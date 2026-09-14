@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<title>MKAYFX AI</title>
+
+<style>
+:root {
+    --bg: #05070b;
+    --panel: #0c1018;
+    --panel2: #111722;
+    --border: #202838;
+    --text: #f5f7fb;
+    --muted: #7f8ba3;
+    --green: #00e396;
+    --red: #ff4d6d;
+    --yellow: #ffc857;
+    --blue: #5897ff;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background:
+        radial-gradient(circle at top, #11182a 0%, #05070b 35%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.app {
+    width: min(100%, 720px);
+    margin: auto;
+    padding: 18px 14px 80px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    font-weight: 900;
+    background: linear-gradient(135deg, #3e7cff, #9f4cff);
+}
+
+.title {
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.subtitle {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+.live {
+    padding: 7px 10px;
+    border-radius: 20px;
+    background: rgba(0,227,150,.1);
+    color: var(--green);
+    border: 1px solid rgba(0,227,150,.25);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.card {
+    background: rgba(12,16,24,.94);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    margin-bottom: 13px;
+    overflow: hidden;
+}
+
+.card-head {
+    padding: 13px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+}
+
+.card-title {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 800;
+    letter-spacing: .8px;
+}
+
+.body {
+    padding: 16px;
+}
+
+.symbol-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+}
+
+.symbol {
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.price {
+    font-size: 37px;
+    font-weight: 900;
+    letter-spacing: -1.5px;
+    margin-top: 5px;
+}
+
+.signal {
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-weight: 900;
+    font-size: 14px;
+}
+
+.signal.buy {
+    background: rgba(0,227,150,.12);
+    color: var(--green);
+}
+
+.signal.sell {
+    background: rgba(255,77,109,.12);
+    color: var(--red);
+}
+
+.signal.wait {
+    background: rgba(255,200,87,.12);
+    color: var(--yellow);
+}
+
+svg {
+    width: 100%;
+    height: 120px;
+    margin-top: 12px;
+}
+
+.decision {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 16px;
+}
+
+.confidence {
+    width: 104px;
+    height: 104px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background:
+        radial-gradient(circle, #0c1018 57%, transparent 59%),
+        conic-gradient(var(--blue) var(--confidence), #202838 0);
+}
+
+.confidence-number {
+    font-size: 25px;
+    font-weight: 900;
+}
+
+.confidence-label {
+    font-size: 9px;
+    text-align: center;
+    color: var(--muted);
+}
+
+.setup-grade {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.summary {
+    font-size: 15px;
+    line-height: 1.5;
+    margin-top: 8px;
+}
+
+.levels {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.level {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    padding: 10px 7px;
+    border-radius: 11px;
+}
+
+.level-label {
+    color: var(--muted);
+    font-size: 9px;
+}
+
+.level-value {
+    font-size: 13px;
+    font-weight: 800;
+    margin-top: 5px;
+}
+
+.reason {
+    padding: 10px 0;
+    border-bottom: 1px solid #151b27;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.reason:last-child {
+    border-bottom: 0;
+}
+
+.tf {
+    margin-bottom: 14px;
+}
+
+.tf:last-child {
+    margin-bottom: 0;
+}
+
+.tf-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 7px;
+}
+
+.bar {
+    height: 7px;
+    background: #191f2c;
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.fill {
+    height: 100%;
+    border-radius: 99px;
+    background: var(--blue);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+}
+
+.metric {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 11px;
+}
+
+.metric-label {
+    color: var(--muted);
+    font-size: 9px;
+}
+
+.metric-value {
+    margin-top: 5px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.controls {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 9px;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    border-radius: 11px;
+    border: 1px solid var(--border);
+    background: var(--panel2);
+    color: white;
+    font-size: 15px;
+    outline: none;
+}
+
+button {
+    border: 0;
+    padding: 0 18px;
+    border-radius: 11px;
+    color: white;
+    font-weight: 800;
+    background: linear-gradient(135deg, #3e7cff, #7857ff);
+}
+
+button:disabled {
+    opacity: .55;
+}
+
+.status {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 10px;
+}
+
+.warning {
+    color: var(--yellow);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.guard {
+    background: rgba(88,151,255,.07);
+    border: 1px solid rgba(88,151,255,.18);
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 12px;
+    color: #b9ceff;
+    font-size: 11px;
+}
+
+@media(max-width:460px) {
+    .decision {
+        grid-template-columns: 90px 1fr;
+    }
+
+    .confidence {
+        width: 86px;
+        height: 86px;
+    }
+
+    .levels {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .price {
+        font-size: 31px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <div class="header">
+        <div class="brand">
+            <div class="logo">M</div>
+
+            <div>
+                <div class="title">MKAYFX AI</div>
+                <div class="subtitle">Autonomous Market Intelligence</div>
+            </div>
+        </div>
+
+        <div class="live" id="liveStatus">
+            ● AI READY
+        </div>
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-head">
+            <div class="card-title">LIVE MARKET</div>
+
+            <div id="lastUpdate" class="subtitle">
+                Waiting...
+            </div>
+        </div>
+
+        <div class="body">
+
+            <div class="symbol-row">
+
+                <div>
+                    <div class="symbol" id="symbolDisplay">
+                        XAU/USD
+                    </div>
+
+                    <div class="price" id="price">
+                        ---
+                    </div>
+                </div>
+
+                <div class="signal wait" id="signal">
+                    WAIT
+                </div>
+
+            </div>
+
+            <svg viewBox="0 0 600 120" preserveAspectRatio="none">
+                <polyline
+                    id="chartLine"
+                    fill="none"
+                    stroke="#5897ff"
+                    stroke-width="3"
+                    points=""
+                />
+            </svg>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-head">
+            <div class="card-title">
+                AI DECISION ENGINE
+            </div>
+
+            <div id="grade">
+                -
+            </div>
+        </div>
+
+        <div class="body">
+
+            <div class="decision">
+
+                <div
+                    class="confidence"
+                    id="confidenceCircle"
+                    style="--confidence:0deg"
+                >
+
+                    <div>
+                        <div class="confidence-number" id="confidence">
+                            0%
+                        </div>
+
+                        <div class="confidence-label">
+                            AI CONFIDENCE
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div>
+
+                    <div class="setup-grade">
+                        AI MARKET VERDICT
+                    </div>
+
+                    <div class="summary" id="summary">
+                        Press AI ANALYZE to begin.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="levels">
+
+                <div class="level">
+                    <div class="level-label">ENTRY</div>
+                    <div class="level-value" id="entry">---</div>
+                </div>
+
+                <div class="level">
+                    <div class="level-label">STOP LOSS</div>
+                    <div class="level-value" id="sl">---</div>
+                </div>
+
+                <div class="level">
+                    <div class="level-label">TP 1</div>
+                    <div class="level-value" id="tp1">---</div>
+                </div>
+
+                <div class="level">
+                    <div class="level-label">TP 2</div>
+                    <div class="level-value" id="tp2">---</div>
+                </div>
+
+            </div>
+
+            <div class="guard" id="guard">
+                AI risk filters active.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-head">
+            <div class="card-title">
+                MULTI-TIMEFRAME AI
+            </div>
+        </div>
+
+        <div class="body">
+
+            <div class="tf">
+                <div class="tf-top">
+                    <span>M5</span>
+                    <strong id="m5Bias">---</strong>
+                </div>
+
+                <div class="bar">
+                    <div class="fill" id="m5Bar" style="width:0%"></div>
+                </div>
+            </div>
+
+
+            <div class="tf">
+                <div class="tf-top">
+                    <span>M15</span>
+                    <strong id="m15Bias">---</strong>
+                </div>
+
+                <div class="bar">
+                    <div class="fill" id="m15Bar" style="width:0%"></div>
+                </div>
+            </div>
+
+
+            <div class="tf">
+                <div class="tf-top">
+                    <span>H1</span>
+                    <strong id="h1Bias">---</strong>
+                </div>
+
+                <div class="bar">
+                    <div class="fill" id="h1Bar" style="width:0%"></div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-head">
+            <div class="card-title">
+                AI MARKET READ
+            </div>
+        </div>
+
+        <div class="body">
+
+            <div class="grid">
+
+                <div class="metric">
+                    <div class="metric-label">REGIME</div>
+                    <div class="metric-value" id="regime">---</div>
+                </div>
+
+                <div class="metric">
+                    <div class="metric-label">STRUCTURE</div>
+                    <div class="metric-value" id="structure">---</div>
+                </div>
+
+                <div class="metric">
+                    <div class="metric-label">LIQUIDITY</div>
+                    <div class="metric-value" id="liquidity">---</div>
+                </div>
+
+                <div class="metric">
+                    <div class="metric-label">RISK / REWARD</div>
+                    <div class="metric-value" id="rr">---</div>
+                </div>
+
+                <div class="metric">
+                    <div class="metric-label">MACRO BIAS</div>
+                    <div class="metric-value" id="macro">---</div>
+                </div>
+
+                <div class="metric">
+                    <div class="metric-label">NEXT TRIGGER</div>
+                    <div class="metric-value" id="trigger">---</div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-head">
+            <div class="card-title">
+                AI REASONING
+            </div>
+        </div>
+
+        <div class="body" id="reasons">
+            <div class="reason">
+                No analysis yet.
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-head">
+            <div class="card-title">
+                RISKS / INVALIDATION
+            </div>
+        </div>
+
+        <div class="body">
+
+            <div id="risks">
+                <div class="reason">
+                    Waiting for AI.
+                </div>
+            </div>
+
+            <div class="guard" id="invalidation">
+                ---
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-head">
+            <div class="card-title">
+                CONTROL
+            </div>
+        </div>
+
+        <div class="body">
+
+            <div class="controls">
+
+                <input
+                    id="symbolInput"
+                    value="XAU/USD"
+                    placeholder="XAU/USD"
+                >
+
+                <button id="analyzeButton">
+                    AI ANALYZE
+                </button>
+
+            </div>
+
+            <div class="status" id="status">
+                Analysis refreshes every 60 seconds.
+            </div>
+
+            <p class="warning">
+                Signals are analytical estimates, not guaranteed
+                outcomes. Test the system on demo data before using
+                real money.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const $ = id => document.getElementById(id);
+
+let busy = false;
+
+
+/* -----------------------------------------
+   NUMBER FORMAT
+----------------------------------------- */
+
+function fmt(value) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        Number.isNaN(Number(value))
+    ) {
+        return "---";
+    }
+
+    const number = Number(value);
+
+    if (number < 10) {
+        return number.toFixed(5);
+    }
+
+    if (number < 100) {
+        return number.toFixed(3);
+    }
+
+    return number.toFixed(2);
+}
+
+
+/* -----------------------------------------
+   SIGNAL COLOUR
+----------------------------------------- */
+
+function setSignal(decision) {
+
+    const signal = $("signal");
+
+    signal.className = "signal";
+
+    const d = decision || "WAIT";
+
+    if (d === "BUY") {
+        signal.classList.add("buy");
+    }
+
+    else if (d === "SELL") {
+        signal.classList.add("sell");
+    }
+
+    else {
+        signal.classList.add("wait");
+    }
+
+    signal.textContent = d;
+}
+
+
+/* -----------------------------------------
+   TIMEFRAME
+----------------------------------------- */
+
+function updateTF(prefix, data) {
+
+    const bias =
+        data?.bias ||
+        "NEUTRAL";
+
+    const strength =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                Number(data?.strength || 0)
+            )
+        );
+
+    $(prefix + "Bias").textContent =
+        `${bias.toUpperCase()} ${strength}%`;
+
+    $(prefix + "Bar").style.width =
+        strength + "%";
+}
+
+
+/* -----------------------------------------
+   CHART
+----------------------------------------- */
+
+function drawChart(candles = []) {
+
+    if (!candles.length) {
+        return;
+    }
+
+    const closes =
+        candles.map(x => Number(x.c));
+
+    const min =
+        Math.min(...closes);
+
+    const max =
+        Math.max(...closes);
+
+    const range =
+        max - min || 1;
+
+    const width = 600;
+    const height = 110;
+
+    const points =
+        closes.map((value, index) => {
+
+            const x =
+                (index / (closes.length - 1))
+                * width;
+
+            const y =
+                height -
+                ((value - min) / range)
+                * height +
+                5;
+
+            return `${x},${y}`;
+
+        }).join(" ");
+
+    $("chartLine")
+        .setAttribute("points", points);
+}
+
+
+/* -----------------------------------------
+   DISPLAY ARRAY
+----------------------------------------- */
+
+function renderArray(id, items) {
+
+    const container = $(id);
+
+    container.innerHTML = "";
+
+    if (!Array.isArray(items) || !items.length) {
+
+        container.innerHTML =
+            '<div class="reason">None reported.</div>';
+
+        return;
+    }
+
+    items.forEach(text => {
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "reason";
+
+        div.textContent =
+            "• " + text;
+
+        container.appendChild(div);
+
+    });
+}
+
+
+/* -----------------------------------------
+   RENDER AI RESPONSE
+----------------------------------------- */
+
+function render(data) {
+
+    const a = data.analysis;
+
+    $("symbolDisplay").textContent =
+        data.symbol;
+
+    $("price").textContent =
+        fmt(data.current_price);
+
+    setSignal(a.decision);
+
+    $("confidence").textContent =
+        Math.round(a.confidence) + "%";
+
+    $("confidenceCircle").style
+        .setProperty(
+            "--confidence",
+            `${a.confidence * 3.6}deg`
+        );
+
+    $("grade").textContent =
+        a.setup_grade || "-";
+
+    $("summary").textContent =
+        a.summary;
+
+    $("entry").textContent =
+        fmt(a.entry);
+
+    $("sl").textContent =
+        fmt(a.stop_loss);
+
+    $("tp1").textContent =
+        fmt(a.take_profit_1);
+
+    $("tp2").textContent =
+        fmt(a.take_profit_2);
+
+    $("regime").textContent =
+        a.market_regime;
+
+    $("structure").textContent =
+        a.structure_summary;
+
+    $("liquidity").textContent =
+        a.liquidity_summary;
+
+    $("rr").textContent =
+        a.risk_reward
+        ? "1:" + Number(a.risk_reward).toFixed(2)
+        : "---";
+
+    $("macro").textContent =
+        a.macro_bias;
+
+    $("trigger").textContent =
+        a.next_trigger;
+
+    updateTF(
+        "m5",
+        a.timeframes.m5
+    );
+
+    updateTF(
+        "m15",
+        a.timeframes.m15
+    );
+
+    updateTF(
+        "h1",
+        a.timeframes.h1
+    );
+
+    renderArray(
+        "reasons",
+        a.reasons
+    );
+
+    renderArray(
+        "risks",
+        a.risks
+    );
+
+    $("invalidation").textContent =
+        "Invalidation: " +
+        a.invalidation;
+
+    $("guard").textContent =
+        data.guardrail_note ||
+        "AI trade passed risk filters.";
+
+    drawChart(data.chart);
+
+    $("lastUpdate").textContent =
+        new Date().toLocaleTimeString(
+            "en-ZA",
+            {
+                timeZone:
+                    "Africa/Johannesburg",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            }
+        );
+
+}
+
+
+/* -----------------------------------------
+   RUN LIVE AI ANALYSIS
+----------------------------------------- */
+
+async function runAnalysis() {
+
+    if (busy) {
+        return;
+    }
+
+    busy = true;
+
+    const button =
+        $("analyzeButton");
+
+    button.disabled = true;
+
+    $("liveStatus").textContent =
+        "● AI THINKING";
+
+    $("status").textContent =
+        "GPT is analysing M5, M15 and H1 raw market data...";
+
+    try {
+
+        const symbol =
+            $("symbolInput")
+            .value
+            .trim();
+
+        const response =
+            await fetch(
+                "/api/analyze",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        symbol
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Analysis failed."
+            );
+        }
+
+        render(data);
+
+        $("liveStatus").textContent =
+            "● LIVE AI";
+
+        $("status").textContent =
+            "Live AI analysis complete. Automatic refresh in 60 seconds.";
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        $("liveStatus").textContent =
+            "● ERROR";
+
+        $("status").textContent =
+            error.message;
+    }
+
+    finally {
+
+        busy = false;
+
+        button.disabled =
+            false;
+    }
+
+}
+
+
+$("analyzeButton")
+    .addEventListener(
+        "click",
+        runAnalysis
+    );
+
+
+/* initial run */
+runAnalysis();
+
+
+/* refresh every minute */
+setInterval(
+    runAnalysis,
+    60000
+);
+
+</script>
+
+</body>
+</html>
