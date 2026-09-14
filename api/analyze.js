@@ -1,2681 +1,3679 @@
-/* ==========================================================
-   MKAYFX V3 - SMART MONEY / MARKET STRUCTURE ENGINE
+/* ============================================================
+   MKAYFX EXTREME AI - GEMINI VERSION
+   api/analyze.js
 
-   FREE PLAN SAFE:
-   - 1 Twelve Data request
-   - M15 + H1 created from M5
-   - 55 second market-data cache
+   FEATURES
+   ------------------------------------------------------------
+   - Accepts BOTH GET and POST
+   - Twelve Data live M5 candles
+   - Only 1 Twelve Data request per refresh
+   - Builds M15 locally
+   - Builds H1 locally
+   - 55 second candle cache
+   - EMA 20 / 50
+   - RSI 14
+   - ATR 14
+   - MACD
+   - Market structure
+   - Momentum
+   - Liquidity ranges
+   - Gemini 3.8 Flash
+   - HIGH AI reasoning
+   - Optional Google Search news grounding
+   - Structured JSON output
+   - Local fallback if Gemini fails
+   - Server-side trade validation
+============================================================ */
 
-   ANALYSIS:
-   - Swing highs / lows
-   - BOS
-   - CHOCH
-   - Liquidity sweeps
-   - Fair Value Gaps
-   - Displacement
-   - Premium / Discount
-   - Multi-timeframe alignment
-   - Tighter dynamic SL / TP
-========================================================== */
+
+/* ============================================================
+   CONFIG
+============================================================ */
+
+const TWELVE_DATA_API_KEY =
+  process.env.TWELVE_DATA_API_KEY;
+
+const GEMINI_API_KEY =
+  process.env.GEMINI_API_KEY;
+
+const GEMINI_MODEL =
+  process.env.GEMINI_MODEL ||
+  "gemini-3.8-flash";
+
+const USE_WEB_NEWS =
+  String(
+    process.env.USE_WEB_NEWS ||
+    "false"
+  ).toLowerCase() === "true";
+
 
 const TWELVE_URL =
-    "https://api.twelvedata.com/time_series";
+  "https://api.twelvedata.com/time_series";
 
-const CACHE_MS = 55_000;
+const GEMINI_URL =
+  "https://generativelanguage.googleapis.com/v1beta/interactions";
 
-const OUTPUT_SIZE = 1000;
+
+const CACHE_MS =
+  55_000;
+
+const OUTPUT_SIZE =
+  1000;
+
+
+/* ============================================================
+   SYMBOLS
+============================================================ */
+
+const ALLOWED_SYMBOLS =
+  new Set([
+    "XAU/USD",
+    "EUR/USD",
+    "GBP/USD",
+    "USD/JPY",
+    "BTC/USD",
+    "XBR/USD"
+  ]);
+
+
+/* ============================================================
+   MEMORY CACHE
+============================================================ */
 
 const marketCache =
-    new Map();
+  new Map();
 
 const inFlight =
-    new Map();
+  new Map();
 
 
-/* ==========================================================
+/* ============================================================
    RESPONSE
-========================================================== */
+============================================================ */
 
 function send(
-    res,
-    status,
-    data
+  res,
+  status,
+  data
 ) {
 
-    return res
-        .status(status)
-        .json(data);
+  return res
+    .status(status)
+    .json(data);
+
 }
 
 
-/* ==========================================================
-   BASIC HELPERS
-========================================================== */
+/* ============================================================
+   NUMBER HELPERS
+============================================================ */
 
 function clamp(
-    value,
-    min,
-    max
+  value,
+  min,
+  max
 ) {
 
-    return Math.max(
-        min,
-        Math.min(
-            max,
-            value
-        )
-    );
+  return Math.max(
+    min,
+    Math.min(
+      max,
+      value
+    )
+  );
+
 }
 
 
 function round(
+  value,
+  digits = 2
+) {
+
+  const n =
+    Number(value);
+
+  if(
+    !Number.isFinite(n)
+  ) {
+
+    return null;
+
+  }
+
+  return Number(
+    n.toFixed(digits)
+  );
+
+}
+
+
+function priceDigits(
+  symbol
+) {
+
+  if(
+    symbol === "EUR/USD" ||
+    symbol === "GBP/USD"
+  ) {
+
+    return 5;
+
+  }
+
+  if(
+    symbol === "USD/JPY"
+  ) {
+
+    return 3;
+
+  }
+
+  return 2;
+
+}
+
+
+function priceRound(
+  symbol,
+  value
+) {
+
+  return round(
     value,
-    digits = 2
-) {
+    priceDigits(symbol)
+  );
 
-    if (
-        value === null ||
-        value === undefined ||
-        !Number.isFinite(
-            Number(value)
-        )
-    ) {
-
-        return null;
-    }
-
-
-    return Number(
-        Number(value)
-            .toFixed(digits)
-    );
 }
 
 
-function average(
-    values
+/* ============================================================
+   TIME PARSER
+============================================================ */
+
+function parseUTC(
+  datetime
 ) {
 
-    if (
-        !values.length
-    ) {
-
-        return 0;
-    }
-
-
-    return (
-        values.reduce(
-            (a, b) =>
-                a + b,
-            0
-        )
-        /
-        values.length
-    );
-}
-
-
-function parseUtc(
-    datetime
-) {
-
-    const clean =
-        String(
-            datetime || ""
-        )
-        .trim()
-        .replace(
-            " ",
-            "T"
-        );
-
-
-    const zoned =
-
-        /Z$|[+-]\d\d:\d\d$/
-        .test(clean)
-
-        ?
-
-        clean
-
-        :
-
-        `${clean}Z`;
-
-
-    return new Date(
-        zoned
+  const clean =
+    String(
+      datetime ||
+      ""
     )
-    .getTime();
+    .trim()
+    .replace(
+      " ",
+      "T"
+    );
+
+
+  const finalValue =
+    /Z$|[+-]\d\d:\d\d$/
+      .test(clean)
+      ?
+      clean
+      :
+      `${clean}Z`;
+
+
+  return new Date(
+    finalValue
+  ).getTime();
+
 }
 
 
-/* ==========================================================
+/* ============================================================
+   REQUEST BODY
+============================================================ */
+
+function getRequestBody(
+  req
+) {
+
+  if(
+    !req.body
+  ) {
+
+    return {};
+
+  }
+
+
+  if(
+    typeof req.body ===
+    "object"
+  ) {
+
+    return req.body;
+
+  }
+
+
+  try {
+
+    return JSON.parse(
+      req.body
+    );
+
+  }
+  catch {
+
+    return {};
+
+  }
+
+}
+
+
+/* ============================================================
    TWELVE DATA
-========================================================== */
+============================================================ */
 
 async function requestM5(
-    symbol
+  symbol
 ) {
 
-    const key =
-        process.env
-            .TWELVE_DATA_API_KEY;
+  if(
+    !TWELVE_DATA_API_KEY
+  ) {
 
+    throw new Error(
+      "TWELVE_DATA_API_KEY is missing in Vercel."
+    );
 
-    if (!key) {
+  }
 
-        throw new Error(
-            "TWELVE_DATA_API_KEY is missing in Vercel."
-        );
-    }
 
+  const params =
+    new URLSearchParams({
 
-    const params =
-        new URLSearchParams({
+      symbol,
 
-            symbol,
+      interval:
+        "5min",
 
-            interval:
-                "5min",
+      outputsize:
+        String(
+          OUTPUT_SIZE
+        ),
 
-            outputsize:
-                String(
-                    OUTPUT_SIZE
-                ),
+      timezone:
+        "UTC",
 
-            timezone:
-                "UTC",
+      format:
+        "JSON",
 
-            format:
-                "JSON",
+      apikey:
+        TWELVE_DATA_API_KEY
 
-            apikey:
-                key
-        });
+    });
 
 
-    const response =
-        await fetch(
-            `${TWELVE_URL}?${params}`
-        );
-
-
-    const data =
-        await response.json();
-
-
-    if (
-        !response.ok ||
-        data.status ===
-        "error" ||
-        !Array.isArray(
-            data.values
-        )
-    ) {
-
-        throw new Error(
-            data.message ||
-            "Twelve Data request failed."
-        );
-    }
-
-
-    const candles =
-
-        data.values
-
-        .map(x => ({
-
-            t:
-                x.datetime,
-
-            o:
-                Number(
-                    x.open
-                ),
-
-            h:
-                Number(
-                    x.high
-                ),
-
-            l:
-                Number(
-                    x.low
-                ),
-
-            c:
-                Number(
-                    x.close
-                ),
-
-            v:
-                Number(
-                    x.volume || 0
-                )
-
-        }))
-
-        .filter(
-            x =>
-                [
-                    x.o,
-                    x.h,
-                    x.l,
-                    x.c
-                ]
-                .every(
-                    Number.isFinite
-                )
-        )
-
-        .reverse();
-
-
-    if (
-        candles.length <
-        200
-    ) {
-
-        throw new Error(
-            "Not enough market data returned."
-        );
-    }
-
-
-    return candles;
-}
-
-
-/* ==========================================================
-   CACHE
-========================================================== */
-
-async function getM5Cached(
-    symbol
-) {
-
-    const key =
-        symbol
-        .toUpperCase();
-
-
-    const now =
-        Date.now();
-
-
-    const cached =
-        marketCache.get(
-            key
-        );
-
-
-    if (
-        cached &&
-        now -
-        cached.time <
-        CACHE_MS
-    ) {
-
-        return {
-
-            candles:
-                cached.candles,
-
-            cacheHit:
-                true
-        };
-    }
-
-
-    if (
-        inFlight.has(
-            key
-        )
-    ) {
-
-        const candles =
-            await inFlight.get(
-                key
-            );
-
-
-        return {
-
-            candles,
-
-            cacheHit:
-                true
-        };
-    }
-
-
-    const pending =
-
-        requestM5(
-            key
-        )
-
-        .then(
-            candles => {
-
-                marketCache.set(
-                    key,
-                    {
-
-                        time:
-                            Date.now(),
-
-                        candles
-                    }
-                );
-
-
-                return candles;
-            }
-        )
-
-        .finally(
-            () => {
-
-                inFlight.delete(
-                    key
-                );
-            }
-        );
-
-
-    inFlight.set(
-        key,
-        pending
+  const response =
+    await fetch(
+      `${TWELVE_URL}?${params.toString()}`
     );
 
 
+  const data =
+    await response.json();
+
+
+  if(
+    !response.ok ||
+    data.status ===
+      "error" ||
+    !Array.isArray(
+      data.values
+    )
+  ) {
+
+    throw new Error(
+      data.message ||
+      "Twelve Data request failed."
+    );
+
+  }
+
+
+  const candles =
+    data.values
+
+      .map(
+        item => ({
+
+          t:
+            item.datetime,
+
+          o:
+            Number(
+              item.open
+            ),
+
+          h:
+            Number(
+              item.high
+            ),
+
+          l:
+            Number(
+              item.low
+            ),
+
+          c:
+            Number(
+              item.close
+            ),
+
+          v:
+            Number(
+              item.volume ||
+              0
+            )
+
+        })
+      )
+
+      .filter(
+        candle =>
+          [
+            candle.o,
+            candle.h,
+            candle.l,
+            candle.c
+          ]
+          .every(
+            Number.isFinite
+          )
+      )
+
+      .reverse();
+
+
+  if(
+    candles.length <
+    120
+  ) {
+
+    throw new Error(
+      "Not enough market candles returned."
+    );
+
+  }
+
+
+  return candles;
+
+}
+
+
+/* ============================================================
+   CACHED MARKET DATA
+============================================================ */
+
+async function getM5Cached(
+  symbol
+) {
+
+  const key =
+    symbol.toUpperCase();
+
+
+  const now =
+    Date.now();
+
+
+  const cached =
+    marketCache.get(
+      key
+    );
+
+
+  if(
+    cached &&
+    now -
+    cached.time <
+    CACHE_MS
+  ) {
+
+    return {
+
+      candles:
+        cached.candles,
+
+      cacheHit:
+        true
+
+    };
+
+  }
+
+
+  if(
+    inFlight.has(key)
+  ) {
+
     const candles =
-        await pending;
+      await inFlight.get(
+        key
+      );
 
 
     return {
 
-        candles,
+      candles,
 
-        cacheHit:
-            false
+      cacheHit:
+        true
+
     };
+
+  }
+
+
+  const pending =
+    requestM5(key)
+
+      .then(
+        candles => {
+
+          marketCache.set(
+            key,
+            {
+
+              time:
+                Date.now(),
+
+              candles
+
+            }
+          );
+
+
+          return candles;
+
+        }
+      )
+
+      .finally(
+        () =>
+          inFlight.delete(
+            key
+          )
+      );
+
+
+  inFlight.set(
+    key,
+    pending
+  );
+
+
+  const candles =
+    await pending;
+
+
+  return {
+
+    candles,
+
+    cacheHit:
+      false
+
+  };
+
 }
 
 
-/* ==========================================================
-   COMPLETED CANDLES
-========================================================== */
+/* ============================================================
+   REMOVE CURRENT INCOMPLETE M5
+============================================================ */
 
 function completedCandles(
-    candles
+  candles
 ) {
 
-    if (
-        candles.length <= 2
-    ) {
+  if(
+    candles.length <
+    3
+  ) {
 
-        return candles;
-    }
+    return candles;
+
+  }
 
 
-    return candles.slice(
-        0,
-        -1
-    );
+  return candles.slice(
+    0,
+    -1
+  );
+
 }
 
 
-/* ==========================================================
-   RESAMPLE M5 -> M15 / H1
-========================================================== */
+/* ============================================================
+   RESAMPLE
+============================================================ */
 
 function resample(
-    candles,
-    minutes,
-    expectedBars
+  candles,
+  minutes
 ) {
 
-    const bucketMs =
-        minutes *
-        60_000;
+  const bucketMS =
+    minutes *
+    60_000;
 
 
-    const buckets =
-        new Map();
+  const buckets =
+    new Map();
 
 
-    for (
-        const candle
-        of candles
+  for(
+    const candle
+    of candles
+  ) {
+
+    const time =
+      parseUTC(
+        candle.t
+      );
+
+
+    if(
+      !Number.isFinite(time)
     ) {
 
-        const ms =
-            parseUtc(
-                candle.t
-            );
+      continue;
 
-
-        if (
-            !Number.isFinite(ms)
-        ) {
-
-            continue;
-        }
-
-
-        const start =
-            Math.floor(
-                ms /
-                bucketMs
-            )
-            *
-            bucketMs;
-
-
-        const existing =
-            buckets.get(
-                start
-            );
-
-
-        if (!existing) {
-
-            buckets.set(
-                start,
-                {
-
-                    start,
-
-                    count:
-                        1,
-
-                    o:
-                        candle.o,
-
-                    h:
-                        candle.h,
-
-                    l:
-                        candle.l,
-
-                    c:
-                        candle.c,
-
-                    v:
-                        candle.v || 0
-                }
-            );
-        }
-
-        else {
-
-            existing.count +=
-                1;
-
-
-            existing.h =
-                Math.max(
-                    existing.h,
-                    candle.h
-                );
-
-
-            existing.l =
-                Math.min(
-                    existing.l,
-                    candle.l
-                );
-
-
-            existing.c =
-                candle.c;
-
-
-            existing.v +=
-                candle.v || 0;
-        }
     }
 
 
-    return [
-        ...buckets.values()
+    const bucket =
+      Math.floor(
+        time /
+        bucketMS
+      ) *
+      bucketMS;
+
+
+    if(
+      !buckets.has(
+        bucket
+      )
+    ) {
+
+      buckets.set(
+        bucket,
+        []
+      );
+
+    }
+
+
+    buckets
+      .get(bucket)
+      .push(candle);
+
+  }
+
+
+  const output =
+    [];
+
+
+  for(
+    const [
+      timestamp,
+      group
     ]
+    of buckets
+  ) {
 
-    .filter(
-        x =>
-            x.count >=
-            expectedBars
-    )
-
-    .sort(
-        (a, b) =>
-            a.start -
-            b.start
-    )
-
-    .map(
-        x => ({
-
-            t:
-                new Date(
-                    x.start
-                )
-                .toISOString()
-                .replace(
-                    "T",
-                    " "
-                )
-                .slice(
-                    0,
-                    19
-                ),
-
-            o:
-                x.o,
-
-            h:
-                x.h,
-
-            l:
-                x.l,
-
-            c:
-                x.c,
-
-            v:
-                x.v
-        })
+    group.sort(
+      (a,b) =>
+        parseUTC(a.t) -
+        parseUTC(b.t)
     );
+
+
+    const first =
+      group[0];
+
+
+    const last =
+      group[
+        group.length -
+        1
+      ];
+
+
+    output.push({
+
+      t:
+        new Date(
+          timestamp
+        )
+        .toISOString(),
+
+      o:
+        first.o,
+
+      h:
+        Math.max(
+          ...group.map(
+            x => x.h
+          )
+        ),
+
+      l:
+        Math.min(
+          ...group.map(
+            x => x.l
+          )
+        ),
+
+      c:
+        last.c,
+
+      v:
+        group.reduce(
+          (
+            total,
+            item
+          ) =>
+            total +
+            (
+              item.v ||
+              0
+            ),
+          0
+        )
+
+    });
+
+  }
+
+
+  return output.sort(
+    (a,b) =>
+      parseUTC(a.t) -
+      parseUTC(b.t)
+  );
+
 }
 
 
-/* ==========================================================
-   VOLATILITY
-========================================================== */
+/* ============================================================
+   SMA
+============================================================ */
 
-function trueRange(
-    current,
-    previous
+function sma(
+  values,
+  period
 ) {
 
-    return Math.max(
+  if(
+    values.length <
+    period
+  ) {
+
+    return null;
+
+  }
+
+
+  const recent =
+    values.slice(
+      -period
+    );
+
+
+  return recent.reduce(
+    (
+      total,
+      value
+    ) =>
+      total +
+      value,
+    0
+  ) /
+  period;
+
+}
+
+
+/* ============================================================
+   EMA SERIES
+============================================================ */
+
+function emaSeries(
+  values,
+  period
+) {
+
+  if(
+    values.length <
+    period
+  ) {
+
+    return [];
+
+  }
+
+
+  const multiplier =
+    2 /
+    (
+      period +
+      1
+    );
+
+
+  const seed =
+    values
+      .slice(
+        0,
+        period
+      )
+      .reduce(
+        (
+          total,
+          value
+        ) =>
+          total +
+          value,
+        0
+      ) /
+    period;
+
+
+  const output =
+    Array(
+      period -
+      1
+    )
+    .fill(null);
+
+
+  let current =
+    seed;
+
+
+  output.push(
+    current
+  );
+
+
+  for(
+    let i =
+      period;
+
+    i <
+    values.length;
+
+    i++
+  ) {
+
+    current =
+      (
+        values[i] -
+        current
+      ) *
+      multiplier +
+      current;
+
+
+    output.push(
+      current
+    );
+
+  }
+
+
+  return output;
+
+}
+
+
+/* ============================================================
+   EMA VALUE
+============================================================ */
+
+function ema(
+  values,
+  period
+) {
+
+  const series =
+    emaSeries(
+      values,
+      period
+    );
+
+
+  if(
+    !series.length
+  ) {
+
+    return null;
+
+  }
+
+
+  return series[
+    series.length -
+    1
+  ];
+
+}
+
+
+/* ============================================================
+   RSI
+============================================================ */
+
+function rsi(
+  closes,
+  period = 14
+) {
+
+  if(
+    closes.length <=
+    period
+  ) {
+
+    return null;
+
+  }
+
+
+  let gains =
+    0;
+
+  let losses =
+    0;
+
+
+  for(
+    let i =
+      closes.length -
+      period;
+
+    i <
+    closes.length;
+
+    i++
+  ) {
+
+    const change =
+      closes[i] -
+      closes[i - 1];
+
+
+    if(
+      change >
+      0
+    ) {
+
+      gains +=
+        change;
+
+    }
+    else {
+
+      losses +=
+        Math.abs(
+          change
+        );
+
+    }
+
+  }
+
+
+  const avgGain =
+    gains /
+    period;
+
+
+  const avgLoss =
+    losses /
+    period;
+
+
+  if(
+    avgLoss ===
+    0
+  ) {
+
+    return 100;
+
+  }
+
+
+  const rs =
+    avgGain /
+    avgLoss;
+
+
+  return (
+    100 -
+    (
+      100 /
+      (
+        1 +
+        rs
+      )
+    )
+  );
+
+}
+
+
+/* ============================================================
+   ATR
+============================================================ */
+
+function atr(
+  candles,
+  period = 14
+) {
+
+  if(
+    candles.length <=
+    period
+  ) {
+
+    return null;
+
+  }
+
+
+  const trueRanges =
+    [];
+
+
+  for(
+    let i = 1;
+
+    i <
+    candles.length;
+
+    i++
+  ) {
+
+    const current =
+      candles[i];
+
+
+    const previous =
+      candles[i - 1];
+
+
+    const range =
+      Math.max(
 
         current.h -
         current.l,
 
         Math.abs(
-            current.h -
-            previous.c
+          current.h -
+          previous.c
         ),
 
         Math.abs(
-            current.l -
-            previous.c
+          current.l -
+          previous.c
         )
+
+      );
+
+
+    trueRanges.push(
+      range
     );
+
+  }
+
+
+  return sma(
+    trueRanges,
+    period
+  );
+
 }
 
 
-function volatility(
-    candles,
-    period = 14
+/* ============================================================
+   MACD
+============================================================ */
+
+function macd(
+  closes
 ) {
 
-    if (
-        candles.length < 2
-    ) {
-
-        return 0;
-    }
-
-
-    const ranges =
-        [];
-
-
-    for (
-        let i = 1;
-        i < candles.length;
-        i++
-    ) {
-
-        ranges.push(
-
-            trueRange(
-                candles[i],
-                candles[i - 1]
-            )
-        );
-    }
-
-
-    return average(
-        ranges.slice(
-            -period
-        )
+  const fast =
+    emaSeries(
+      closes,
+      12
     );
-}
 
 
-/* ==========================================================
-   SWING DETECTION
-========================================================== */
-
-function detectSwings(
-    candles,
-    width = 2
-) {
-
-    const highs =
-        [];
-
-    const lows =
-        [];
+  const slow =
+    emaSeries(
+      closes,
+      26
+    );
 
 
-    for (
-        let i = width;
-        i <
-        candles.length -
-        width;
-        i++
+  const values =
+    [];
+
+
+  for(
+    let i = 0;
+
+    i <
+    closes.length;
+
+    i++
+  ) {
+
+    if(
+      fast[i] ===
+        null ||
+      fast[i] ===
+        undefined ||
+      slow[i] ===
+        null ||
+      slow[i] ===
+        undefined
     ) {
 
-        const current =
-            candles[i];
+      continue;
 
-
-        let isHigh =
-            true;
-
-        let isLow =
-            true;
-
-
-        for (
-            let j =
-                i - width;
-            j <=
-                i + width;
-            j++
-        ) {
-
-            if (
-                j === i
-            ) {
-
-                continue;
-            }
-
-
-            if (
-                candles[j].h >=
-                current.h
-            ) {
-
-                isHigh =
-                    false;
-            }
-
-
-            if (
-                candles[j].l <=
-                current.l
-            ) {
-
-                isLow =
-                    false;
-            }
-        }
-
-
-        if (
-            isHigh
-        ) {
-
-            highs.push({
-
-                index:
-                    i,
-
-                price:
-                    current.h,
-
-                time:
-                    current.t
-            });
-        }
-
-
-        if (
-            isLow
-        ) {
-
-            lows.push({
-
-                index:
-                    i,
-
-                price:
-                    current.l,
-
-                time:
-                    current.t
-            });
-        }
     }
 
+
+    values.push(
+      fast[i] -
+      slow[i]
+    );
+
+  }
+
+
+  if(
+    values.length <
+    9
+  ) {
 
     return {
 
-        highs,
+      line:
+        null,
 
-        lows
+      signal:
+        null,
+
+      histogram:
+        null
+
     };
+
+  }
+
+
+  const line =
+    values[
+      values.length -
+      1
+    ];
+
+
+  const signal =
+    ema(
+      values,
+      9
+    );
+
+
+  return {
+
+    line,
+
+    signal,
+
+    histogram:
+      line -
+      signal
+
+  };
+
 }
 
 
-/* ==========================================================
+/* ============================================================
    MARKET STRUCTURE
-========================================================== */
+============================================================ */
 
-function getStructure(
-    candles
+function structure(
+  candles
 ) {
 
-    const swings =
-        detectSwings(
-            candles,
-            2
-        );
+  if(
+    candles.length <
+    20
+  ) {
+
+    return "UNKNOWN";
+
+  }
 
 
-    const highs =
-        swings.highs.slice(
-            -3
-        );
+  const recent =
+    candles.slice(
+      -20
+    );
 
 
-    const lows =
-        swings.lows.slice(
-            -3
-        );
+  const first =
+    recent.slice(
+      0,
+      10
+    );
 
 
-    let bias =
-        "NEUTRAL";
+  const second =
+    recent.slice(
+      10
+    );
 
 
-    let structure =
-        "RANGE";
+  const high1 =
+    Math.max(
+      ...first.map(
+        x => x.h
+      )
+    );
 
 
-    if (
-        highs.length >= 2 &&
-        lows.length >= 2
-    ) {
-
-        const highUp =
-            highs.at(-1).price >
-            highs.at(-2).price;
+  const low1 =
+    Math.min(
+      ...first.map(
+        x => x.l
+      )
+    );
 
 
-        const lowUp =
-            lows.at(-1).price >
-            lows.at(-2).price;
+  const high2 =
+    Math.max(
+      ...second.map(
+        x => x.h
+      )
+    );
 
 
-        const highDown =
-            highs.at(-1).price <
-            highs.at(-2).price;
+  const low2 =
+    Math.min(
+      ...second.map(
+        x => x.l
+      )
+    );
 
 
-        const lowDown =
-            lows.at(-1).price <
-            lows.at(-2).price;
+  if(
+    high2 >
+      high1 &&
+    low2 >
+      low1
+  ) {
+
+    return (
+      "HIGHER HIGHS / HIGHER LOWS"
+    );
+
+  }
 
 
-        if (
-            highUp &&
-            lowUp
-        ) {
+  if(
+    high2 <
+      high1 &&
+    low2 <
+      low1
+  ) {
 
-            bias =
-                "BULLISH";
+    return (
+      "LOWER HIGHS / LOWER LOWS"
+    );
 
-            structure =
-                "HH / HL";
-        }
-
-
-        else if (
-            highDown &&
-            lowDown
-        ) {
-
-            bias =
-                "BEARISH";
-
-            structure =
-                "LH / LL";
-        }
-    }
+  }
 
 
-    return {
+  if(
+    high2 >
+      high1 &&
+    low2 <
+      low1
+  ) {
 
-        bias,
+    return (
+      "EXPANDING VOLATILITY"
+    );
 
-        structure,
+  }
 
-        swingHigh:
-            highs.at(-1) ||
-            null,
 
-        previousSwingHigh:
-            highs.at(-2) ||
-            null,
+  return (
+    "RANGING / MIXED"
+  );
 
-        swingLow:
-            lows.at(-1) ||
-            null,
-
-        previousSwingLow:
-            lows.at(-2) ||
-            null,
-
-        highs,
-
-        lows
-    };
 }
 
 
-/* ==========================================================
-   BOS / CHOCH
-========================================================== */
+/* ============================================================
+   MOMENTUM
+============================================================ */
 
-function detectBreak(
-    candles,
-    structure
+function momentum(
+  candles
 ) {
 
-    const last =
-        candles.at(-1);
+  const recent =
+    candles.slice(
+      -6
+    );
 
 
-    if (!last) {
+  if(
+    recent.length <
+    4
+  ) {
 
-        return {
+    return "MIXED";
 
-            type:
-                "NONE",
+  }
 
-            direction:
-                "NONE"
-        };
-    }
 
+  let bull =
+    0;
 
-    const previousHigh =
-        structure
-            .previousSwingHigh
-            ?.price;
+  let bear =
+    0;
 
 
-    const previousLow =
-        structure
-            .previousSwingLow
-            ?.price;
-
-
-    if (
-        Number.isFinite(
-            previousHigh
-        ) &&
-        last.c >
-        previousHigh
-    ) {
-
-        return {
-
-            type:
-                structure.bias ===
-                "BEARISH"
-
-                ?
-
-                "CHOCH"
-
-                :
-
-                "BOS",
-
-            direction:
-                "BULLISH"
-        };
-    }
-
-
-    if (
-        Number.isFinite(
-            previousLow
-        ) &&
-        last.c <
-        previousLow
-    ) {
-
-        return {
-
-            type:
-                structure.bias ===
-                "BULLISH"
-
-                ?
-
-                "CHOCH"
-
-                :
-
-                "BOS",
-
-            direction:
-                "BEARISH"
-        };
-    }
-
-
-    return {
-
-        type:
-            "NONE",
-
-        direction:
-            "NONE"
-    };
-}
-
-
-/* ==========================================================
-   LIQUIDITY SWEEP
-========================================================== */
-
-function detectLiquiditySweep(
-    candles
-) {
-
-    if (
-        candles.length <
-        25
-    ) {
-
-        return {
-
-            direction:
-                "NONE"
-        };
-    }
-
-
-    const last =
-        candles.at(-1);
-
-
-    const previous =
-        candles.slice(
-            -21,
-            -1
-        );
-
-
-    const previousHigh =
-        Math.max(
-            ...previous.map(
-                x => x.h
-            )
-        );
-
-
-    const previousLow =
-        Math.min(
-            ...previous.map(
-                x => x.l
-            )
-        );
-
-
-    if (
-        last.h >
-        previousHigh &&
-        last.c <
-        previousHigh
-    ) {
-
-        return {
-
-            direction:
-                "BEARISH",
-
-            level:
-                previousHigh,
-
-            sweptPrice:
-                last.h
-        };
-    }
-
-
-    if (
-        last.l <
-        previousLow &&
-        last.c >
-        previousLow
-    ) {
-
-        return {
-
-            direction:
-                "BULLISH",
-
-            level:
-                previousLow,
-
-            sweptPrice:
-                last.l
-        };
-    }
-
-
-    return {
-
-        direction:
-            "NONE"
-    };
-}
-
-
-/* ==========================================================
-   FAIR VALUE GAP
-========================================================== */
-
-function findRecentFVG(
-    candles
-) {
-
-    const search =
-        candles.slice(
-            -50
-        );
-
-
-    let latestBullish =
-        null;
-
-    let latestBearish =
-        null;
-
-
-    for (
-        let i = 2;
-        i < search.length;
-        i++
-    ) {
-
-        const a =
-            search[i - 2];
-
-        const c =
-            search[i];
-
-
-        if (
-            c.l >
-            a.h
-        ) {
-
-            latestBullish = {
-
-                direction:
-                    "BULLISH",
-
-                low:
-                    a.h,
-
-                high:
-                    c.l,
-
-                time:
-                    c.t
-            };
-        }
-
-
-        if (
-            c.h <
-            a.l
-        ) {
-
-            latestBearish = {
-
-                direction:
-                    "BEARISH",
-
-                low:
-                    c.h,
-
-                high:
-                    a.l,
-
-                time:
-                    c.t
-            };
-        }
-    }
-
-
-    return {
-
-        bullish:
-            latestBullish,
-
-        bearish:
-            latestBearish
-    };
-}
-
-
-/* ==========================================================
-   DISPLACEMENT
-========================================================== */
-
-function detectDisplacement(
-    candles
-) {
-
-    if (
-        candles.length <
-        15
-    ) {
-
-        return {
-
-            direction:
-                "NONE",
-
-            strength:
-                0
-        };
-    }
-
-
-    const recent =
-        candles.slice(
-            -15
-        );
-
-
-    const last =
-        recent.at(-1);
-
+  for(
+    const candle
+    of recent
+  ) {
 
     const body =
-        Math.abs(
-            last.c -
-            last.o
-        );
-
-
-    const averageBody =
-        average(
-
-            recent
-            .slice(
-                0,
-                -1
-            )
-            .map(
-                x =>
-                    Math.abs(
-                        x.c -
-                        x.o
-                    )
-            )
-        );
-
-
-    if (
-        averageBody <= 0
-    ) {
-
-        return {
-
-            direction:
-                "NONE",
-
-            strength:
-                0
-        };
-    }
-
-
-    const ratio =
-        body /
-        averageBody;
-
-
-    if (
-        ratio >= 1.6
-    ) {
-
-        return {
-
-            direction:
-                last.c >
-                last.o
-
-                ?
-
-                "BULLISH"
-
-                :
-
-                "BEARISH",
-
-            strength:
-                round(
-                    ratio,
-                    2
-                )
-        };
-    }
-
-
-    return {
-
-        direction:
-            "NONE",
-
-        strength:
-            round(
-                ratio,
-                2
-            )
-    };
-}
-
-
-/* ==========================================================
-   PREMIUM / DISCOUNT
-========================================================== */
-
-function getDealingRange(
-    candles
-) {
-
-    const recent =
-        candles.slice(
-            -40
-        );
-
-
-    const high =
-        Math.max(
-            ...recent.map(
-                x => x.h
-            )
-        );
-
-
-    const low =
-        Math.min(
-            ...recent.map(
-                x => x.l
-            )
-        );
-
-
-    const midpoint =
-        (
-            high +
-            low
-        )
-        /
-        2;
-
-
-    const close =
-        candles.at(-1).c;
-
-
-    return {
-
-        high,
-
-        low,
-
-        midpoint,
-
-        zone:
-            close >
-            midpoint
-
-            ?
-
-            "PREMIUM"
-
-            :
-
-            "DISCOUNT"
-    };
-}
-
-
-/* ==========================================================
-   TIMEFRAME ANALYSIS
-========================================================== */
-
-function analyseTimeframe(
-    candles
-) {
-
-    const structure =
-        getStructure(
-            candles
-        );
-
-
-    const breakInfo =
-        detectBreak(
-            candles,
-            structure
-        );
-
-
-    const sweep =
-        detectLiquiditySweep(
-            candles
-        );
-
-
-    const fvg =
-        findRecentFVG(
-            candles
-        );
-
-
-    const displacement =
-        detectDisplacement(
-            candles
-        );
+      Math.abs(
+        candle.c -
+        candle.o
+      );
 
 
     const range =
-        getDealingRange(
-            candles
-        );
-
-
-    const vol =
-        volatility(
-            candles,
-            14
-        );
-
-
-    let bullish =
-        0;
-
-    let bearish =
-        0;
-
-
-    if (
-        structure.bias ===
-        "BULLISH"
-    ) {
-
-        bullish +=
-            35;
-    }
-
-
-    if (
-        structure.bias ===
-        "BEARISH"
-    ) {
-
-        bearish +=
-            35;
-    }
-
-
-    if (
-        breakInfo.direction ===
-        "BULLISH"
-    ) {
-
-        bullish +=
-
-            breakInfo.type ===
-            "CHOCH"
-
-            ?
-
-            22
-
-            :
-
-            18;
-    }
-
-
-    if (
-        breakInfo.direction ===
-        "BEARISH"
-    ) {
-
-        bearish +=
-
-            breakInfo.type ===
-            "CHOCH"
-
-            ?
-
-            22
-
-            :
-
-            18;
-    }
-
-
-    if (
-        sweep.direction ===
-        "BULLISH"
-    ) {
-
-        bullish +=
-            18;
-    }
-
-
-    if (
-        sweep.direction ===
-        "BEARISH"
-    ) {
-
-        bearish +=
-            18;
-    }
-
-
-    if (
-        displacement.direction ===
-        "BULLISH"
-    ) {
-
-        bullish +=
-            12;
-    }
-
-
-    if (
-        displacement.direction ===
-        "BEARISH"
-    ) {
-
-        bearish +=
-            12;
-    }
-
-
-    if (
-        range.zone ===
-        "DISCOUNT"
-    ) {
-
-        bullish +=
-            5;
-    }
-
-
-    if (
-        range.zone ===
-        "PREMIUM"
-    ) {
-
-        bearish +=
-            5;
-    }
-
-
-    let bias =
-        "NEUTRAL";
-
-
-    if (
-        bullish -
-        bearish >=
-        12
-    ) {
-
-        bias =
-            "BULLISH";
-    }
-
-
-    if (
-        bearish -
-        bullish >=
-        12
-    ) {
-
-        bias =
-            "BEARISH";
-    }
+      Math.max(
+        candle.h -
+        candle.l,
+        0.0000001
+      );
 
 
     const strength =
-        Math.round(
-
-            clamp(
-
-                Math.max(
-                    bullish,
-                    bearish
-                ),
-
-                30,
-
-                95
-            )
-        );
+      body /
+      range;
 
 
-    return {
+    if(
+      candle.c >
+      candle.o
+    ) {
 
-        bias,
+      bull +=
+        strength;
 
-        strength,
+    }
 
-        bullishScore:
-            bullish,
 
-        bearishScore:
-            bearish,
+    if(
+      candle.c <
+      candle.o
+    ) {
 
-        structure,
+      bear +=
+        strength;
 
-        breakInfo,
+    }
 
-        sweep,
+  }
 
-        fvg,
 
-        displacement,
+  if(
+    bull >
+    bear *
+    1.25
+  ) {
 
-        range,
+    return "BULLISH";
 
-        volatility:
-            vol
-    };
+  }
+
+
+  if(
+    bear >
+    bull *
+    1.25
+  ) {
+
+    return "BEARISH";
+
+  }
+
+
+  return "MIXED";
+
 }
 
 
-/* ==========================================================
-   CREATE TRADE LEVELS
-========================================================== */
+/* ============================================================
+   TREND BIAS
+============================================================ */
 
-function buildLevels(
-    decision,
-    currentPrice,
-    m5Analysis
+function trendBias(
+  closes
 ) {
 
-    const vol =
-        Math.max(
+  const price =
+    closes[
+      closes.length -
+      1
+    ];
 
-            m5Analysis
-                .volatility,
 
-            currentPrice *
-            0.0003
-        );
+  const e20 =
+    ema(
+      closes,
+      20
+    );
 
 
-    const minimumRisk =
-        vol *
-        0.65;
+  const e50 =
+    ema(
+      closes,
+      50
+    );
 
 
-    const maximumRisk =
-        vol *
-        1.5;
+  if(
+    e20 === null ||
+    e50 === null
+  ) {
 
+    return "NEUTRAL";
 
-    if (
-        decision ===
-        "BUY"
-    ) {
+  }
 
-        let logicalStop =
 
-            m5Analysis
-                .structure
-                .swingLow
-                ?.price
+  if(
+    price >
+      e20 &&
+    e20 >
+      e50
+  ) {
 
-            ??
+    return "BULLISH";
 
-            currentPrice -
-            vol;
+  }
 
 
-        if (
-            m5Analysis
-                .sweep
-                .direction ===
-            "BULLISH"
-        ) {
+  if(
+    price <
+      e20 &&
+    e20 <
+      e50
+  ) {
 
-            logicalStop =
-                Math.min(
+    return "BEARISH";
 
-                    logicalStop,
+  }
 
-                    m5Analysis
-                        .sweep
-                        .sweptPrice
-                );
-        }
 
+  return "NEUTRAL";
 
-        let risk =
-            currentPrice -
-            logicalStop;
-
-
-        risk =
-            clamp(
-
-                risk,
-
-                minimumRisk,
-
-                maximumRisk
-            );
-
-
-        const stop =
-            currentPrice -
-            risk;
-
-
-        return {
-
-            entry:
-                round(
-                    currentPrice,
-                    2
-                ),
-
-            stop_loss:
-                round(
-                    stop,
-                    2
-                ),
-
-            take_profit_1:
-                round(
-                    currentPrice +
-                    risk *
-                    1.5,
-                    2
-                ),
-
-            take_profit_2:
-                round(
-                    currentPrice +
-                    risk *
-                    2.0,
-                    2
-                ),
-
-            risk_reward:
-                1.5
-        };
-    }
-
-
-    if (
-        decision ===
-        "SELL"
-    ) {
-
-        let logicalStop =
-
-            m5Analysis
-                .structure
-                .swingHigh
-                ?.price
-
-            ??
-
-            currentPrice +
-            vol;
-
-
-        if (
-            m5Analysis
-                .sweep
-                .direction ===
-            "BEARISH"
-        ) {
-
-            logicalStop =
-                Math.max(
-
-                    logicalStop,
-
-                    m5Analysis
-                        .sweep
-                        .sweptPrice
-                );
-        }
-
-
-        let risk =
-            logicalStop -
-            currentPrice;
-
-
-        risk =
-            clamp(
-
-                risk,
-
-                minimumRisk,
-
-                maximumRisk
-            );
-
-
-        const stop =
-            currentPrice +
-            risk;
-
-
-        return {
-
-            entry:
-                round(
-                    currentPrice,
-                    2
-                ),
-
-            stop_loss:
-                round(
-                    stop,
-                    2
-                ),
-
-            take_profit_1:
-                round(
-                    currentPrice -
-                    risk *
-                    1.5,
-                    2
-                ),
-
-            take_profit_2:
-                round(
-                    currentPrice -
-                    risk *
-                    2.0,
-                    2
-                ),
-
-            risk_reward:
-                1.5
-        };
-    }
-
-
-    return {
-
-        entry:
-            null,
-
-        stop_loss:
-            null,
-
-        take_profit_1:
-            null,
-
-        take_profit_2:
-            null,
-
-        risk_reward:
-            null
-    };
 }
 
 
-/* ==========================================================
-   MASTER SIGNAL ENGINE
-========================================================== */
+/* ============================================================
+   RECENT RANGE
+============================================================ */
 
-function createAnalysis(
-    symbol,
-    currentPrice,
-    m5,
-    m15,
-    h1
+function recentRange(
+  candles,
+  bars = 20
 ) {
 
-    const M5 =
-        analyseTimeframe(
-            m5
-        );
+  const recent =
+    candles.slice(
+      -bars
+    );
 
 
-    const M15 =
-        analyseTimeframe(
-            m15
-        );
+  return {
 
+    high:
+      Math.max(
+        ...recent.map(
+          x => x.h
+        )
+      ),
 
-    const H1 =
-        analyseTimeframe(
-            h1
-        );
+    low:
+      Math.min(
+        ...recent.map(
+          x => x.l
+        )
+      )
 
+  };
 
-    let buyScore =
-        0;
+}
 
 
-    let sellScore =
-        0;
+/* ============================================================
+   TIMEFRAME SNAPSHOT
+============================================================ */
 
+function snapshot(
+  symbol,
+  candles
+) {
 
-    /* ======================================================
-       H1 STRUCTURE
-    ====================================================== */
-
-    if (
-        H1.bias ===
-        "BULLISH"
-    ) {
-
-        buyScore +=
-            35;
-    }
-
-
-    if (
-        H1.bias ===
-        "BEARISH"
-    ) {
-
-        sellScore +=
-            35;
-    }
-
-
-    /* ======================================================
-       M15 CONFIRMATION
-    ====================================================== */
-
-    if (
-        M15.bias ===
-        "BULLISH"
-    ) {
-
-        buyScore +=
-            25;
-    }
-
-
-    if (
-        M15.bias ===
-        "BEARISH"
-    ) {
-
-        sellScore +=
-            25;
-    }
-
-
-    /* ======================================================
-       M5 ENTRY
-    ====================================================== */
-
-    if (
-        M5.bias ===
-        "BULLISH"
-    ) {
-
-        buyScore +=
-            15;
-    }
-
-
-    if (
-        M5.bias ===
-        "BEARISH"
-    ) {
-
-        sellScore +=
-            15;
-    }
-
-
-    /* ======================================================
-       M5 LIQUIDITY SWEEP
-    ====================================================== */
-
-    if (
-        M5.sweep.direction ===
-        "BULLISH"
-    ) {
-
-        buyScore +=
-            10;
-    }
-
-
-    if (
-        M5.sweep.direction ===
-        "BEARISH"
-    ) {
-
-        sellScore +=
-            10;
-    }
-
-
-    /* ======================================================
-       M5 BOS / CHOCH
-    ====================================================== */
-
-    if (
-        M5.breakInfo.direction ===
-        "BULLISH"
-    ) {
-
-        buyScore +=
-
-            M5.breakInfo.type ===
-            "CHOCH"
-
-            ?
-
-            12
-
-            :
-
-            8;
-    }
-
-
-    if (
-        M5.breakInfo.direction ===
-        "BEARISH"
-    ) {
-
-        sellScore +=
-
-            M5.breakInfo.type ===
-            "CHOCH"
-
-            ?
-
-            12
-
-            :
-
-            8;
-    }
-
-
-    /* ======================================================
-       DISPLACEMENT
-    ====================================================== */
-
-    if (
-        M5.displacement.direction ===
-        "BULLISH"
-    ) {
-
-        buyScore +=
-            5;
-    }
-
-
-    if (
-        M5.displacement.direction ===
-        "BEARISH"
-    ) {
-
-        sellScore +=
-            5;
-    }
-
-
-    /* ======================================================
-       PREMIUM / DISCOUNT
-    ====================================================== */
-
-    if (
-        M15.range.zone ===
-        "DISCOUNT"
-    ) {
-
-        buyScore +=
-            5;
-    }
-
-
-    if (
-        M15.range.zone ===
-        "PREMIUM"
-    ) {
-
-        sellScore +=
-            5;
-    }
-
-
-    let decision =
-        "WAIT";
-
-
-    const difference =
-        Math.abs(
-            buyScore -
-            sellScore
-        );
-
-
-    /* ======================================================
-       STRICT ENTRY RULES
-    ====================================================== */
-
-    if (
-        buyScore >= 70 &&
-        difference >= 20 &&
-        H1.bias ===
-        "BULLISH" &&
-        M15.bias !==
-        "BEARISH"
-    ) {
-
-        decision =
-            "BUY";
-    }
-
-
-    if (
-        sellScore >= 70 &&
-        difference >= 20 &&
-        H1.bias ===
-        "BEARISH" &&
-        M15.bias !==
-        "BULLISH"
-    ) {
-
-        decision =
-            "SELL";
-    }
-
-
-    const winningScore =
-        Math.max(
-            buyScore,
-            sellScore
-        );
-
-
-    const confidence =
-
-        decision ===
-        "WAIT"
-
-        ?
-
-        Math.round(
-            clamp(
-
-                45 +
-                difference *
-                0.3,
-
-                45,
-                69
-            )
+  const closes =
+    candles.map(
+      x => x.c
+    );
+
+
+  const e20 =
+    ema(
+      closes,
+      20
+    );
+
+
+  const e50 =
+    ema(
+      closes,
+      50
+    );
+
+
+  const rsi14 =
+    rsi(
+      closes,
+      14
+    );
+
+
+  const atr14 =
+    atr(
+      candles,
+      14
+    );
+
+
+  const macdData =
+    macd(
+      closes
+    );
+
+
+  const range =
+    recentRange(
+      candles,
+      20
+    );
+
+
+  return {
+
+    price:
+      priceRound(
+        symbol,
+        closes[
+          closes.length -
+          1
+        ]
+      ),
+
+    bias:
+      trendBias(
+        closes
+      ),
+
+    structure:
+      structure(
+        candles
+      ),
+
+    momentum:
+      momentum(
+        candles
+      ),
+
+    indicators: {
+
+      ema20:
+        priceRound(
+          symbol,
+          e20
+        ),
+
+      ema50:
+        priceRound(
+          symbol,
+          e50
+        ),
+
+      rsi14:
+        round(
+          rsi14,
+          1
+        ),
+
+      atr14:
+        priceRound(
+          symbol,
+          atr14
+        ),
+
+      macd:
+        round(
+          macdData.line,
+          6
+        ),
+
+      macdSignal:
+        round(
+          macdData.signal,
+          6
+        ),
+
+      macdHistogram:
+        round(
+          macdData.histogram,
+          6
         )
 
-        :
+    },
+
+    liquidity: {
+
+      recentHigh:
+        priceRound(
+          symbol,
+          range.high
+        ),
+
+      recentLow:
+        priceRound(
+          symbol,
+          range.low
+        )
+
+    },
+
+    candles:
+      candles
+        .slice(
+          -20
+        )
+        .map(
+          x => ({
+
+            t:
+              x.t,
+
+            o:
+              priceRound(
+                symbol,
+                x.o
+              ),
+
+            h:
+              priceRound(
+                symbol,
+                x.h
+              ),
+
+            l:
+              priceRound(
+                symbol,
+                x.l
+              ),
+
+            c:
+              priceRound(
+                symbol,
+                x.c
+              )
+
+          })
+        )
+
+  };
 
-        Math.round(
-            clamp(
-
-                winningScore,
-
-                70,
-                92
-            )
-        );
-
-
-    const levels =
-        buildLevels(
-            decision,
-            currentPrice,
-            M5
-        );
-
-
-    let setupGrade =
-        "NO TRADE";
-
-
-    if (
-        decision !==
-        "WAIT"
-    ) {
-
-        if (
-            confidence >= 88
-        ) {
-
-            setupGrade =
-                "A+";
-        }
-
-        else if (
-            confidence >= 82
-        ) {
-
-            setupGrade =
-                "A";
-        }
-
-        else {
-
-            setupGrade =
-                "B";
-        }
-    }
-
-
-    const reasons =
-        [];
-
-
-    reasons.push(
-        `H1: ${H1.bias} ${H1.strength}% | ${H1.structure.structure}.`
-    );
-
-
-    reasons.push(
-        `M15: ${M15.bias} ${M15.strength}% | ${M15.structure.structure}.`
-    );
-
-
-    reasons.push(
-        `M5: ${M5.bias} ${M5.strength}% | ${M5.structure.structure}.`
-    );
-
-
-    reasons.push(
-        `M5 structure event: ${M5.breakInfo.type} ${M5.breakInfo.direction}.`
-    );
-
-
-    reasons.push(
-        `M5 liquidity sweep: ${M5.sweep.direction}.`
-    );
-
-
-    reasons.push(
-        `M5 displacement: ${M5.displacement.direction}.`
-    );
-
-
-    reasons.push(
-        `M15 price location: ${M15.range.zone}.`
-    );
-
-
-    reasons.push(
-        `Score: BUY ${buyScore} vs SELL ${sellScore}.`
-    );
-
-
-    const bullishFVG =
-        M5.fvg.bullish;
-
-
-    const bearishFVG =
-        M5.fvg.bearish;
-
-
-    let liquiditySummary =
-        "No immediate liquidity sweep detected.";
-
-
-    if (
-        M5.sweep.direction !==
-        "NONE"
-    ) {
-
-        liquiditySummary =
-            `${M5.sweep.direction} liquidity sweep detected near ${round(M5.sweep.level, 2)}.`;
-    }
-
-
-    let fvgText =
-        "No recent M5 imbalance.";
-
-
-    if (
-        decision ===
-        "BUY" &&
-        bullishFVG
-    ) {
-
-        fvgText =
-            `Bullish FVG ${round(bullishFVG.low, 2)} - ${round(bullishFVG.high, 2)}.`;
-    }
-
-
-    if (
-        decision ===
-        "SELL" &&
-        bearishFVG
-    ) {
-
-        fvgText =
-            `Bearish FVG ${round(bearishFVG.low, 2)} - ${round(bearishFVG.high, 2)}.`;
-    }
-
-
-    return {
-
-        decision,
-
-        confidence,
-
-        setup_grade:
-            setupGrade,
-
-
-        summary:
-
-            decision ===
-            "WAIT"
-
-            ?
-
-            `${symbol} has no high-quality entry yet. Waiting for stronger smart-money confirmation.`
-
-            :
-
-            `${decision} setup detected with higher-timeframe structure and M5 confirmation.`,
-
-
-        market_regime:
-
-            H1.bias ===
-            "BULLISH"
-
-            ?
-
-            "BULLISH STRUCTURE"
-
-            :
-
-            H1.bias ===
-            "BEARISH"
-
-            ?
-
-            "BEARISH STRUCTURE"
-
-            :
-
-            "RANGING / UNCLEAR",
-
-
-        structure_summary:
-
-            `H1 ${H1.structure.structure} | M15 ${M15.structure.structure} | M5 ${M5.structure.structure}. ${fvgText}`,
-
-
-        liquidity_summary:
-            liquiditySummary,
-
-
-        macro_bias:
-            "UNKNOWN",
-
-
-        macro_summary:
-
-            "Macro/news confirmation is not included in this free technical engine.",
-
-
-        entry:
-            levels.entry,
-
-
-        stop_loss:
-            levels.stop_loss,
-
-
-        take_profit_1:
-            levels.take_profit_1,
-
-
-        take_profit_2:
-            levels.take_profit_2,
-
-
-        risk_reward:
-            levels.risk_reward,
-
-
-        invalidation:
-
-            decision ===
-            "BUY"
-
-            ?
-
-            `Bullish setup invalid below ${levels.stop_loss}.`
-
-            :
-
-            decision ===
-            "SELL"
-
-            ?
-
-            `Bearish setup invalid above ${levels.stop_loss}.`
-
-            :
-
-            "Wait for H1/M15 alignment plus M5 BOS, CHOCH or liquidity confirmation.",
-
-
-        next_trigger:
-
-            decision ===
-            "WAIT"
-
-            ?
-
-            "Wait for liquidity sweep + structure confirmation on M5."
-
-            :
-
-            `Monitor M5 for failure of the ${decision} structure.`,
-
-
-        timeframes: {
-
-            m5: {
-
-                bias:
-                    M5.bias,
-
-                strength:
-                    M5.strength
-            },
-
-
-            m15: {
-
-                bias:
-                    M15.bias,
-
-                strength:
-                    M15.strength
-            },
-
-
-            h1: {
-
-                bias:
-                    H1.bias,
-
-                strength:
-                    H1.strength
-            }
-        },
-
-
-        reasons,
-
-
-        risks: [
-
-            "Structure can change quickly after high-impact economic news.",
-
-            "Liquidity sweeps can become genuine breakouts.",
-
-            "Spread and slippage may change actual entry and exit prices.",
-
-            "WAIT is intentional when the timeframes do not align."
-
-        ]
-    };
 }
 
 
-/* ==========================================================
-   VERCEL ENDPOINT
-========================================================== */
+/* ============================================================
+   SESSION
+============================================================ */
 
-export default async function handler(
-    req,
-    res
+function currentSession() {
+
+  const hour =
+    new Date()
+      .getUTCHours();
+
+
+  if(
+    hour >= 0 &&
+    hour < 7
+  ) {
+
+    return "ASIA";
+
+  }
+
+
+  if(
+    hour >= 7 &&
+    hour < 12
+  ) {
+
+    return "LONDON";
+
+  }
+
+
+  if(
+    hour >= 12 &&
+    hour < 16
+  ) {
+
+    return (
+      "LONDON / NEW YORK OVERLAP"
+    );
+
+  }
+
+
+  if(
+    hour >= 16 &&
+    hour < 21
+  ) {
+
+    return "NEW YORK";
+
+  }
+
+
+  return "TRANSITION";
+
+}
+
+
+/* ============================================================
+   LOCAL FALLBACK ANALYSIS
+============================================================ */
+
+function localAnalysis(
+  symbol,
+  price,
+  m5,
+  m15,
+  h1
 ) {
 
-    res.setHeader(
-        "Cache-Control",
-        "no-store"
+  let buyScore =
+    0;
+
+  let sellScore =
+    0;
+
+
+  /* H1 */
+
+  if(
+    h1.bias ===
+    "BULLISH"
+  ) {
+
+    buyScore +=
+      30;
+
+  }
+
+
+  if(
+    h1.bias ===
+    "BEARISH"
+  ) {
+
+    sellScore +=
+      30;
+
+  }
+
+
+  /* M15 */
+
+  if(
+    m15.bias ===
+    "BULLISH"
+  ) {
+
+    buyScore +=
+      22;
+
+  }
+
+
+  if(
+    m15.bias ===
+    "BEARISH"
+  ) {
+
+    sellScore +=
+      22;
+
+  }
+
+
+  /* M5 */
+
+  if(
+    m5.bias ===
+    "BULLISH"
+  ) {
+
+    buyScore +=
+      12;
+
+  }
+
+
+  if(
+    m5.bias ===
+    "BEARISH"
+  ) {
+
+    sellScore +=
+      12;
+
+  }
+
+
+  /* MOMENTUM */
+
+  if(
+    m5.momentum ===
+    "BULLISH"
+  ) {
+
+    buyScore +=
+      10;
+
+  }
+
+
+  if(
+    m5.momentum ===
+    "BEARISH"
+  ) {
+
+    sellScore +=
+      10;
+
+  }
+
+
+  /* MACD */
+
+  if(
+    Number(
+      m5.indicators
+        .macdHistogram
+    ) >
+    0
+  ) {
+
+    buyScore +=
+      8;
+
+  }
+
+
+  if(
+    Number(
+      m5.indicators
+        .macdHistogram
+    ) <
+    0
+  ) {
+
+    sellScore +=
+      8;
+
+  }
+
+
+  let action =
+    "WAIT";
+
+
+  const difference =
+    Math.abs(
+      buyScore -
+      sellScore
     );
 
 
-    if (
-        req.method !==
-        "POST"
-    ) {
+  if(
+    buyScore >=
+      55 &&
+    buyScore >
+      sellScore &&
+    difference >=
+      20
+  ) {
 
-        return send(
-            res,
-            405,
-            {
-                error:
-                    "Use POST."
-            }
-        );
-    }
+    action =
+      "BUY";
 
-
-    try {
-
-        const symbol =
-            String(
-                req.body?.symbol ||
-                "XAU/USD"
-            )
-            .trim()
-            .toUpperCase();
+  }
 
 
-        const {
+  if(
+    sellScore >=
+      55 &&
+    sellScore >
+      buyScore &&
+    difference >=
+      20
+  ) {
 
-            candles:
-                m5Raw,
+    action =
+      "SELL";
 
-            cacheHit
-
-        } =
-
-        await getM5Cached(
-            symbol
-        );
-
-
-        const currentPrice =
-            m5Raw.at(-1).c;
+  }
 
 
-        const m5 =
-            completedCandles(
-                m5Raw
-            );
+  let confidence =
+    action ===
+      "WAIT"
+      ?
+      clamp(
+        45 +
+        Math.round(
+          difference /
+          3
+        ),
+        45,
+        68
+      )
+      :
+      clamp(
+        60 +
+        Math.round(
+          difference /
+          2
+        ),
+        60,
+        88
+      );
 
 
-        const m15 =
-            resample(
-                m5,
-                15,
-                3
-            );
+  const atrValue =
+    Number(
+      m5.indicators
+        .atr14
+    ) ||
+    Math.abs(
+      price *
+      0.001
+    );
 
 
-        const h1 =
-            resample(
-                m5,
-                60,
-                12
-            );
+  let entry =
+    null;
+
+  let stopLoss =
+    null;
+
+  let takeProfit1 =
+    null;
+
+  let takeProfit2 =
+    null;
+
+  let riskReward =
+    "—";
 
 
-        if (
-            m15.length < 40 ||
-            h1.length < 30
-        ) {
+  if(
+    action ===
+    "BUY"
+  ) {
 
-            throw new Error(
-                "Not enough completed candles for multi-timeframe analysis."
-            );
+    entry =
+      price;
+
+    stopLoss =
+      price -
+      atrValue *
+      1.25;
+
+
+    const risk =
+      entry -
+      stopLoss;
+
+
+    takeProfit1 =
+      entry +
+      risk *
+      1.5;
+
+
+    takeProfit2 =
+      entry +
+      risk *
+      2.2;
+
+
+    riskReward =
+      "1:2.2";
+
+  }
+
+
+  if(
+    action ===
+    "SELL"
+  ) {
+
+    entry =
+      price;
+
+    stopLoss =
+      price +
+      atrValue *
+      1.25;
+
+
+    const risk =
+      stopLoss -
+      entry;
+
+
+    takeProfit1 =
+      entry -
+      risk *
+      1.5;
+
+
+    takeProfit2 =
+      entry -
+      risk *
+      2.2;
+
+
+    riskReward =
+      "1:2.2";
+
+  }
+
+
+  const setupGrade =
+    action ===
+      "WAIT"
+      ?
+      "WAIT"
+      :
+      confidence >=
+        85
+        ?
+        "A"
+        :
+        confidence >=
+          78
+          ?
+          "B+"
+          :
+          "B";
+
+
+  return {
+
+    action,
+
+    confidence,
+
+    setupGrade,
+
+    summary:
+      action ===
+        "WAIT"
+        ?
+        `${symbol} does not currently have enough multi-timeframe alignment for a high-quality trade.`
+        :
+        `${action} setup detected using H1 direction, M15 confirmation and M5 timing.`,
+
+    timeframeBias: {
+
+      M5:
+        m5.bias,
+
+      M15:
+        m15.bias,
+
+      H1:
+        h1.bias
+
+    },
+
+    regime:
+      `${h1.bias} / ${h1.structure}`,
+
+    structure:
+      `H1 ${h1.structure}; M15 ${m15.structure}; M5 ${m5.structure}.`,
+
+    momentum:
+      m5.momentum,
+
+    liquiditySummary:
+      `M15 liquidity range: ${m15.liquidity.recentLow} to ${m15.liquidity.recentHigh}.`,
+
+    macroBias:
+      "UNKNOWN",
+
+    entry:
+      action ===
+        "WAIT"
+        ?
+        null
+        :
+        priceRound(
+          symbol,
+          entry
+        ),
+
+    stopLoss:
+      action ===
+        "WAIT"
+        ?
+        null
+        :
+        priceRound(
+          symbol,
+          stopLoss
+        ),
+
+    takeProfit1:
+      action ===
+        "WAIT"
+        ?
+        null
+        :
+        priceRound(
+          symbol,
+          takeProfit1
+        ),
+
+    takeProfit2:
+      action ===
+        "WAIT"
+        ?
+        null
+        :
+        priceRound(
+          symbol,
+          takeProfit2
+        ),
+
+    riskReward,
+
+    invalidation:
+      action ===
+        "BUY"
+        ?
+        `Bullish setup invalid below ${priceRound(symbol,stopLoss)}.`
+        :
+        action ===
+          "SELL"
+          ?
+          `Bearish setup invalid above ${priceRound(symbol,stopLoss)}.`
+          :
+          "No active setup.",
+
+    nextTrigger:
+      action ===
+        "WAIT"
+        ?
+        "Wait for H1 and M15 alignment with M5 confirmation."
+        :
+        `Monitor M5 structure for continued ${action === "BUY" ? "bullish" : "bearish"} confirmation.`,
+
+    reasons: [
+
+      `H1 bias: ${h1.bias}.`,
+
+      `M15 bias: ${m15.bias}.`,
+
+      `M5 bias: ${m5.bias}.`,
+
+      `BUY score ${buyScore} vs SELL score ${sellScore}.`
+
+    ],
+
+    risks: [
+
+      "Market conditions can change quickly.",
+
+      "Spread, slippage and high-impact news may invalidate technical levels."
+
+    ],
+
+    newsSummary:
+      "Gemini news analysis was unavailable; local technical fallback is active."
+
+  };
+
+}
+
+
+/* ============================================================
+   GEMINI JSON SCHEMA
+============================================================ */
+
+const ANALYSIS_SCHEMA = {
+
+  type:
+    "object",
+
+  additionalProperties:
+    false,
+
+  properties: {
+
+    action: {
+
+      type:
+        "string",
+
+      enum: [
+        "BUY",
+        "SELL",
+        "WAIT"
+      ]
+
+    },
+
+    confidence: {
+
+      type:
+        "integer",
+
+      minimum:
+        0,
+
+      maximum:
+        99
+
+    },
+
+    setupGrade: {
+
+      type:
+        "string",
+
+      enum: [
+        "A+",
+        "A",
+        "B+",
+        "B",
+        "C",
+        "WAIT"
+      ]
+
+    },
+
+    summary: {
+      type:"string"
+    },
+
+    timeframeBias: {
+
+      type:
+        "object",
+
+      additionalProperties:
+        false,
+
+      properties: {
+
+        M5: {
+          type:"string",
+          enum:[
+            "BULLISH",
+            "BEARISH",
+            "NEUTRAL"
+          ]
+        },
+
+        M15: {
+          type:"string",
+          enum:[
+            "BULLISH",
+            "BEARISH",
+            "NEUTRAL"
+          ]
+        },
+
+        H1: {
+          type:"string",
+          enum:[
+            "BULLISH",
+            "BEARISH",
+            "NEUTRAL"
+          ]
         }
 
+      },
 
-        const analysis =
-            createAnalysis(
+      required:[
+        "M5",
+        "M15",
+        "H1"
+      ]
 
-                symbol,
+    },
 
-                currentPrice,
+    regime:{
+      type:"string"
+    },
 
-                m5,
+    structure:{
+      type:"string"
+    },
 
-                m15,
+    momentum:{
+      type:"string"
+    },
 
-                h1
-            );
+    liquiditySummary:{
+      type:"string"
+    },
 
+    macroBias:{
+      type:"string"
+    },
 
-        return send(
-            res,
-            200,
-            {
+    entry:{
+      type:[
+        "number",
+        "null"
+      ]
+    },
 
-                success:
-                    true,
+    stopLoss:{
+      type:[
+        "number",
+        "null"
+      ]
+    },
 
+    takeProfit1:{
+      type:[
+        "number",
+        "null"
+      ]
+    },
 
-                symbol,
+    takeProfit2:{
+      type:[
+        "number",
+        "null"
+      ]
+    },
 
+    riskReward:{
+      type:"string"
+    },
 
-                current_price:
-                    currentPrice,
+    invalidation:{
+      type:"string"
+    },
 
+    nextTrigger:{
+      type:"string"
+    },
 
-                model:
-                    "MKAYFX-SMC-V3",
+    reasons:{
 
+      type:"array",
 
-                reasoning_effort:
-                    "market-structure",
+      items:{
+        type:"string"
+      },
 
+      minItems:3,
 
-                analysis,
+      maxItems:7
 
+    },
 
-                guardrail_note:
+    risks:{
 
-                    cacheHit
+      type:"array",
 
-                    ?
+      items:{
+        type:"string"
+      },
 
-                    "Smart-money V3: cached market data used. 0 new Twelve Data credits."
+      minItems:2,
 
-                    :
+      maxItems:6
 
-                    "Smart-money V3: 1 Twelve Data request used. M15 and H1 were generated locally.",
+    },
 
-
-                chart:
-                    m5Raw.slice(
-                        -60
-                    ),
-
-
-                data_mode:
-                    "1-credit M5 + locally generated M15/H1",
-
-
-                cache_hit:
-                    cacheHit,
-
-
-                timestamp:
-                    new Date()
-                    .toISOString()
-
-            }
-        );
+    newsSummary:{
+      type:"string"
     }
 
+  },
 
-    catch (
-        error
+  required:[
+
+    "action",
+    "confidence",
+    "setupGrade",
+    "summary",
+    "timeframeBias",
+    "regime",
+    "structure",
+    "momentum",
+    "liquiditySummary",
+    "macroBias",
+    "entry",
+    "stopLoss",
+    "takeProfit1",
+    "takeProfit2",
+    "riskReward",
+    "invalidation",
+    "nextTrigger",
+    "reasons",
+    "risks",
+    "newsSummary"
+
+  ]
+
+};
+
+
+/* ============================================================
+   GEMINI TEXT EXTRACTION
+============================================================ */
+
+function extractGeminiText(
+  data
+) {
+
+  const outputs =
+    [];
+
+
+  for(
+    const step
+    of data.steps ||
+    []
+  ) {
+
+    if(
+      step.type !==
+      "model_output"
     ) {
 
-        console.error(
-            error
-        );
+      continue;
 
-
-        return send(
-            res,
-            500,
-            {
-
-                success:
-                    false,
-
-
-                error:
-
-                    error?.message ||
-
-                    "Unknown server error."
-            }
-        );
     }
+
+
+    for(
+      const block
+      of step.content ||
+      []
+    ) {
+
+      if(
+        block.type ===
+          "text" &&
+        typeof block.text ===
+          "string"
+      ) {
+
+        outputs.push(
+          block.text
+        );
+
+      }
+
+    }
+
+  }
+
+
+  return outputs
+    .join("")
+    .trim();
+
+}
+
+
+/* ============================================================
+   GEMINI SOURCE EXTRACTION
+============================================================ */
+
+function extractGeminiSources(
+  data
+) {
+
+  const sources =
+    [];
+
+
+  for(
+    const step
+    of data.steps ||
+    []
+  ) {
+
+    if(
+      step.type !==
+      "model_output"
+    ) {
+
+      continue;
+
+    }
+
+
+    for(
+      const block
+      of step.content ||
+      []
+    ) {
+
+      for(
+        const annotation
+        of block.annotations ||
+        []
+      ) {
+
+        if(
+          annotation.type ===
+          "url_citation"
+        ) {
+
+          sources.push({
+
+            title:
+              annotation.title ||
+              "Source",
+
+            url:
+              annotation.url ||
+              annotation.uri ||
+              ""
+
+          });
+
+        }
+
+      }
+
+    }
+
+  }
+
+
+  return sources
+    .filter(
+      item =>
+        item.url
+    )
+    .slice(
+      0,
+      6
+    );
+
+}
+
+
+/* ============================================================
+   GEMINI ANALYSIS
+============================================================ */
+
+async function callGemini(
+  packet
+) {
+
+  if(
+    !GEMINI_API_KEY
+  ) {
+
+    throw new Error(
+      "GEMINI_API_KEY is missing."
+    );
+
+  }
+
+
+  const systemInstruction =
+`
+You are MKAYFX Extreme AI.
+
+You are a market-analysis decision engine.
+
+You are NOT a guaranteed-profit system.
+
+Analyze the LIVE supplied market data.
+
+Use:
+
+H1 = major directional context
+M15 = setup confirmation
+M5 = entry timing
+
+Consider:
+
+- price action
+- market structure
+- EMA 20
+- EMA 50
+- RSI
+- ATR
+- MACD
+- momentum
+- recent liquidity highs/lows
+- breakouts
+- false breakouts
+- trend continuation
+- reversals
+- ranging conditions
+- volatility
+- session conditions
+- risk/reward
+- whether the entry is late or overextended
+
+Return exactly one:
+
+BUY
+SELL
+WAIT
+
+WAIT is an important valid decision.
+
+Do not force trades.
+
+For BUY:
+
+stopLoss < entry
+takeProfit1 > entry
+takeProfit2 > takeProfit1
+
+For SELL:
+
+stopLoss > entry
+takeProfit1 < entry
+takeProfit2 < takeProfit1
+
+If WAIT:
+
+entry, stopLoss, takeProfit1 and takeProfit2 must be null.
+
+Avoid distant unrealistic targets.
+
+Use ATR and actual structure when placing stops and targets.
+
+Confidence must reflect uncertainty.
+
+Never use 100%.
+
+A+ setups should be rare.
+
+If Google Search is available, check only important current market-moving catalysts relevant to the selected symbol.
+
+For XAU/USD focus especially on:
+
+- USD
+- Federal Reserve
+- interest rates
+- CPI
+- PCE
+- NFP
+- unemployment
+- US Treasury yields
+- geopolitical developments
+
+Current news must not override the supplied live technical structure without a good reason.
+
+Do not invent prices.
+
+If evidence conflicts, choose WAIT.
+`;
+
+
+  const body = {
+
+    model:
+      GEMINI_MODEL,
+
+    system_instruction:
+      systemInstruction,
+
+    input:
+      `Current UTC time: ${new Date().toISOString()}
+
+Analyze this LIVE market packet:
+
+${JSON.stringify(packet)}`,
+
+    generation_config: {
+
+      thinking_level:
+        "high"
+
+    },
+
+    response_format: {
+
+      type:
+        "text",
+
+      mime_type:
+        "application/json",
+
+      schema:
+        ANALYSIS_SCHEMA
+
+    },
+
+    store:
+      false
+
+  };
+
+
+  if(
+    USE_WEB_NEWS
+  ) {
+
+    body.tools = [
+      {
+        type:
+          "google_search"
+      }
+    ];
+
+  }
+
+
+  const response =
+    await fetch(
+      GEMINI_URL,
+      {
+
+        method:
+          "POST",
+
+        headers: {
+
+          "Content-Type":
+            "application/json",
+
+          "x-goog-api-key":
+            GEMINI_API_KEY
+
+        },
+
+        body:
+          JSON.stringify(
+            body
+          )
+
+      }
+    );
+
+
+  const data =
+    await response.json();
+
+
+  if(
+    !response.ok
+  ) {
+
+    throw new Error(
+      data?.error?.message ||
+      `Gemini API error ${response.status}`
+    );
+
+  }
+
+
+  if(
+    data.status &&
+    data.status !==
+      "completed"
+  ) {
+
+    throw new Error(
+      `Gemini response status: ${data.status}`
+    );
+
+  }
+
+
+  const text =
+    extractGeminiText(
+      data
+    );
+
+
+  if(
+    !text
+  ) {
+
+    throw new Error(
+      "Gemini returned no analysis."
+    );
+
+  }
+
+
+  let analysis;
+
+
+  try {
+
+    analysis =
+      JSON.parse(
+        text
+      );
+
+  }
+  catch {
+
+    throw new Error(
+      "Gemini returned invalid JSON."
+    );
+
+  }
+
+
+  return {
+
+    analysis,
+
+    sources:
+      extractGeminiSources(
+        data
+      )
+
+  };
+
+}
+
+
+/* ============================================================
+   SERVER-SIDE TRADE VALIDATION
+============================================================ */
+
+function validateAnalysis(
+  symbol,
+  analysis,
+  currentPrice,
+  atrValue
+) {
+
+  const result = {
+    ...analysis
+  };
+
+
+  result.confidence =
+    clamp(
+      Number(
+        result.confidence ||
+        0
+      ),
+      0,
+      99
+    );
+
+
+  if(
+    ![
+      "BUY",
+      "SELL",
+      "WAIT"
+    ].includes(
+      result.action
+    )
+  ) {
+
+    result.action =
+      "WAIT";
+
+  }
+
+
+  if(
+    result.action ===
+    "WAIT"
+  ) {
+
+    result.setupGrade =
+      "WAIT";
+
+    result.entry =
+      null;
+
+    result.stopLoss =
+      null;
+
+    result.takeProfit1 =
+      null;
+
+    result.takeProfit2 =
+      null;
+
+    result.riskReward =
+      "—";
+
+    return result;
+
+  }
+
+
+  const entry =
+    Number(
+      result.entry
+    );
+
+
+  const stop =
+    Number(
+      result.stopLoss
+    );
+
+
+  const tp1 =
+    Number(
+      result.takeProfit1
+    );
+
+
+  const tp2 =
+    Number(
+      result.takeProfit2
+    );
+
+
+  if(
+    ![
+      entry,
+      stop,
+      tp1,
+      tp2
+    ]
+    .every(
+      Number.isFinite
+    )
+  ) {
+
+    return forceWait(
+      result
+    );
+
+  }
+
+
+  if(
+    result.action ===
+    "BUY"
+  ) {
+
+    if(
+      !(
+        stop <
+          entry &&
+        tp1 >
+          entry &&
+        tp2 >
+          tp1
+      )
+    ) {
+
+      return forceWait(
+        result
+      );
+
+    }
+
+  }
+
+
+  if(
+    result.action ===
+    "SELL"
+  ) {
+
+    if(
+      !(
+        stop >
+          entry &&
+        tp1 <
+          entry &&
+        tp2 <
+          tp1
+      )
+    ) {
+
+      return forceWait(
+        result
+      );
+
+    }
+
+  }
+
+
+  const atrNumber =
+    Math.max(
+      Number(
+        atrValue ||
+        0
+      ),
+      Math.abs(
+        currentPrice *
+        0.0001
+      )
+    );
+
+
+  /* ENTRY TOO FAR FROM LIVE PRICE */
+
+  if(
+    Math.abs(
+      entry -
+      currentPrice
+    ) >
+    atrNumber *
+    3
+  ) {
+
+    return forceWait(
+      result
+    );
+
+  }
+
+
+  /* STOP TOO FAR */
+
+  if(
+    Math.abs(
+      stop -
+      entry
+    ) >
+    atrNumber *
+    4
+  ) {
+
+    return forceWait(
+      result
+    );
+
+  }
+
+
+  /* LOW CONFIDENCE */
+
+  if(
+    result.confidence <
+    60
+  ) {
+
+    return forceWait(
+      result
+    );
+
+  }
+
+
+  result.entry =
+    priceRound(
+      symbol,
+      entry
+    );
+
+
+  result.stopLoss =
+    priceRound(
+      symbol,
+      stop
+    );
+
+
+  result.takeProfit1 =
+    priceRound(
+      symbol,
+      tp1
+    );
+
+
+  result.takeProfit2 =
+    priceRound(
+      symbol,
+      tp2
+    );
+
+
+  return result;
+
+}
+
+
+function forceWait(
+  result
+) {
+
+  return {
+
+    ...result,
+
+    action:
+      "WAIT",
+
+    setupGrade:
+      "WAIT",
+
+    entry:
+      null,
+
+    stopLoss:
+      null,
+
+    takeProfit1:
+      null,
+
+    takeProfit2:
+      null,
+
+    riskReward:
+      "—",
+
+    invalidation:
+      "No validated active trade setup.",
+
+    nextTrigger:
+      "Wait for a fresh confirmed market setup."
+
+  };
+
+}
+
+
+/* ============================================================
+   MAIN API
+============================================================ */
+
+export default async function handler(
+  req,
+  res
+) {
+
+  res.setHeader(
+    "Cache-Control",
+    "no-store"
+  );
+
+
+  res.setHeader(
+    "Allow",
+    "GET, POST, OPTIONS"
+  );
+
+
+  /* ========================================================
+     PREFLIGHT
+  ======================================================== */
+
+  if(
+    req.method ===
+    "OPTIONS"
+  ) {
+
+    return res
+      .status(204)
+      .end();
+
+  }
+
+
+  /*
+     IMPORTANT:
+
+     ACCEPT BOTH GET AND POST.
+
+     THIS MEANS:
+
+     OLD FRONTEND:
+     /api/analyze?symbol=XAU%2FUSD
+
+     AND NEW FRONTEND:
+     POST /api/analyze
+
+     WILL BOTH WORK.
+  */
+
+  if(
+    req.method !==
+      "GET" &&
+    req.method !==
+      "POST"
+  ) {
+
+    return send(
+      res,
+      405,
+      {
+        error:
+          "Use GET or POST."
+      }
+    );
+
+  }
+
+
+  try {
+
+    const body =
+      getRequestBody(
+        req
+      );
+
+
+    const symbol =
+      String(
+
+        body.symbol ||
+
+        req.query?.symbol ||
+
+        "XAU/USD"
+
+      )
+      .trim()
+      .toUpperCase();
+
+
+    if(
+      !ALLOWED_SYMBOLS.has(
+        symbol
+      )
+    ) {
+
+      return send(
+        res,
+        400,
+        {
+          success:
+            false,
+
+          error:
+            `Unsupported symbol: ${symbol}`
+        }
+      );
+
+    }
+
+
+    /* ========================================================
+       LIVE MARKET DATA
+    ======================================================== */
+
+    const {
+      candles:
+        rawM5,
+
+      cacheHit
+
+    } =
+      await getM5Cached(
+        symbol
+      );
+
+
+    const currentPrice =
+      rawM5[
+        rawM5.length -
+        1
+      ].c;
+
+
+    /* ========================================================
+       COMPLETED CANDLES
+    ======================================================== */
+
+    const m5 =
+      completedCandles(
+        rawM5
+      );
+
+
+    const m15 =
+      resample(
+        m5,
+        15
+      );
+
+
+    const h1 =
+      resample(
+        m5,
+        60
+      );
+
+
+    if(
+      m5.length <
+        100 ||
+      m15.length <
+        30 ||
+      h1.length <
+        20
+    ) {
+
+      throw new Error(
+        "Not enough completed candles for analysis."
+      );
+
+    }
+
+
+    /* ========================================================
+       TECHNICAL ENGINE
+    ======================================================== */
+
+    const m5Data =
+      snapshot(
+        symbol,
+        m5
+      );
+
+
+    const m15Data =
+      snapshot(
+        symbol,
+        m15
+      );
+
+
+    const h1Data =
+      snapshot(
+        symbol,
+        h1
+      );
+
+
+    /* ========================================================
+       PRICE CHANGE
+    ======================================================== */
+
+    const oldIndex =
+      Math.max(
+        0,
+        rawM5.length -
+        13
+      );
+
+
+    const oldPrice =
+      rawM5[
+        oldIndex
+      ].c;
+
+
+    const changePct =
+      oldPrice
+        ?
+        (
+          (
+            currentPrice /
+            oldPrice
+          ) -
+          1
+        ) *
+        100
+        :
+        0;
+
+
+    /* ========================================================
+       AI PACKET
+    ======================================================== */
+
+    const packet = {
+
+      symbol,
+
+      currentPrice:
+        priceRound(
+          symbol,
+          currentPrice
+        ),
+
+      currentUTC:
+        new Date()
+          .toISOString(),
+
+      session:
+        currentSession(),
+
+      M5:
+        m5Data,
+
+      M15:
+        m15Data,
+
+      H1:
+        h1Data
+
+    };
+
+
+    /* ========================================================
+       LOCAL FALLBACK FIRST
+    ======================================================== */
+
+    let analysis =
+      localAnalysis(
+
+        symbol,
+
+        currentPrice,
+
+        m5Data,
+
+        m15Data,
+
+        h1Data
+
+      );
+
+
+    let model =
+      "local-technical-fallback";
+
+
+    let aiOnline =
+      false;
+
+
+    let newsSources =
+      [];
+
+
+    let aiError =
+      null;
+
+
+    /* ========================================================
+       GEMINI
+    ======================================================== */
+
+    if(
+      GEMINI_API_KEY
+    ) {
+
+      try {
+
+        const result =
+          await callGemini(
+            packet
+          );
+
+
+        analysis =
+          validateAnalysis(
+
+            symbol,
+
+            result.analysis,
+
+            currentPrice,
+
+            m5Data
+              .indicators
+              .atr14
+
+          );
+
+
+        newsSources =
+          result.sources;
+
+
+        model =
+          GEMINI_MODEL;
+
+
+        aiOnline =
+          true;
+
+      }
+      catch(error) {
+
+        console.error(
+          "Gemini failed:",
+          error
+        );
+
+
+        aiError =
+          error?.message ||
+          "Gemini failed.";
+
+
+        /*
+           DO NOT BREAK THE WEBSITE.
+
+           LOCAL ENGINE CONTINUES WORKING.
+        */
+
+        model =
+          "local-fallback-gemini-unavailable";
+
+      }
+
+    }
+    else {
+
+      aiError =
+        "GEMINI_API_KEY is not configured.";
+
+    }
+
+
+    /* ========================================================
+       RESPONSE
+    ======================================================== */
+
+    return send(
+      res,
+      200,
+      {
+
+        success:
+          true,
+
+        symbol,
+
+        price:
+          priceRound(
+            symbol,
+            currentPrice
+          ),
+
+        current_price:
+          priceRound(
+            symbol,
+            currentPrice
+          ),
+
+        changePct:
+          round(
+            changePct,
+            4
+          ),
+
+        model,
+
+        ai_online:
+          aiOnline,
+
+        ai_provider:
+          aiOnline
+            ?
+            "Google Gemini"
+            :
+            "Local fallback",
+
+        ai_error:
+          aiError,
+
+        reasoning_effort:
+          aiOnline
+            ?
+            "high"
+            :
+            "deterministic",
+
+        analysis,
+
+        chart:
+          rawM5
+            .slice(
+              -60
+            )
+            .map(
+              candle => ({
+
+                t:
+                  candle.t,
+
+                o:
+                  priceRound(
+                    symbol,
+                    candle.o
+                  ),
+
+                h:
+                  priceRound(
+                    symbol,
+                    candle.h
+                  ),
+
+                l:
+                  priceRound(
+                    symbol,
+                    candle.l
+                  ),
+
+                c:
+                  priceRound(
+                    symbol,
+                    candle.c
+                  )
+
+              })
+            ),
+
+        data_mode:
+          aiOnline
+            ?
+            "Live M5 + local M15/H1 + Gemini AI"
+            :
+            "Live M5 + local M15/H1 + local fallback",
+
+        cache_hit:
+          cacheHit,
+
+        guardrail_note:
+          cacheHit
+            ?
+            "Market candles came from the 55-second cache."
+            :
+            "Fresh Twelve Data M5 candles loaded; M15 and H1 were generated locally.",
+
+        session:
+          currentSession(),
+
+        news_sources:
+          newsSources,
+
+        timestamp:
+          new Date()
+            .toISOString()
+
+      }
+    );
+
+
+  }
+  catch(error) {
+
+    console.error(
+      "MKAYFX ERROR:",
+      error
+    );
+
+
+    return send(
+      res,
+      500,
+      {
+
+        success:
+          false,
+
+        error:
+          error?.message ||
+          "Unknown server error."
+
+      }
+    );
+
+  }
+
 }
