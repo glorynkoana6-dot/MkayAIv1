@@ -13,11 +13,8 @@ const USE_WEB_NEWS =
     "true"
   ).toLowerCase() === "true";
 
-const REQUIRE_AI_APPROVAL =
-  String(
-    process.env.REQUIRE_AI_APPROVAL ||
-    "true"
-  ).toLowerCase() === "true";
+const REQUIRE_AI_APPROVAL = false;
+const USE_GEMINI_FILTER = false;;
 
 
 /* ======================================================
