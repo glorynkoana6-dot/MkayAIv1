@@ -1,99 +1,122 @@
 /* ==========================================================
-   MKAYFX AI - LIVE MARKET INTELLIGENCE ENGINE
+   MKAYFX - FREE PLAN LIVE MARKET ENGINE
 
-   AI:
-   GPT-5.6 SOL
-
-   REASONING:
-   MAX
-
-   DATA:
-   Twelve Data
-
-   TIMEFRAMES:
-   M5
-   M15
-   H1
+   - ONE Twelve Data request per refresh
+   - M15 and H1 are built locally from M5
+   - 55-second cache prevents repeated button taps burning credits
+   - Works without an OpenAI API key using local technical analysis
 ========================================================== */
 
+const TWELVE_URL = "https://api.twelvedata.com/time_series";
 
-const OPENAI_URL =
-    "https://api.openai.com/v1/responses";
+const CACHE_MS = 55_000;
+const OUTPUT_SIZE = 1000;
 
-const TWELVE_URL =
-    "https://api.twelvedata.com/time_series";
+const marketCache = new Map();
+const inFlight = new Map();
 
 
 /* ==========================================================
-   CONFIG
+   RESPONSE
 ========================================================== */
 
-const MODEL =
-    process.env.OPENAI_MODEL ||
-    "gpt-5.6-sol";
-
-const REASONING_EFFORT =
-    process.env.OPENAI_REASONING_EFFORT ||
-    "max";
-
-const MIN_CONFIDENCE = 75;
-
-const MIN_RR = 1.8;
-
-const REQUIRE_H1_ALIGNMENT = true;
-
-
-/* ==========================================================
-   HTTP RESPONSE
-========================================================== */
-
-function send(
-    res,
-    status,
-    data
-) {
-
-    res.status(status)
+function send(res, status, data) {
+    return res
+        .status(status)
         .json(data);
 }
 
 
 /* ==========================================================
-   FETCH TWELVE DATA
+   HELPERS
 ========================================================== */
 
-async function fetchTimeframe(
-    symbol,
-    interval,
-    outputsize = 120
-) {
+function clamp(value, min, max) {
+    return Math.max(
+        min,
+        Math.min(max, value)
+    );
+}
+
+
+function round(value, digits = 2) {
+
+    if (!Number.isFinite(Number(value))) {
+        return null;
+    }
+
+    return Number(
+        Number(value)
+            .toFixed(digits)
+    );
+}
+
+
+function parseUtc(datetime) {
+
+    const clean =
+        String(datetime || "")
+            .trim()
+            .replace(" ", "T");
+
+    const withZone =
+        /Z$|[+-]\d\d:\d\d$/.test(clean)
+            ? clean
+            : `${clean}Z`;
+
+    return new Date(withZone)
+        .getTime();
+}
+
+
+/* ==========================================================
+   TWELVE DATA
+========================================================== */
+
+async function requestM5(symbol) {
 
     const key =
         process.env.TWELVE_DATA_API_KEY;
 
     if (!key) {
+
         throw new Error(
-            "TWELVE_DATA_API_KEY is missing."
+            "TWELVE_DATA_API_KEY is missing in Vercel."
         );
     }
 
+
     const params =
         new URLSearchParams({
+
             symbol,
-            interval,
+
+            interval:
+                "5min",
+
             outputsize:
-                String(outputsize),
-            format: "JSON",
-            apikey: key
+                String(OUTPUT_SIZE),
+
+            timezone:
+                "UTC",
+
+            format:
+                "JSON",
+
+            apikey:
+                key
         });
+
 
     const response =
         await fetch(
             `${TWELVE_URL}?${params}`
         );
 
+
     const data =
         await response.json();
+
 
     if (
         !response.ok ||
@@ -103,509 +126,820 @@ async function fetchTimeframe(
 
         throw new Error(
             data.message ||
-            `Twelve Data ${interval} failed.`
+            "Twelve Data request failed."
         );
     }
 
 
-    /*
-      Twelve Data returns newest first.
+    const candles =
+        data.values
 
-      Reverse:
-      oldest -> newest
-    */
-
-    return data.values
         .map(x => ({
-            t: x.datetime,
-            o: Number(x.open),
-            h: Number(x.high),
-            l: Number(x.low),
-            c: Number(x.close),
-            v: Number(x.volume || 0)
+
+            t:
+                x.datetime,
+
+            o:
+                Number(x.open),
+
+            h:
+                Number(x.high),
+
+            l:
+                Number(x.low),
+
+            c:
+                Number(x.close),
+
+            v:
+                Number(
+                    x.volume || 0
+                )
+
         }))
+
+        .filter(
+            x =>
+                [
+                    x.o,
+                    x.h,
+                    x.l,
+                    x.c
+                ]
+                .every(
+                    Number.isFinite
+                )
+        )
+
         .reverse();
+
+
+    if (
+        candles.length < 120
+    ) {
+
+        throw new Error(
+            "Not enough market data returned for analysis."
+        );
+    }
+
+
+    return candles;
 }
 
 
 /* ==========================================================
-   REMOVE CURRENT FORMING CANDLE
+   CACHE
+
+   Prevents every button tap from using another Twelve Data
+   credit.
 ========================================================== */
 
-function completedCandles(
-    candles
-) {
+async function getM5Cached(symbol) {
 
-    if (candles.length < 3) {
-        return candles;
+    const key =
+        symbol.toUpperCase();
+
+    const now =
+        Date.now();
+
+    const cached =
+        marketCache.get(key);
+
+
+    if (
+        cached &&
+        now - cached.time <
+        CACHE_MS
+    ) {
+
+        return {
+
+            candles:
+                cached.candles,
+
+            cacheHit:
+                true
+        };
     }
 
-    return candles.slice(
-        0,
-        -1
+
+    if (
+        inFlight.has(key)
+    ) {
+
+        const candles =
+            await inFlight.get(key);
+
+        return {
+
+            candles,
+
+            cacheHit:
+                true
+        };
+    }
+
+
+    const pending =
+
+        requestM5(key)
+
+        .then(candles => {
+
+            marketCache.set(
+                key,
+                {
+                    time:
+                        Date.now(),
+
+                    candles
+                }
+            );
+
+            return candles;
+
+        })
+
+        .finally(() => {
+
+            inFlight.delete(key);
+
+        });
+
+
+    inFlight.set(
+        key,
+        pending
+    );
+
+
+    const candles =
+        await pending;
+
+
+    return {
+
+        candles,
+
+        cacheHit:
+            false
+    };
+}
+
+
+/* ==========================================================
+   REMOVE FORMING CANDLE
+========================================================== */
+
+function completedM5(candles) {
+
+    return candles.length > 2
+
+        ? candles.slice(
+            0,
+            -1
+        )
+
+        : candles;
+}
+
+
+/* ==========================================================
+   CREATE M15 / H1 FROM M5
+
+   No additional Twelve Data requests.
+========================================================== */
+
+function resample(
+    candles,
+    minutes,
+    expectedBars
+) {
+
+    const bucketMs =
+        minutes *
+        60_000;
+
+
+    const buckets =
+        new Map();
+
+
+    for (
+        const candle
+        of candles
+    ) {
+
+        const ms =
+            parseUtc(
+                candle.t
+            );
+
+
+        if (
+            !Number.isFinite(ms)
+        ) {
+            continue;
+        }
+
+
+        const bucketStart =
+            Math.floor(
+                ms /
+                bucketMs
+            ) *
+            bucketMs;
+
+
+        const existing =
+            buckets.get(
+                bucketStart
+            );
+
+
+        if (!existing) {
+
+            buckets.set(
+                bucketStart,
+                {
+
+                    start:
+                        bucketStart,
+
+                    count:
+                        1,
+
+                    o:
+                        candle.o,
+
+                    h:
+                        candle.h,
+
+                    l:
+                        candle.l,
+
+                    c:
+                        candle.c,
+
+                    v:
+                        candle.v || 0
+
+                }
+            );
+
+        }
+
+        else {
+
+            existing.count += 1;
+
+            existing.h =
+                Math.max(
+                    existing.h,
+                    candle.h
+                );
+
+            existing.l =
+                Math.min(
+                    existing.l,
+                    candle.l
+                );
+
+            existing.c =
+                candle.c;
+
+            existing.v +=
+                candle.v || 0;
+        }
+    }
+
+
+    return [
+        ...buckets.values()
+    ]
+
+    .filter(
+        x =>
+            x.count >=
+            expectedBars
+    )
+
+    .sort(
+        (a, b) =>
+            a.start -
+            b.start
+    )
+
+    .map(x => ({
+
+        t:
+            new Date(
+                x.start
+            )
+            .toISOString()
+            .replace(
+                "T",
+                " "
+            )
+            .slice(
+                0,
+                19
+            ),
+
+        o:
+            x.o,
+
+        h:
+            x.h,
+
+        l:
+            x.l,
+
+        c:
+            x.c,
+
+        v:
+            x.v
+
+    }));
+}
+
+
+/* ==========================================================
+   EMA
+========================================================== */
+
+function ema(
+    values,
+    period
+) {
+
+    if (
+        !values.length
+    ) {
+
+        return null;
+    }
+
+
+    const k =
+        2 /
+        (period + 1);
+
+
+    let value =
+        values[0];
+
+
+    for (
+        let i = 1;
+        i < values.length;
+        i++
+    ) {
+
+        value =
+            values[i] *
+            k +
+            value *
+            (1 - k);
+    }
+
+
+    return value;
+}
+
+
+/* ==========================================================
+   ATR
+========================================================== */
+
+function atr(
+    candles,
+    period = 14
+) {
+
+    if (
+        candles.length < 2
+    ) {
+
+        return 0;
+    }
+
+
+    const ranges =
+        [];
+
+
+    for (
+        let i = 1;
+        i < candles.length;
+        i++
+    ) {
+
+        const cur =
+            candles[i];
+
+        const prev =
+            candles[i - 1];
+
+
+        ranges.push(
+
+            Math.max(
+
+                cur.h -
+                cur.l,
+
+                Math.abs(
+                    cur.h -
+                    prev.c
+                ),
+
+                Math.abs(
+                    cur.l -
+                    prev.c
+                )
+            )
+        );
+    }
+
+
+    const use =
+        ranges.slice(
+            -period
+        );
+
+
+    return (
+        use.reduce(
+            (a, b) =>
+                a + b,
+            0
+        )
+        /
+        Math.max(
+            1,
+            use.length
+        )
     );
 }
 
 
 /* ==========================================================
-   REDUCE TOKEN USE
+   HIGHEST / LOWEST
 ========================================================== */
 
-function compactCandles(
+function highest(
     candles,
-    amount = 80
+    amount = 20
 ) {
 
-    return candles
-        .slice(-amount)
-        .map(x => [
-            x.t,
-            x.o,
-            x.h,
-            x.l,
-            x.c,
-            x.v
-        ]);
+    const slice =
+        candles.slice(
+            -amount
+        );
+
+
+    return slice.length
+
+        ? Math.max(
+            ...slice.map(
+                x => x.h
+            )
+        )
+
+        : null;
+}
+
+
+function lowest(
+    candles,
+    amount = 20
+) {
+
+    const slice =
+        candles.slice(
+            -amount
+        );
+
+
+    return slice.length
+
+        ? Math.min(
+            ...slice.map(
+                x => x.l
+            )
+        )
+
+        : null;
 }
 
 
 /* ==========================================================
-   STRUCTURED OUTPUT SCHEMA
+   TIMEFRAME ANALYSIS
 ========================================================== */
 
-const schema = {
+function timeframeRead(
+    candles
+) {
 
-    type: "object",
+    if (
+        candles.length < 30
+    ) {
 
-    additionalProperties: false,
+        return {
 
-    properties: {
-
-        decision: {
-            type: "string",
-            enum: [
-                "BUY",
-                "SELL",
-                "WAIT"
-            ]
-        },
-
-        confidence: {
-            type: "number",
-            minimum: 0,
-            maximum: 100
-        },
-
-        setup_grade: {
-            type: "string",
-            enum: [
-                "A+",
-                "A",
-                "B",
-                "C",
-                "NO TRADE"
-            ]
-        },
-
-        summary: {
-            type: "string"
-        },
-
-        market_regime: {
-            type: "string"
-        },
-
-        structure_summary: {
-            type: "string"
-        },
-
-        liquidity_summary: {
-            type: "string"
-        },
-
-        macro_bias: {
-            type: "string",
-            enum: [
-                "BULLISH",
-                "BEARISH",
+            bias:
                 "NEUTRAL",
-                "UNKNOWN"
-            ]
-        },
 
-        macro_summary: {
-            type: "string"
-        },
-
-        entry: {
-            type: [
-                "number",
-                "null"
-            ]
-        },
-
-        stop_loss: {
-            type: [
-                "number",
-                "null"
-            ]
-        },
-
-        take_profit_1: {
-            type: [
-                "number",
-                "null"
-            ]
-        },
-
-        take_profit_2: {
-            type: [
-                "number",
-                "null"
-            ]
-        },
-
-        risk_reward: {
-            type: [
-                "number",
-                "null"
-            ]
-        },
-
-        invalidation: {
-            type: "string"
-        },
-
-        next_trigger: {
-            type: "string"
-        },
-
-        timeframes: {
-
-            type: "object",
-
-            additionalProperties: false,
-
-            properties: {
-
-                m5: {
-                    type: "object",
-
-                    additionalProperties:
-                        false,
-
-                    properties: {
-
-                        bias: {
-                            type: "string",
-                            enum: [
-                                "BULLISH",
-                                "BEARISH",
-                                "NEUTRAL"
-                            ]
-                        },
-
-                        strength: {
-                            type: "number",
-                            minimum: 0,
-                            maximum: 100
-                        }
-                    },
-
-                    required: [
-                        "bias",
-                        "strength"
-                    ]
-                },
-
-                m15: {
-                    type: "object",
-
-                    additionalProperties:
-                        false,
-
-                    properties: {
-
-                        bias: {
-                            type: "string",
-                            enum: [
-                                "BULLISH",
-                                "BEARISH",
-                                "NEUTRAL"
-                            ]
-                        },
-
-                        strength: {
-                            type: "number",
-                            minimum: 0,
-                            maximum: 100
-                        }
-                    },
-
-                    required: [
-                        "bias",
-                        "strength"
-                    ]
-                },
-
-                h1: {
-                    type: "object",
-
-                    additionalProperties:
-                        false,
-
-                    properties: {
-
-                        bias: {
-                            type: "string",
-                            enum: [
-                                "BULLISH",
-                                "BEARISH",
-                                "NEUTRAL"
-                            ]
-                        },
-
-                        strength: {
-                            type: "number",
-                            minimum: 0,
-                            maximum: 100
-                        }
-                    },
-
-                    required: [
-                        "bias",
-                        "strength"
-                    ]
-                }
-
-            },
-
-            required: [
-                "m5",
-                "m15",
-                "h1"
-            ]
-        },
-
-        reasons: {
-
-            type: "array",
-
-            items: {
-                type: "string"
-            },
-
-            minItems: 3,
-
-            maxItems: 8
-        },
-
-        risks: {
-
-            type: "array",
-
-            items: {
-                type: "string"
-            },
-
-            minItems: 1,
-
-            maxItems: 6
-        }
-
-    },
-
-    required: [
-
-        "decision",
-        "confidence",
-        "setup_grade",
-        "summary",
-
-        "market_regime",
-        "structure_summary",
-        "liquidity_summary",
-
-        "macro_bias",
-        "macro_summary",
-
-        "entry",
-        "stop_loss",
-        "take_profit_1",
-        "take_profit_2",
-
-        "risk_reward",
-
-        "invalidation",
-        "next_trigger",
-
-        "timeframes",
-
-        "reasons",
-        "risks"
-    ]
-};
-
-
-/* ==========================================================
-   SYSTEM INSTRUCTIONS
-========================================================== */
-
-const instructions = `
-
-You are MKAYFX AI.
-
-You are an institutional-style market analysis engine.
-
-Your job is NOT to produce as many trades as possible.
-
-Your job is to reject weak setups and identify only higher-quality
-opportunities.
-
-You receive raw OHLCV candles from:
-
-M5
-M15
-H1
-
-The current forming candle is not included in your historical analysis.
-
-Perform the technical analysis yourself.
-
-Do NOT rely on conventional indicator signals unless useful.
-
-Analyse:
-
-1. Higher timeframe trend
-2. Market structure
-3. BOS
-4. CHOCH
-5. Swing highs
-6. Swing lows
-7. Liquidity pools
-8. Equal highs
-9. Equal lows
-10. Liquidity sweeps
-11. Stop hunts
-12. Displacement
-13. Fair value gaps
-14. Imbalances
-15. Premium / discount
-16. Support / resistance
-17. Supply / demand
-18. Breakouts
-19. Failed breakouts
-20. Momentum
-21. Volatility
-22. Candle behaviour
-23. Multi-timeframe alignment
-24. Risk-to-reward quality
-25. Whether the market is trending, ranging or unstable
-
-Be skeptical.
-
-A WAIT result is a successful result when conditions are unclear.
-
-Never force BUY or SELL.
-
-BUY rules:
-
-- Prefer H1 bullish alignment.
-- Require a clear logical invalidation.
-- Entry must be above stop loss.
-- TP must be above entry.
-- Avoid buying directly into obvious resistance.
-- Prefer confirmation from M15 and M5.
-
-SELL rules:
-
-- Prefer H1 bearish alignment.
-- Require a clear logical invalidation.
-- Entry must be below stop loss.
-- TP must be below entry.
-- Avoid selling directly into obvious support.
-- Prefer confirmation from M15 and M5.
-
-Use realistic price levels.
-
-Do not invent certainty.
-
-Confidence guidance:
-
-90-100:
-Exceptional multi-timeframe setup.
-
-80-89:
-Strong setup.
-
-75-79:
-Tradeable but not exceptional.
-
-Below 75:
-Usually WAIT.
-
-Only use A+ for rare setups.
-
-For weak or conflicting conditions:
-decision = WAIT.
-
-For WAIT:
-entry = null
-stop_loss = null
-take_profit_1 = null
-take_profit_2 = null
-risk_reward = null
-
-Think deeply before producing the final structured result.
-
-Do not output anything outside the requested JSON schema.
-
-`;
-
-
-/* ==========================================================
-   EXTRACT TEXT FROM RESPONSES API
-========================================================== */
-
-function extractOutputText(
-    response
-) {
-
-    if (typeof response.output_text === "string") {
-        return response.output_text;
+            strength:
+                30,
+
+            structure:
+                "INSUFFICIENT DATA",
+
+            atr:
+                0,
+
+            close:
+                candles.at(-1)?.c ??
+                null,
+
+            recentHigh:
+                highest(
+                    candles,
+                    20
+                ),
+
+            recentLow:
+                lowest(
+                    candles,
+                    20
+                )
+        };
     }
 
-    if (!Array.isArray(response.output)) {
-        return null;
+
+    const closes =
+        candles.map(
+            x => x.c
+        );
+
+
+    const close =
+        closes.at(-1);
+
+
+    const e20 =
+        ema(
+            closes.slice(-120),
+            20
+        );
+
+
+    const e50 =
+        ema(
+            closes.slice(-180),
+            50
+        );
+
+
+    const a =
+        atr(
+            candles,
+            14
+        )
+        ||
+        Math.max(
+            close *
+            0.0005,
+            0.01
+        );
+
+
+    const recent =
+        candles.slice(
+            -20
+        );
+
+
+    const previous =
+        candles.slice(
+            -40,
+            -20
+        );
+
+
+    const recentHigh =
+        Math.max(
+            ...recent.map(
+                x => x.h
+            )
+        );
+
+
+    const recentLow =
+        Math.min(
+            ...recent.map(
+                x => x.l
+            )
+        );
+
+
+    const prevHigh =
+        previous.length
+
+        ? Math.max(
+            ...previous.map(
+                x => x.h
+            )
+        )
+
+        : recentHigh;
+
+
+    const prevLow =
+        previous.length
+
+        ? Math.min(
+            ...previous.map(
+                x => x.l
+            )
+        )
+
+        : recentLow;
+
+
+    let structure =
+        "RANGE";
+
+
+    if (
+        recentHigh >
+        prevHigh &&
+        recentLow >
+        prevLow
+    ) {
+
+        structure =
+            "HH / HL";
     }
 
-    for (const item of response.output) {
 
-        if (!Array.isArray(item.content)) {
-            continue;
-        }
+    if (
+        recentHigh <
+        prevHigh &&
+        recentLow <
+        prevLow
+    ) {
 
-        for (const content of item.content) {
-
-            if (
-                content.type === "output_text" &&
-                typeof content.text === "string"
-            ) {
-
-                return content.text;
-            }
-        }
+        structure =
+            "LH / LL";
     }
 
-    return null;
+
+    let bias =
+        "NEUTRAL";
+
+
+    if (
+        close > e20 &&
+        e20 > e50
+    ) {
+
+        bias =
+            "BULLISH";
+    }
+
+    else if (
+        close < e20 &&
+        e20 < e50
+    ) {
+
+        bias =
+            "BEARISH";
+    }
+
+
+    const momentumLookback =
+        Math.min(
+            10,
+            closes.length - 1
+        );
+
+
+    const oldClose =
+        closes[
+            closes.length -
+            1 -
+            momentumLookback
+        ];
+
+
+    const momentum =
+        oldClose
+
+        ? Math.abs(
+            close -
+            oldClose
+        )
+        /
+        a
+
+        : 0;
+
+
+    const separation =
+        Math.abs(
+            e20 -
+            e50
+        )
+        /
+        a;
+
+
+    let strength =
+
+        38 +
+
+        separation *
+        18 +
+
+        momentum *
+        7;
+
+
+    if (
+        structure ===
+        "HH / HL" &&
+        bias ===
+        "BULLISH"
+    ) {
+
+        strength += 8;
+    }
+
+
+    if (
+        structure ===
+        "LH / LL" &&
+        bias ===
+        "BEARISH"
+    ) {
+
+        strength += 8;
+    }
+
+
+    if (
+        bias ===
+        "NEUTRAL"
+    ) {
+
+        strength =
+            Math.min(
+                strength,
+                55
+            );
+    }
+
+
+    strength =
+        Math.round(
+            clamp(
+                strength,
+                25,
+                95
+            )
+        );
+
+
+    return {
+
+        bias,
+
+        strength,
+
+        structure,
+
+        atr:
+            a,
+
+        close,
+
+        recentHigh,
+
+        recentLow
+    };
 }
 
 
 /* ==========================================================
-   CALL GPT
+   SIGNAL ENGINE
 ========================================================== */
 
-async function askAI(
+function makeLocalAnalysis(
     symbol,
     currentPrice,
     m5,
@@ -613,485 +947,645 @@ async function askAI(
     h1
 ) {
 
-    const apiKey =
-        process.env.OPENAI_API_KEY;
+    const r5 =
+        timeframeRead(m5);
 
-    if (!apiKey) {
+    const r15 =
+        timeframeRead(m15);
 
-        throw new Error(
-            "OPENAI_API_KEY is missing."
-        );
-    }
+    const r1 =
+        timeframeRead(h1);
 
 
-    const payload = {
+    let buyScore =
+        0;
 
-        model: MODEL,
+    let sellScore =
+        0;
 
-        reasoning: {
-            effort:
-                REASONING_EFFORT
-        },
 
-        instructions,
+    const scoreBias =
+        (
+            read,
+            weight
+        ) => {
 
-        input: `
+            if (
+                read.bias ===
+                "BULLISH"
+            ) {
 
-MARKET:
-${symbol}
-
-CURRENT LIVE PRICE:
-${currentPrice}
-
-SERVER TIME UTC:
-${new Date().toISOString()}
-
-IMPORTANT:
-
-Each candle array is:
-
-[
- timestamp,
- open,
- high,
- low,
- close,
- volume
-]
-
-==============================
-M5 COMPLETED CANDLES
-==============================
-
-${JSON.stringify(
-    compactCandles(m5, 90)
-)}
-
-==============================
-M15 COMPLETED CANDLES
-==============================
-
-${JSON.stringify(
-    compactCandles(m15, 80)
-)}
-
-==============================
-H1 COMPLETED CANDLES
-==============================
-
-${JSON.stringify(
-    compactCandles(h1, 70)
-)}
-
-Analyse the market carefully.
-
-Do not assume there must be a trade.
-
-Return WAIT when quality is insufficient.
-
-`,
-
-        text: {
-
-            format: {
-
-                type: "json_schema",
-
-                name:
-                    "market_analysis",
-
-                strict: true,
-
-                schema
-
+                buyScore +=
+                    weight;
             }
 
-        }
 
-    };
+            if (
+                read.bias ===
+                "BEARISH"
+            ) {
+
+                sellScore +=
+                    weight;
+            }
+        };
 
 
-    /*
-      Optional macro web intelligence.
+    scoreBias(
+        r1,
+        38
+    );
 
-      Set ENABLE_WEB_SEARCH=true in Vercel
-      if you want the AI to use current web information.
-    */
+    scoreBias(
+        r15,
+        28
+    );
+
+    scoreBias(
+        r5,
+        20
+    );
+
 
     if (
-        process.env.ENABLE_WEB_SEARCH ===
-        "true"
+        r1.structure ===
+        "HH / HL"
     ) {
 
-        payload.tools = [
-            {
-                type:
-                    "web_search"
-            }
-        ];
+        buyScore += 8;
     }
 
 
-    const response =
-        await fetch(
-            OPENAI_URL,
-            {
+    if (
+        r1.structure ===
+        "LH / LL"
+    ) {
 
-                method:
-                    "POST",
+        sellScore += 8;
+    }
 
-                headers: {
 
-                    "Authorization":
-                        `Bearer ${apiKey}`,
+    if (
+        r15.structure ===
+        "HH / HL"
+    ) {
 
-                    "Content-Type":
-                        "application/json"
+        buyScore += 6;
+    }
 
-                },
 
-                body:
-                    JSON.stringify(
-                        payload
-                    )
+    if (
+        r15.structure ===
+        "LH / LL"
+    ) {
 
-            }
+        sellScore += 6;
+    }
+
+
+    let decision =
+        "WAIT";
+
+
+    const best =
+        Math.max(
+            buyScore,
+            sellScore
         );
 
 
-    const data =
-        await response.json();
+    const difference =
+        Math.abs(
+            buyScore -
+            sellScore
+        );
 
 
-    if (!response.ok) {
+    if (
+        buyScore >= 70 &&
+        difference >= 18 &&
+        r1.bias ===
+        "BULLISH"
+    ) {
 
-        console.error(
-            JSON.stringify(
-                data,
-                null,
-                2
+        decision =
+            "BUY";
+    }
+
+
+    else if (
+        sellScore >= 70 &&
+        difference >= 18 &&
+        r1.bias ===
+        "BEARISH"
+    ) {
+
+        decision =
+            "SELL";
+    }
+
+
+    const confidence =
+
+        decision ===
+        "WAIT"
+
+        ?
+
+        Math.round(
+            clamp(
+                45 +
+                difference *
+                0.25,
+
+                45,
+                69
+            )
+        )
+
+        :
+
+        Math.round(
+            clamp(
+                best,
+                70,
+                92
             )
         );
 
-        throw new Error(
-            data?.error?.message ||
-            "OpenAI request failed."
+
+    const m5Atr =
+        r5.atr ||
+        currentPrice *
+        0.001;
+
+
+    const riskDistance =
+        Math.max(
+
+            m5Atr *
+            1.25,
+
+            currentPrice *
+            0.0007
         );
-    }
 
 
-    const text =
-        extractOutputText(
-            data
-        );
+    let entry =
+        null;
+
+    let stop =
+        null;
+
+    let tp1 =
+        null;
+
+    let tp2 =
+        null;
+
+    let rr =
+        null;
 
 
-    if (!text) {
-
-        throw new Error(
-            "AI returned no structured response."
-        );
-    }
-
-
-    return JSON.parse(
-        text
-    );
-}
-
-
-/* ==========================================================
-   RISK GUARDRAILS
-========================================================== */
-
-function applyGuardrails(
-    analysis,
-    currentPrice
-) {
-
-    let note =
-        "AI signal passed quality filters.";
-
-
-    /*
-      Already WAIT
-    */
+    /* ======================================================
+       BUY LEVELS
+    ====================================================== */
 
     if (
-        analysis.decision ===
-        "WAIT"
-    ) {
-
-        analysis.setup_grade =
-            "NO TRADE";
-
-        return {
-            analysis,
-            note:
-                "AI rejected the setup. Waiting for better conditions."
-        };
-    }
-
-
-    /*
-      Confidence filter
-    */
-
-    if (
-        Number(
-            analysis.confidence
-        ) < MIN_CONFIDENCE
-    ) {
-
-        analysis.decision =
-            "WAIT";
-
-        analysis.setup_grade =
-            "NO TRADE";
-
-        return {
-
-            analysis,
-
-            note:
-                `Blocked: AI confidence below ${MIN_CONFIDENCE}%.`
-        };
-    }
-
-
-    const entry =
-        Number(
-            analysis.entry
-        );
-
-    const sl =
-        Number(
-            analysis.stop_loss
-        );
-
-    const tp1 =
-        Number(
-            analysis.take_profit_1
-        );
-
-
-    if (
-        !Number.isFinite(entry) ||
-        !Number.isFinite(sl) ||
-        !Number.isFinite(tp1)
-    ) {
-
-        analysis.decision =
-            "WAIT";
-
-        analysis.setup_grade =
-            "NO TRADE";
-
-        return {
-
-            analysis,
-
-            note:
-                "Blocked: AI produced incomplete trade levels."
-        };
-    }
-
-
-    let risk;
-    let reward;
-
-
-    /*
-      BUY validation
-    */
-
-    if (
-        analysis.decision ===
+        decision ===
         "BUY"
     ) {
 
-        if (
-            sl >= entry ||
-            tp1 <= entry
-        ) {
-
-            analysis.decision =
-                "WAIT";
-
-            analysis.setup_grade =
-                "NO TRADE";
-
-            return {
-
-                analysis,
-
-                note:
-                    "Blocked: invalid BUY price structure."
-            };
-        }
-
-        risk =
-            entry - sl;
-
-        reward =
-            tp1 - entry;
+        entry =
+            currentPrice;
 
 
-        if (
-            REQUIRE_H1_ALIGNMENT &&
-            analysis.timeframes.h1.bias !==
-            "BULLISH"
-        ) {
+        const swingStop =
+            Number.isFinite(
+                r5.recentLow
+            )
 
-            analysis.decision =
-                "WAIT";
+            ?
 
-            analysis.setup_grade =
-                "NO TRADE";
+            r5.recentLow -
+            m5Atr *
+            0.15
 
-            return {
+            :
 
-                analysis,
+            entry -
+            riskDistance;
 
-                note:
-                    "Blocked: BUY was not aligned with H1 AI bias."
-            };
-        }
+
+        stop =
+            Math.min(
+
+                entry -
+                riskDistance,
+
+                swingStop
+            );
+
+
+        const risk =
+            entry -
+            stop;
+
+
+        tp1 =
+            entry +
+            risk *
+            1.8;
+
+
+        tp2 =
+            entry +
+            risk *
+            2.5;
+
+
+        rr =
+            1.8;
     }
 
 
-    /*
-      SELL validation
-    */
+    /* ======================================================
+       SELL LEVELS
+    ====================================================== */
 
     if (
-        analysis.decision ===
+        decision ===
         "SELL"
     ) {
 
-        if (
-            sl <= entry ||
-            tp1 >= entry
-        ) {
-
-            analysis.decision =
-                "WAIT";
-
-            analysis.setup_grade =
-                "NO TRADE";
-
-            return {
-
-                analysis,
-
-                note:
-                    "Blocked: invalid SELL price structure."
-            };
-        }
-
-        risk =
-            sl - entry;
-
-        reward =
-            entry - tp1;
+        entry =
+            currentPrice;
 
 
-        if (
-            REQUIRE_H1_ALIGNMENT &&
-            analysis.timeframes.h1.bias !==
-            "BEARISH"
-        ) {
+        const swingStop =
+            Number.isFinite(
+                r5.recentHigh
+            )
 
-            analysis.decision =
-                "WAIT";
+            ?
 
-            analysis.setup_grade =
-                "NO TRADE";
+            r5.recentHigh +
+            m5Atr *
+            0.15
 
-            return {
+            :
 
-                analysis,
+            entry +
+            riskDistance;
 
-                note:
-                    "Blocked: SELL was not aligned with H1 AI bias."
-            };
-        }
+
+        stop =
+            Math.max(
+
+                entry +
+                riskDistance,
+
+                swingStop
+            );
+
+
+        const risk =
+            stop -
+            entry;
+
+
+        tp1 =
+            entry -
+            risk *
+            1.8;
+
+
+        tp2 =
+            entry -
+            risk *
+            2.5;
+
+
+        rr =
+            1.8;
     }
 
 
-    /*
-      Risk / reward
-    */
+    /* ======================================================
+       MARKET REGIME
+    ====================================================== */
 
-    const calculatedRR =
-        reward / risk;
+    const aligned =
+        [
+            r5.bias,
+            r15.bias,
+            r1.bias
+        ]
 
-
-    analysis.risk_reward =
-        Number(
-            calculatedRR.toFixed(2)
+        .filter(
+            x =>
+                x !==
+                "NEUTRAL"
         );
 
 
+    const allBull =
+
+        aligned.length === 3 &&
+
+        aligned.every(
+            x =>
+                x ===
+                "BULLISH"
+        );
+
+
+    const allBear =
+
+        aligned.length === 3 &&
+
+        aligned.every(
+            x =>
+                x ===
+                "BEARISH"
+        );
+
+
+    const regime =
+
+        allBull
+
+        ?
+
+        "BULLISH TREND"
+
+        :
+
+        allBear
+
+        ?
+
+        "BEARISH TREND"
+
+        :
+
+        "MIXED / RANGE";
+
+
+    /* ======================================================
+       SETUP GRADE
+    ====================================================== */
+
+    let setupGrade =
+        "NO TRADE";
+
+
     if (
-        calculatedRR <
-        MIN_RR
+        decision !==
+        "WAIT"
     ) {
 
-        analysis.decision =
-            "WAIT";
+        setupGrade =
 
-        analysis.setup_grade =
-            "NO TRADE";
+            confidence >= 88
+            ? "A+"
 
-        return {
+            :
 
-            analysis,
+            confidence >= 82
+            ? "A"
 
-            note:
-                `Blocked: risk/reward ${calculatedRR.toFixed(2)} is below required ${MIN_RR}.`
-        };
+            :
+
+            confidence >= 75
+            ? "B"
+
+            :
+
+            "C";
     }
 
 
-    /*
-      Prevent ridiculous stale entries.
+    /* ======================================================
+       REASONING
+    ====================================================== */
 
-      Entry must be reasonably near live price.
-    */
+    const reasons = [
 
-    const distance =
-        Math.abs(
-            entry -
-            currentPrice
-        ) /
-        currentPrice;
+        `H1 bias: ${r1.bias} (${r1.strength}%), structure ${r1.structure}.`,
+
+        `M15 bias: ${r15.bias} (${r15.strength}%), structure ${r15.structure}.`,
+
+        `M5 bias: ${r5.bias} (${r5.strength}%), structure ${r5.structure}.`,
+
+        `Directional score: BUY ${buyScore} vs SELL ${sellScore}.`
+
+    ];
 
 
     if (
-        distance >
-        0.006
+        decision ===
+        "WAIT"
     ) {
 
-        analysis.decision =
-            "WAIT";
+        reasons.push(
 
-        analysis.setup_grade =
-            "NO TRADE";
-
-        return {
-
-            analysis,
-
-            note:
-                "Blocked: suggested entry is too far from the live market price."
-        };
+            "The engine requires stronger H1 alignment and a clearer multi-timeframe advantage before issuing a trade."
+        );
     }
 
+    else {
+
+        reasons.push(
+
+            `${decision} passed the higher-timeframe alignment filter and minimum score threshold.`
+        );
+    }
+
+
+    const high =
+        round(
+            r15.recentHigh,
+            2
+        );
+
+
+    const low =
+        round(
+            r15.recentLow,
+            2
+        );
+
+
+    /* ======================================================
+       FINAL RESULT
+    ====================================================== */
 
     return {
-        analysis,
-        note
+
+        decision,
+
+        confidence,
+
+        setup_grade:
+            setupGrade,
+
+
+        summary:
+
+            decision ===
+            "WAIT"
+
+            ?
+
+            `${symbol} does not currently have enough multi-timeframe alignment for a high-quality entry.`
+
+            :
+
+            `${decision} setup detected on ${symbol} with H1, M15 and M5 technical confirmation.`,
+
+
+        market_regime:
+            regime,
+
+
+        structure_summary:
+
+            `H1 ${r1.structure}; M15 ${r15.structure}; M5 ${r5.structure}.`,
+
+
+        liquidity_summary:
+
+            `Recent M15 range: high ${high ?? "n/a"}, low ${low ?? "n/a"}.`,
+
+
+        macro_bias:
+            "UNKNOWN",
+
+
+        macro_summary:
+
+            "Macro/news data is not included in free local mode; this verdict is technical only.",
+
+
+        entry:
+            round(
+                entry,
+                2
+            ),
+
+
+        stop_loss:
+            round(
+                stop,
+                2
+            ),
+
+
+        take_profit_1:
+            round(
+                tp1,
+                2
+            ),
+
+
+        take_profit_2:
+            round(
+                tp2,
+                2
+            ),
+
+
+        risk_reward:
+            rr,
+
+
+        invalidation:
+
+            decision ===
+            "BUY"
+
+            ?
+
+            `Bullish setup invalid below ${round(stop, 2)}.`
+
+            :
+
+            decision ===
+            "SELL"
+
+            ?
+
+            `Bearish setup invalid above ${round(stop, 2)}.`
+
+            :
+
+            "Wait until H1 direction and lower-timeframe structure align more clearly.",
+
+
+        next_trigger:
+
+            decision ===
+            "WAIT"
+
+            ?
+
+            "H1 + M15 directional alignment with M5 confirmation."
+
+            :
+
+            `Watch for price to hold the ${
+                decision === "BUY"
+                    ? "bullish"
+                    : "bearish"
+            } M5 structure.`,
+
+
+        timeframes: {
+
+            m5: {
+
+                bias:
+                    r5.bias,
+
+                strength:
+                    r5.strength
+            },
+
+
+            m15: {
+
+                bias:
+                    r15.bias,
+
+                strength:
+                    r15.strength
+            },
+
+
+            h1: {
+
+                bias:
+                    r1.bias,
+
+                strength:
+                    r1.strength
+            }
+        },
+
+
+        reasons,
+
+
+        risks: [
+
+            "This is a technical estimate, not a guaranteed outcome.",
+
+            "Fast news, spreads and slippage can invalidate levels before the next refresh.",
+
+            "Macro/news confirmation is not included in free local mode."
+
+        ]
     };
 }
 
@@ -1131,138 +1625,176 @@ export default async function handler(
 
         const symbol =
             String(
+
                 req.body?.symbol ||
                 "XAU/USD"
+
             )
             .trim()
             .toUpperCase();
 
 
-        /*
-          Fetch market data simultaneously
-        */
+        if (!symbol) {
 
-        const [
-            m5Raw,
-            m15Raw,
-            h1Raw
-        ] =
-        await Promise.all([
-
-            fetchTimeframe(
-                symbol,
-                "5min",
-                120
-            ),
-
-            fetchTimeframe(
-                symbol,
-                "15min",
-                120
-            ),
-
-            fetchTimeframe(
-                symbol,
-                "1h",
-                120
-            )
-
-        ]);
+            return send(
+                res,
+                400,
+                {
+                    error:
+                        "Symbol is required."
+                }
+            );
+        }
 
 
-        /*
-          Current price comes from latest
-          available M5 candle.
-        */
+        /* ==================================================
+           ONLY ONE TWELVE DATA REQUEST
+        ================================================== */
+
+        const {
+
+            candles:
+                m5Raw,
+
+            cacheHit
+
+        } =
+
+        await getM5Cached(
+            symbol
+        );
+
 
         const currentPrice =
-            m5Raw[
-                m5Raw.length - 1
-            ].c;
+            m5Raw.at(-1).c;
 
 
-        /*
-          Remove forming candles before
-          sending history to AI.
-        */
+        /* ==================================================
+           COMPLETED M5
+        ================================================== */
 
         const m5 =
-            completedCandles(
+            completedM5(
                 m5Raw
             );
 
+
+        /* ==================================================
+           BUILD M15 LOCALLY
+        ================================================== */
+
         const m15 =
-            completedCandles(
-                m15Raw
+            resample(
+                m5,
+                15,
+                3
             );
+
+
+        /* ==================================================
+           BUILD H1 LOCALLY
+        ================================================== */
 
         const h1 =
-            completedCandles(
-                h1Raw
+            resample(
+                m5,
+                60,
+                12
             );
 
 
-        /*
-          AI THINKING
-        */
+        if (
+            m15.length < 30 ||
+            h1.length < 30
+        ) {
 
-        let analysis =
-            await askAI(
+            throw new Error(
+
+                "Not enough completed candles to build M15/H1 analysis yet."
+            );
+        }
+
+
+        /* ==================================================
+           RUN LOCAL ANALYSIS
+        ================================================== */
+
+        const analysis =
+            makeLocalAnalysis(
+
                 symbol,
+
                 currentPrice,
+
                 m5,
+
                 m15,
+
                 h1
             );
 
 
-        /*
-          Strict validation
-        */
-
-        const guarded =
-            applyGuardrails(
-                analysis,
-                currentPrice
-            );
-
-
-        analysis =
-            guarded.analysis;
-
-
-        /*
-          Return data to dashboard
-        */
+        /* ==================================================
+           RETURN TO DASHBOARD
+        ================================================== */
 
         return send(
             res,
             200,
             {
 
-                success: true,
+                success:
+                    true,
+
 
                 symbol,
+
 
                 current_price:
                     currentPrice,
 
+
                 model:
-                    MODEL,
+                    "local-technical-engine",
+
 
                 reasoning_effort:
-                    REASONING_EFFORT,
+                    "deterministic",
+
 
                 analysis,
 
+
                 guardrail_note:
-                    guarded.note,
+
+                    cacheHit
+
+                    ?
+
+                    "Free-plan mode: reused cached market data, so this refresh used 0 new Twelve Data credits."
+
+                    :
+
+                    "Free-plan mode: 1 Twelve Data request used. M15 and H1 were built locally from M5 data.",
+
 
                 chart:
-                    m5Raw
-                    .slice(-60),
+                    m5Raw.slice(
+                        -60
+                    ),
+
+
+                data_mode:
+
+                    "1-credit M5 + local M15/H1 aggregation",
+
+
+                cache_hit:
+                    cacheHit,
+
 
                 timestamp:
+
                     new Date()
                     .toISOString()
 
@@ -1270,6 +1802,7 @@ export default async function handler(
         );
 
     }
+
 
     catch (error) {
 
@@ -1286,8 +1819,11 @@ export default async function handler(
                 success:
                     false,
 
+
                 error:
-                    error.message ||
+
+                    error?.message ||
+
                     "Unknown server error."
 
             }
