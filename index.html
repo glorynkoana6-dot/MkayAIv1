@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 
 <meta
   name="viewport"
   content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-/>
+>
 
 <meta name="theme-color" content="#05070b">
 
@@ -17,23 +19,20 @@
 :root{
   --bg:#05070b;
   --panel:#0e131b;
-  --panel2:#131a24;
-  --panel3:#090d13;
+  --panel2:#111823;
   --border:rgba(255,255,255,.08);
 
-  --text:#f4f7fb;
-  --muted:#8590a0;
+  --text:#f5f7fb;
+  --muted:#8490a1;
 
-  --blue:#6b8cff;
-  --blue2:#9db5ff;
+  --blue:#718cff;
+  --blue2:#9ab2ff;
 
-  --green:#39e39b;
-  --red:#ff6477;
-  --gold:#f5c75c;
-  --purple:#b38cff;
+  --green:#40e5a2;
+  --red:#ff6578;
+  --gold:#f5c95f;
 
-  --shadow:
-    0 18px 60px rgba(0,0,0,.38);
+  --shadow:0 20px 60px rgba(0,0,0,.35);
 }
 
 *{
@@ -45,26 +44,25 @@ html{
 }
 
 body{
+
   margin:0;
 
   min-height:100vh;
 
-  color:var(--text);
-
   background:
     radial-gradient(
-      circle at 20% 0%,
-      rgba(92,124,255,.18),
-      transparent 32%
+      circle at 15% 0%,
+      rgba(89,112,255,.20),
+      transparent 33%
     ),
-
     radial-gradient(
       circle at 100% 10%,
-      rgba(179,140,255,.09),
+      rgba(117,80,255,.10),
       transparent 28%
     ),
-
     var(--bg);
+
+  color:var(--text);
 
   font-family:
     Inter,
@@ -76,12 +74,12 @@ body{
   padding:
     max(16px,env(safe-area-inset-top))
     14px
-    max(100px,env(safe-area-inset-bottom));
+    max(90px,env(safe-area-inset-bottom));
+
 }
 
 button,
-select,
-input{
+select{
   font:inherit;
 }
 
@@ -90,42 +88,54 @@ button{
 }
 
 .app{
-  width:100%;
-  max-width:1180px;
+  max-width:1150px;
   margin:auto;
 }
 
-
-/* =========================================
-   TOP BAR
-========================================= */
+/* ==============================
+   HEADER
+============================== */
 
 .topbar{
+
   display:flex;
+
   justify-content:space-between;
+
   align-items:center;
 
   gap:12px;
 
   margin-bottom:16px;
+
 }
 
 .brand{
+
   display:flex;
-  gap:11px;
+
   align-items:center;
+
+  gap:12px;
+
 }
 
 .logo{
-  width:44px;
-  height:44px;
 
-  border-radius:14px;
+  width:48px;
+  height:48px;
+
+  border-radius:15px;
 
   display:grid;
+
   place-items:center;
 
+  font-size:20px;
+
   font-weight:950;
+
+  color:#071020;
 
   background:
     linear-gradient(
@@ -134,49 +144,57 @@ button{
       #637cff
     );
 
-  color:#061020;
-
   box-shadow:
-    0 10px 34px
-    rgba(98,124,255,.35);
+    0 12px 32px
+    rgba(93,120,255,.35);
+
 }
 
 .brand h1{
+
   margin:0;
 
-  font-size:17px;
+  font-size:18px;
 
-  letter-spacing:-.4px;
+  line-height:1.15;
+
 }
 
 .brand p{
-  margin:3px 0 0;
+
+  margin:5px 0 0;
+
+  color:var(--muted);
 
   font-size:10px;
 
-  color:var(--muted);
 }
 
 .status{
+
   display:flex;
+
   align-items:center;
 
   gap:7px;
 
-  font-size:10px;
-
-  padding:8px 10px;
+  padding:9px 11px;
 
   border-radius:999px;
+
+  border:
+    1px solid
+    var(--border);
 
   background:
     rgba(255,255,255,.035);
 
-  border:
-    1px solid var(--border);
+  font-size:9px;
+
 }
 
 .dot{
+
   width:7px;
   height:7px;
 
@@ -185,114 +203,143 @@ button{
   background:var(--green);
 
   box-shadow:
-    0 0 14px var(--green);
+    0 0 14px
+    var(--green);
+
 }
 
 .dot.loading{
+
   background:var(--gold);
 
   box-shadow:
-    0 0 14px var(--gold);
+    0 0 14px
+    var(--gold);
+
 }
 
 .dot.error{
+
   background:var(--red);
 
   box-shadow:
-    0 0 14px var(--red);
+    0 0 14px
+    var(--red);
+
 }
 
+/* ==============================
+   AI BANNER
+============================== */
 
-/* =========================================
-   EXTREME AI BANNER
-========================================= */
+.ai-banner{
 
-.extreme-banner{
-  margin-bottom:14px;
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:12px;
+
+  margin-bottom:15px;
+
+  padding:15px;
+
+  border-radius:20px;
 
   border:
-    1px solid rgba(126,153,255,.2);
+    1px solid
+    rgba(112,137,255,.24);
 
   background:
     linear-gradient(
       135deg,
-      rgba(89,110,255,.13),
-      rgba(179,140,255,.08)
+      rgba(92,113,255,.14),
+      rgba(113,70,255,.08)
     );
 
-  border-radius:18px;
+}
 
-  padding:13px 14px;
+.ai-left{
 
   display:flex;
-
-  justify-content:space-between;
 
   align-items:center;
 
   gap:12px;
-}
 
-.extreme-left{
-  display:flex;
-  align-items:center;
-  gap:10px;
 }
 
 .ai-orb{
-  width:34px;
-  height:34px;
+
+  width:39px;
+  height:39px;
 
   border-radius:50%;
 
   background:
     radial-gradient(
       circle,
-      #dbe3ff,
-      #657dff 40%,
-      #362e86 72%
+      white,
+      #9aaeff 25%,
+      #6179ff 50%,
+      #252776 80%
     );
 
   box-shadow:
-    0 0 24px
-    rgba(108,132,255,.45);
+    0 0 30px
+    rgba(109,132,255,.68);
+
 }
 
-.extreme-banner strong{
+.ai-banner strong{
+
   display:block;
+
   font-size:12px;
+
 }
 
-.extreme-banner small{
+.ai-banner small{
+
+  display:block;
+
+  margin-top:4px;
+
   color:var(--muted);
+
   font-size:9px;
+
 }
 
-.mode-badge{
-  color:#cfd8ff;
+.mode{
+
+  padding:7px 10px;
+
+  border-radius:999px;
+
+  color:#d2d9ff;
+
+  background:
+    rgba(140,160,255,.08);
+
+  border:
+    1px solid
+    rgba(160,180,255,.22);
 
   font-size:9px;
 
   font-weight:900;
 
-  padding:7px 9px;
-
-  border-radius:999px;
-
-  border:
-    1px solid
-    rgba(157,181,255,.22);
-
-  background:
-    rgba(157,181,255,.07);
 }
 
-
-/* =========================================
+/* ==============================
    CONTROLS
-========================================= */
+============================== */
 
 .controls{
+
   display:grid;
 
   grid-template-columns:
@@ -301,151 +348,147 @@ button{
 
   gap:9px;
 
-  margin-bottom:14px;
+  margin-bottom:13px;
+
 }
 
-select,
-input{
-  min-height:46px;
+select{
 
-  border:
-    1px solid var(--border);
+  width:100%;
 
-  border-radius:14px;
+  min-height:48px;
 
-  background:var(--panel);
-
-  color:var(--text);
-
-  outline:none;
-
-  padding:0 13px;
-}
-
-.main-btn{
-  border:0;
-
-  min-height:46px;
-
-  border-radius:14px;
-
-  padding:0 16px;
+  padding:0 14px;
 
   color:white;
 
-  font-weight:900;
+  background:#0b1017;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:14px;
+
+  outline:none;
+
+}
+
+.primary{
+
+  min-height:48px;
+
+  padding:0 18px;
+
+  border:0;
+
+  border-radius:14px;
+
+  color:white;
+
+  font-weight:950;
 
   background:
     linear-gradient(
       135deg,
-      #799cff,
-      #635dff
+      #7b9cff,
+      #655cff
     );
 
   box-shadow:
-    0 9px 28px
-    rgba(100,120,255,.25);
+    0 10px 30px
+    rgba(99,116,255,.25);
+
 }
 
-.main-btn:disabled{
+.primary:disabled{
+
   opacity:.5;
+
 }
 
-.secondary-btn{
-  width:100%;
-
-  border:
-    1px solid var(--border);
-
-  background:
-    rgba(255,255,255,.035);
-
-  color:var(--text);
-
-  padding:11px;
-
-  border-radius:13px;
-
-  font-weight:800;
-}
-
-
-/* =========================================
+/* ==============================
    ERROR
-========================================= */
+============================== */
 
 .error-box{
+
   display:none;
 
-  margin-bottom:12px;
+  margin-bottom:13px;
 
-  padding:11px 13px;
+  padding:13px;
 
-  color:#ff9aa7;
+  border-radius:14px;
+
+  color:#ff9eaa;
 
   background:
     rgba(255,100,119,.07);
 
   border:
     1px solid
-    rgba(255,100,119,.25);
-
-  border-radius:13px;
+    rgba(255,100,119,.28);
 
   font-size:11px;
 
   line-height:1.5;
+
 }
 
-
-/* =========================================
+/* ==============================
    HERO
-========================================= */
+============================== */
 
 .hero{
+
   position:relative;
 
   overflow:hidden;
 
-  border-radius:23px;
-
-  padding:19px;
+  padding:20px;
 
   margin-bottom:14px;
+
+  border-radius:23px;
+
+  border:
+    1px solid
+    var(--border);
 
   background:
     linear-gradient(
       145deg,
-      rgba(20,27,38,.98),
-      rgba(8,12,18,.97)
+      rgba(17,24,34,.99),
+      rgba(7,11,17,.98)
     );
 
-  border:
-    1px solid var(--border);
+  box-shadow:
+    var(--shadow);
 
-  box-shadow:var(--shadow);
 }
 
 .hero::after{
+
   content:"";
 
   position:absolute;
 
-  width:260px;
-  height:260px;
+  width:270px;
+  height:270px;
 
-  right:-90px;
-  bottom:-130px;
+  right:-110px;
+  bottom:-145px;
 
   border-radius:50%;
 
   background:
-    rgba(92,123,255,.11);
+    rgba(83,106,255,.12);
 
-  filter:blur(5px);
 }
 
 .hero-top{
+
   position:relative;
 
   z-index:2;
@@ -457,9 +500,11 @@ input{
   align-items:flex-start;
 
   gap:15px;
+
 }
 
 .symbol{
+
   color:var(--muted);
 
   font-size:11px;
@@ -467,42 +512,46 @@ input{
   font-weight:900;
 
   letter-spacing:.9px;
+
 }
 
 .price{
-  margin:
-    5px 0 3px;
+
+  margin:6px 0 4px;
 
   font-size:
     clamp(
-      34px,
-      8vw,
-      57px
+      36px,
+      9vw,
+      60px
     );
 
   font-weight:950;
 
   letter-spacing:-2px;
+
 }
 
 .change{
+
   color:var(--muted);
 
   font-size:11px;
 
   font-weight:800;
+
 }
 
 .signal{
-  min-width:92px;
 
-  height:40px;
-
-  border-radius:12px;
+  min-width:95px;
+  height:42px;
 
   display:grid;
 
   place-items:center;
+
+  border-radius:13px;
 
   font-size:14px;
 
@@ -513,45 +562,59 @@ input{
   border:
     1px solid
     rgba(255,255,255,.08);
+
 }
 
 .signal.BUY{
+
   color:var(--green);
 
   background:
-    rgba(57,227,155,.09);
+    rgba(64,229,162,.09);
+
 }
 
 .signal.SELL{
+
   color:var(--red);
 
   background:
-    rgba(255,100,119,.09);
+    rgba(255,101,120,.09);
+
 }
 
 .signal.WAIT{
+
   color:var(--gold);
 
   background:
-    rgba(245,199,92,.09);
+    rgba(245,201,95,.09);
+
 }
 
+/* ==============================
+   CHART
+============================== */
+
 #sparkline{
-  width:100%;
-
-  height:96px;
-
-  margin-top:14px;
 
   position:relative;
 
   z-index:2;
+
+  width:100%;
+
+  height:100px;
+
+  margin-top:14px;
+
 }
 
 #sparkPoints{
+
   fill:none;
 
-  stroke:#8eaaff;
+  stroke:#8da8ff;
 
   stroke-width:3;
 
@@ -562,16 +625,17 @@ input{
   filter:
     drop-shadow(
       0 0 8px
-      rgba(120,150,255,.35)
+      rgba(120,145,255,.38)
     );
+
 }
 
+/* ==============================
+   HEALTH
+============================== */
 
-/* =========================================
-   MARKET HEALTH ROW
-========================================= */
+.health{
 
-.market-health{
   position:relative;
 
   z-index:2;
@@ -581,95 +645,112 @@ input{
   grid-template-columns:
     repeat(4,1fr);
 
-  gap:7px;
+  gap:8px;
 
   margin-top:11px;
+
 }
 
-.health-item{
+.health-box{
+
+  padding:10px;
+
+  border-radius:12px;
+
   background:
-    rgba(255,255,255,.035);
+    rgba(255,255,255,.03);
 
   border:
-    1px solid var(--border);
+    1px solid
+    var(--border);
 
-  border-radius:11px;
-
-  padding:8px 9px;
 }
 
-.health-item small{
+.health-box small{
+
   display:block;
 
-  font-size:8px;
+  margin-bottom:5px;
 
   color:var(--muted);
 
+  font-size:8px;
+
   text-transform:uppercase;
 
-  margin-bottom:4px;
 }
 
-.health-item strong{
+.health-box strong{
+
   font-size:11px;
+
 }
 
-
-/* =========================================
+/* ==============================
    GRID
-========================================= */
+============================== */
 
 .grid{
+
   display:grid;
 
   grid-template-columns:
     1.3fr .9fr;
 
   gap:14px;
+
 }
 
 .stack{
+
   display:grid;
 
   gap:14px;
 
   align-content:start;
+
 }
 
 .card{
+
   padding:16px;
 
   border-radius:18px;
 
   border:
-    1px solid var(--border);
+    1px solid
+    var(--border);
 
   background:
-    rgba(14,19,27,.94);
+    rgba(14,19,27,.96);
 
-  box-shadow:var(--shadow);
+  box-shadow:
+    var(--shadow);
+
 }
 
 .card-title{
+
+  margin-bottom:12px;
+
   color:var(--muted);
 
   font-size:10px;
 
-  font-weight:900;
+  font-weight:950;
+
+  letter-spacing:1.1px;
 
   text-transform:uppercase;
 
-  letter-spacing:1px;
-
-  margin-bottom:12px;
 }
 
-
-/* =========================================
-   EXTREME DECISION
-========================================= */
+/* ==============================
+   DECISION
+============================== */
 
 .decision{
+
   display:grid;
 
   grid-template-columns:
@@ -677,34 +758,37 @@ input{
 
   align-items:center;
 
-  gap:16px;
+  gap:15px;
+
 }
 
 .confidence{
+
   --p:0;
 
   width:94px;
   height:94px;
 
-  border-radius:50%;
+  position:relative;
 
   display:grid;
 
   place-items:center;
 
-  position:relative;
+  border-radius:50%;
 
   background:
     conic-gradient(
       var(--blue)
-      calc(var(--p)*1%),
-
+      calc(var(--p) * 1%),
       rgba(255,255,255,.07)
       0
     );
+
 }
 
 .confidence::before{
+
   content:"";
 
   position:absolute;
@@ -715,50 +799,56 @@ input{
   border-radius:50%;
 
   background:#101620;
+
 }
 
 .confidence span{
+
   position:relative;
 
   font-size:20px;
 
   font-weight:950;
+
 }
 
 .summary{
-  color:#dfe5ef;
 
-  font-size:14px;
+  color:#e1e6ef;
+
+  font-size:13px;
 
   line-height:1.55;
+
 }
 
 .grade{
-  margin-top:7px;
 
   display:inline-block;
 
-  padding:
-    5px 8px;
+  margin-top:8px;
+
+  padding:5px 8px;
 
   border-radius:8px;
+
+  color:#d1d9e7;
 
   background:
     rgba(255,255,255,.045);
 
-  color:#cbd4e2;
-
   font-size:9px;
 
   font-weight:900;
+
 }
 
-
-/* =========================================
+/* ==============================
    LEVELS
-========================================= */
+============================== */
 
 .levels{
+
   display:grid;
 
   grid-template-columns:
@@ -767,82 +857,124 @@ input{
   gap:7px;
 
   margin-top:15px;
+
 }
 
 .level{
-  padding:
-    11px 9px;
+
+  padding:11px 9px;
 
   border-radius:12px;
 
-  background:var(--panel3);
+  background:#090d13;
 
   border:
-    1px solid var(--border);
+    1px solid
+    var(--border);
+
 }
 
 .level small{
+
   display:block;
+
+  margin-bottom:5px;
 
   color:var(--muted);
 
   font-size:8px;
 
-  margin-bottom:5px;
-
   text-transform:uppercase;
+
 }
 
 .level strong{
+
   font-size:13px;
+
 }
 
+/* ==============================
+   SECONDARY BUTTON
+============================== */
 
-/* =========================================
+.secondary{
+
+  width:100%;
+
+  margin-top:11px;
+
+  padding:11px;
+
+  color:white;
+
+  background:
+    rgba(255,255,255,.035);
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:13px;
+
+  font-weight:850;
+
+}
+
+/* ==============================
    TIMEFRAMES
-========================================= */
+============================== */
 
 .tf-row{
+
   display:grid;
 
   grid-template-columns:
     48px 1fr auto;
 
-  gap:9px;
-
   align-items:center;
+
+  gap:9px;
 
   padding:9px 0;
 
   border-bottom:
     1px solid
     rgba(255,255,255,.05);
+
 }
 
 .tf-row:last-child{
+
   border-bottom:0;
+
 }
 
 .tf-name{
+
+  color:var(--muted);
+
   font-size:10px;
 
   font-weight:900;
 
-  color:var(--muted);
 }
 
 .bar{
-  height:6px;
 
-  border-radius:999px;
+  height:6px;
 
   overflow:hidden;
 
+  border-radius:999px;
+
   background:
-    rgba(255,255,255,.055);
+    rgba(255,255,255,.06);
+
 }
 
 .bar span{
+
   display:block;
 
   height:100%;
@@ -855,71 +987,76 @@ input{
   background:
     linear-gradient(
       90deg,
-      #627cff,
-      #9ab4ff
+      #6179ff,
+      #9bb5ff
     );
+
 }
 
 .bias{
+
   font-size:10px;
 
   font-weight:900;
+
 }
 
-
-/* =========================================
-   KV ROWS
-========================================= */
+/* ==============================
+   KEY VALUE
+============================== */
 
 .kv{
+
   display:grid;
 
   grid-template-columns:
     1fr auto;
 
-  gap:9px;
+  gap:10px;
 
   padding:8px 0;
-
-  font-size:11px;
 
   border-bottom:
     1px solid
     rgba(255,255,255,.05);
+
+  font-size:11px;
+
 }
 
 .kv:last-child{
+
   border-bottom:0;
+
 }
 
 .kv span{
+
   color:var(--muted);
+
 }
 
-
-/* =========================================
+/* ==============================
    CHIPS
-========================================= */
+============================== */
 
 .chips{
+
   display:flex;
 
   flex-wrap:wrap;
 
   gap:7px;
+
 }
 
 .chip{
-  padding:
-    7px 9px;
+
+  padding:7px 9px;
 
   border-radius:999px;
 
-  font-size:9px;
-
-  line-height:1.4;
-
-  color:#d0d9e7;
+  color:#d0d8e5;
 
   background:
     rgba(255,255,255,.045);
@@ -927,65 +1064,67 @@ input{
   border:
     1px solid
     rgba(255,255,255,.06);
+
+  font-size:9px;
+
+  line-height:1.4;
+
 }
 
-.risk{
-  border-color:
-    rgba(255,100,119,.18);
+.chip.risk{
 
   background:
     rgba(255,100,119,.055);
+
+  border-color:
+    rgba(255,100,119,.18);
+
 }
 
-
-/* =========================================
-   CONFLUENCE SCORE
-========================================= */
-
-.confluence-box{
-  display:grid;
-
-  grid-template-columns:
-    1fr auto;
-
-  align-items:center;
-
-  gap:15px;
-}
+/* ==============================
+   CONFLUENCE
+============================== */
 
 .confluence-number{
+
   font-size:30px;
 
   font-weight:950;
+
 }
 
-.confluence-label{
+.confluence-text{
+
+  margin-top:4px;
+
   color:var(--muted);
 
   font-size:9px;
 
-  margin-top:3px;
 }
 
 .confluence-bar{
+
   height:9px;
 
-  border-radius:999px;
+  margin-top:12px;
 
   overflow:hidden;
+
+  border-radius:999px;
 
   background:
     rgba(255,255,255,.06);
 
-  margin-top:11px;
 }
 
 .confluence-bar span{
+
   display:block;
 
-  height:100%;
-
   width:0%;
+
+  height:100%;
 
   transition:
     width .5s ease;
@@ -993,61 +1132,35 @@ input{
   background:
     linear-gradient(
       90deg,
-      #655fff,
-      #55b7ff,
-      #44dda1
+      #635fff,
+      #55b6ff,
+      #42dda1
     );
+
 }
 
-
-/* =========================================
-   SETTINGS
-========================================= */
-
-.settings-grid{
-  display:grid;
-
-  grid-template-columns:
-    repeat(2,1fr);
-
-  gap:9px;
-}
-
-.field label{
-  display:block;
-
-  margin-bottom:5px;
-
-  color:var(--muted);
-
-  font-size:9px;
-}
-
-.field select,
-.field input{
-  width:100%;
-}
-
-
-/* =========================================
-   SIGNAL HISTORY
-========================================= */
+/* ==============================
+   HISTORY
+============================== */
 
 .history{
+
   display:grid;
 
   gap:7px;
+
 }
 
 .history-row{
+
   display:grid;
 
   grid-template-columns:
-    56px 1fr auto;
-
-  gap:8px;
+    55px 1fr auto;
 
   align-items:center;
+
+  gap:8px;
 
   padding:9px 10px;
 
@@ -1061,63 +1174,103 @@ input{
     rgba(255,255,255,.05);
 
   font-size:10px;
+
 }
 
 .history-row small{
+
   color:var(--muted);
+
 }
 
-.mini-signal{
+.mini{
+
   font-weight:950;
+
 }
 
-.mini-signal.BUY{
+.mini.BUY{
   color:var(--green);
 }
 
-.mini-signal.SELL{
+.mini.SELL{
   color:var(--red);
 }
 
-.mini-signal.WAIT{
+.mini.WAIT{
   color:var(--gold);
 }
 
+/* ==============================
+   SETTINGS
+============================== */
 
-/* =========================================
-   META
-========================================= */
+.settings-grid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(2,1fr);
+
+  gap:9px;
+
+}
+
+.field label{
+
+  display:block;
+
+  margin-bottom:5px;
+
+  color:var(--muted);
+
+  font-size:9px;
+
+}
+
+.field select{
+
+  width:100%;
+
+}
+
+/* ==============================
+   FOOTER
+============================== */
 
 .meta{
+
   display:flex;
 
   justify-content:space-between;
 
-  gap:10px;
+  gap:8px;
+
+  margin-top:14px;
 
   color:var(--muted);
 
   font-size:9px;
 
-  margin-top:14px;
 }
 
-.foot{
+.footer{
+
   margin-top:15px;
 
   text-align:center;
 
-  color:#66717f;
+  color:#657080;
 
   font-size:9px;
 
   line-height:1.5;
+
 }
 
-
-/* =========================================
-   RESPONSIVE
-========================================= */
+/* ==============================
+   MOBILE
+============================== */
 
 @media(max-width:760px){
 
@@ -1130,14 +1283,14 @@ input{
       repeat(2,1fr);
   }
 
-  .market-health{
+  .health{
     grid-template-columns:
       repeat(2,1fr);
   }
 
   .decision{
     grid-template-columns:
-      82px 1fr;
+      80px 1fr;
   }
 
   .confidence{
@@ -1155,22 +1308,22 @@ input{
   }
 
   .status{
-    font-size:8px;
+    max-width:145px;
   }
 
 }
 
 </style>
+
 </head>
+
 
 <body>
 
 <main class="app">
 
 
-<!-- ===================================
-     HEADER
-=================================== -->
+<!-- HEADER -->
 
 <div class="topbar">
 
@@ -1211,13 +1364,11 @@ input{
 </div>
 
 
-<!-- ===================================
-     EXTREME AI MODE
-=================================== -->
+<!-- AI ENGINE -->
 
-<div class="extreme-banner">
+<div class="ai-banner">
 
-  <div class="extreme-left">
+  <div class="ai-left">
 
     <div class="ai-orb"></div>
 
@@ -1227,7 +1378,7 @@ input{
         Extreme AI Engine
       </strong>
 
-      <small>
+      <small id="engineSubtitle">
         Multi-timeframe decision system
       </small>
 
@@ -1235,17 +1386,15 @@ input{
 
   </div>
 
-  <div class="mode-badge">
+
+  <div class="mode">
     EXTREME MODE
   </div>
 
 </div>
 
 
-
-<!-- ===================================
-     SYMBOL CONTROLS
-=================================== -->
+<!-- CONTROLS -->
 
 <div class="controls">
 
@@ -1280,7 +1429,7 @@ input{
 
   <button
     id="analyzeBtn"
-    class="main-btn">
+    class="primary">
 
     EXTREME ANALYZE
 
@@ -1295,10 +1444,7 @@ input{
 </div>
 
 
-
-<!-- ===================================
-     PRICE HERO
-=================================== -->
+<!-- HERO -->
 
 <section class="hero">
 
@@ -1307,26 +1453,24 @@ input{
     <div>
 
       <div
-        class="symbol"
-        id="heroSymbol">
+        id="heroSymbol"
+        class="symbol">
 
         XAU/USD
 
       </div>
 
-
       <div
-        class="price"
-        id="price">
+        id="price"
+        class="price">
 
         —
 
       </div>
 
-
       <div
-        class="change"
-        id="change">
+        id="change"
+        class="change">
 
         Waiting for live data...
 
@@ -1359,9 +1503,9 @@ input{
   </svg>
 
 
-  <div class="market-health">
+  <div class="health">
 
-    <div class="health-item">
+    <div class="health-box">
 
       <small>
         Setup Grade
@@ -1374,7 +1518,7 @@ input{
     </div>
 
 
-    <div class="health-item">
+    <div class="health-box">
 
       <small>
         AI Confluence
@@ -1387,7 +1531,7 @@ input{
     </div>
 
 
-    <div class="health-item">
+    <div class="health-box">
 
       <small>
         Data
@@ -1400,7 +1544,7 @@ input{
     </div>
 
 
-    <div class="health-item">
+    <div class="health-box">
 
       <small>
         Scan
@@ -1417,15 +1561,15 @@ input{
 </section>
 
 
+<!-- MAIN -->
 
 <section class="grid">
 
+
+<!-- LEFT -->
+
 <div class="stack">
 
-
-<!-- ===================================
-     AI DECISION
-=================================== -->
 
 <div class="card">
 
@@ -1453,7 +1597,7 @@ input{
         id="summary"
         class="summary">
 
-        Waiting for AI analysis.
+        Waiting for analysis.
 
       </div>
 
@@ -1527,8 +1671,7 @@ input{
 
 
   <button
-    class="secondary-btn"
-    style="margin-top:11px"
+    class="secondary"
     onclick="copyTradePlan()">
 
     Copy Trade Plan
@@ -1538,10 +1681,7 @@ input{
 </div>
 
 
-
-<!-- ===================================
-     AI CONFLUENCE
-=================================== -->
+<!-- CONFLUENCE -->
 
 <div class="card">
 
@@ -1549,31 +1689,42 @@ input{
     AI Confluence Engine
   </div>
 
-  <div class="confluence-box">
 
-    <div>
+  <div class="kv">
 
-      <div
-        id="confluenceNumber"
-        class="confluence-number">
+    <span>
+      Score
+    </span>
 
-        0%
+    <strong
+      id="confluenceNumber"
+      class="confluence-number">
 
-      </div>
+      0%
 
-      <div
-        id="confluenceText"
-        class="confluence-label">
+    </strong>
 
-        Waiting for analysis
+  </div>
 
-      </div>
 
-    </div>
+  <div class="kv">
 
-    <div id="alignmentLabel">
+    <span>
+      Alignment
+    </span>
+
+    <strong id="alignmentLabel">
       —
-    </div>
+    </strong>
+
+  </div>
+
+
+  <div
+    id="confluenceText"
+    class="confluence-text">
+
+    Waiting for analysis
 
   </div>
 
@@ -1588,23 +1739,21 @@ input{
 </div>
 
 
-
-<!-- ===================================
-     REASONS
-=================================== -->
+<!-- REASONS -->
 
 <div class="card">
 
   <div class="card-title">
-    Why Extreme AI Chose This
+    Why The Engine Chose This
   </div>
+
 
   <div
     id="reasons"
     class="chips">
 
     <span class="chip">
-      Waiting for market analysis
+      Waiting for analysis
     </span>
 
   </div>
@@ -1612,15 +1761,12 @@ input{
 </div>
 
 
-
-<!-- ===================================
-     RISK
-=================================== -->
+<!-- RISKS -->
 
 <div class="card">
 
   <div class="card-title">
-    Extreme Risk Engine
+    Risk Engine
   </div>
 
 
@@ -1629,7 +1775,7 @@ input{
     class="chips">
 
     <span class="chip risk">
-      Risk engine waiting
+      Waiting for risk analysis
     </span>
 
   </div>
@@ -1640,7 +1786,7 @@ input{
     style="margin-top:10px">
 
     <span>
-      Setup invalidation
+      Invalidation
     </span>
 
     <strong id="invalidation">
@@ -1649,19 +1795,30 @@ input{
 
   </div>
 
+
+  <div class="kv">
+
+    <span>
+      Next Trigger
+    </span>
+
+    <strong id="nextTrigger">
+      —
+    </strong>
+
+  </div>
+
 </div>
 
 
-
-<!-- ===================================
-     HISTORY
-=================================== -->
+<!-- HISTORY -->
 
 <div class="card">
 
   <div class="card-title">
-    Recent AI Signals
+    Recent Signals
   </div>
+
 
   <div
     id="history"
@@ -1672,7 +1829,7 @@ input{
       <small>—</small>
 
       <span>
-        No signals recorded yet
+        No signals yet
       </span>
 
       <span>—</span>
@@ -1683,16 +1840,16 @@ input{
 
 </div>
 
+
 </div>
 
 
+<!-- RIGHT -->
 
 <div class="stack">
 
 
-<!-- ===================================
-     TIMEFRAMES
-=================================== -->
+<!-- TIMEFRAMES -->
 
 <div class="card">
 
@@ -1708,10 +1865,12 @@ input{
     </div>
 
     <div class="bar">
+
       <span
         id="m5Bar"
         style="width:50%">
       </span>
+
     </div>
 
     <div
@@ -1732,10 +1891,12 @@ input{
     </div>
 
     <div class="bar">
+
       <span
         id="m15Bar"
         style="width:50%">
       </span>
+
     </div>
 
     <div
@@ -1756,10 +1917,12 @@ input{
     </div>
 
     <div class="bar">
+
       <span
         id="h1Bar"
         style="width:50%">
       </span>
+
     </div>
 
     <div
@@ -1775,10 +1938,7 @@ input{
 </div>
 
 
-
-<!-- ===================================
-     MARKET READ
-=================================== -->
+<!-- MARKET -->
 
 <div class="card">
 
@@ -1790,7 +1950,7 @@ input{
   <div class="kv">
 
     <span>
-      Market regime
+      Market Regime
     </span>
 
     <strong id="regime">
@@ -1838,42 +1998,124 @@ input{
 
   </div>
 
+
+  <div class="kv">
+
+    <span>
+      Liquidity
+    </span>
+
+    <strong id="liquidity">
+      —
+    </strong>
+
+  </div>
+
 </div>
 
 
-
-<!-- ===================================
-     NEWS
-=================================== -->
+<!-- NEWS -->
 
 <div class="card">
 
   <div class="card-title">
-    AI News / Macro Intelligence
+    Macro / News Intelligence
   </div>
+
+
+  <div class="kv">
+
+    <span>
+      Macro Bias
+    </span>
+
+    <strong id="macroBias">
+      —
+    </strong>
+
+  </div>
+
 
   <div
     id="newsSummary"
     class="summary"
-    style="font-size:12px">
+    style="margin-top:10px;font-size:11px">
 
-    Waiting for news intelligence.
+    Waiting for macro analysis.
 
   </div>
 
 </div>
 
 
-
-<!-- ===================================
-     SETTINGS
-=================================== -->
+<!-- ENGINE -->
 
 <div class="card">
 
   <div class="card-title">
-    AI Controls
+    Engine Status
   </div>
+
+
+  <div class="kv">
+
+    <span>
+      AI / Engine
+    </span>
+
+    <strong id="modelName">
+      —
+    </strong>
+
+  </div>
+
+
+  <div class="kv">
+
+    <span>
+      Data Mode
+    </span>
+
+    <strong id="dataMode">
+      —
+    </strong>
+
+  </div>
+
+
+  <div class="kv">
+
+    <span>
+      Market Cache
+    </span>
+
+    <strong id="cacheStatus">
+      —
+    </strong>
+
+  </div>
+
+
+  <div
+    id="guardrail"
+    class="summary"
+    style="font-size:10px;margin-top:10px">
+
+    Waiting for engine.
+
+  </div>
+
+</div>
+
+
+<!-- SETTINGS -->
+
+<div class="card">
+
+  <div class="card-title">
+    Controls
+  </div>
+
 
   <div class="settings-grid">
 
@@ -1887,15 +2129,15 @@ input{
       <select id="refreshSetting">
 
         <option value="60">
-          Every 60 seconds
+          60 seconds
         </option>
 
         <option value="120">
-          Every 2 minutes
+          2 minutes
         </option>
 
         <option value="300">
-          Every 5 minutes
+          5 minutes
         </option>
 
         <option value="0">
@@ -1910,7 +2152,7 @@ input{
     <div class="field">
 
       <label>
-        Minimum Alert Confidence
+        Alert Confidence
       </label>
 
       <select id="confidenceSetting">
@@ -1923,8 +2165,12 @@ input{
           70%
         </option>
 
-        <option value="75" selected>
+        <option
+          value="75"
+          selected>
+
           75%
+
         </option>
 
         <option value="80">
@@ -1947,8 +2193,7 @@ input{
 
 
   <button
-    class="secondary-btn"
-    style="margin-top:10px"
+    class="secondary"
     onclick="enableNotifications()">
 
     Enable BUY / SELL Alerts
@@ -1957,10 +2202,10 @@ input{
 
 </div>
 
+
 </div>
 
 </section>
-
 
 
 <div class="meta">
@@ -1970,17 +2215,17 @@ input{
   </span>
 
   <span id="countdown">
-    Next AI scan: —
+    Next scan: —
   </span>
 
 </div>
 
 
-<div class="foot">
+<div class="footer">
 
-  MKAYFX Extreme AI provides probabilistic
-  market analysis, not guaranteed trades.
-  Paper-test the system before risking money.
+  MKAYFX market analysis is probabilistic.
+  Signals can be wrong. Paper-test before
+  risking real money.
 
 </div>
 
@@ -1988,46 +2233,62 @@ input{
 </main>
 
 
-
 <script>
 
-/* =========================================
-   MKAYFX EXTREME AI FRONTEND ENGINE
-========================================= */
+/* ======================================================
+   MKAYFX FRONTEND V5
+
+   IMPORTANT:
+   /api/analyze IS CALLED USING POST
+====================================================== */
+
 
 const $ =
   id =>
     document.getElementById(id);
 
 
-let busy = false;
+let busy =
+  false;
 
-let currentData = null;
 
-let previousSignal = null;
+let currentData =
+  null;
+
+
+let previousAlertKey =
+  null;
+
 
 let refreshSeconds =
   Number(
     localStorage.getItem(
       "mkayfx_refresh"
-    ) || 60
+    ) ||
+    60
   );
+
 
 let nextScan =
   refreshSeconds;
 
 
-/* =========================================
+/* ======================================================
    SETTINGS
-========================================= */
+====================================================== */
+
 
 $("refreshSetting").value =
-  String(refreshSeconds);
+  String(
+    refreshSeconds
+  );
+
 
 $("confidenceSetting").value =
   localStorage.getItem(
     "mkayfx_confidence"
-  ) || "75";
+  ) ||
+  "75";
 
 
 $("refreshSetting")
@@ -2040,10 +2301,14 @@ $("refreshSetting")
           $("refreshSetting").value
         );
 
+
       localStorage.setItem(
         "mkayfx_refresh",
-        refreshSeconds
+        String(
+          refreshSeconds
+        )
       );
+
 
       nextScan =
         refreshSeconds;
@@ -2066,365 +2331,498 @@ $("confidenceSetting")
   );
 
 
-/* =========================================
-   FORMAT PRICE
-========================================= */
-
-function fmt(value){
-
-  if(
-    value === null ||
-    value === undefined ||
-    Number.isNaN(
-      Number(value)
-    )
-  ){
-    return "—";
-  }
-
-  const n =
-    Number(value);
-
-  if(
-    Math.abs(n) >= 1000
-  ){
-    return n.toFixed(2);
-  }
-
-  if(
-    Math.abs(n) >= 10
-  ){
-    return n.toFixed(3);
-  }
-
-  return n.toFixed(5);
-}
+/* ======================================================
+   UTILITIES
+====================================================== */
 
 
-/* =========================================
-   ESCAPE HTML
-========================================= */
-
-function escapeHtml(value){
-
-  return String(value)
-    .replace(
-      /[&<>'"]/g,
-      char => ({
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        "'":"&#39;",
-        '"':"&quot;"
-      })[char]
-    );
-
-}
-
-
-/* =========================================
-   STATUS
-========================================= */
-
-function setStatus(
-  type,
-  text
+function clamp(
+  value,
+  min,
+  max
 ){
 
-  $("statusDot").className =
-    `dot ${type || ""}`;
-
-  $("statusText").textContent =
-    text;
-
-}
-
-
-/* =========================================
-   BIAS SCORE
-========================================= */
-
-function biasScore(
-  bias
-){
-
-  if(
-    bias === "BULLISH"
-  ){
-    return 88;
-  }
-
-  if(
-    bias === "BEARISH"
-  ){
-    return 88;
-  }
-
-  return 42;
-}
-
-
-/* =========================================
-   SETUP GRADE
-========================================= */
-
-function setupGrade(
-  confidence,
-  action
-){
-
-  if(
-    action === "WAIT"
-  ){
-    return {
-      grade:"WAIT",
-      text:"NO TRADE"
-    };
-  }
-
-  if(
-    confidence >= 90
-  ){
-    return {
-      grade:"A+",
-      text:"ELITE SETUP"
-    };
-  }
-
-  if(
-    confidence >= 85
-  ){
-    return {
-      grade:"A",
-      text:"HIGH QUALITY"
-    };
-  }
-
-  if(
-    confidence >= 78
-  ){
-    return {
-      grade:"B+",
-      text:"STRONG SETUP"
-    };
-  }
-
-  if(
-    confidence >= 70
-  ){
-    return {
-      grade:"B",
-      text:"VALID SETUP"
-    };
-  }
-
-  return {
-    grade:"C",
-    text:"LOW CONFIDENCE"
-  };
-
-}
-
-
-/* =========================================
-   CONFLUENCE ENGINE
-========================================= */
-
-function calculateConfluence(
-  analysis
-){
-
-  const tf =
-    analysis.timeframeBias || {};
-
-  const biases = [
-    tf.M5,
-    tf.M15,
-    tf.H1
-  ];
-
-  let alignment = 0;
-
-  if(
-    biases[0] ===
-    biases[1]
-  ){
-    alignment++;
-  }
-
-  if(
-    biases[1] ===
-    biases[2]
-  ){
-    alignment++;
-  }
-
-  if(
-    biases[0] ===
-    biases[2]
-  ){
-    alignment++;
-  }
-
-
-  let score =
-    Number(
-      analysis.confidence || 0
-    ) * .65;
-
-
-  score +=
-    alignment * 10;
-
-
-  if(
-    analysis.action !== "WAIT"
-  ){
-    score += 5;
-  }
-
-
-  return Math.min(
-    99,
-    Math.max(
-      0,
-      Math.round(score)
+  return Math.max(
+    min,
+    Math.min(
+      max,
+      value
     )
   );
 
 }
 
 
-/* =========================================
-   ALIGNMENT TEXT
-========================================= */
-
-function alignmentText(
-  tf
+function fmt(
+  value
 ){
 
   if(
-    tf.M5 === tf.M15 &&
-    tf.M15 === tf.H1
+    value === null ||
+    value === undefined ||
+    value === "" ||
+    !Number.isFinite(
+      Number(value)
+    )
   ){
 
-    if(
-      tf.M5 === "BULLISH"
-    ){
-      return "FULL BULLISH";
-    }
+    return "—";
 
-    if(
-      tf.M5 === "BEARISH"
-    ){
-      return "FULL BEARISH";
-    }
+  }
+
+
+  const n =
+    Number(value);
+
+
+  if(
+    Math.abs(n) >=
+    1000
+  ){
+
+    return n.toFixed(2);
 
   }
 
 
   if(
-    tf.M15 === tf.H1
+    Math.abs(n) >=
+    10
   ){
-    return "HTF ALIGNED";
+
+    return n.toFixed(3);
+
   }
 
 
-  return "MIXED";
+  return n.toFixed(5);
 
 }
 
 
-/* =========================================
-   CHART
-========================================= */
-
-function drawChart(
-  values
+function escapeHtml(
+  value
 ){
 
-  if(
-    !Array.isArray(values) ||
-    values.length < 2
-  ){
-    return;
-  }
+  return String(
+    value ?? ""
+  )
+  .replace(
+    /[&<>'"]/g,
+    char => ({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      "'":"&#39;",
+      '"':"&quot;"
+    })[char]
+  );
+
+}
 
 
-  const numbers =
-    values.map(
-      item =>
-        typeof item === "object"
-          ? Number(
-              item.c ??
-              item.close
-            )
-          : Number(item)
+function setStatus(
+  type,
+  text
+){
+
+  $("statusDot")
+    .className =
+      `dot ${type || ""}`;
+
+
+  $("statusText")
+    .textContent =
+      text;
+
+}
+
+
+/* ======================================================
+   BACKEND NORMALIZER
+
+   SUPPORTS:
+
+   NEW FORMAT:
+   action
+   stopLoss
+   takeProfit1
+   timeframeBias
+
+   OLD FORMAT:
+   decision
+   stop_loss
+   take_profit_1
+   timeframes
+====================================================== */
+
+
+function normalizeResponse(
+  raw
+){
+
+  const source =
+    raw.analysis ||
+    {};
+
+
+  const action =
+    source.action ||
+    source.decision ||
+    "WAIT";
+
+
+  const tf =
+    source.timeframeBias ||
+    {
+
+      M5:
+        source.timeframes?.m5?.bias ||
+        "NEUTRAL",
+
+      M15:
+        source.timeframes?.m15?.bias ||
+        "NEUTRAL",
+
+      H1:
+        source.timeframes?.h1?.bias ||
+        "NEUTRAL"
+
+    };
+
+
+  return {
+
+    success:
+      raw.success !==
+      false,
+
+    symbol:
+      raw.symbol ||
+      $("symbolSelect").value,
+
+    price:
+      raw.price ??
+      raw.current_price ??
+      null,
+
+    timestamp:
+      raw.timestamp ||
+      new Date()
+        .toISOString(),
+
+    model:
+      raw.model ||
+      "MKAYFX ENGINE",
+
+    dataMode:
+      raw.data_mode ||
+      "LIVE MARKET DATA",
+
+    cacheHit:
+      Boolean(
+        raw.cache_hit
+      ),
+
+    guardrail:
+      raw.guardrail_note ||
+      "",
+
+    chart:
+      Array.isArray(
+        raw.chart
+      )
+        ?
+        raw.chart
+        :
+        [],
+
+    analysis:{
+
+      action,
+
+      confidence:
+        Number(
+          source.confidence ||
+          0
+        ),
+
+      setupGrade:
+        source.setupGrade ??
+        source.setup_grade ??
+        null,
+
+      summary:
+        source.summary ||
+        "No summary returned.",
+
+      timeframeBias:
+        tf,
+
+      timeframeStrength:{
+
+        M5:
+          source.timeframes?.m5?.strength ??
+          null,
+
+        M15:
+          source.timeframes?.m15?.strength ??
+          null,
+
+        H1:
+          source.timeframes?.h1?.strength ??
+          null
+
+      },
+
+      regime:
+        source.regime ??
+        source.market_regime ??
+        "—",
+
+      structure:
+        source.structure ??
+        source.structure_summary ??
+        "—",
+
+      momentum:
+        source.momentum ??
+        source.timeframes?.m5?.bias ??
+        "—",
+
+      liquidity:
+        source.liquiditySummary ??
+        source.liquidity_summary ??
+        "—",
+
+      macroBias:
+        source.macroBias ??
+        source.macro_bias ??
+        "UNKNOWN",
+
+      newsSummary:
+        source.newsSummary ??
+        source.macro_summary ??
+        "No macro/news analysis.",
+
+      entry:
+        source.entry ??
+        null,
+
+      stopLoss:
+        source.stopLoss ??
+        source.stop_loss ??
+        null,
+
+      takeProfit1:
+        source.takeProfit1 ??
+        source.take_profit_1 ??
+        null,
+
+      takeProfit2:
+        source.takeProfit2 ??
+        source.take_profit_2 ??
+        null,
+
+      riskReward:
+        source.riskReward ??
+        source.risk_reward ??
+        "—",
+
+      invalidation:
+        source.invalidation ??
+        "—",
+
+      nextTrigger:
+        source.nextTrigger ??
+        source.next_trigger ??
+        "—",
+
+      reasons:
+        Array.isArray(
+          source.reasons
+        )
+          ?
+          source.reasons
+          :
+          [],
+
+      risks:
+        Array.isArray(
+          source.risks
+        )
+          ?
+          source.risks
+          :
+          []
+
+    }
+
+  };
+
+}
+
+
+/* ======================================================
+   CHART
+====================================================== */
+
+
+function getChartValues(
+  chart
+){
+
+  return chart
+
+    .map(
+      item => {
+
+        if(
+          typeof item ===
+          "number"
+        ){
+
+          return item;
+
+        }
+
+
+        if(
+          typeof item ===
+          "string"
+        ){
+
+          return Number(
+            item
+          );
+
+        }
+
+
+        if(
+          item &&
+          typeof item ===
+          "object"
+        ){
+
+          return Number(
+            item.c ??
+            item.close
+          );
+
+        }
+
+
+        return NaN;
+
+      }
     )
+
     .filter(
       Number.isFinite
     );
 
+}
+
+
+function drawChart(
+  chart
+){
+
+  const values =
+    getChartValues(
+      chart
+    );
+
 
   if(
-    numbers.length < 2
+    values.length <
+    2
   ){
+
+    $("sparkPoints")
+      .setAttribute(
+        "points",
+        ""
+      );
+
     return;
+
   }
 
 
   const min =
-    Math.min(...numbers);
+    Math.min(
+      ...values
+    );
+
 
   const max =
-    Math.max(...numbers);
+    Math.max(
+      ...values
+    );
+
 
   const range =
-    max - min || 1;
+    max -
+    min ||
+    1;
 
 
   const width =
     700;
+
 
   const height =
     100;
 
 
   const points =
-    numbers.map(
-      (value,index) => {
+    values
 
-        const x =
-          (
-            index /
+      .map(
+        (
+          value,
+          index
+        ) => {
+
+          const x =
             (
-              numbers.length - 1
-            )
-          ) * width;
+              index /
+              (
+                values.length -
+                1
+              )
+            ) *
+            width;
 
 
-        const y =
-          height -
-          (
+          const y =
+            height -
             (
               (
-                value - min
-              ) /
-              range
-            ) *
-            78 +
-            11
+                (
+                  value -
+                  min
+                ) /
+                range
+              ) *
+              78 +
+              11
+            );
+
+
+          return (
+            `${x.toFixed(1)},` +
+            `${y.toFixed(1)}`
           );
 
+        }
+      )
 
-        return (
-          `${x.toFixed(1)},` +
-          `${y.toFixed(1)}`
-        );
-
-      }
-    )
-    .join(" ");
+      .join(
+        " "
+      );
 
 
   $("sparkPoints")
@@ -2436,9 +2834,340 @@ function drawChart(
 }
 
 
-/* =========================================
-   SIGNAL HISTORY
-========================================= */
+/* ======================================================
+   RECENT CHANGE
+====================================================== */
+
+
+function recentChange(
+  chart,
+  currentPrice
+){
+
+  const values =
+    getChartValues(
+      chart
+    );
+
+
+  if(
+    values.length <
+    2 ||
+    !Number.isFinite(
+      Number(
+        currentPrice
+      )
+    )
+  ){
+
+    return null;
+
+  }
+
+
+  const barsBack =
+    Math.min(
+      12,
+      values.length -
+      1
+    );
+
+
+  const old =
+    values[
+      values.length -
+      1 -
+      barsBack
+    ];
+
+
+  if(
+    !old
+  ){
+
+    return null;
+
+  }
+
+
+  return (
+    (
+      Number(
+        currentPrice
+      ) /
+      old
+    ) -
+    1
+  ) *
+  100;
+
+}
+
+
+/* ======================================================
+   GRADE
+====================================================== */
+
+
+function calculateGrade(
+  analysis
+){
+
+  if(
+    analysis.setupGrade
+  ){
+
+    return String(
+      analysis.setupGrade
+    );
+
+  }
+
+
+  if(
+    analysis.action ===
+    "WAIT"
+  ){
+
+    return "WAIT";
+
+  }
+
+
+  const confidence =
+    Number(
+      analysis.confidence
+    );
+
+
+  if(
+    confidence >=
+    90
+  ){
+
+    return "A+";
+
+  }
+
+
+  if(
+    confidence >=
+    85
+  ){
+
+    return "A";
+
+  }
+
+
+  if(
+    confidence >=
+    78
+  ){
+
+    return "B+";
+
+  }
+
+
+  if(
+    confidence >=
+    70
+  ){
+
+    return "B";
+
+  }
+
+
+  return "C";
+
+}
+
+
+/* ======================================================
+   CONFLUENCE
+====================================================== */
+
+
+function calculateConfluence(
+  analysis
+){
+
+  const tf =
+    analysis.timeframeBias;
+
+
+  let alignment =
+    0;
+
+
+  if(
+    tf.M5 ===
+    tf.M15 &&
+    tf.M5 !==
+    "NEUTRAL"
+  ){
+
+    alignment++;
+
+  }
+
+
+  if(
+    tf.M15 ===
+    tf.H1 &&
+    tf.M15 !==
+    "NEUTRAL"
+  ){
+
+    alignment++;
+
+  }
+
+
+  if(
+    tf.M5 ===
+    tf.H1 &&
+    tf.M5 !==
+    "NEUTRAL"
+  ){
+
+    alignment++;
+
+  }
+
+
+  let score =
+    Number(
+      analysis.confidence
+    ) *
+    .65;
+
+
+  score +=
+    alignment *
+    10;
+
+
+  if(
+    analysis.action !==
+    "WAIT"
+  ){
+
+    score +=
+      5;
+
+  }
+
+
+  return clamp(
+    Math.round(
+      score
+    ),
+    0,
+    99
+  );
+
+}
+
+
+function alignmentText(
+  tf
+){
+
+  if(
+    tf.M5 === tf.M15 &&
+    tf.M15 === tf.H1
+  ){
+
+    if(
+      tf.H1 ===
+      "BULLISH"
+    ){
+
+      return "FULL BULLISH";
+
+    }
+
+
+    if(
+      tf.H1 ===
+      "BEARISH"
+    ){
+
+      return "FULL BEARISH";
+
+    }
+
+  }
+
+
+  if(
+    tf.M15 ===
+    tf.H1
+  ){
+
+    return "HTF ALIGNED";
+
+  }
+
+
+  return "MIXED";
+
+}
+
+
+/* ======================================================
+   TIMEFRAME BAR
+====================================================== */
+
+
+function biasWidth(
+  bias,
+  strength
+){
+
+  if(
+    Number.isFinite(
+      Number(
+        strength
+      )
+    )
+  ){
+
+    return clamp(
+      Number(
+        strength
+      ),
+      10,
+      100
+    );
+
+  }
+
+
+  if(
+    bias ===
+    "BULLISH" ||
+    bias ===
+    "BEARISH"
+  ){
+
+    return 82;
+
+  }
+
+
+  return 45;
+
+}
+
+
+/* ======================================================
+   HISTORY
+====================================================== */
+
 
 function getHistory(){
 
@@ -2447,7 +3176,8 @@ function getHistory(){
     return JSON.parse(
       localStorage.getItem(
         "mkayfx_history"
-      ) || "[]"
+      ) ||
+      "[]"
     );
 
   }
@@ -2464,11 +3194,12 @@ function saveHistory(
   data
 ){
 
-  const a =
-    data.analysis;
-
   const history =
     getHistory();
+
+
+  const a =
+    data.analysis;
 
 
   const item = {
@@ -2487,6 +3218,7 @@ function saveHistory(
 
     price:
       data.price
+
   };
 
 
@@ -2496,10 +3228,10 @@ function saveHistory(
 
   if(
     !last ||
-    last.signal !==
-      item.signal ||
     last.symbol !==
-      item.symbol
+      item.symbol ||
+    last.signal !==
+      item.signal
   ){
 
     history.unshift(
@@ -2514,7 +3246,7 @@ function saveHistory(
     JSON.stringify(
       history.slice(
         0,
-        15
+        20
       )
     )
   );
@@ -2535,98 +3267,118 @@ function renderHistory(){
     !history.length
   ){
 
-    $("history").innerHTML =
-      `
-      <div class="history-row">
+    $("history")
+      .innerHTML =
+        `
+        <div class="history-row">
 
-        <small>—</small>
+          <small>—</small>
 
-        <span>
-          No signals recorded yet
-        </span>
+          <span>
+            No signals yet
+          </span>
 
-        <span>—</span>
+          <span>—</span>
 
-      </div>
-      `;
+        </div>
+        `;
 
     return;
 
   }
 
 
-  $("history").innerHTML =
-    history
-      .slice(0,6)
-      .map(
-        item => {
+  $("history")
+    .innerHTML =
+      history
 
-          const time =
-            new Date(
-              item.time
-            )
-            .toLocaleTimeString(
-              [],
-              {
-                hour:"2-digit",
-                minute:"2-digit"
-              }
-            );
+        .slice(
+          0,
+          6
+        )
+
+        .map(
+          item => {
+
+            const time =
+              new Date(
+                item.time
+              )
+              .toLocaleTimeString(
+                [],
+                {
+                  hour:
+                    "2-digit",
+
+                  minute:
+                    "2-digit"
+                }
+              );
 
 
-          return `
-          <div class="history-row">
+            return `
+            <div class="history-row">
 
-            <small>
-              ${time}
-            </small>
+              <small>
+                ${time}
+              </small>
 
-            <span>
+              <span>
+                ${escapeHtml(
+                  item.symbol
+                )}
+                ·
+                ${fmt(
+                  item.price
+                )}
+              </span>
 
-              ${escapeHtml(
-                item.symbol
-              )}
+              <span
+                class="mini
+                ${escapeHtml(
+                  item.signal
+                )}">
 
-              ·
+                ${escapeHtml(
+                  item.signal
+                )}
 
-              ${fmt(
-                item.price
-              )}
+                ${Number(
+                  item.confidence ||
+                  0
+                )}%
 
-            </span>
+              </span>
 
-            <span
-              class="mini-signal
-              ${item.signal}">
+            </div>
+            `;
 
-              ${item.signal}
+          }
+        )
 
-              ${item.confidence}%
-
-            </span>
-
-          </div>
-          `;
-
-        }
-      )
-      .join("");
+        .join(
+          ""
+        );
 
 }
 
 
-/* =========================================
+/* ======================================================
    NOTIFICATIONS
-========================================= */
+====================================================== */
+
 
 async function enableNotifications(){
 
   if(
-    !("Notification" in window)
+    !(
+      "Notification" in
+      window
+    )
   ){
 
     alert(
-      "Browser notifications are not supported here."
+      "Notifications are not supported in this browser."
     );
 
     return;
@@ -2634,13 +3386,14 @@ async function enableNotifications(){
   }
 
 
-  const permission =
+  const result =
     await Notification
       .requestPermission();
 
 
   if(
-    permission === "granted"
+    result ===
+    "granted"
   ){
 
     alert(
@@ -2660,53 +3413,68 @@ function maybeAlert(
     data.analysis;
 
 
+  if(
+    a.action ===
+    "WAIT"
+  ){
+
+    return;
+
+  }
+
+
   const minimum =
     Number(
-      $("confidenceSetting").value
+      $("confidenceSetting")
+        .value
     );
 
 
   if(
-    a.action === "WAIT"
+    a.confidence <
+    minimum
   ){
+
     return;
+
   }
 
 
+  const key =
+    `${data.symbol}-${a.action}-${Math.round(a.confidence)}`;
+
+
   if(
-    Number(
-      a.confidence
-    ) < minimum
+    previousAlertKey ===
+    key
   ){
+
     return;
+
   }
 
 
-  if(
-    previousSignal ===
-    a.action
-  ){
-    return;
-  }
-
-
-  previousSignal =
-    a.action;
+  previousAlertKey =
+    key;
 
 
   if(
-    "Notification" in window &&
+    "Notification" in
+    window &&
     Notification.permission ===
-      "granted"
+    "granted"
   ){
 
     new Notification(
       `${data.symbol} ${a.action}`,
       {
+
         body:
-          `${a.confidence}% confidence · ` +
-          `Entry ${fmt(a.entry)} · ` +
-          `SL ${fmt(a.stopLoss)}`
+          `${a.confidence}% confidence | ` +
+          `Entry ${fmt(a.entry)} | ` +
+          `SL ${fmt(a.stopLoss)} | ` +
+          `TP1 ${fmt(a.takeProfit1)}`
+
       }
     );
 
@@ -2715,9 +3483,10 @@ function maybeAlert(
 }
 
 
-/* =========================================
-   COPY TRADE PLAN
-========================================= */
+/* ======================================================
+   COPY PLAN
+====================================================== */
+
 
 async function copyTradePlan(){
 
@@ -2726,7 +3495,7 @@ async function copyTradePlan(){
   ){
 
     alert(
-      "Run an analysis first."
+      "Run analysis first."
     );
 
     return;
@@ -2747,25 +3516,31 @@ Signal: ${a.action}
 Confidence: ${a.confidence}%
 
 Entry: ${fmt(a.entry)}
-SL: ${fmt(a.stopLoss)}
+Stop Loss: ${fmt(a.stopLoss)}
 TP1: ${fmt(a.takeProfit1)}
 TP2: ${fmt(a.takeProfit2)}
 
-Risk/Reward:
-${a.riskReward || "—"}
+Risk Reward:
+${a.riskReward}
 
-Market:
+Analysis:
 ${a.summary}
 
 Invalidation:
-${a.invalidation}`;
+${a.invalidation}
+
+Next Trigger:
+${a.nextTrigger}`;
 
 
   try{
 
     await navigator
       .clipboard
-      .writeText(text);
+      .writeText(
+        text
+      );
+
 
     alert(
       "Trade plan copied."
@@ -2783,136 +3558,180 @@ ${a.invalidation}`;
 }
 
 
-/* =========================================
-   RENDER ANALYSIS
-========================================= */
+/* ======================================================
+   RENDER
+====================================================== */
+
 
 function render(
-  data
+  raw
 ){
+
+  const data =
+    normalizeResponse(
+      raw
+    );
+
 
   currentData =
     data;
 
 
   const a =
-    data.analysis || {};
+    data.analysis;
 
 
-  const price =
-    data.price ??
-    data.current_price;
+  $("heroSymbol")
+    .textContent =
+      data.symbol;
 
 
-  $("heroSymbol").textContent =
-    data.symbol;
-
-
-  $("price").textContent =
-    fmt(price);
+  $("price")
+    .textContent =
+      fmt(
+        data.price
+      );
 
 
   const change =
-    Number(
-      data.changePct || 0
+    recentChange(
+      data.chart,
+      data.price
     );
 
 
-  $("change").textContent =
-    `${change >= 0 ? "+" : ""}` +
-    `${change.toFixed(3)}% · recent move`;
+  if(
+    change ===
+    null
+  ){
+
+    $("change")
+      .textContent =
+        "Live market data loaded";
+
+  }
+  else{
+
+    $("change")
+      .textContent =
+        `${
+          change >=
+          0
+            ?
+            "+"
+            :
+            ""
+        }${change.toFixed(3)}% · recent move`;
+
+  }
 
 
-  $("signalBadge").textContent =
-    a.action || "WAIT";
+  $("signalBadge")
+    .textContent =
+      a.action;
 
 
-  $("signalBadge").className =
-    `signal ${a.action || "WAIT"}`;
-
-
-  const confidence =
-    Number(
-      a.confidence || 0
-    );
+  $("signalBadge")
+    .className =
+      `signal ${a.action}`;
 
 
   $("confidence")
     .style
     .setProperty(
       "--p",
-      Math.max(
+      clamp(
+        a.confidence,
         0,
-        Math.min(
-          100,
-          confidence
-        )
+        100
       )
     );
 
 
-  $("confidenceText").textContent =
-    `${confidence}%`;
+  $("confidenceText")
+    .textContent =
+      `${a.confidence}%`;
 
 
-  $("summary").textContent =
-    a.summary ||
-    "No AI summary returned.";
+  $("summary")
+    .textContent =
+      a.summary;
 
 
-  $("entry").textContent =
-    fmt(a.entry);
+  $("entry")
+    .textContent =
+      fmt(
+        a.entry
+      );
 
 
-  $("sl").textContent =
-    fmt(a.stopLoss);
+  $("sl")
+    .textContent =
+      fmt(
+        a.stopLoss
+      );
 
 
-  $("tp1").textContent =
-    fmt(a.takeProfit1);
+  $("tp1")
+    .textContent =
+      fmt(
+        a.takeProfit1
+      );
 
 
-  $("tp2").textContent =
-    fmt(a.takeProfit2);
+  $("tp2")
+    .textContent =
+      fmt(
+        a.takeProfit2
+      );
 
 
-  $("rr").textContent =
-    a.riskReward ||
-    "—";
+  $("rr")
+    .textContent =
+      a.riskReward;
 
 
-  $("regime").textContent =
-    a.regime ||
-    "—";
+  $("regime")
+    .textContent =
+      a.regime;
 
 
-  $("structure").textContent =
-    a.structure ||
-    "—";
+  $("structure")
+    .textContent =
+      a.structure;
 
 
-  $("momentum").textContent =
-    a.momentum ||
-    "—";
+  $("momentum")
+    .textContent =
+      a.momentum;
 
 
-  $("invalidation").textContent =
-    a.invalidation ||
-    "—";
+  $("liquidity")
+    .textContent =
+      a.liquidity;
 
 
-  $("newsSummary").textContent =
-    a.newsSummary ||
-    "No news analysis returned.";
+  $("macroBias")
+    .textContent =
+      a.macroBias;
 
 
-  const tf =
-    a.timeframeBias || {
-      M5:"NEUTRAL",
-      M15:"NEUTRAL",
-      H1:"NEUTRAL"
-    };
+  $("newsSummary")
+    .textContent =
+      a.newsSummary;
 
+
+  $("invalidation")
+    .textContent =
+      a.invalidation;
+
+
+  $("nextTrigger")
+    .textContent =
+      a.nextTrigger;
+
+
+  /* TIMEFRAMES */
 
   [
     "M5",
@@ -2923,84 +3742,72 @@ function render(
     timeframe => {
 
       const bias =
-        tf[timeframe] ||
+        a.timeframeBias[
+          timeframe
+        ] ||
         "NEUTRAL";
+
+
+      const strength =
+        a.timeframeStrength[
+          timeframe
+        ];
 
 
       $(
         `${timeframe.toLowerCase()}Bias`
       )
       .textContent =
-        bias;
+        strength !==
+        null
+          ?
+          `${bias} ${Math.round(Number(strength))}%`
+          :
+          bias;
 
 
       $(
         `${timeframe.toLowerCase()}Bar`
       )
       .style.width =
-        `${biasScore(bias)}%`;
+        `${biasWidth(
+          bias,
+          strength
+        )}%`;
 
     }
   );
 
 
-  $("reasons").innerHTML =
-    (
-      Array.isArray(
-        a.reasons
-      )
-        ? a.reasons
-        : []
-    )
-    .map(
-      reason =>
-        `<span class="chip">
-          ${escapeHtml(reason)}
-        </span>`
-    )
-    .join("") ||
-    `<span class="chip">
-      No reasoning returned
-    </span>`;
-
-
-  $("risks").innerHTML =
-    (
-      Array.isArray(
-        a.risks
-      )
-        ? a.risks
-        : []
-    )
-    .map(
-      risk =>
-        `<span class="chip risk">
-          ${escapeHtml(risk)}
-        </span>`
-    )
-    .join("") ||
-    `<span class="chip risk">
-      No risk notes returned
-    </span>`;
-
+  /* GRADE */
 
   const grade =
-    setupGrade(
-      confidence,
-      a.action
+    calculateGrade(
+      a
     );
 
 
-  $("setupGrade").textContent =
-    grade.grade;
+  $("setupGrade")
+    .textContent =
+      grade;
 
 
-  $("gradeBadge").textContent =
-    `${grade.grade} · ${grade.text}`;
+  $("gradeBadge")
+    .textContent =
+      grade ===
+      "WAIT"
+        ?
+        "WAIT · NO TRADE"
+        :
+        `${grade} SETUP`;
 
+
+  /* CONFLUENCE */
 
   const confluence =
-    calculateConfluence(a);
+    calculateConfluence(
+      a
+    );
 
 
   $("confluenceNumber")
@@ -3020,67 +3827,167 @@ function render(
 
   $("alignmentLabel")
     .textContent =
-      alignmentText(tf);
+      alignmentText(
+        a.timeframeBias
+      );
 
 
   if(
-    confluence >= 85
+    confluence >=
+    85
   ){
 
     $("confluenceText")
       .textContent =
-        "Very strong timeframe agreement";
+        "Very strong agreement";
 
   }
   else if(
-    confluence >= 70
+    confluence >=
+    70
   ){
 
     $("confluenceText")
       .textContent =
-        "Good multi-factor agreement";
+        "Strong agreement";
 
   }
   else if(
-    confluence >= 55
+    confluence >=
+    55
   ){
 
     $("confluenceText")
       .textContent =
-        "Moderate market agreement";
+        "Moderate agreement";
 
   }
   else{
 
     $("confluenceText")
       .textContent =
-        "Weak or conflicting setup";
+        "Weak / conflicting setup";
 
   }
 
 
-  $("dataHealth").textContent =
-    "LIVE";
+  /* REASONS */
+
+  $("reasons")
+    .innerHTML =
+      a.reasons.length
+        ?
+        a.reasons
+
+          .map(
+            item =>
+              `
+              <span class="chip">
+                ${escapeHtml(item)}
+              </span>
+              `
+          )
+
+          .join(
+            ""
+          )
+        :
+        `
+        <span class="chip">
+          No detailed reasoning returned.
+        </span>
+        `;
 
 
-  $("scanState").textContent =
-    "COMPLETE";
+  /* RISKS */
+
+  $("risks")
+    .innerHTML =
+      a.risks.length
+        ?
+        a.risks
+
+          .map(
+            item =>
+              `
+              <span class="chip risk">
+                ${escapeHtml(item)}
+              </span>
+              `
+          )
+
+          .join(
+            ""
+          )
+        :
+        `
+        <span class="chip risk">
+          No risk notes returned.
+        </span>
+        `;
 
 
-  $("updated").textContent =
-    "Updated " +
-    new Date(
-      data.timestamp ||
-      Date.now()
-    )
-    .toLocaleTimeString(
-      [],
-      {
-        hour:"2-digit",
-        minute:"2-digit",
-        second:"2-digit"
-      }
-    );
+  /* ENGINE */
+
+  $("modelName")
+    .textContent =
+      data.model;
+
+
+  $("engineSubtitle")
+    .textContent =
+      data.model;
+
+
+  $("dataMode")
+    .textContent =
+      data.dataMode;
+
+
+  $("cacheStatus")
+    .textContent =
+      data.cacheHit
+        ?
+        "CACHE HIT"
+        :
+        "FRESH DATA";
+
+
+  $("guardrail")
+    .textContent =
+      data.guardrail ||
+      "Live engine response received.";
+
+
+  $("dataHealth")
+    .textContent =
+      "LIVE";
+
+
+  $("scanState")
+    .textContent =
+      "COMPLETE";
+
+
+  $("updated")
+    .textContent =
+      "Updated " +
+      new Date(
+        data.timestamp
+      )
+      .toLocaleTimeString(
+        [],
+        {
+          hour:
+            "2-digit",
+
+          minute:
+            "2-digit",
+
+          second:
+            "2-digit"
+        }
+      );
 
 
   drawChart(
@@ -3100,16 +4007,29 @@ function render(
 }
 
 
-/* =========================================
-   ANALYSE
-========================================= */
+/* ======================================================
+   ANALYZE
+
+   THIS IS THE IMPORTANT FIX.
+
+   IT USES:
+
+   POST /api/analyze
+
+   NOT:
+
+   GET /api/analyze?symbol=...
+====================================================== */
+
 
 async function analyze(){
 
   if(
     busy
   ){
+
     return;
+
   }
 
 
@@ -3132,29 +4052,71 @@ async function analyze(){
       "SCANNING";
 
 
+  $("dataHealth")
+    .textContent =
+      "FETCHING";
+
+
   setStatus(
     "loading",
-    "EXTREME AI ANALYSING"
+    "AI ANALYSING"
   );
 
 
   try{
 
     const symbol =
-      $("symbolSelect").value;
+      $("symbolSelect")
+        .value;
 
 
     const response =
       await fetch(
-        `/api/analyze?symbol=${encodeURIComponent(symbol)}`,
+        "/api/analyze",
         {
-          cache:"no-store"
+
+          method:
+            "POST",
+
+          headers:{
+
+            "Content-Type":
+              "application/json"
+
+          },
+
+          body:
+            JSON.stringify(
+              {
+                symbol:
+                  symbol
+              }
+            ),
+
+          cache:
+            "no-store"
+
         }
       );
 
 
-    const data =
-      await response.json();
+    let data;
+
+
+    try{
+
+      data =
+        await response
+          .json();
+
+    }
+    catch{
+
+      throw new Error(
+        "The API returned invalid data."
+      );
+
+    }
 
 
     if(
@@ -3163,7 +4125,20 @@ async function analyze(){
 
       throw new Error(
         data.error ||
-        "Extreme AI analysis failed"
+        `API error ${response.status}`
+      );
+
+    }
+
+
+    if(
+      data.success ===
+      false
+    ){
+
+      throw new Error(
+        data.error ||
+        "Analysis failed."
       );
 
     }
@@ -3176,12 +4151,13 @@ async function analyze(){
 
     setStatus(
       "",
-      "EXTREME AI ONLINE"
+      "ENGINE ONLINE"
     );
 
 
     if(
-      refreshSeconds > 0
+      refreshSeconds >
+      0
     ){
 
       nextScan =
@@ -3190,13 +4166,19 @@ async function analyze(){
     }
 
   }
-  catch(error){
+  catch(
+    error
+  ){
 
-    console.error(error);
+    console.error(
+      "MKAYFX ERROR:",
+      error
+    );
 
 
-    $("errorBox").textContent =
-      error.message;
+    $("errorBox")
+      .textContent =
+        error.message;
 
 
     $("errorBox")
@@ -3204,12 +4186,14 @@ async function analyze(){
         "block";
 
 
-    $("dataHealth").textContent =
-      "ERROR";
+    $("dataHealth")
+      .textContent =
+        "ERROR";
 
 
-    $("scanState").textContent =
-      "FAILED";
+    $("scanState")
+      .textContent =
+        "FAILED";
 
 
     setStatus(
@@ -3233,9 +4217,10 @@ async function analyze(){
 }
 
 
-/* =========================================
-   STALE DATA MONITOR
-========================================= */
+/* ======================================================
+   DATA AGE CHECK
+====================================================== */
+
 
 setInterval(
   () => {
@@ -3243,7 +4228,9 @@ setInterval(
     if(
       !currentData
     ){
+
       return;
+
     }
 
 
@@ -3269,28 +4256,23 @@ setInterval(
           "STALE";
 
     }
-    else{
-
-      $("dataHealth")
-        .textContent =
-          "LIVE";
-
-    }
 
   },
   5000
 );
 
 
-/* =========================================
-   AUTO SCAN
-========================================= */
+/* ======================================================
+   AUTO REFRESH
+====================================================== */
+
 
 setInterval(
   () => {
 
     if(
-      refreshSeconds === 0
+      refreshSeconds ===
+      0
     ){
 
       $("countdown")
@@ -3312,8 +4294,12 @@ setInterval(
 
 
     if(
-      nextScan <= 0
+      nextScan <=
+      0
     ){
+
+      nextScan =
+        refreshSeconds;
 
       analyze();
 
@@ -3322,7 +4308,7 @@ setInterval(
 
     $("countdown")
       .textContent =
-        `Next AI scan: ${
+        `Next scan: ${
           Math.max(
             0,
             nextScan
@@ -3334,9 +4320,10 @@ setInterval(
 );
 
 
-/* =========================================
+/* ======================================================
    EVENTS
-========================================= */
+====================================================== */
+
 
 $("analyzeBtn")
   .addEventListener(
@@ -3350,7 +4337,7 @@ $("symbolSelect")
     "change",
     () => {
 
-      previousSignal =
+      previousAlertKey =
         null;
 
       analyze();
@@ -3359,16 +4346,19 @@ $("symbolSelect")
   );
 
 
+/* ======================================================
+   START
+====================================================== */
+
+
 renderHistory();
 
 
-/* =========================================
-   START
-========================================= */
-
 analyze();
+
 
 </script>
 
 </body>
+
 </html>
