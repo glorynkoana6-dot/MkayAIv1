@@ -2,1080 +2,3371 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-<title>MKAYFX AI</title>
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+/>
+
+<meta name="theme-color" content="#05070b">
+
+<title>MKAYFX Extreme AI</title>
 
 <style>
-:root {
-    --bg: #05070b;
-    --panel: #0c1018;
-    --panel2: #111722;
-    --border: #202838;
-    --text: #f5f7fb;
-    --muted: #7f8ba3;
-    --green: #00e396;
-    --red: #ff4d6d;
-    --yellow: #ffc857;
-    --blue: #5897ff;
+
+:root{
+  --bg:#05070b;
+  --panel:#0e131b;
+  --panel2:#131a24;
+  --panel3:#090d13;
+  --border:rgba(255,255,255,.08);
+
+  --text:#f4f7fb;
+  --muted:#8590a0;
+
+  --blue:#6b8cff;
+  --blue2:#9db5ff;
+
+  --green:#39e39b;
+  --red:#ff6477;
+  --gold:#f5c75c;
+  --purple:#b38cff;
+
+  --shadow:
+    0 18px 60px rgba(0,0,0,.38);
 }
 
-* {
-    box-sizing: border-box;
+*{
+  box-sizing:border-box;
 }
 
-body {
-    margin: 0;
-    background:
-        radial-gradient(circle at top, #11182a 0%, #05070b 35%);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+html{
+  scroll-behavior:smooth;
 }
 
-.app {
-    width: min(100%, 720px);
-    margin: auto;
-    padding: 18px 14px 80px;
+body{
+  margin:0;
+
+  min-height:100vh;
+
+  color:var(--text);
+
+  background:
+    radial-gradient(
+      circle at 20% 0%,
+      rgba(92,124,255,.18),
+      transparent 32%
+    ),
+
+    radial-gradient(
+      circle at 100% 10%,
+      rgba(179,140,255,.09),
+      transparent 28%
+    ),
+
+    var(--bg);
+
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  padding:
+    max(16px,env(safe-area-inset-top))
+    14px
+    max(100px,env(safe-area-inset-bottom));
 }
 
-.header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 18px;
+button,
+select,
+input{
+  font:inherit;
 }
 
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+button{
+  cursor:pointer;
 }
 
-.logo {
-    width: 42px;
-    height: 42px;
-    border-radius: 13px;
-    display: grid;
-    place-items: center;
-    font-weight: 900;
-    background: linear-gradient(135deg, #3e7cff, #9f4cff);
+.app{
+  width:100%;
+  max-width:1180px;
+  margin:auto;
 }
 
-.title {
-    font-size: 18px;
-    font-weight: 800;
+
+/* =========================================
+   TOP BAR
+========================================= */
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  gap:12px;
+
+  margin-bottom:16px;
 }
 
-.subtitle {
-    color: var(--muted);
-    font-size: 11px;
-    margin-top: 2px;
+.brand{
+  display:flex;
+  gap:11px;
+  align-items:center;
 }
 
-.live {
-    padding: 7px 10px;
-    border-radius: 20px;
-    background: rgba(0,227,150,.1);
-    color: var(--green);
-    border: 1px solid rgba(0,227,150,.25);
-    font-size: 11px;
-    font-weight: 800;
+.logo{
+  width:44px;
+  height:44px;
+
+  border-radius:14px;
+
+  display:grid;
+  place-items:center;
+
+  font-weight:950;
+
+  background:
+    linear-gradient(
+      145deg,
+      #b7c8ff,
+      #637cff
+    );
+
+  color:#061020;
+
+  box-shadow:
+    0 10px 34px
+    rgba(98,124,255,.35);
 }
 
-.card {
-    background: rgba(12,16,24,.94);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    margin-bottom: 13px;
-    overflow: hidden;
+.brand h1{
+  margin:0;
+
+  font-size:17px;
+
+  letter-spacing:-.4px;
 }
 
-.card-head {
-    padding: 13px 15px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
+.brand p{
+  margin:3px 0 0;
+
+  font-size:10px;
+
+  color:var(--muted);
 }
 
-.card-title {
-    font-size: 11px;
-    color: var(--muted);
-    font-weight: 800;
-    letter-spacing: .8px;
+.status{
+  display:flex;
+  align-items:center;
+
+  gap:7px;
+
+  font-size:10px;
+
+  padding:8px 10px;
+
+  border-radius:999px;
+
+  background:
+    rgba(255,255,255,.035);
+
+  border:
+    1px solid var(--border);
 }
 
-.body {
-    padding: 16px;
+.dot{
+  width:7px;
+  height:7px;
+
+  border-radius:50%;
+
+  background:var(--green);
+
+  box-shadow:
+    0 0 14px var(--green);
 }
 
-.symbol-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: start;
+.dot.loading{
+  background:var(--gold);
+
+  box-shadow:
+    0 0 14px var(--gold);
 }
 
-.symbol {
-    font-size: 17px;
-    font-weight: 800;
+.dot.error{
+  background:var(--red);
+
+  box-shadow:
+    0 0 14px var(--red);
 }
 
-.price {
-    font-size: 37px;
-    font-weight: 900;
-    letter-spacing: -1.5px;
-    margin-top: 5px;
+
+/* =========================================
+   EXTREME AI BANNER
+========================================= */
+
+.extreme-banner{
+  margin-bottom:14px;
+
+  border:
+    1px solid rgba(126,153,255,.2);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(89,110,255,.13),
+      rgba(179,140,255,.08)
+    );
+
+  border-radius:18px;
+
+  padding:13px 14px;
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  gap:12px;
 }
 
-.signal {
-    padding: 8px 14px;
-    border-radius: 10px;
-    font-weight: 900;
-    font-size: 14px;
+.extreme-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
 
-.signal.buy {
-    background: rgba(0,227,150,.12);
-    color: var(--green);
+.ai-orb{
+  width:34px;
+  height:34px;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle,
+      #dbe3ff,
+      #657dff 40%,
+      #362e86 72%
+    );
+
+  box-shadow:
+    0 0 24px
+    rgba(108,132,255,.45);
 }
 
-.signal.sell {
-    background: rgba(255,77,109,.12);
-    color: var(--red);
+.extreme-banner strong{
+  display:block;
+  font-size:12px;
 }
 
-.signal.wait {
-    background: rgba(255,200,87,.12);
-    color: var(--yellow);
+.extreme-banner small{
+  color:var(--muted);
+  font-size:9px;
 }
 
-svg {
-    width: 100%;
-    height: 120px;
-    margin-top: 12px;
+.mode-badge{
+  color:#cfd8ff;
+
+  font-size:9px;
+
+  font-weight:900;
+
+  padding:7px 9px;
+
+  border-radius:999px;
+
+  border:
+    1px solid
+    rgba(157,181,255,.22);
+
+  background:
+    rgba(157,181,255,.07);
 }
 
-.decision {
-    display: grid;
-    grid-template-columns: 110px 1fr;
-    gap: 16px;
+
+/* =========================================
+   CONTROLS
+========================================= */
+
+.controls{
+  display:grid;
+
+  grid-template-columns:
+    minmax(0,1fr)
+    auto;
+
+  gap:9px;
+
+  margin-bottom:14px;
 }
 
-.confidence {
-    width: 104px;
-    height: 104px;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    background:
-        radial-gradient(circle, #0c1018 57%, transparent 59%),
-        conic-gradient(var(--blue) var(--confidence), #202838 0);
+select,
+input{
+  min-height:46px;
+
+  border:
+    1px solid var(--border);
+
+  border-radius:14px;
+
+  background:var(--panel);
+
+  color:var(--text);
+
+  outline:none;
+
+  padding:0 13px;
 }
 
-.confidence-number {
-    font-size: 25px;
-    font-weight: 900;
+.main-btn{
+  border:0;
+
+  min-height:46px;
+
+  border-radius:14px;
+
+  padding:0 16px;
+
+  color:white;
+
+  font-weight:900;
+
+  background:
+    linear-gradient(
+      135deg,
+      #799cff,
+      #635dff
+    );
+
+  box-shadow:
+    0 9px 28px
+    rgba(100,120,255,.25);
 }
 
-.confidence-label {
-    font-size: 9px;
-    text-align: center;
-    color: var(--muted);
+.main-btn:disabled{
+  opacity:.5;
 }
 
-.setup-grade {
-    font-size: 11px;
-    color: var(--muted);
+.secondary-btn{
+  width:100%;
+
+  border:
+    1px solid var(--border);
+
+  background:
+    rgba(255,255,255,.035);
+
+  color:var(--text);
+
+  padding:11px;
+
+  border-radius:13px;
+
+  font-weight:800;
 }
 
-.summary {
-    font-size: 15px;
-    line-height: 1.5;
-    margin-top: 8px;
+
+/* =========================================
+   ERROR
+========================================= */
+
+.error-box{
+  display:none;
+
+  margin-bottom:12px;
+
+  padding:11px 13px;
+
+  color:#ff9aa7;
+
+  background:
+    rgba(255,100,119,.07);
+
+  border:
+    1px solid
+    rgba(255,100,119,.25);
+
+  border-radius:13px;
+
+  font-size:11px;
+
+  line-height:1.5;
 }
 
-.levels {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-top: 16px;
+
+/* =========================================
+   HERO
+========================================= */
+
+.hero{
+  position:relative;
+
+  overflow:hidden;
+
+  border-radius:23px;
+
+  padding:19px;
+
+  margin-bottom:14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(20,27,38,.98),
+      rgba(8,12,18,.97)
+    );
+
+  border:
+    1px solid var(--border);
+
+  box-shadow:var(--shadow);
 }
 
-.level {
-    background: var(--panel2);
-    border: 1px solid var(--border);
-    padding: 10px 7px;
-    border-radius: 11px;
+.hero::after{
+  content:"";
+
+  position:absolute;
+
+  width:260px;
+  height:260px;
+
+  right:-90px;
+  bottom:-130px;
+
+  border-radius:50%;
+
+  background:
+    rgba(92,123,255,.11);
+
+  filter:blur(5px);
 }
 
-.level-label {
-    color: var(--muted);
-    font-size: 9px;
+.hero-top{
+  position:relative;
+
+  z-index:2;
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:flex-start;
+
+  gap:15px;
 }
 
-.level-value {
-    font-size: 13px;
-    font-weight: 800;
-    margin-top: 5px;
+.symbol{
+  color:var(--muted);
+
+  font-size:11px;
+
+  font-weight:900;
+
+  letter-spacing:.9px;
 }
 
-.reason {
-    padding: 10px 0;
-    border-bottom: 1px solid #151b27;
-    font-size: 13px;
-    line-height: 1.45;
+.price{
+  margin:
+    5px 0 3px;
+
+  font-size:
+    clamp(
+      34px,
+      8vw,
+      57px
+    );
+
+  font-weight:950;
+
+  letter-spacing:-2px;
 }
 
-.reason:last-child {
-    border-bottom: 0;
+.change{
+  color:var(--muted);
+
+  font-size:11px;
+
+  font-weight:800;
 }
 
-.tf {
-    margin-bottom: 14px;
+.signal{
+  min-width:92px;
+
+  height:40px;
+
+  border-radius:12px;
+
+  display:grid;
+
+  place-items:center;
+
+  font-size:14px;
+
+  font-weight:950;
+
+  letter-spacing:.8px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.08);
 }
 
-.tf:last-child {
-    margin-bottom: 0;
+.signal.BUY{
+  color:var(--green);
+
+  background:
+    rgba(57,227,155,.09);
 }
 
-.tf-top {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    margin-bottom: 7px;
+.signal.SELL{
+  color:var(--red);
+
+  background:
+    rgba(255,100,119,.09);
 }
 
-.bar {
-    height: 7px;
-    background: #191f2c;
-    border-radius: 99px;
-    overflow: hidden;
+.signal.WAIT{
+  color:var(--gold);
+
+  background:
+    rgba(245,199,92,.09);
 }
 
-.fill {
-    height: 100%;
-    border-radius: 99px;
-    background: var(--blue);
+#sparkline{
+  width:100%;
+
+  height:96px;
+
+  margin-top:14px;
+
+  position:relative;
+
+  z-index:2;
 }
 
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 9px;
+#sparkPoints{
+  fill:none;
+
+  stroke:#8eaaff;
+
+  stroke-width:3;
+
+  stroke-linecap:round;
+
+  stroke-linejoin:round;
+
+  filter:
+    drop-shadow(
+      0 0 8px
+      rgba(120,150,255,.35)
+    );
 }
 
-.metric {
-    background: var(--panel2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 11px;
+
+/* =========================================
+   MARKET HEALTH ROW
+========================================= */
+
+.market-health{
+  position:relative;
+
+  z-index:2;
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(4,1fr);
+
+  gap:7px;
+
+  margin-top:11px;
 }
 
-.metric-label {
-    color: var(--muted);
-    font-size: 9px;
+.health-item{
+  background:
+    rgba(255,255,255,.035);
+
+  border:
+    1px solid var(--border);
+
+  border-radius:11px;
+
+  padding:8px 9px;
 }
 
-.metric-value {
-    margin-top: 5px;
-    font-size: 12px;
-    font-weight: 800;
+.health-item small{
+  display:block;
+
+  font-size:8px;
+
+  color:var(--muted);
+
+  text-transform:uppercase;
+
+  margin-bottom:4px;
 }
 
-.controls {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 9px;
+.health-item strong{
+  font-size:11px;
 }
 
-input {
-    width: 100%;
-    padding: 13px;
-    border-radius: 11px;
-    border: 1px solid var(--border);
-    background: var(--panel2);
-    color: white;
-    font-size: 15px;
-    outline: none;
+
+/* =========================================
+   GRID
+========================================= */
+
+.grid{
+  display:grid;
+
+  grid-template-columns:
+    1.3fr .9fr;
+
+  gap:14px;
 }
 
-button {
-    border: 0;
-    padding: 0 18px;
-    border-radius: 11px;
-    color: white;
-    font-weight: 800;
-    background: linear-gradient(135deg, #3e7cff, #7857ff);
+.stack{
+  display:grid;
+
+  gap:14px;
+
+  align-content:start;
 }
 
-button:disabled {
-    opacity: .55;
+.card{
+  padding:16px;
+
+  border-radius:18px;
+
+  border:
+    1px solid var(--border);
+
+  background:
+    rgba(14,19,27,.94);
+
+  box-shadow:var(--shadow);
 }
 
-.status {
-    color: var(--muted);
-    font-size: 11px;
-    margin-top: 10px;
+.card-title{
+  color:var(--muted);
+
+  font-size:10px;
+
+  font-weight:900;
+
+  text-transform:uppercase;
+
+  letter-spacing:1px;
+
+  margin-bottom:12px;
 }
 
-.warning {
-    color: var(--yellow);
-    font-size: 11px;
-    line-height: 1.5;
+
+/* =========================================
+   EXTREME DECISION
+========================================= */
+
+.decision{
+  display:grid;
+
+  grid-template-columns:
+    auto 1fr;
+
+  align-items:center;
+
+  gap:16px;
 }
 
-.guard {
-    background: rgba(88,151,255,.07);
-    border: 1px solid rgba(88,151,255,.18);
-    padding: 10px;
-    border-radius: 10px;
-    margin-top: 12px;
-    color: #b9ceff;
-    font-size: 11px;
+.confidence{
+  --p:0;
+
+  width:94px;
+  height:94px;
+
+  border-radius:50%;
+
+  display:grid;
+
+  place-items:center;
+
+  position:relative;
+
+  background:
+    conic-gradient(
+      var(--blue)
+      calc(var(--p)*1%),
+
+      rgba(255,255,255,.07)
+      0
+    );
 }
 
-@media(max-width:460px) {
-    .decision {
-        grid-template-columns: 90px 1fr;
-    }
+.confidence::before{
+  content:"";
 
-    .confidence {
-        width: 86px;
-        height: 86px;
-    }
+  position:absolute;
 
-    .levels {
-        grid-template-columns: 1fr 1fr;
-    }
+  width:73px;
+  height:73px;
 
-    .price {
-        font-size: 31px;
-    }
+  border-radius:50%;
+
+  background:#101620;
 }
+
+.confidence span{
+  position:relative;
+
+  font-size:20px;
+
+  font-weight:950;
+}
+
+.summary{
+  color:#dfe5ef;
+
+  font-size:14px;
+
+  line-height:1.55;
+}
+
+.grade{
+  margin-top:7px;
+
+  display:inline-block;
+
+  padding:
+    5px 8px;
+
+  border-radius:8px;
+
+  background:
+    rgba(255,255,255,.045);
+
+  color:#cbd4e2;
+
+  font-size:9px;
+
+  font-weight:900;
+}
+
+
+/* =========================================
+   LEVELS
+========================================= */
+
+.levels{
+  display:grid;
+
+  grid-template-columns:
+    repeat(4,1fr);
+
+  gap:7px;
+
+  margin-top:15px;
+}
+
+.level{
+  padding:
+    11px 9px;
+
+  border-radius:12px;
+
+  background:var(--panel3);
+
+  border:
+    1px solid var(--border);
+}
+
+.level small{
+  display:block;
+
+  color:var(--muted);
+
+  font-size:8px;
+
+  margin-bottom:5px;
+
+  text-transform:uppercase;
+}
+
+.level strong{
+  font-size:13px;
+}
+
+
+/* =========================================
+   TIMEFRAMES
+========================================= */
+
+.tf-row{
+  display:grid;
+
+  grid-template-columns:
+    48px 1fr auto;
+
+  gap:9px;
+
+  align-items:center;
+
+  padding:9px 0;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.05);
+}
+
+.tf-row:last-child{
+  border-bottom:0;
+}
+
+.tf-name{
+  font-size:10px;
+
+  font-weight:900;
+
+  color:var(--muted);
+}
+
+.bar{
+  height:6px;
+
+  border-radius:999px;
+
+  overflow:hidden;
+
+  background:
+    rgba(255,255,255,.055);
+}
+
+.bar span{
+  display:block;
+
+  height:100%;
+
+  border-radius:999px;
+
+  transition:
+    width .4s ease;
+
+  background:
+    linear-gradient(
+      90deg,
+      #627cff,
+      #9ab4ff
+    );
+}
+
+.bias{
+  font-size:10px;
+
+  font-weight:900;
+}
+
+
+/* =========================================
+   KV ROWS
+========================================= */
+
+.kv{
+  display:grid;
+
+  grid-template-columns:
+    1fr auto;
+
+  gap:9px;
+
+  padding:8px 0;
+
+  font-size:11px;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.05);
+}
+
+.kv:last-child{
+  border-bottom:0;
+}
+
+.kv span{
+  color:var(--muted);
+}
+
+
+/* =========================================
+   CHIPS
+========================================= */
+
+.chips{
+  display:flex;
+
+  flex-wrap:wrap;
+
+  gap:7px;
+}
+
+.chip{
+  padding:
+    7px 9px;
+
+  border-radius:999px;
+
+  font-size:9px;
+
+  line-height:1.4;
+
+  color:#d0d9e7;
+
+  background:
+    rgba(255,255,255,.045);
+
+  border:
+    1px solid
+    rgba(255,255,255,.06);
+}
+
+.risk{
+  border-color:
+    rgba(255,100,119,.18);
+
+  background:
+    rgba(255,100,119,.055);
+}
+
+
+/* =========================================
+   CONFLUENCE SCORE
+========================================= */
+
+.confluence-box{
+  display:grid;
+
+  grid-template-columns:
+    1fr auto;
+
+  align-items:center;
+
+  gap:15px;
+}
+
+.confluence-number{
+  font-size:30px;
+
+  font-weight:950;
+}
+
+.confluence-label{
+  color:var(--muted);
+
+  font-size:9px;
+
+  margin-top:3px;
+}
+
+.confluence-bar{
+  height:9px;
+
+  border-radius:999px;
+
+  overflow:hidden;
+
+  background:
+    rgba(255,255,255,.06);
+
+  margin-top:11px;
+}
+
+.confluence-bar span{
+  display:block;
+
+  height:100%;
+
+  width:0%;
+
+  transition:
+    width .5s ease;
+
+  background:
+    linear-gradient(
+      90deg,
+      #655fff,
+      #55b7ff,
+      #44dda1
+    );
+}
+
+
+/* =========================================
+   SETTINGS
+========================================= */
+
+.settings-grid{
+  display:grid;
+
+  grid-template-columns:
+    repeat(2,1fr);
+
+  gap:9px;
+}
+
+.field label{
+  display:block;
+
+  margin-bottom:5px;
+
+  color:var(--muted);
+
+  font-size:9px;
+}
+
+.field select,
+.field input{
+  width:100%;
+}
+
+
+/* =========================================
+   SIGNAL HISTORY
+========================================= */
+
+.history{
+  display:grid;
+
+  gap:7px;
+}
+
+.history-row{
+  display:grid;
+
+  grid-template-columns:
+    56px 1fr auto;
+
+  gap:8px;
+
+  align-items:center;
+
+  padding:9px 10px;
+
+  border-radius:11px;
+
+  background:
+    rgba(255,255,255,.03);
+
+  border:
+    1px solid
+    rgba(255,255,255,.05);
+
+  font-size:10px;
+}
+
+.history-row small{
+  color:var(--muted);
+}
+
+.mini-signal{
+  font-weight:950;
+}
+
+.mini-signal.BUY{
+  color:var(--green);
+}
+
+.mini-signal.SELL{
+  color:var(--red);
+}
+
+.mini-signal.WAIT{
+  color:var(--gold);
+}
+
+
+/* =========================================
+   META
+========================================= */
+
+.meta{
+  display:flex;
+
+  justify-content:space-between;
+
+  gap:10px;
+
+  color:var(--muted);
+
+  font-size:9px;
+
+  margin-top:14px;
+}
+
+.foot{
+  margin-top:15px;
+
+  text-align:center;
+
+  color:#66717f;
+
+  font-size:9px;
+
+  line-height:1.5;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media(max-width:760px){
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .levels{
+    grid-template-columns:
+      repeat(2,1fr);
+  }
+
+  .market-health{
+    grid-template-columns:
+      repeat(2,1fr);
+  }
+
+  .decision{
+    grid-template-columns:
+      82px 1fr;
+  }
+
+  .confidence{
+    width:78px;
+    height:78px;
+  }
+
+  .confidence::before{
+    width:61px;
+    height:61px;
+  }
+
+  .settings-grid{
+    grid-template-columns:1fr;
+  }
+
+  .status{
+    font-size:8px;
+  }
+
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<main class="app">
 
-    <div class="header">
-        <div class="brand">
-            <div class="logo">M</div>
 
-            <div>
-                <div class="title">MKAYFX AI</div>
-                <div class="subtitle">Autonomous Market Intelligence</div>
-            </div>
-        </div>
+<!-- ===================================
+     HEADER
+=================================== -->
 
-        <div class="live" id="liveStatus">
-            ● AI READY
-        </div>
+<div class="topbar">
+
+  <div class="brand">
+
+    <div class="logo">
+      M
     </div>
 
+    <div>
 
-    <div class="card">
+      <h1>
+        MKAYFX EXTREME AI
+      </h1>
 
-        <div class="card-head">
-            <div class="card-title">LIVE MARKET</div>
-
-            <div id="lastUpdate" class="subtitle">
-                Waiting...
-            </div>
-        </div>
-
-        <div class="body">
-
-            <div class="symbol-row">
-
-                <div>
-                    <div class="symbol" id="symbolDisplay">
-                        XAU/USD
-                    </div>
-
-                    <div class="price" id="price">
-                        ---
-                    </div>
-                </div>
-
-                <div class="signal wait" id="signal">
-                    WAIT
-                </div>
-
-            </div>
-
-            <svg viewBox="0 0 600 120" preserveAspectRatio="none">
-                <polyline
-                    id="chartLine"
-                    fill="none"
-                    stroke="#5897ff"
-                    stroke-width="3"
-                    points=""
-                />
-            </svg>
-
-        </div>
+      <p>
+        Autonomous Market Intelligence
+      </p>
 
     </div>
 
+  </div>
 
-    <div class="card">
 
-        <div class="card-head">
-            <div class="card-title">
-                AI DECISION ENGINE
-            </div>
+  <div class="status">
 
-            <div id="grade">
-                -
-            </div>
-        </div>
+    <span
+      id="statusDot"
+      class="dot loading">
+    </span>
 
-        <div class="body">
+    <span id="statusText">
+      INITIALISING
+    </span>
 
-            <div class="decision">
-
-                <div
-                    class="confidence"
-                    id="confidenceCircle"
-                    style="--confidence:0deg"
-                >
-
-                    <div>
-                        <div class="confidence-number" id="confidence">
-                            0%
-                        </div>
-
-                        <div class="confidence-label">
-                            AI CONFIDENCE
-                        </div>
-                    </div>
-
-                </div>
-
-
-                <div>
-
-                    <div class="setup-grade">
-                        AI MARKET VERDICT
-                    </div>
-
-                    <div class="summary" id="summary">
-                        Press AI ANALYZE to begin.
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="levels">
-
-                <div class="level">
-                    <div class="level-label">ENTRY</div>
-                    <div class="level-value" id="entry">---</div>
-                </div>
-
-                <div class="level">
-                    <div class="level-label">STOP LOSS</div>
-                    <div class="level-value" id="sl">---</div>
-                </div>
-
-                <div class="level">
-                    <div class="level-label">TP 1</div>
-                    <div class="level-value" id="tp1">---</div>
-                </div>
-
-                <div class="level">
-                    <div class="level-label">TP 2</div>
-                    <div class="level-value" id="tp2">---</div>
-                </div>
-
-            </div>
-
-            <div class="guard" id="guard">
-                AI risk filters active.
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="card">
-
-        <div class="card-head">
-            <div class="card-title">
-                MULTI-TIMEFRAME AI
-            </div>
-        </div>
-
-        <div class="body">
-
-            <div class="tf">
-                <div class="tf-top">
-                    <span>M5</span>
-                    <strong id="m5Bias">---</strong>
-                </div>
-
-                <div class="bar">
-                    <div class="fill" id="m5Bar" style="width:0%"></div>
-                </div>
-            </div>
-
-
-            <div class="tf">
-                <div class="tf-top">
-                    <span>M15</span>
-                    <strong id="m15Bias">---</strong>
-                </div>
-
-                <div class="bar">
-                    <div class="fill" id="m15Bar" style="width:0%"></div>
-                </div>
-            </div>
-
-
-            <div class="tf">
-                <div class="tf-top">
-                    <span>H1</span>
-                    <strong id="h1Bias">---</strong>
-                </div>
-
-                <div class="bar">
-                    <div class="fill" id="h1Bar" style="width:0%"></div>
-                </div>
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="card">
-
-        <div class="card-head">
-            <div class="card-title">
-                AI MARKET READ
-            </div>
-        </div>
-
-        <div class="body">
-
-            <div class="grid">
-
-                <div class="metric">
-                    <div class="metric-label">REGIME</div>
-                    <div class="metric-value" id="regime">---</div>
-                </div>
-
-                <div class="metric">
-                    <div class="metric-label">STRUCTURE</div>
-                    <div class="metric-value" id="structure">---</div>
-                </div>
-
-                <div class="metric">
-                    <div class="metric-label">LIQUIDITY</div>
-                    <div class="metric-value" id="liquidity">---</div>
-                </div>
-
-                <div class="metric">
-                    <div class="metric-label">RISK / REWARD</div>
-                    <div class="metric-value" id="rr">---</div>
-                </div>
-
-                <div class="metric">
-                    <div class="metric-label">MACRO BIAS</div>
-                    <div class="metric-value" id="macro">---</div>
-                </div>
-
-                <div class="metric">
-                    <div class="metric-label">NEXT TRIGGER</div>
-                    <div class="metric-value" id="trigger">---</div>
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="card">
-
-        <div class="card-head">
-            <div class="card-title">
-                AI REASONING
-            </div>
-        </div>
-
-        <div class="body" id="reasons">
-            <div class="reason">
-                No analysis yet.
-            </div>
-        </div>
-
-    </div>
-
-
-    <div class="card">
-
-        <div class="card-head">
-            <div class="card-title">
-                RISKS / INVALIDATION
-            </div>
-        </div>
-
-        <div class="body">
-
-            <div id="risks">
-                <div class="reason">
-                    Waiting for AI.
-                </div>
-            </div>
-
-            <div class="guard" id="invalidation">
-                ---
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="card">
-
-        <div class="card-head">
-            <div class="card-title">
-                CONTROL
-            </div>
-        </div>
-
-        <div class="body">
-
-            <div class="controls">
-
-                <input
-                    id="symbolInput"
-                    value="XAU/USD"
-                    placeholder="XAU/USD"
-                >
-
-                <button id="analyzeButton">
-                    AI ANALYZE
-                </button>
-
-            </div>
-
-            <div class="status" id="status">
-                Analysis refreshes every 60 seconds.
-            </div>
-
-            <p class="warning">
-                Signals are analytical estimates, not guaranteed
-                outcomes. Test the system on demo data before using
-                real money.
-            </p>
-
-        </div>
-
-    </div>
+  </div>
 
 </div>
 
 
+<!-- ===================================
+     EXTREME AI MODE
+=================================== -->
+
+<div class="extreme-banner">
+
+  <div class="extreme-left">
+
+    <div class="ai-orb"></div>
+
+    <div>
+
+      <strong>
+        Extreme AI Engine
+      </strong>
+
+      <small>
+        Multi-timeframe decision system
+      </small>
+
+    </div>
+
+  </div>
+
+  <div class="mode-badge">
+    EXTREME MODE
+  </div>
+
+</div>
+
+
+
+<!-- ===================================
+     SYMBOL CONTROLS
+=================================== -->
+
+<div class="controls">
+
+  <select id="symbolSelect">
+
+    <option value="XAU/USD">
+      XAU/USD · GOLD
+    </option>
+
+    <option value="EUR/USD">
+      EUR/USD
+    </option>
+
+    <option value="GBP/USD">
+      GBP/USD
+    </option>
+
+    <option value="USD/JPY">
+      USD/JPY
+    </option>
+
+    <option value="BTC/USD">
+      BTC/USD
+    </option>
+
+    <option value="XBR/USD">
+      XBR/USD · BRENT
+    </option>
+
+  </select>
+
+
+  <button
+    id="analyzeBtn"
+    class="main-btn">
+
+    EXTREME ANALYZE
+
+  </button>
+
+</div>
+
+
+<div
+  id="errorBox"
+  class="error-box">
+</div>
+
+
+
+<!-- ===================================
+     PRICE HERO
+=================================== -->
+
+<section class="hero">
+
+  <div class="hero-top">
+
+    <div>
+
+      <div
+        class="symbol"
+        id="heroSymbol">
+
+        XAU/USD
+
+      </div>
+
+
+      <div
+        class="price"
+        id="price">
+
+        —
+
+      </div>
+
+
+      <div
+        class="change"
+        id="change">
+
+        Waiting for live data...
+
+      </div>
+
+    </div>
+
+
+    <div
+      id="signalBadge"
+      class="signal WAIT">
+
+      WAIT
+
+    </div>
+
+  </div>
+
+
+  <svg
+    id="sparkline"
+    viewBox="0 0 700 100"
+    preserveAspectRatio="none">
+
+    <polyline
+      id="sparkPoints"
+      points="">
+    </polyline>
+
+  </svg>
+
+
+  <div class="market-health">
+
+    <div class="health-item">
+
+      <small>
+        Setup Grade
+      </small>
+
+      <strong id="setupGrade">
+        —
+      </strong>
+
+    </div>
+
+
+    <div class="health-item">
+
+      <small>
+        AI Confluence
+      </small>
+
+      <strong id="heroConfluence">
+        —
+      </strong>
+
+    </div>
+
+
+    <div class="health-item">
+
+      <small>
+        Data
+      </small>
+
+      <strong id="dataHealth">
+        WAITING
+      </strong>
+
+    </div>
+
+
+    <div class="health-item">
+
+      <small>
+        Scan
+      </small>
+
+      <strong id="scanState">
+        IDLE
+      </strong>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<section class="grid">
+
+<div class="stack">
+
+
+<!-- ===================================
+     AI DECISION
+=================================== -->
+
+<div class="card">
+
+  <div class="card-title">
+    Extreme AI Decision Engine
+  </div>
+
+
+  <div class="decision">
+
+    <div
+      id="confidence"
+      class="confidence">
+
+      <span id="confidenceText">
+        0%
+      </span>
+
+    </div>
+
+
+    <div>
+
+      <div
+        id="summary"
+        class="summary">
+
+        Waiting for AI analysis.
+
+      </div>
+
+      <div
+        id="gradeBadge"
+        class="grade">
+
+        NO SETUP
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="levels">
+
+    <div class="level">
+
+      <small>
+        Entry
+      </small>
+
+      <strong id="entry">
+        —
+      </strong>
+
+    </div>
+
+
+    <div class="level">
+
+      <small>
+        Stop Loss
+      </small>
+
+      <strong id="sl">
+        —
+      </strong>
+
+    </div>
+
+
+    <div class="level">
+
+      <small>
+        TP1
+      </small>
+
+      <strong id="tp1">
+        —
+      </strong>
+
+    </div>
+
+
+    <div class="level">
+
+      <small>
+        TP2
+      </small>
+
+      <strong id="tp2">
+        —
+      </strong>
+
+    </div>
+
+  </div>
+
+
+  <button
+    class="secondary-btn"
+    style="margin-top:11px"
+    onclick="copyTradePlan()">
+
+    Copy Trade Plan
+
+  </button>
+
+</div>
+
+
+
+<!-- ===================================
+     AI CONFLUENCE
+=================================== -->
+
+<div class="card">
+
+  <div class="card-title">
+    AI Confluence Engine
+  </div>
+
+  <div class="confluence-box">
+
+    <div>
+
+      <div
+        id="confluenceNumber"
+        class="confluence-number">
+
+        0%
+
+      </div>
+
+      <div
+        id="confluenceText"
+        class="confluence-label">
+
+        Waiting for analysis
+
+      </div>
+
+    </div>
+
+    <div id="alignmentLabel">
+      —
+    </div>
+
+  </div>
+
+
+  <div class="confluence-bar">
+
+    <span id="confluenceBar">
+    </span>
+
+  </div>
+
+</div>
+
+
+
+<!-- ===================================
+     REASONS
+=================================== -->
+
+<div class="card">
+
+  <div class="card-title">
+    Why Extreme AI Chose This
+  </div>
+
+  <div
+    id="reasons"
+    class="chips">
+
+    <span class="chip">
+      Waiting for market analysis
+    </span>
+
+  </div>
+
+</div>
+
+
+
+<!-- ===================================
+     RISK
+=================================== -->
+
+<div class="card">
+
+  <div class="card-title">
+    Extreme Risk Engine
+  </div>
+
+
+  <div
+    id="risks"
+    class="chips">
+
+    <span class="chip risk">
+      Risk engine waiting
+    </span>
+
+  </div>
+
+
+  <div
+    class="kv"
+    style="margin-top:10px">
+
+    <span>
+      Setup invalidation
+    </span>
+
+    <strong id="invalidation">
+      —
+    </strong>
+
+  </div>
+
+</div>
+
+
+
+<!-- ===================================
+     HISTORY
+=================================== -->
+
+<div class="card">
+
+  <div class="card-title">
+    Recent AI Signals
+  </div>
+
+  <div
+    id="history"
+    class="history">
+
+    <div class="history-row">
+
+      <small>—</small>
+
+      <span>
+        No signals recorded yet
+      </span>
+
+      <span>—</span>
+
+    </div>
+
+  </div>
+
+</div>
+
+</div>
+
+
+
+<div class="stack">
+
+
+<!-- ===================================
+     TIMEFRAMES
+=================================== -->
+
+<div class="card">
+
+  <div class="card-title">
+    Multi-Timeframe Intelligence
+  </div>
+
+
+  <div class="tf-row">
+
+    <div class="tf-name">
+      M5
+    </div>
+
+    <div class="bar">
+      <span
+        id="m5Bar"
+        style="width:50%">
+      </span>
+    </div>
+
+    <div
+      id="m5Bias"
+      class="bias">
+
+      NEUTRAL
+
+    </div>
+
+  </div>
+
+
+  <div class="tf-row">
+
+    <div class="tf-name">
+      M15
+    </div>
+
+    <div class="bar">
+      <span
+        id="m15Bar"
+        style="width:50%">
+      </span>
+    </div>
+
+    <div
+      id="m15Bias"
+      class="bias">
+
+      NEUTRAL
+
+    </div>
+
+  </div>
+
+
+  <div class="tf-row">
+
+    <div class="tf-name">
+      H1
+    </div>
+
+    <div class="bar">
+      <span
+        id="h1Bar"
+        style="width:50%">
+      </span>
+    </div>
+
+    <div
+      id="h1Bias"
+      class="bias">
+
+      NEUTRAL
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ===================================
+     MARKET READ
+=================================== -->
+
+<div class="card">
+
+  <div class="card-title">
+    Extreme Market Read
+  </div>
+
+
+  <div class="kv">
+
+    <span>
+      Market regime
+    </span>
+
+    <strong id="regime">
+      —
+    </strong>
+
+  </div>
+
+
+  <div class="kv">
+
+    <span>
+      Structure
+    </span>
+
+    <strong id="structure">
+      —
+    </strong>
+
+  </div>
+
+
+  <div class="kv">
+
+    <span>
+      Momentum
+    </span>
+
+    <strong id="momentum">
+      —
+    </strong>
+
+  </div>
+
+
+  <div class="kv">
+
+    <span>
+      Risk / Reward
+    </span>
+
+    <strong id="rr">
+      —
+    </strong>
+
+  </div>
+
+</div>
+
+
+
+<!-- ===================================
+     NEWS
+=================================== -->
+
+<div class="card">
+
+  <div class="card-title">
+    AI News / Macro Intelligence
+  </div>
+
+  <div
+    id="newsSummary"
+    class="summary"
+    style="font-size:12px">
+
+    Waiting for news intelligence.
+
+  </div>
+
+</div>
+
+
+
+<!-- ===================================
+     SETTINGS
+=================================== -->
+
+<div class="card">
+
+  <div class="card-title">
+    AI Controls
+  </div>
+
+  <div class="settings-grid">
+
+
+    <div class="field">
+
+      <label>
+        Auto Scan
+      </label>
+
+      <select id="refreshSetting">
+
+        <option value="60">
+          Every 60 seconds
+        </option>
+
+        <option value="120">
+          Every 2 minutes
+        </option>
+
+        <option value="300">
+          Every 5 minutes
+        </option>
+
+        <option value="0">
+          Off
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Minimum Alert Confidence
+      </label>
+
+      <select id="confidenceSetting">
+
+        <option value="60">
+          60%
+        </option>
+
+        <option value="70">
+          70%
+        </option>
+
+        <option value="75" selected>
+          75%
+        </option>
+
+        <option value="80">
+          80%
+        </option>
+
+        <option value="85">
+          85%
+        </option>
+
+        <option value="90">
+          90%
+        </option>
+
+      </select>
+
+    </div>
+
+  </div>
+
+
+  <button
+    class="secondary-btn"
+    style="margin-top:10px"
+    onclick="enableNotifications()">
+
+    Enable BUY / SELL Alerts
+
+  </button>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<div class="meta">
+
+  <span id="updated">
+    Not updated yet
+  </span>
+
+  <span id="countdown">
+    Next AI scan: —
+  </span>
+
+</div>
+
+
+<div class="foot">
+
+  MKAYFX Extreme AI provides probabilistic
+  market analysis, not guaranteed trades.
+  Paper-test the system before risking money.
+
+</div>
+
+
+</main>
+
+
+
 <script>
 
-const $ = id => document.getElementById(id);
+/* =========================================
+   MKAYFX EXTREME AI FRONTEND ENGINE
+========================================= */
+
+const $ =
+  id =>
+    document.getElementById(id);
+
 
 let busy = false;
 
+let currentData = null;
 
-/* -----------------------------------------
-   NUMBER FORMAT
------------------------------------------ */
+let previousSignal = null;
 
-function fmt(value) {
+let refreshSeconds =
+  Number(
+    localStorage.getItem(
+      "mkayfx_refresh"
+    ) || 60
+  );
 
-    if (
-        value === null ||
-        value === undefined ||
-        Number.isNaN(Number(value))
-    ) {
-        return "---";
+let nextScan =
+  refreshSeconds;
+
+
+/* =========================================
+   SETTINGS
+========================================= */
+
+$("refreshSetting").value =
+  String(refreshSeconds);
+
+$("confidenceSetting").value =
+  localStorage.getItem(
+    "mkayfx_confidence"
+  ) || "75";
+
+
+$("refreshSetting")
+  .addEventListener(
+    "change",
+    () => {
+
+      refreshSeconds =
+        Number(
+          $("refreshSetting").value
+        );
+
+      localStorage.setItem(
+        "mkayfx_refresh",
+        refreshSeconds
+      );
+
+      nextScan =
+        refreshSeconds;
+
     }
+  );
 
-    const number = Number(value);
 
-    if (number < 10) {
-        return number.toFixed(5);
+$("confidenceSetting")
+  .addEventListener(
+    "change",
+    () => {
+
+      localStorage.setItem(
+        "mkayfx_confidence",
+        $("confidenceSetting").value
+      );
+
     }
+  );
 
-    if (number < 100) {
-        return number.toFixed(3);
-    }
 
-    return number.toFixed(2);
+/* =========================================
+   FORMAT PRICE
+========================================= */
+
+function fmt(value){
+
+  if(
+    value === null ||
+    value === undefined ||
+    Number.isNaN(
+      Number(value)
+    )
+  ){
+    return "—";
+  }
+
+  const n =
+    Number(value);
+
+  if(
+    Math.abs(n) >= 1000
+  ){
+    return n.toFixed(2);
+  }
+
+  if(
+    Math.abs(n) >= 10
+  ){
+    return n.toFixed(3);
+  }
+
+  return n.toFixed(5);
 }
 
 
-/* -----------------------------------------
-   SIGNAL COLOUR
------------------------------------------ */
+/* =========================================
+   ESCAPE HTML
+========================================= */
 
-function setSignal(decision) {
+function escapeHtml(value){
 
-    const signal = $("signal");
+  return String(value)
+    .replace(
+      /[&<>'"]/g,
+      char => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        "'":"&#39;",
+        '"':"&quot;"
+      })[char]
+    );
 
-    signal.className = "signal";
-
-    const d = decision || "WAIT";
-
-    if (d === "BUY") {
-        signal.classList.add("buy");
-    }
-
-    else if (d === "SELL") {
-        signal.classList.add("sell");
-    }
-
-    else {
-        signal.classList.add("wait");
-    }
-
-    signal.textContent = d;
 }
 
 
-/* -----------------------------------------
-   TIMEFRAME
------------------------------------------ */
+/* =========================================
+   STATUS
+========================================= */
 
-function updateTF(prefix, data) {
+function setStatus(
+  type,
+  text
+){
 
-    const bias =
-        data?.bias ||
+  $("statusDot").className =
+    `dot ${type || ""}`;
+
+  $("statusText").textContent =
+    text;
+
+}
+
+
+/* =========================================
+   BIAS SCORE
+========================================= */
+
+function biasScore(
+  bias
+){
+
+  if(
+    bias === "BULLISH"
+  ){
+    return 88;
+  }
+
+  if(
+    bias === "BEARISH"
+  ){
+    return 88;
+  }
+
+  return 42;
+}
+
+
+/* =========================================
+   SETUP GRADE
+========================================= */
+
+function setupGrade(
+  confidence,
+  action
+){
+
+  if(
+    action === "WAIT"
+  ){
+    return {
+      grade:"WAIT",
+      text:"NO TRADE"
+    };
+  }
+
+  if(
+    confidence >= 90
+  ){
+    return {
+      grade:"A+",
+      text:"ELITE SETUP"
+    };
+  }
+
+  if(
+    confidence >= 85
+  ){
+    return {
+      grade:"A",
+      text:"HIGH QUALITY"
+    };
+  }
+
+  if(
+    confidence >= 78
+  ){
+    return {
+      grade:"B+",
+      text:"STRONG SETUP"
+    };
+  }
+
+  if(
+    confidence >= 70
+  ){
+    return {
+      grade:"B",
+      text:"VALID SETUP"
+    };
+  }
+
+  return {
+    grade:"C",
+    text:"LOW CONFIDENCE"
+  };
+
+}
+
+
+/* =========================================
+   CONFLUENCE ENGINE
+========================================= */
+
+function calculateConfluence(
+  analysis
+){
+
+  const tf =
+    analysis.timeframeBias || {};
+
+  const biases = [
+    tf.M5,
+    tf.M15,
+    tf.H1
+  ];
+
+  let alignment = 0;
+
+  if(
+    biases[0] ===
+    biases[1]
+  ){
+    alignment++;
+  }
+
+  if(
+    biases[1] ===
+    biases[2]
+  ){
+    alignment++;
+  }
+
+  if(
+    biases[0] ===
+    biases[2]
+  ){
+    alignment++;
+  }
+
+
+  let score =
+    Number(
+      analysis.confidence || 0
+    ) * .65;
+
+
+  score +=
+    alignment * 10;
+
+
+  if(
+    analysis.action !== "WAIT"
+  ){
+    score += 5;
+  }
+
+
+  return Math.min(
+    99,
+    Math.max(
+      0,
+      Math.round(score)
+    )
+  );
+
+}
+
+
+/* =========================================
+   ALIGNMENT TEXT
+========================================= */
+
+function alignmentText(
+  tf
+){
+
+  if(
+    tf.M5 === tf.M15 &&
+    tf.M15 === tf.H1
+  ){
+
+    if(
+      tf.M5 === "BULLISH"
+    ){
+      return "FULL BULLISH";
+    }
+
+    if(
+      tf.M5 === "BEARISH"
+    ){
+      return "FULL BEARISH";
+    }
+
+  }
+
+
+  if(
+    tf.M15 === tf.H1
+  ){
+    return "HTF ALIGNED";
+  }
+
+
+  return "MIXED";
+
+}
+
+
+/* =========================================
+   CHART
+========================================= */
+
+function drawChart(
+  values
+){
+
+  if(
+    !Array.isArray(values) ||
+    values.length < 2
+  ){
+    return;
+  }
+
+
+  const numbers =
+    values.map(
+      item =>
+        typeof item === "object"
+          ? Number(
+              item.c ??
+              item.close
+            )
+          : Number(item)
+    )
+    .filter(
+      Number.isFinite
+    );
+
+
+  if(
+    numbers.length < 2
+  ){
+    return;
+  }
+
+
+  const min =
+    Math.min(...numbers);
+
+  const max =
+    Math.max(...numbers);
+
+  const range =
+    max - min || 1;
+
+
+  const width =
+    700;
+
+  const height =
+    100;
+
+
+  const points =
+    numbers.map(
+      (value,index) => {
+
+        const x =
+          (
+            index /
+            (
+              numbers.length - 1
+            )
+          ) * width;
+
+
+        const y =
+          height -
+          (
+            (
+              (
+                value - min
+              ) /
+              range
+            ) *
+            78 +
+            11
+          );
+
+
+        return (
+          `${x.toFixed(1)},` +
+          `${y.toFixed(1)}`
+        );
+
+      }
+    )
+    .join(" ");
+
+
+  $("sparkPoints")
+    .setAttribute(
+      "points",
+      points
+    );
+
+}
+
+
+/* =========================================
+   SIGNAL HISTORY
+========================================= */
+
+function getHistory(){
+
+  try{
+
+    return JSON.parse(
+      localStorage.getItem(
+        "mkayfx_history"
+      ) || "[]"
+    );
+
+  }
+  catch{
+
+    return [];
+
+  }
+
+}
+
+
+function saveHistory(
+  data
+){
+
+  const a =
+    data.analysis;
+
+  const history =
+    getHistory();
+
+
+  const item = {
+
+    time:
+      Date.now(),
+
+    symbol:
+      data.symbol,
+
+    signal:
+      a.action,
+
+    confidence:
+      a.confidence,
+
+    price:
+      data.price
+  };
+
+
+  const last =
+    history[0];
+
+
+  if(
+    !last ||
+    last.signal !==
+      item.signal ||
+    last.symbol !==
+      item.symbol
+  ){
+
+    history.unshift(
+      item
+    );
+
+  }
+
+
+  localStorage.setItem(
+    "mkayfx_history",
+    JSON.stringify(
+      history.slice(
+        0,
+        15
+      )
+    )
+  );
+
+
+  renderHistory();
+
+}
+
+
+function renderHistory(){
+
+  const history =
+    getHistory();
+
+
+  if(
+    !history.length
+  ){
+
+    $("history").innerHTML =
+      `
+      <div class="history-row">
+
+        <small>—</small>
+
+        <span>
+          No signals recorded yet
+        </span>
+
+        <span>—</span>
+
+      </div>
+      `;
+
+    return;
+
+  }
+
+
+  $("history").innerHTML =
+    history
+      .slice(0,6)
+      .map(
+        item => {
+
+          const time =
+            new Date(
+              item.time
+            )
+            .toLocaleTimeString(
+              [],
+              {
+                hour:"2-digit",
+                minute:"2-digit"
+              }
+            );
+
+
+          return `
+          <div class="history-row">
+
+            <small>
+              ${time}
+            </small>
+
+            <span>
+
+              ${escapeHtml(
+                item.symbol
+              )}
+
+              ·
+
+              ${fmt(
+                item.price
+              )}
+
+            </span>
+
+            <span
+              class="mini-signal
+              ${item.signal}">
+
+              ${item.signal}
+
+              ${item.confidence}%
+
+            </span>
+
+          </div>
+          `;
+
+        }
+      )
+      .join("");
+
+}
+
+
+/* =========================================
+   NOTIFICATIONS
+========================================= */
+
+async function enableNotifications(){
+
+  if(
+    !("Notification" in window)
+  ){
+
+    alert(
+      "Browser notifications are not supported here."
+    );
+
+    return;
+
+  }
+
+
+  const permission =
+    await Notification
+      .requestPermission();
+
+
+  if(
+    permission === "granted"
+  ){
+
+    alert(
+      "MKAYFX alerts enabled."
+    );
+
+  }
+
+}
+
+
+function maybeAlert(
+  data
+){
+
+  const a =
+    data.analysis;
+
+
+  const minimum =
+    Number(
+      $("confidenceSetting").value
+    );
+
+
+  if(
+    a.action === "WAIT"
+  ){
+    return;
+  }
+
+
+  if(
+    Number(
+      a.confidence
+    ) < minimum
+  ){
+    return;
+  }
+
+
+  if(
+    previousSignal ===
+    a.action
+  ){
+    return;
+  }
+
+
+  previousSignal =
+    a.action;
+
+
+  if(
+    "Notification" in window &&
+    Notification.permission ===
+      "granted"
+  ){
+
+    new Notification(
+      `${data.symbol} ${a.action}`,
+      {
+        body:
+          `${a.confidence}% confidence · ` +
+          `Entry ${fmt(a.entry)} · ` +
+          `SL ${fmt(a.stopLoss)}`
+      }
+    );
+
+  }
+
+}
+
+
+/* =========================================
+   COPY TRADE PLAN
+========================================= */
+
+async function copyTradePlan(){
+
+  if(
+    !currentData
+  ){
+
+    alert(
+      "Run an analysis first."
+    );
+
+    return;
+
+  }
+
+
+  const a =
+    currentData.analysis;
+
+
+  const text =
+`MKAYFX EXTREME AI
+
+${currentData.symbol}
+
+Signal: ${a.action}
+Confidence: ${a.confidence}%
+
+Entry: ${fmt(a.entry)}
+SL: ${fmt(a.stopLoss)}
+TP1: ${fmt(a.takeProfit1)}
+TP2: ${fmt(a.takeProfit2)}
+
+Risk/Reward:
+${a.riskReward || "—"}
+
+Market:
+${a.summary}
+
+Invalidation:
+${a.invalidation}`;
+
+
+  try{
+
+    await navigator
+      .clipboard
+      .writeText(text);
+
+    alert(
+      "Trade plan copied."
+    );
+
+  }
+  catch{
+
+    alert(
+      text
+    );
+
+  }
+
+}
+
+
+/* =========================================
+   RENDER ANALYSIS
+========================================= */
+
+function render(
+  data
+){
+
+  currentData =
+    data;
+
+
+  const a =
+    data.analysis || {};
+
+
+  const price =
+    data.price ??
+    data.current_price;
+
+
+  $("heroSymbol").textContent =
+    data.symbol;
+
+
+  $("price").textContent =
+    fmt(price);
+
+
+  const change =
+    Number(
+      data.changePct || 0
+    );
+
+
+  $("change").textContent =
+    `${change >= 0 ? "+" : ""}` +
+    `${change.toFixed(3)}% · recent move`;
+
+
+  $("signalBadge").textContent =
+    a.action || "WAIT";
+
+
+  $("signalBadge").className =
+    `signal ${a.action || "WAIT"}`;
+
+
+  const confidence =
+    Number(
+      a.confidence || 0
+    );
+
+
+  $("confidence")
+    .style
+    .setProperty(
+      "--p",
+      Math.max(
+        0,
+        Math.min(
+          100,
+          confidence
+        )
+      )
+    );
+
+
+  $("confidenceText").textContent =
+    `${confidence}%`;
+
+
+  $("summary").textContent =
+    a.summary ||
+    "No AI summary returned.";
+
+
+  $("entry").textContent =
+    fmt(a.entry);
+
+
+  $("sl").textContent =
+    fmt(a.stopLoss);
+
+
+  $("tp1").textContent =
+    fmt(a.takeProfit1);
+
+
+  $("tp2").textContent =
+    fmt(a.takeProfit2);
+
+
+  $("rr").textContent =
+    a.riskReward ||
+    "—";
+
+
+  $("regime").textContent =
+    a.regime ||
+    "—";
+
+
+  $("structure").textContent =
+    a.structure ||
+    "—";
+
+
+  $("momentum").textContent =
+    a.momentum ||
+    "—";
+
+
+  $("invalidation").textContent =
+    a.invalidation ||
+    "—";
+
+
+  $("newsSummary").textContent =
+    a.newsSummary ||
+    "No news analysis returned.";
+
+
+  const tf =
+    a.timeframeBias || {
+      M5:"NEUTRAL",
+      M15:"NEUTRAL",
+      H1:"NEUTRAL"
+    };
+
+
+  [
+    "M5",
+    "M15",
+    "H1"
+  ]
+  .forEach(
+    timeframe => {
+
+      const bias =
+        tf[timeframe] ||
         "NEUTRAL";
 
-    const strength =
-        Math.max(
-            0,
-            Math.min(
-                100,
-                Number(data?.strength || 0)
-            )
-        );
 
-    $(prefix + "Bias").textContent =
-        `${bias.toUpperCase()} ${strength}%`;
-
-    $(prefix + "Bar").style.width =
-        strength + "%";
-}
+      $(
+        `${timeframe.toLowerCase()}Bias`
+      )
+      .textContent =
+        bias;
 
 
-/* -----------------------------------------
-   CHART
------------------------------------------ */
+      $(
+        `${timeframe.toLowerCase()}Bar`
+      )
+      .style.width =
+        `${biasScore(bias)}%`;
 
-function drawChart(candles = []) {
-
-    if (!candles.length) {
-        return;
     }
-
-    const closes =
-        candles.map(x => Number(x.c));
-
-    const min =
-        Math.min(...closes);
-
-    const max =
-        Math.max(...closes);
-
-    const range =
-        max - min || 1;
-
-    const width = 600;
-    const height = 110;
-
-    const points =
-        closes.map((value, index) => {
-
-            const x =
-                (index / (closes.length - 1))
-                * width;
-
-            const y =
-                height -
-                ((value - min) / range)
-                * height +
-                5;
-
-            return `${x},${y}`;
-
-        }).join(" ");
-
-    $("chartLine")
-        .setAttribute("points", points);
-}
+  );
 
 
-/* -----------------------------------------
-   DISPLAY ARRAY
------------------------------------------ */
-
-function renderArray(id, items) {
-
-    const container = $(id);
-
-    container.innerHTML = "";
-
-    if (!Array.isArray(items) || !items.length) {
-
-        container.innerHTML =
-            '<div class="reason">None reported.</div>';
-
-        return;
-    }
-
-    items.forEach(text => {
-
-        const div =
-            document.createElement("div");
-
-        div.className =
-            "reason";
-
-        div.textContent =
-            "• " + text;
-
-        container.appendChild(div);
-
-    });
-}
-
-
-/* -----------------------------------------
-   RENDER AI RESPONSE
------------------------------------------ */
-
-function render(data) {
-
-    const a = data.analysis;
-
-    $("symbolDisplay").textContent =
-        data.symbol;
-
-    $("price").textContent =
-        fmt(data.current_price);
-
-    setSignal(a.decision);
-
-    $("confidence").textContent =
-        Math.round(a.confidence) + "%";
-
-    $("confidenceCircle").style
-        .setProperty(
-            "--confidence",
-            `${a.confidence * 3.6}deg`
-        );
-
-    $("grade").textContent =
-        a.setup_grade || "-";
-
-    $("summary").textContent =
-        a.summary;
-
-    $("entry").textContent =
-        fmt(a.entry);
-
-    $("sl").textContent =
-        fmt(a.stop_loss);
-
-    $("tp1").textContent =
-        fmt(a.take_profit_1);
-
-    $("tp2").textContent =
-        fmt(a.take_profit_2);
-
-    $("regime").textContent =
-        a.market_regime;
-
-    $("structure").textContent =
-        a.structure_summary;
-
-    $("liquidity").textContent =
-        a.liquidity_summary;
-
-    $("rr").textContent =
-        a.risk_reward
-        ? "1:" + Number(a.risk_reward).toFixed(2)
-        : "---";
-
-    $("macro").textContent =
-        a.macro_bias;
-
-    $("trigger").textContent =
-        a.next_trigger;
-
-    updateTF(
-        "m5",
-        a.timeframes.m5
-    );
-
-    updateTF(
-        "m15",
-        a.timeframes.m15
-    );
-
-    updateTF(
-        "h1",
-        a.timeframes.h1
-    );
-
-    renderArray(
-        "reasons",
+  $("reasons").innerHTML =
+    (
+      Array.isArray(
         a.reasons
-    );
+      )
+        ? a.reasons
+        : []
+    )
+    .map(
+      reason =>
+        `<span class="chip">
+          ${escapeHtml(reason)}
+        </span>`
+    )
+    .join("") ||
+    `<span class="chip">
+      No reasoning returned
+    </span>`;
 
-    renderArray(
-        "risks",
+
+  $("risks").innerHTML =
+    (
+      Array.isArray(
         a.risks
+      )
+        ? a.risks
+        : []
+    )
+    .map(
+      risk =>
+        `<span class="chip risk">
+          ${escapeHtml(risk)}
+        </span>`
+    )
+    .join("") ||
+    `<span class="chip risk">
+      No risk notes returned
+    </span>`;
+
+
+  const grade =
+    setupGrade(
+      confidence,
+      a.action
     );
 
-    $("invalidation").textContent =
-        "Invalidation: " +
-        a.invalidation;
 
-    $("guard").textContent =
-        data.guardrail_note ||
-        "AI trade passed risk filters.";
+  $("setupGrade").textContent =
+    grade.grade;
 
-    drawChart(data.chart);
 
-    $("lastUpdate").textContent =
-        new Date().toLocaleTimeString(
-            "en-ZA",
-            {
-                timeZone:
-                    "Africa/Johannesburg",
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit"
-            }
-        );
+  $("gradeBadge").textContent =
+    `${grade.grade} · ${grade.text}`;
+
+
+  const confluence =
+    calculateConfluence(a);
+
+
+  $("confluenceNumber")
+    .textContent =
+      `${confluence}%`;
+
+
+  $("heroConfluence")
+    .textContent =
+      `${confluence}%`;
+
+
+  $("confluenceBar")
+    .style.width =
+      `${confluence}%`;
+
+
+  $("alignmentLabel")
+    .textContent =
+      alignmentText(tf);
+
+
+  if(
+    confluence >= 85
+  ){
+
+    $("confluenceText")
+      .textContent =
+        "Very strong timeframe agreement";
+
+  }
+  else if(
+    confluence >= 70
+  ){
+
+    $("confluenceText")
+      .textContent =
+        "Good multi-factor agreement";
+
+  }
+  else if(
+    confluence >= 55
+  ){
+
+    $("confluenceText")
+      .textContent =
+        "Moderate market agreement";
+
+  }
+  else{
+
+    $("confluenceText")
+      .textContent =
+        "Weak or conflicting setup";
+
+  }
+
+
+  $("dataHealth").textContent =
+    "LIVE";
+
+
+  $("scanState").textContent =
+    "COMPLETE";
+
+
+  $("updated").textContent =
+    "Updated " +
+    new Date(
+      data.timestamp ||
+      Date.now()
+    )
+    .toLocaleTimeString(
+      [],
+      {
+        hour:"2-digit",
+        minute:"2-digit",
+        second:"2-digit"
+      }
+    );
+
+
+  drawChart(
+    data.chart
+  );
+
+
+  saveHistory(
+    data
+  );
+
+
+  maybeAlert(
+    data
+  );
 
 }
 
 
-/* -----------------------------------------
-   RUN LIVE AI ANALYSIS
------------------------------------------ */
+/* =========================================
+   ANALYSE
+========================================= */
 
-async function runAnalysis() {
+async function analyze(){
 
-    if (busy) {
-        return;
-    }
+  if(
+    busy
+  ){
+    return;
+  }
 
-    busy = true;
 
-    const button =
-        $("analyzeButton");
+  busy =
+    true;
 
-    button.disabled = true;
 
-    $("liveStatus").textContent =
-        "● AI THINKING";
+  $("analyzeBtn")
+    .disabled =
+      true;
 
-    $("status").textContent =
-        "GPT is analysing M5, M15 and H1 raw market data...";
 
-    try {
+  $("errorBox")
+    .style.display =
+      "none";
 
-        const symbol =
-            $("symbolInput")
-            .value
-            .trim();
 
-        const response =
-            await fetch(
-                "/api/analyze",
-                {
-                    method: "POST",
+  $("scanState")
+    .textContent =
+      "SCANNING";
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
 
-                    body: JSON.stringify({
-                        symbol
-                    })
-                }
-            );
+  setStatus(
+    "loading",
+    "EXTREME AI ANALYSING"
+  );
 
-        const data =
-            await response.json();
 
-        if (!response.ok) {
+  try{
 
-            throw new Error(
-                data.error ||
-                "Analysis failed."
-            );
+    const symbol =
+      $("symbolSelect").value;
+
+
+    const response =
+      await fetch(
+        `/api/analyze?symbol=${encodeURIComponent(symbol)}`,
+        {
+          cache:"no-store"
         }
+      );
 
-        render(data);
 
-        $("liveStatus").textContent =
-            "● LIVE AI";
+    const data =
+      await response.json();
 
-        $("status").textContent =
-            "Live AI analysis complete. Automatic refresh in 60 seconds.";
+
+    if(
+      !response.ok
+    ){
+
+      throw new Error(
+        data.error ||
+        "Extreme AI analysis failed"
+      );
 
     }
 
-    catch (error) {
 
-        console.error(error);
+    render(
+      data
+    );
 
-        $("liveStatus").textContent =
-            "● ERROR";
 
-        $("status").textContent =
-            error.message;
+    setStatus(
+      "",
+      "EXTREME AI ONLINE"
+    );
+
+
+    if(
+      refreshSeconds > 0
+    ){
+
+      nextScan =
+        refreshSeconds;
+
     }
 
-    finally {
+  }
+  catch(error){
 
-        busy = false;
+    console.error(error);
 
-        button.disabled =
-            false;
-    }
+
+    $("errorBox").textContent =
+      error.message;
+
+
+    $("errorBox")
+      .style.display =
+        "block";
+
+
+    $("dataHealth").textContent =
+      "ERROR";
+
+
+    $("scanState").textContent =
+      "FAILED";
+
+
+    setStatus(
+      "error",
+      "AI CONNECTION ERROR"
+    );
+
+  }
+  finally{
+
+    busy =
+      false;
+
+
+    $("analyzeBtn")
+      .disabled =
+        false;
+
+  }
 
 }
 
 
-$("analyzeButton")
-    .addEventListener(
-        "click",
-        runAnalysis
-    );
+/* =========================================
+   STALE DATA MONITOR
+========================================= */
 
-
-/* initial run */
-runAnalysis();
-
-
-/* refresh every minute */
 setInterval(
-    runAnalysis,
-    60000
+  () => {
+
+    if(
+      !currentData
+    ){
+      return;
+    }
+
+
+    const timestamp =
+      new Date(
+        currentData.timestamp
+      )
+      .getTime();
+
+
+    const age =
+      Date.now() -
+      timestamp;
+
+
+    if(
+      age >
+      180000
+    ){
+
+      $("dataHealth")
+        .textContent =
+          "STALE";
+
+    }
+    else{
+
+      $("dataHealth")
+        .textContent =
+          "LIVE";
+
+    }
+
+  },
+  5000
 );
+
+
+/* =========================================
+   AUTO SCAN
+========================================= */
+
+setInterval(
+  () => {
+
+    if(
+      refreshSeconds === 0
+    ){
+
+      $("countdown")
+        .textContent =
+          "Auto scan: OFF";
+
+      return;
+
+    }
+
+
+    if(
+      !busy
+    ){
+
+      nextScan--;
+
+    }
+
+
+    if(
+      nextScan <= 0
+    ){
+
+      analyze();
+
+    }
+
+
+    $("countdown")
+      .textContent =
+        `Next AI scan: ${
+          Math.max(
+            0,
+            nextScan
+          )
+        }s`;
+
+  },
+  1000
+);
+
+
+/* =========================================
+   EVENTS
+========================================= */
+
+$("analyzeBtn")
+  .addEventListener(
+    "click",
+    analyze
+  );
+
+
+$("symbolSelect")
+  .addEventListener(
+    "change",
+    () => {
+
+      previousSignal =
+        null;
+
+      analyze();
+
+    }
+  );
+
+
+renderHistory();
+
+
+/* =========================================
+   START
+========================================= */
+
+analyze();
 
 </script>
 
