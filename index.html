@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -25,7 +26,8 @@
   content="black-translucent"
 >
 
-<title>MKAYFX GOLD V9.1</title>
+<title>MKAYFX GOLD</title>
+
 
 <style>
 
@@ -60,39 +62,56 @@ body{
     sans-serif;
 
   background:
+
     radial-gradient(
       circle at 15% 0%,
       rgba(91,111,255,.19),
       transparent 27%
     ),
+
     #040608;
 
   padding:
-    max(12px,env(safe-area-inset-top))
+    max(
+      12px,
+      env(safe-area-inset-top)
+    )
     9px
-    max(90px,env(safe-area-inset-bottom));
+    max(
+      90px,
+      env(safe-area-inset-bottom)
+    );
 
 }
 
 .app{
+
   max-width:800px;
   margin:auto;
+
 }
 
 header{
 
   display:flex;
+
   align-items:center;
-  justify-content:space-between;
+
+  justify-content:
+    space-between;
+
   gap:10px;
+
   margin-bottom:10px;
 
 }
 
 .brand{
+
   display:flex;
   align-items:center;
   gap:9px;
+
 }
 
 .logo{
@@ -116,28 +135,38 @@ header{
   color:#171204;
 
   font-weight:1000;
+
 }
 
 h1{
+
   margin:0;
+
   font-size:14px;
+
 }
 
 .subtitle{
+
   margin-top:3px;
+
   color:var(--muted);
+
   font-size:7px;
+
 }
 
 .status{
 
-  padding:8px 10px;
+  padding:
+    8px 10px;
 
   border:
     1px solid
     var(--border);
 
-  border-radius:999px;
+  border-radius:
+    999px;
 
   font-size:7px;
   font-weight:900;
@@ -156,9 +185,11 @@ h1{
   color:var(--red);
 }
 
+
 .card{
 
   margin-bottom:9px;
+
   padding:14px;
 
   border:
@@ -173,14 +204,19 @@ h1{
 }
 
 .hero{
+
   text-align:center;
+
 }
 
 .hero small{
 
   display:block;
+
   color:var(--muted);
+
   font-size:6px;
+
   letter-spacing:1px;
 
 }
@@ -188,7 +224,9 @@ h1{
 .signal{
 
   margin-top:4px;
+
   font-size:38px;
+
   font-weight:1000;
 
 }
@@ -211,9 +249,11 @@ h1{
 
   margin-top:7px;
 
-  padding:6px 9px;
+  padding:
+    6px 9px;
 
-  border-radius:999px;
+  border-radius:
+    999px;
 
   color:var(--blue);
 
@@ -225,9 +265,11 @@ h1{
     rgba(120,145,255,.15);
 
   font-size:7px;
+
   font-weight:900;
 
 }
+
 
 .price{
 
@@ -236,9 +278,11 @@ h1{
   color:white;
 
   font-size:32px;
+
   font-weight:1000;
 
 }
+
 
 .state{
 
@@ -247,9 +291,9 @@ h1{
   color:var(--muted);
 
   font-size:8px;
-  line-height:1.5;
 
 }
+
 
 .levels{
 
@@ -263,6 +307,7 @@ h1{
   margin-top:14px;
 
 }
+
 
 .level{
 
@@ -294,7 +339,9 @@ h1{
 }
 
 .level strong{
+
   font-size:15px;
+
 }
 
 .level.entry strong{
@@ -309,14 +356,19 @@ h1{
   color:var(--green);
 }
 
+
 .progress-wrap{
+
   margin-top:15px;
+
 }
 
 .progress-info{
 
   display:flex;
-  justify-content:space-between;
+
+  justify-content:
+    space-between;
 
   margin-bottom:6px;
 
@@ -357,6 +409,7 @@ h1{
 
 }
 
+
 .title{
 
   margin-bottom:10px;
@@ -364,12 +417,15 @@ h1{
   color:var(--muted);
 
   font-size:7px;
+
   font-weight:1000;
 
   text-transform:uppercase;
+
   letter-spacing:1px;
 
 }
+
 
 .grid{
 
@@ -381,6 +437,7 @@ h1{
   gap:9px;
 
 }
+
 
 .kv{
 
@@ -409,6 +466,7 @@ h1{
   color:var(--muted);
 }
 
+
 .tfs{
 
   display:grid;
@@ -419,6 +477,7 @@ h1{
   gap:5px;
 
 }
+
 
 .tf{
 
@@ -462,6 +521,7 @@ h1{
   color:var(--gold);
 }
 
+
 .reason{
 
   margin-bottom:5px;
@@ -476,9 +536,11 @@ h1{
   color:#c6cfda;
 
   font-size:7px;
+
   line-height:1.45;
 
 }
+
 
 .history-row{
 
@@ -499,6 +561,7 @@ h1{
 
 }
 
+
 .result.TP{
   color:var(--green);
 }
@@ -506,6 +569,7 @@ h1{
 .result.SL{
   color:var(--red);
 }
+
 
 .controls{
 
@@ -517,6 +581,7 @@ h1{
   gap:7px;
 
 }
+
 
 label{
 
@@ -530,10 +595,12 @@ label{
 
 }
 
+
 input,
 select{
 
   width:100%;
+
   height:38px;
 
   padding:0 9px;
@@ -551,6 +618,7 @@ select{
   background:#070b10;
 
 }
+
 
 button{
 
@@ -574,9 +642,11 @@ button{
     );
 
   font-weight:1000;
+
   font-size:8px;
 
 }
+
 
 button.secondary{
 
@@ -588,6 +658,7 @@ button.secondary{
     var(--border);
 
 }
+
 
 .error{
 
@@ -612,17 +683,20 @@ button.secondary{
 
 }
 
+
 .meta{
 
   display:flex;
 
-  justify-content:space-between;
+  justify-content:
+    space-between;
 
   color:var(--muted);
 
   font-size:6px;
 
 }
+
 
 @media(max-width:600px){
 
@@ -657,7 +731,7 @@ button.secondary{
       </h1>
 
       <div class="subtitle">
-        LOCKED SIGNAL ENGINE V9.1 • BUILD 1939
+        LOCKED SIGNAL ENGINE V9
       </div>
 
     </div>
@@ -832,7 +906,6 @@ button.secondary{
 
   </div>
 
-
   <div class="kv">
 
     <span>
@@ -844,7 +917,6 @@ button.secondary{
     </strong>
 
   </div>
-
 
   <div class="kv">
 
@@ -858,7 +930,6 @@ button.secondary{
 
   </div>
 
-
   <div class="kv">
 
     <span>
@@ -870,7 +941,6 @@ button.secondary{
     </strong>
 
   </div>
-
 
   <div class="kv">
 
@@ -896,23 +966,43 @@ button.secondary{
   <div class="tfs">
 
     <div class="tf">
+
       <small>M1</small>
-      <strong id="m1">—</strong>
+
+      <strong id="m1">
+        —
+      </strong>
+
     </div>
 
     <div class="tf">
+
       <small>M5</small>
-      <strong id="m5">—</strong>
+
+      <strong id="m5">
+        —
+      </strong>
+
     </div>
 
     <div class="tf">
+
       <small>M15</small>
-      <strong id="m15">—</strong>
+
+      <strong id="m15">
+        —
+      </strong>
+
     </div>
 
     <div class="tf">
+
       <small>H1</small>
-      <strong id="h1">—</strong>
+
+      <strong id="h1">
+        —
+      </strong>
+
     </div>
 
   </div>
@@ -938,7 +1028,6 @@ button.secondary{
 
   </div>
 
-
   <div class="kv">
 
     <span>
@@ -950,7 +1039,6 @@ button.secondary{
     </strong>
 
   </div>
-
 
   <div class="kv">
 
@@ -1047,8 +1135,11 @@ button.secondary{
   </div>
 
 
-  <button id="newSignal">
+  <button
+    id="newSignal">
+
     FORCE NEW ANALYSIS
+
   </button>
 
 
@@ -1085,13 +1176,14 @@ button.secondary{
 <script>
 
 /* =========================================================
-   MKAYFX GOLD
-   LOCKED SIGNAL FRONTEND V9.1
+   MKAYFX LOCKED SIGNAL FRONTEND
 ========================================================= */
 
 const $ =
   id =>
-    document.getElementById(id);
+    document.getElementById(
+      id
+    );
 
 
 const ACTIVE_KEY =
@@ -1100,10 +1192,6 @@ const ACTIVE_KEY =
 
 const HISTORY_KEY =
   "mkayfx_history_v9";
-
-
-const WAIT_REANALYZE_MS =
-  60000;
 
 
 let activeTrade =
@@ -1126,10 +1214,6 @@ let countdownTimer =
   null;
 
 
-let searchTimer =
-  null;
-
-
 let secondsRemaining =
   15;
 
@@ -1138,7 +1222,9 @@ let secondsRemaining =
    HELPERS
 ========================================================= */
 
-function finite(value){
+function finite(
+  value
+){
 
   if(
     value === null ||
@@ -1160,7 +1246,9 @@ function finite(value){
 }
 
 
-function fmt(value){
+function fmt(
+  value
+){
 
   const n =
     finite(value);
@@ -1173,190 +1261,47 @@ function fmt(value){
 }
 
 
-/* =========================================================
-   VALIDATE TRADE
-========================================================= */
-
-function validTrade(trade){
-
-  if(
-    !trade ||
-    typeof trade !== "object"
-  ){
-    return false;
-  }
-
-
-  if(
-    trade.signal !== "BUY" &&
-    trade.signal !== "SELL"
-  ){
-    return false;
-  }
-
-
-  const entry =
-    finite(trade.entry);
-
-
-  const sl =
-    finite(trade.stopLoss);
-
-
-  const tp =
-    finite(trade.takeProfit);
-
-
-  if(
-    entry === null ||
-    sl === null ||
-    tp === null
-  ){
-    return false;
-  }
-
-
-  if(
-    entry <= 0 ||
-    sl <= 0 ||
-    tp <= 0
-  ){
-    return false;
-  }
-
-
-  if(
-    entry === sl ||
-    entry === tp ||
-    sl === tp
-  ){
-    return false;
-  }
-
-
-  /*
-     BUY must have:
-     SL below entry
-     TP above entry
-  */
-
-  if(
-    trade.signal === "BUY" &&
-    !(
-      sl < entry &&
-      tp > entry
-    )
-  ){
-    return false;
-  }
-
-
-  /*
-     SELL must have:
-     SL above entry
-     TP below entry
-  */
-
-  if(
-    trade.signal === "SELL" &&
-    !(
-      sl > entry &&
-      tp < entry
-    )
-  ){
-    return false;
-  }
-
-
-  if(
-    !trade.createdAt
-  ){
-    return false;
-  }
-
-
-  const date =
-    new Date(
-      trade.createdAt
-    );
-
-
-  if(
-    Number.isNaN(
-      date.getTime()
-    )
-  ){
-    return false;
-  }
-
-
-  return true;
-
-}
-
-
-/* =========================================================
-   UI HELPERS
-========================================================= */
-
 function setStatus(
   text,
   className
 ){
 
-  $("status").textContent =
-    text;
+  $("status")
+    .textContent =
+      text;
 
 
-  $("status").className =
-    `status ${className || ""}`;
+  $("status")
+    .className =
+      `status ${className || ""}`;
 
 }
 
 
-function showError(message){
+function showError(
+  message
+){
 
-  $("error").textContent =
-    message;
+  $("error")
+    .textContent =
+      message;
 
 
-  $("error").style.display =
-    "block";
+  $("error")
+    .style.display =
+      "block";
 
 }
 
 
 function hideError(){
 
-  $("error").style.display =
-    "none";
+  $("error")
+    .style.display =
+      "none";
 
 }
 
-
-function escapeHTML(value){
-
-  return String(
-    value ?? ""
-  )
-  .replace(
-    /[&<>'"]/g,
-    char =>
-      ({
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        "'":"&#39;",
-        '"':"&quot;"
-      })[char]
-  );
-
-}
-
-
-/* =========================================================
-   STORAGE
-========================================================= */
 
 function readActive(){
 
@@ -1374,13 +1319,7 @@ function readActive(){
     return value;
 
   }
-  catch(error){
-
-    console.error(
-      "Could not read active trade:",
-      error
-    );
-
+  catch{
 
     return null;
 
@@ -1389,17 +1328,23 @@ function readActive(){
 }
 
 
-function saveActive(trade){
+function saveActive(
+  trade
+){
 
   activeTrade =
     trade;
 
 
-  if(trade){
+  if(
+    trade
+  ){
 
     localStorage.setItem(
       ACTIVE_KEY,
-      JSON.stringify(trade)
+      JSON.stringify(
+        trade
+      )
     );
 
   }
@@ -1418,18 +1363,12 @@ function history(){
 
   try{
 
-    const parsed =
-      JSON.parse(
-        localStorage.getItem(
-          HISTORY_KEY
-        ) ||
-        "[]"
-      );
-
-
-    return Array.isArray(parsed)
-      ? parsed
-      : [];
+    return JSON.parse(
+      localStorage.getItem(
+        HISTORY_KEY
+      ) ||
+      "[]"
+    );
 
   }
   catch{
@@ -1441,19 +1380,26 @@ function history(){
 }
 
 
-function saveHistory(item){
+function saveHistory(
+  item
+){
 
   const list =
     history();
 
 
-  list.unshift(item);
+  list.unshift(
+    item
+  );
 
 
   localStorage.setItem(
     HISTORY_KEY,
     JSON.stringify(
-      list.slice(0,30)
+      list.slice(
+        0,
+        30
+      )
     )
   );
 
@@ -1464,120 +1410,28 @@ function saveHistory(item){
 
 
 /* =========================================================
-   RESET EMPTY DISPLAY
-========================================================= */
-
-function resetTradeDisplay(){
-
-  $("signal").textContent =
-    "...";
-
-
-  $("signal").className =
-    "signal WAIT";
-
-
-  $("entry").textContent =
-    "—";
-
-
-  $("sl").textContent =
-    "—";
-
-
-  $("tp").textContent =
-    "—";
-
-
-  $("tp2").textContent =
-    "—";
-
-
-  $("rr").textContent =
-    "—";
-
-
-  $("strength").textContent =
-    "—";
-
-
-  $("session").textContent =
-    "—";
-
-
-  $("signalId").textContent =
-    "—";
-
-
-  $("created").textContent =
-    "—";
-
-
-  $("price").textContent =
-    "—";
-
-
-  $("progressLabel").textContent =
-    "—";
-
-
-  $("progressBar").style.width =
-    "50%";
-
-
-  $("reasons").innerHTML =
-    "";
-
-
-  $("equityDisplay").textContent =
-    "—";
-
-
-  $("riskPercent").textContent =
-    "—";
-
-
-  $("maxRisk").textContent =
-    "—";
-
-
-  for(
-    const id of [
-      "m1",
-      "m5",
-      "m15",
-      "h1"
-    ]
-  ){
-
-    $(id).textContent =
-      "NEUTRAL";
-
-
-    $(id).className =
-      "NEUTRAL";
-
-  }
-
-}
-
-
-/* =========================================================
-   RENDER TRADE
+   RENDER
 ========================================================= */
 
 function renderTrade(){
 
   if(
-    !activeTrade ||
-    !validTrade(activeTrade)
+    !activeTrade
   ){
 
-    resetTradeDisplay();
+    $("signal")
+      .textContent =
+        "...";
 
 
-    $("lock").textContent =
-      "NO ACTIVE SIGNAL";
+    $("signal")
+      .className =
+        "signal WAIT";
+
+
+    $("lock")
+      .textContent =
+        "NO ACTIVE SIGNAL";
 
 
     return;
@@ -1589,90 +1443,96 @@ function renderTrade(){
     activeTrade;
 
 
-  $("signal").textContent =
-    trade.signal;
+  $("signal")
+    .textContent =
+      trade.signal;
 
 
-  $("signal").className =
-    `signal ${trade.signal}`;
+  $("signal")
+    .className =
+      `signal ${trade.signal}`;
 
 
-  $("lock").textContent =
-    "🔒 SIGNAL LOCKED";
+  $("lock")
+    .textContent =
+      "🔒 SIGNAL LOCKED";
 
 
-  $("entry").textContent =
-    fmt(trade.entry);
+  $("entry")
+    .textContent =
+      fmt(
+        trade.entry
+      );
 
 
-  $("sl").textContent =
-    fmt(trade.stopLoss);
+  $("sl")
+    .textContent =
+      fmt(
+        trade.stopLoss
+      );
 
 
-  $("tp").textContent =
-    fmt(trade.takeProfit);
+  $("tp")
+    .textContent =
+      fmt(
+        trade.takeProfit
+      );
 
 
-  $("tp2").textContent =
-    fmt(trade.takeProfit2);
+  $("tp2")
+    .textContent =
+      fmt(
+        trade.takeProfit2
+      );
 
 
-  $("rr").textContent =
-    trade.riskReward ||
-    "—";
+  $("rr")
+    .textContent =
+      trade.riskReward ||
+      "—";
 
 
-  const strength =
-    finite(
-      trade.setupStrength
-    );
+  $("strength")
+    .textContent =
+      `${trade.setupStrength}/100`;
 
 
-  $("strength").textContent =
-    strength !== null
-      ? `${strength}/100`
-      : "—";
+  $("session")
+    .textContent =
+      trade.session ||
+      "—";
 
 
-  $("session").textContent =
-    trade.session ||
-    "—";
+  $("signalId")
+    .textContent =
+      trade.signalId
+        ?.slice(-12) ||
+      "—";
 
 
-  $("signalId").textContent =
-    trade.signalId
-      ? String(
-          trade.signalId
-        ).slice(-12)
-      : "—";
+  $("created")
+    .textContent =
+      new Date(
+        trade.createdAt
+      )
+      .toLocaleTimeString(
+        [],
+        {
+          hour:
+            "2-digit",
 
+          minute:
+            "2-digit",
 
-  const createdDate =
-    new Date(
-      trade.createdAt
-    );
-
-
-  $("created").textContent =
-    !Number.isNaN(
-      createdDate.getTime()
-    )
-      ? createdDate.toLocaleTimeString(
-          [],
-          {
-            hour:"2-digit",
-            minute:"2-digit",
-            second:"2-digit"
-          }
-        )
-      : "—";
+          second:
+            "2-digit"
+        }
+      );
 
 
   const biases =
-    trade.timeframeBias &&
-    typeof trade.timeframeBias === "object"
-      ? trade.timeframeBias
-      : {};
+    trade.timeframeBias ||
+    {};
 
 
   for(
@@ -1687,139 +1547,129 @@ function renderTrade(){
     ]
   ){
 
-    let value =
-      String(
-        biases[tf] ||
-        "NEUTRAL"
-      )
-      .toUpperCase();
+    const value =
+      biases[tf] ||
+      "NEUTRAL";
 
 
-    if(
-      ![
-        "BULLISH",
-        "BEARISH",
-        "NEUTRAL"
-      ].includes(value)
-    ){
-
-      value =
-        "NEUTRAL";
-
-    }
+    $(id)
+      .textContent =
+        value;
 
 
-    $(id).textContent =
-      value;
-
-
-    $(id).className =
-      value;
+    $(id)
+      .className =
+        value;
 
   }
 
 
   const account =
-    trade.account &&
-    typeof trade.account === "object"
-      ? trade.account
-      : {};
+    trade.account ||
+    {};
 
 
-  const equity =
-    finite(
-      account.equityZAR
-    );
+  $("equityDisplay")
+    .textContent =
+      account.equityZAR != null
+        ? `R${Number(
+            account.equityZAR
+          ).toFixed(2)}`
+        : "—";
 
 
-  const riskPercent =
-    finite(
-      account.riskPercent
-    );
+  $("riskPercent")
+    .textContent =
+      account.riskPercent != null
+        ? `${account.riskPercent}%`
+        : "—";
 
 
-  const maxRisk =
-    finite(
-      account.maxRiskZAR
-    );
-
-
-  $("equityDisplay").textContent =
-    equity !== null
-      ? `R${equity.toFixed(2)}`
-      : "—";
-
-
-  $("riskPercent").textContent =
-    riskPercent !== null
-      ? `${riskPercent}%`
-      : "—";
-
-
-  $("maxRisk").textContent =
-    maxRisk !== null
-      ? `R${maxRisk.toFixed(2)}`
-      : "—";
+  $("maxRisk")
+    .textContent =
+      account.maxRiskZAR != null
+        ? `R${Number(
+            account.maxRiskZAR
+          ).toFixed(2)}`
+        : "—";
 
 
   const reasons =
-    Array.isArray(
-      trade.technical?.reasons
-    )
-      ? trade.technical.reasons
-      : [];
+    trade.technical
+      ?.reasons ||
+    [];
 
 
-  $("reasons").innerHTML =
-    reasons.length
-      ? reasons
-          .slice(0,8)
-          .map(
-            reason => `
-              <div class="reason">
-                ${escapeHTML(reason)}
-              </div>
-            `
-          )
-          .join("")
-      : `
-          <div class="reason">
-            Qualified multi-timeframe XAU/USD setup.
-          </div>
-        `;
-
-
-  const currentPrice =
-    finite(
-      activeTrade.currentPrice
-    );
+  $("reasons")
+    .innerHTML =
+      reasons
+        .slice(
+          0,
+          8
+        )
+        .map(
+          reason => `
+            <div class="reason">
+              ${escapeHTML(reason)}
+            </div>
+          `
+        )
+        .join("");
 
 
   if(
-    currentPrice !== null
+    activeTrade.currentPrice != null
   ){
 
-    $("price").textContent =
-      fmt(currentPrice);
+    $("price")
+      .textContent =
+        fmt(
+          activeTrade.currentPrice
+        );
 
 
     updateProgress(
-      currentPrice
+      activeTrade.currentPrice
     );
 
   }
   else{
 
-    $("price").textContent =
-      fmt(
-        trade.entry
-      );
+    $("price")
+      .textContent =
+        fmt(
+          trade.entry
+        );
 
   }
 
 
-  $("state").textContent =
-    "Trade is active. Strategy analysis is locked until TP or SL.";
+  $("state")
+    .textContent =
+      "Trade is active. Strategy analysis is locked until TP or SL.";
+
+}
+
+
+function escapeHTML(
+  value
+){
+
+  return String(
+    value ??
+    ""
+  )
+  .replace(
+    /[&<>'"]/g,
+    char =>
+      ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        "'":"&#39;",
+        '"':"&quot;"
+      })[char]
+  );
 
 }
 
@@ -1828,56 +1678,27 @@ function renderTrade(){
    PROGRESS
 ========================================================= */
 
-function updateProgress(price){
+function updateProgress(
+  price
+){
 
   if(
-    !activeTrade ||
-    !validTrade(activeTrade)
+    !activeTrade
   ){
     return;
   }
 
 
   const entry =
-    finite(
-      activeTrade.entry
-    );
+    activeTrade.entry;
 
 
   const sl =
-    finite(
-      activeTrade.stopLoss
-    );
+    activeTrade.stopLoss;
 
 
   const tp =
-    finite(
-      activeTrade.takeProfit
-    );
-
-
-  const currentPrice =
-    finite(price);
-
-
-  if(
-    entry === null ||
-    sl === null ||
-    tp === null ||
-    currentPrice === null
-  ){
-
-    $("progressLabel").textContent =
-      "—";
-
-
-    $("progressBar").style.width =
-      "50%";
-
-
-    return;
-
-  }
+    activeTrade.takeProfit;
 
 
   const range =
@@ -1887,28 +1708,10 @@ function updateProgress(price){
     );
 
 
-  const risk =
-    Math.abs(
-      entry -
-      sl
-    );
-
-
   if(
-    range <= 0 ||
-    risk <= 0
+    range <= 0
   ){
-
-    $("progressLabel").textContent =
-      "—";
-
-
-    $("progressBar").style.width =
-      "50%";
-
-
     return;
-
   }
 
 
@@ -1916,12 +1719,13 @@ function updateProgress(price){
 
 
   if(
-    activeTrade.signal === "BUY"
+    activeTrade.signal ===
+    "BUY"
   ){
 
     percentage =
       (
-        currentPrice -
+        price -
         sl
       ) /
       range *
@@ -1933,22 +1737,10 @@ function updateProgress(price){
     percentage =
       (
         sl -
-        currentPrice
+        price
       ) /
       range *
       100;
-
-  }
-
-
-  if(
-    !Number.isFinite(
-      percentage
-    )
-  ){
-
-    percentage =
-      50;
 
   }
 
@@ -1963,109 +1755,36 @@ function updateProgress(price){
     );
 
 
-  $("progressBar").style.width =
-    `${percentage}%`;
+  $("progressBar")
+    .style.width =
+      `${percentage}%`;
 
 
-  let currentR;
-
-
-  if(
-    activeTrade.signal === "BUY"
-  ){
-
-    currentR =
-      (
-        currentPrice -
-        entry
-      ) /
-      risk;
-
-  }
-  else{
-
-    currentR =
-      (
-        entry -
-        currentPrice
-      ) /
-      risk;
-
-  }
-
-
-  if(
-    !Number.isFinite(
-      currentR
-    )
-  ){
-
-    $("progressLabel").textContent =
-      "—";
-
-
-    return;
-
-  }
-
-
-  $("progressLabel").textContent =
-    `${
-      currentR >= 0
-        ? "+"
-        : ""
-    }${currentR.toFixed(2)}R`;
-
-}
-
-
-/* =========================================================
-   WAIT / SEARCH MODE
-========================================================= */
-
-function stopSearchTimer(){
-
-  if(searchTimer){
-
-    clearTimeout(
-      searchTimer
+  const risk =
+    Math.abs(
+      entry -
+      sl
     );
 
 
-    searchTimer =
-      null;
-
-  }
-
-}
-
-
-function scheduleNextAnalysis(){
-
-  stopSearchTimer();
-
-
-  if(activeTrade){
-    return;
-  }
+  let currentR =
+    activeTrade.signal ===
+      "BUY"
+      ? (
+          price -
+          entry
+        ) /
+        risk
+      : (
+          entry -
+          price
+        ) /
+        risk;
 
 
-  searchTimer =
-    setTimeout(
-      async () => {
-
-        if(
-          !activeTrade &&
-          !analyzing
-        ){
-
-          await createNewSignal();
-
-        }
-
-      },
-      WAIT_REANALYZE_MS
-    );
+  $("progressLabel")
+    .textContent =
+      `${currentR >= 0 ? "+" : ""}${currentR.toFixed(2)}R`;
 
 }
 
@@ -2076,18 +1795,10 @@ function scheduleNextAnalysis(){
 
 async function createNewSignal(){
 
-  if(analyzing){
-    return;
-  }
-
-
   if(
-    activeTrade &&
-    validTrade(activeTrade)
+    analyzing
   ){
-
     return;
-
   }
 
 
@@ -2098,13 +1809,7 @@ async function createNewSignal(){
   stopMonitor();
 
 
-  stopSearchTimer();
-
-
   hideError();
-
-
-  resetTradeDisplay();
 
 
   setStatus(
@@ -2113,211 +1818,132 @@ async function createNewSignal(){
   );
 
 
-  $("signal").textContent =
-    "...";
+  $("signal")
+    .textContent =
+      "...";
 
 
-  $("signal").className =
-    "signal WAIT";
+  $("signal")
+    .className =
+      "signal WAIT";
 
 
-  $("lock").textContent =
-    "ANALYZING GOLD";
+  $("lock")
+    .textContent =
+      "ANALYZING GOLD";
 
 
-  $("state").textContent =
-    "Reading XAU/USD M1, M5, M15, H1, liquidity, structure and momentum...";
+  $("state")
+    .textContent =
+      "Reading M1, M5, M15, H1, liquidity, structure and momentum...";
 
 
   try{
 
     const equity =
-      finite(
-        $("equity").value
-      ) ??
-      200;
+      Number(
+        $("equity")
+          .value ||
+        200
+      );
 
 
     const response =
       await fetch(
-        `/api/analyze?t=${Date.now()}`,
+        "/api/analyze",
         {
-          method:"POST",
+          method:
+            "POST",
 
           headers:{
             "Content-Type":
-              "application/json",
-
-            "Cache-Control":
-              "no-cache"
+              "application/json"
           },
 
-          cache:"no-store",
+          cache:
+            "no-store",
 
           body:
             JSON.stringify({
-              equity,
-              force:true,
-              timestamp:
-                Date.now()
+              equity
             })
         }
       );
 
 
-    let data;
-
-
-    try{
-
-      data =
-        await response.json();
-
-    }
-    catch{
-
-      throw new Error(
-        `Analyze API returned invalid JSON. HTTP ${response.status}`
-      );
-
-    }
+    const data =
+      await response.json();
 
 
     if(
       !response.ok ||
-      data.success === false
+      data.success ===
+      false
     ){
 
       throw new Error(
         data.error ||
-        `Could not analyze gold. HTTP ${response.status}`
+        "Could not create signal."
       );
 
     }
-
-
-    const signal =
-      String(
-        data.signal ||
-        ""
-      )
-      .trim()
-      .toUpperCase();
 
 
     const trade = {
 
       signalId:
-        data.signalId ||
-        null,
+        data.signalId,
 
-      signal,
+      signal:
+        data.signal,
 
       setupStrength:
-        finite(
-          data.setupStrength
-        ),
+        data.setupStrength,
 
       session:
-        data.session ||
-        "—",
+        data.session,
 
       entry:
-        finite(
-          data.entry
-        ),
+        data.entry,
 
       stopLoss:
-        finite(
-          data.stopLoss
-        ),
+        data.stopLoss,
 
       takeProfit:
-        finite(
-          data.takeProfit
-        ),
+        data.takeProfit,
 
       takeProfit2:
-        finite(
-          data.takeProfit2
-        ),
+        data.takeProfit2,
 
       riskReward:
-        data.riskReward ||
-        null,
+        data.riskReward,
 
       riskReward2:
-        data.riskReward2 ||
-        null,
+        data.riskReward2,
 
       createdAt:
-        data.createdAt ||
-        null,
+        data.createdAt,
 
       timeframeBias:
-        data.timeframeBias ||
-        {},
+        data.timeframeBias,
 
       technical:
-        data.technical ||
-        {
-          reasons:[]
-        },
+        data.technical,
 
       goldContext:
-        data.goldContext ||
-        {},
+        data.goldContext,
 
       account:
-        data.account ||
-        {},
+        data.account,
 
       currentPrice:
-        finite(
-          data.entry
-        ),
+        data.entry,
 
       status:
         "ACTIVE"
 
     };
 
-
-    /*
-       CRITICAL:
-       NEVER LOCK WAIT / BROKEN / EMPTY SIGNAL.
-    */
-
-    if(
-      !validTrade(trade)
-    ){
-
-      console.log(
-        "No valid trade returned:",
-        data
-      );
-
-
-      saveActive(null);
-
-
-      renderWaitingData(
-        data
-      );
-
-
-      scheduleNextAnalysis();
-
-
-      return;
-
-    }
-
-
-    /*
-       VALID BUY/SELL SIGNAL.
-       NOW IT MAY BE LOCKED.
-    */
 
     saveActive(
       trade
@@ -2333,30 +1959,25 @@ async function createNewSignal(){
     );
 
 
+    /*
+       Immediately begin price monitoring.
+
+       No more strategy analysis happens until
+       TP or SL closes this signal.
+    */
+
     startMonitor();
 
-
-    /*
-       Immediately fetch current market price.
-    */
 
     await checkPrice();
 
   }
-  catch(error){
-
-    console.error(
-      "Analysis error:",
-      error
-    );
-
-
-    saveActive(null);
-
+  catch(
+    error
+  ){
 
     showError(
-      error.message ||
-      "Analysis failed."
+      error.message
     );
 
 
@@ -2366,23 +1987,9 @@ async function createNewSignal(){
     );
 
 
-    $("signal").textContent =
-      "WAIT";
-
-
-    $("signal").className =
-      "signal WAIT";
-
-
-    $("lock").textContent =
-      "ANALYSIS ERROR";
-
-
-    $("state").textContent =
-      "Could not create a valid gold signal. Retrying automatically.";
-
-
-    scheduleNextAnalysis();
+    $("state")
+      .textContent =
+        "Signal creation failed.";
 
   }
   finally{
@@ -2396,200 +2003,6 @@ async function createNewSignal(){
 
 
 /* =========================================================
-   RENDER WAITING ANALYSIS
-========================================================= */
-
-function renderWaitingData(data){
-
-  resetTradeDisplay();
-
-
-  $("signal").textContent =
-    "WAIT";
-
-
-  $("signal").className =
-    "signal WAIT";
-
-
-  $("lock").textContent =
-    "SEARCHING";
-
-
-  setStatus(
-    "SEARCHING",
-    "analyzing"
-  );
-
-
-  const livePrice =
-    finite(
-      data.price ??
-      data.currentPrice ??
-      data.entry
-    );
-
-
-  if(
-    livePrice !== null
-  ){
-
-    $("price").textContent =
-      fmt(livePrice);
-
-  }
-
-
-  const strength =
-    finite(
-      data.setupStrength
-    );
-
-
-  $("strength").textContent =
-    strength !== null
-      ? `${strength}/100`
-      : "—";
-
-
-  $("session").textContent =
-    data.session ||
-    "—";
-
-
-  $("rr").textContent =
-    data.riskReward ||
-    "—";
-
-
-  $("signalId").textContent =
-    data.signalId
-      ? String(
-          data.signalId
-        ).slice(-12)
-      : "—";
-
-
-  if(data.createdAt){
-
-    const date =
-      new Date(
-        data.createdAt
-      );
-
-
-    $("created").textContent =
-      !Number.isNaN(
-        date.getTime()
-      )
-        ? date.toLocaleTimeString(
-            [],
-            {
-              hour:"2-digit",
-              minute:"2-digit",
-              second:"2-digit"
-            }
-          )
-        : "—";
-
-  }
-
-
-  const biases =
-    data.timeframeBias &&
-    typeof data.timeframeBias === "object"
-      ? data.timeframeBias
-      : {};
-
-
-  for(
-    const [
-      id,
-      tf
-    ] of [
-      ["m1","M1"],
-      ["m5","M5"],
-      ["m15","M15"],
-      ["h1","H1"]
-    ]
-  ){
-
-    let value =
-      String(
-        biases[tf] ||
-        "NEUTRAL"
-      )
-      .toUpperCase();
-
-
-    if(
-      ![
-        "BULLISH",
-        "BEARISH",
-        "NEUTRAL"
-      ].includes(value)
-    ){
-
-      value =
-        "NEUTRAL";
-
-    }
-
-
-    $(id).textContent =
-      value;
-
-
-    $(id).className =
-      value;
-
-  }
-
-
-  const reasons =
-    Array.isArray(
-      data.technical?.reasons
-    )
-      ? data.technical.reasons
-      : Array.isArray(
-          data.reasons
-        )
-        ? data.reasons
-        : [];
-
-
-  $("reasons").innerHTML =
-    reasons.length
-      ? reasons
-          .slice(0,8)
-          .map(
-            reason => `
-              <div class="reason">
-                ${escapeHTML(reason)}
-              </div>
-            `
-          )
-          .join("")
-      : `
-          <div class="reason">
-            Waiting for a qualified BUY or SELL setup.
-          </div>
-        `;
-
-
-  $("state").textContent =
-    data.message ||
-    data.reason ||
-    "No qualified XAU/USD setup yet. The engine will analyse again automatically.";
-
-
-  $("nextCheck").textContent =
-    "Next analysis ~60s";
-
-}
-
-
-/* =========================================================
    PRICE CHECK
 ========================================================= */
 
@@ -2597,7 +2010,6 @@ async function checkPrice(){
 
   if(
     !activeTrade ||
-    !validTrade(activeTrade) ||
     checkingPrice ||
     analyzing
   ){
@@ -2613,40 +2025,22 @@ async function checkPrice(){
 
     const response =
       await fetch(
-        `/api/price?t=${Date.now()}`,
+        "/api/price",
         {
           method:"GET",
-          cache:"no-store",
-
-          headers:{
-            "Cache-Control":
-              "no-cache"
-          }
+          cache:"no-store"
         }
       );
 
 
-    let data;
-
-
-    try{
-
-      data =
-        await response.json();
-
-    }
-    catch{
-
-      throw new Error(
-        "Price API returned invalid JSON."
-      );
-
-    }
+    const data =
+      await response.json();
 
 
     if(
       !response.ok ||
-      data.success === false
+      data.success ===
+      false
     ){
 
       throw new Error(
@@ -2666,11 +2060,7 @@ async function checkPrice(){
     if(
       price === null
     ){
-
-      throw new Error(
-        "Price API returned no valid XAU/USD price."
-      );
-
+      return;
     }
 
 
@@ -2679,8 +2069,7 @@ async function checkPrice(){
 
 
     activeTrade.lastPriceCheck =
-      data.timestamp ||
-      new Date().toISOString();
+      data.timestamp;
 
 
     saveActive(
@@ -2688,15 +2077,19 @@ async function checkPrice(){
     );
 
 
-    $("price").textContent =
-      fmt(price);
+    $("price")
+      .textContent =
+        fmt(
+          price
+        );
 
 
-    $("lastCheck").textContent =
-      `Price checked ${
-        new Date()
-          .toLocaleTimeString()
-      }`;
+    $("lastCheck")
+      .textContent =
+        `Price checked ${
+          new Date()
+            .toLocaleTimeString()
+        }`;
 
 
     updateProgress(
@@ -2704,52 +2097,25 @@ async function checkPrice(){
     );
 
 
-    const tp =
-      finite(
-        activeTrade.takeProfit
-      );
-
-
-    const sl =
-      finite(
-        activeTrade.stopLoss
-      );
-
-
-    if(
-      tp === null ||
-      sl === null
-    ){
-
-      console.error(
-        "Trade lost TP/SL values."
-      );
-
-
-      stopMonitor();
-
-
-      saveActive(null);
-
-
-      await createNewSignal();
-
-
-      return;
-
-    }
-
-
     /*
-       BUY
+       BUY:
+       TP if price >= take profit
+       SL if price <= stop
+
+       SELL:
+       TP if price <= take profit
+       SL if price >= stop
     */
 
+
     if(
-      activeTrade.signal === "BUY"
+      activeTrade.signal ===
+      "BUY"
     ){
 
       if(
-        price >= tp
+        price >=
+        activeTrade.takeProfit
       ){
 
         await closeTrade(
@@ -2763,7 +2129,8 @@ async function checkPrice(){
 
 
       if(
-        price <= sl
+        price <=
+        activeTrade.stopLoss
       ){
 
         await closeTrade(
@@ -2778,16 +2145,14 @@ async function checkPrice(){
     }
 
 
-    /*
-       SELL
-    */
-
     if(
-      activeTrade.signal === "SELL"
+      activeTrade.signal ===
+      "SELL"
     ){
 
       if(
-        price <= tp
+        price <=
+        activeTrade.takeProfit
       ){
 
         await closeTrade(
@@ -2801,7 +2166,8 @@ async function checkPrice(){
 
 
       if(
-        price >= sl
+        price >=
+        activeTrade.stopLoss
       ){
 
         await closeTrade(
@@ -2816,16 +2182,13 @@ async function checkPrice(){
     }
 
   }
-  catch(error){
+  catch(
+    error
+  ){
 
     console.error(
-      "Price check error:",
       error
     );
-
-
-    $("lastCheck").textContent =
-      "Price check failed";
 
   }
   finally{
@@ -2839,7 +2202,7 @@ async function checkPrice(){
 
 
 /* =========================================================
-   CLOSE TRADE + IMMEDIATELY REANALYZE
+   CLOSE + IMMEDIATELY REANALYZE
 ========================================================= */
 
 async function closeTrade(
@@ -2848,8 +2211,7 @@ async function closeTrade(
 ){
 
   if(
-    !activeTrade ||
-    !validTrade(activeTrade)
+    !activeTrade
   ){
     return;
   }
@@ -2877,41 +2239,48 @@ async function closeTrade(
   stopMonitor();
 
 
-  stopSearchTimer();
-
-
   saveActive(
     null
   );
 
 
-  $("lock").textContent =
-    result === "TP"
-      ? "✅ TAKE PROFIT HIT"
-      : "❌ STOP LOSS HIT";
+  $("lock")
+    .textContent =
+      result ===
+        "TP"
+        ? "✅ TAKE PROFIT HIT"
+        : "❌ STOP LOSS HIT";
 
 
-  $("state").textContent =
-    `${
-      result === "TP"
-        ? "Take profit"
-        : "Stop loss"
-    } hit at ${fmt(hitPrice)}. Analysing XAU/USD again immediately...`;
+  $("state")
+    .textContent =
+      `${
+        result ===
+        "TP"
+          ? "Take profit"
+          : "Stop loss"
+      } hit at ${fmt(hitPrice)}. Analysing next signal immediately...`;
 
 
   setStatus(
-    result === "TP"
+    result ===
+      "TP"
       ? "TP HIT"
       : "SL HIT",
 
-    result === "TP"
+    result ===
+      "TP"
       ? "active"
       : "error"
   );
 
 
   /*
-     IMMEDIATE NEW ANALYSIS
+     THIS IS THE IMPORTANT PART.
+
+     The previous trade is now finished.
+
+     Full analysis starts IMMEDIATELY.
   */
 
   await createNewSignal();
@@ -2925,24 +2294,20 @@ async function closeTrade(
 
 function monitorSeconds(){
 
-  const seconds =
-    Number(
-      $("interval").value ||
-      15
-    );
-
-
-  return Number.isFinite(seconds) &&
-    seconds >= 5
-      ? seconds
-      : 15;
+  return Number(
+    $("interval")
+      .value ||
+    15
+  );
 
 }
 
 
 function stopMonitor(){
 
-  if(monitorTimer){
+  if(
+    monitorTimer
+  ){
 
     clearInterval(
       monitorTimer
@@ -2955,7 +2320,9 @@ function stopMonitor(){
   }
 
 
-  if(countdownTimer){
+  if(
+    countdownTimer
+  ){
 
     clearInterval(
       countdownTimer
@@ -2975,20 +2342,8 @@ function startMonitor(){
   stopMonitor();
 
 
-  if(
-    !activeTrade ||
-    !validTrade(activeTrade)
-  ){
-    return;
-  }
-
-
   secondsRemaining =
     monitorSeconds();
-
-
-  $("nextCheck").textContent =
-    `Next price check ${secondsRemaining}s`;
 
 
   monitorTimer =
@@ -3007,7 +2362,8 @@ function startMonitor(){
 
 
         if(
-          secondsRemaining <= 0
+          secondsRemaining <=
+          0
         ){
 
           secondsRemaining =
@@ -3016,8 +2372,9 @@ function startMonitor(){
         }
 
 
-        $("nextCheck").textContent =
-          `Next price check ${secondsRemaining}s`;
+        $("nextCheck")
+          .textContent =
+            `Next price check ${secondsRemaining}s`;
 
       },
       1000
@@ -3036,75 +2393,57 @@ function renderHistory(){
     history();
 
 
-  $("history").innerHTML =
-    list.length
-      ? list
-          .slice(0,8)
-          .map(
-            trade => {
+  $("history")
+    .innerHTML =
+      list.length
+        ? list
+            .slice(
+              0,
+              8
+            )
+            .map(
+              trade => {
 
-              const date =
-                new Date(
-                  trade.closedAt
-                );
-
-
-              const time =
-                !Number.isNaN(
-                  date.getTime()
-                )
-                  ? date.toLocaleTimeString(
-                      [],
-                      {
-                        hour:"2-digit",
-                        minute:"2-digit"
-                      }
-                    )
-                  : "—";
+                const time =
+                  new Date(
+                    trade.closedAt
+                  )
+                  .toLocaleTimeString(
+                    [],
+                    {
+                      hour:"2-digit",
+                      minute:"2-digit"
+                    }
+                  );
 
 
-              const signal =
-                trade.signal === "BUY" ||
-                trade.signal === "SELL"
-                  ? trade.signal
-                  : "—";
+                return `
+                  <div class="history-row">
 
+                    <span>
+                      ${time}
+                    </span>
 
-              const result =
-                trade.result === "TP" ||
-                trade.result === "SL"
-                  ? trade.result
-                  : "—";
+                    <strong class="${trade.signal}">
+                      ${trade.signal}
+                    </strong>
 
+                    <span class="result ${trade.result}">
+                      ${trade.result}
+                      · ${fmt(trade.hitPrice)}
+                    </span>
 
-              return `
-                <div class="history-row">
+                  </div>
+                `;
 
-                  <span>
-                    ${escapeHTML(time)}
-                  </span>
-
-                  <strong class="${escapeHTML(signal)}">
-                    ${escapeHTML(signal)}
-                  </strong>
-
-                  <span class="result ${escapeHTML(result)}">
-                    ${escapeHTML(result)}
-                    ·
-                    ${fmt(trade.hitPrice)}
-                  </span>
-
-                </div>
-              `;
-
-            }
-          )
-          .join("")
-      : `
-          <div class="reason">
-            No completed trades yet.
-          </div>
-        `;
+              }
+            )
+            .join("")
+        : `
+            <div class="reason">
+              No completed trades yet.
+            </div>
+          `;
 
 }
 
@@ -3120,13 +2459,13 @@ $("newSignal")
 
       const confirmed =
         confirm(
-          activeTrade
-            ? "End the current locked signal and create a fresh analysis?"
-            : "Run a fresh XAU/USD analysis now?"
+          "End the current locked signal and create a new analysis?"
         );
 
 
-      if(!confirmed){
+      if(
+        !confirmed
+      ){
         return;
       }
 
@@ -3134,13 +2473,9 @@ $("newSignal")
       stopMonitor();
 
 
-      stopSearchTimer();
-
-
-      saveActive(null);
-
-
-      resetTradeDisplay();
+      saveActive(
+        null
+      );
 
 
       await createNewSignal();
@@ -3152,42 +2487,28 @@ $("newSignal")
 $("clearTrade")
   .addEventListener(
     "click",
-    async () => {
+    () => {
 
       stopMonitor();
 
 
-      stopSearchTimer();
-
-
-      saveActive(null);
-
-
-      resetTradeDisplay();
-
-
-      $("lock").textContent =
-        "TRADE CLEARED";
-
-
-      setStatus(
-        "ANALYZING",
-        "analyzing"
+      saveActive(
+        null
       );
 
 
-      $("state").textContent =
-        "Trade cleared. Analysing XAU/USD again...";
+      renderTrade();
 
 
-      /*
-         Clearing the trade does not leave
-         the engine dead.
+      setStatus(
+        "NO TRADE",
+        ""
+      );
 
-         It immediately analyses again.
-      */
 
-      await createNewSignal();
+      $("state")
+        .textContent =
+          "Locked trade cleared.";
 
     }
   );
@@ -3199,60 +2520,13 @@ $("interval")
     () => {
 
       if(
-        activeTrade &&
-        validTrade(activeTrade)
+        activeTrade
       ){
-
         startMonitor();
-
       }
 
     }
   );
-
-
-/* =========================================================
-   PAGE VISIBILITY
-========================================================= */
-
-document.addEventListener(
-  "visibilitychange",
-  async () => {
-
-    if(
-      document.visibilityState !==
-      "visible"
-    ){
-      return;
-    }
-
-
-    /*
-       When user returns to Safari,
-       immediately check existing trade.
-
-       If there is no trade,
-       immediately analyze.
-    */
-
-    if(
-      activeTrade &&
-      validTrade(activeTrade)
-    ){
-
-      await checkPrice();
-
-    }
-    else if(
-      !analyzing
-    ){
-
-      await createNewSignal();
-
-    }
-
-  }
-);
 
 
 /* =========================================================
@@ -3264,41 +2538,20 @@ async function start(){
   renderHistory();
 
 
-  hideError();
-
-
   activeTrade =
     readActive();
 
 
-  /*
-     REMOVE CORRUPTED / OLD FAKE TRADE.
-  */
-
   if(
-    activeTrade &&
-    !validTrade(activeTrade)
+    activeTrade
   ){
 
-    console.warn(
-      "Invalid saved V9 trade removed:",
-      activeTrade
-    );
-
-
-    saveActive(null);
-
-
-    activeTrade =
-      null;
-
-  }
-
-
-  if(activeTrade){
-
     /*
-       A REAL VALID LOCKED TRADE EXISTS.
+       Existing locked trade found.
+
+       DO NOT ANALYZE AGAIN.
+
+       Resume monitoring the same trade.
     */
 
     renderTrade();
@@ -3314,8 +2567,7 @@ async function start(){
 
 
     /*
-       Check current price immediately
-       when the website opens.
+       Check immediately when app reopens.
     */
 
     await checkPrice();
@@ -3324,23 +2576,10 @@ async function start(){
   else{
 
     /*
-       NO VALID TRADE.
+       No active trade.
 
-       Analyze immediately.
+       Analyse gold immediately.
     */
-
-    resetTradeDisplay();
-
-
-    $("state").textContent =
-      "No valid locked trade. Analysing XAU/USD immediately...";
-
-
-    setStatus(
-      "ANALYZING",
-      "analyzing"
-    );
-
 
     await createNewSignal();
 
@@ -3349,13 +2588,10 @@ async function start(){
 }
 
 
-/* =========================================================
-   START ENGINE
-========================================================= */
-
 start();
 
 </script>
 
 </body>
+
 </html>
