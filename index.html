@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
 
 <meta
@@ -24,21 +23,15 @@
 
 <meta
   name="apple-mobile-web-app-title"
-  content="MKAYFX"
+  content="MKAYFX GOLD"
 >
 
-<title>MKAYFX Extreme AI V7</title>
+<title>MKAYFX Gold Scalper</title>
 
 <style>
 
-/* =========================================================
-   ROOT
-========================================================= */
-
 :root{
-
   --bg:#05070b;
-
   --panel:#0c121a;
   --panel2:#101822;
   --panel3:#080c12;
@@ -48,12 +41,9 @@
 
   --text:#f5f7fb;
   --muted:#8290a3;
-  --muted2:#5f6c7e;
 
   --blue:#718cff;
-  --blue2:#a3b7ff;
   --purple:#846bff;
-  --cyan:#5dc8ff;
 
   --green:#42e3a1;
   --red:#ff6578;
@@ -62,37 +52,22 @@
   --shadow:
     0 25px 70px
     rgba(0,0,0,.38);
-
 }
 
-
-/* =========================================================
-   RESET
-========================================================= */
-
 *{
-
   box-sizing:border-box;
-
-  -webkit-tap-highlight-color:
-    transparent;
-
+  -webkit-tap-highlight-color:transparent;
 }
 
 html{
-
   scroll-behavior:smooth;
-
 }
 
 body{
-
   margin:0;
-
   min-height:100vh;
 
-  color:
-    var(--text);
+  color:var(--text);
 
   font-family:
     Inter,
@@ -103,7 +78,6 @@ body{
     sans-serif;
 
   background:
-
     radial-gradient(
       circle at 10% 0%,
       rgba(86,110,255,.23),
@@ -112,503 +86,305 @@ body{
 
     radial-gradient(
       circle at 100% 0%,
-      rgba(133,74,255,.13),
-      transparent 27%
-    ),
-
-    radial-gradient(
-      circle at 45% 100%,
-      rgba(50,120,255,.07),
-      transparent 40%
+      rgba(245,201,95,.10),
+      transparent 28%
     ),
 
     var(--bg);
 
   padding:
-
-    max(
-      15px,
-      env(safe-area-inset-top)
-    )
-
+    max(15px,env(safe-area-inset-top))
     13px
-
-    max(
-      100px,
-      env(safe-area-inset-bottom)
-    );
-
+    max(100px,env(safe-area-inset-bottom));
 }
 
 button,
+input,
 select{
-
   font:inherit;
-
 }
 
 button{
-
   cursor:pointer;
-
 }
 
 button:active{
+  transform:scale(.985);
+}
 
-  transform:
-    scale(.985);
-
+button:disabled{
+  opacity:.45;
 }
 
 .app{
-
-  max-width:
-    1200px;
-
+  max-width:1150px;
   margin:auto;
-
 }
 
-
-/* =========================================================
-   HEADER
-========================================================= */
+/* HEADER */
 
 .topbar{
-
   display:flex;
-
-  justify-content:
-    space-between;
-
+  justify-content:space-between;
   align-items:center;
-
   gap:12px;
-
-  margin-bottom:
-    14px;
-
+  margin-bottom:14px;
 }
 
 .brand{
-
   display:flex;
-
   align-items:center;
-
   gap:11px;
-
-  min-width:0;
-
 }
 
 .logo{
-
   width:49px;
   height:49px;
 
-  flex:none;
-
   display:grid;
-
   place-items:center;
 
-  border-radius:
-    16px;
+  border-radius:16px;
 
-  color:#071020;
+  color:#191304;
 
-  font-size:20px;
-
+  font-size:19px;
   font-weight:1000;
 
   background:
-
     linear-gradient(
       145deg,
-      #c9d5ff,
-      #7794ff 45%,
-      #6b5cff
+      #fff2ac,
+      #f5c95f 45%,
+      #b88922
     );
 
   box-shadow:
-
     0 12px 35px
-    rgba(91,112,255,.36);
-
+    rgba(245,201,95,.22);
 }
 
 .brand h1{
-
   margin:0;
-
   font-size:18px;
-
   line-height:1.05;
-
   font-weight:1000;
-
 }
 
 .brand p{
-
-  margin:
-    5px 0 0;
-
-  color:
-    var(--muted);
-
+  margin:5px 0 0;
+  color:var(--muted);
   font-size:8px;
-
 }
 
 .header-right{
-
   display:flex;
-
   align-items:center;
-
   gap:7px;
-
 }
 
 .status{
-
   display:flex;
-
   align-items:center;
-
   gap:7px;
 
-  padding:
-    9px 11px;
+  padding:9px 11px;
 
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:
-    999px;
+  border:1px solid var(--border);
+  border-radius:999px;
 
   background:
     rgba(255,255,255,.035);
 
   font-size:8px;
-
   font-weight:900;
-
-  white-space:nowrap;
-
 }
 
 .dot{
-
   width:7px;
   height:7px;
 
   border-radius:50%;
 
-  background:
-    var(--green);
+  background:var(--green);
 
   box-shadow:
     0 0 14px
     var(--green);
-
 }
 
 .dot.loading{
-
-  background:
-    var(--gold);
+  background:var(--gold);
 
   box-shadow:
     0 0 14px
     var(--gold);
-
 }
 
 .dot.error{
-
-  background:
-    var(--red);
+  background:var(--red);
 
   box-shadow:
     0 0 14px
     var(--red);
-
 }
 
 .dot.offline{
-
   background:#687384;
-
   box-shadow:none;
-
 }
 
 .icon-btn{
-
   width:38px;
   height:38px;
 
   display:grid;
-
   place-items:center;
 
   color:white;
 
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:
-    12px;
+  border:1px solid var(--border);
+  border-radius:12px;
 
   background:
     rgba(255,255,255,.035);
-
 }
 
+/* GOLD BANNER */
 
-/* =========================================================
-   AI BANNER
-========================================================= */
-
-.ai-banner{
-
+.gold-banner{
   display:flex;
-
+  justify-content:space-between;
   align-items:center;
-
-  justify-content:
-    space-between;
-
   gap:12px;
 
-  margin-bottom:
-    12px;
+  margin-bottom:12px;
 
-  padding:
-    14px;
+  padding:14px;
 
   border:
     1px solid
-    rgba(113,140,255,.24);
+    rgba(245,201,95,.22);
 
-  border-radius:
-    20px;
+  border-radius:20px;
 
   background:
-
     linear-gradient(
       135deg,
-      rgba(94,116,255,.14),
-      rgba(126,71,255,.07)
+      rgba(245,201,95,.12),
+      rgba(113,140,255,.07)
     );
-
 }
 
-.ai-left{
-
-  display:flex;
-
-  align-items:center;
-
-  gap:11px;
-
-}
-
-.ai-orb{
-
-  width:40px;
-  height:40px;
-
-  position:relative;
-
-  flex:none;
+.gold-orb{
+  width:41px;
+  height:41px;
 
   border-radius:50%;
 
   background:
-
     radial-gradient(
       circle at 35% 30%,
-      #fff,
-      #b8c3ff 17%,
-      #7388ff 44%,
-      #403a99 72%,
-      #191d45
+      #fffbdc,
+      #f5d87f 22%,
+      #c59431 55%,
+      #493513
     );
 
   box-shadow:
-
-    0 0 30px
-    rgba(110,132,255,.65);
-
+    0 0 28px
+    rgba(245,201,95,.38);
 }
 
-.ai-orb::after{
-
-  content:"";
-
-  position:absolute;
-
-  inset:-5px;
-
-  border-radius:50%;
-
-  border:
-    1px solid
-    rgba(150,167,255,.22);
-
-  animation:
-    orbPulse 2.2s
-    ease-in-out
-    infinite;
-
+.gold-left{
+  display:flex;
+  align-items:center;
+  gap:11px;
 }
 
-@keyframes orbPulse{
-
-  0%,
-  100%{
-
-    transform:
-      scale(.9);
-
-    opacity:.25;
-
-  }
-
-  50%{
-
-    transform:
-      scale(1.15);
-
-    opacity:.9;
-
-  }
-
-}
-
-.ai-banner strong{
-
+.gold-banner strong{
   display:block;
-
   font-size:12px;
-
 }
 
-.ai-banner small{
-
+.gold-banner small{
   display:block;
-
   margin-top:4px;
 
-  color:
-    var(--muted);
-
+  color:var(--muted);
   font-size:8px;
-
 }
 
 .mode{
-
-  padding:
-    7px 9px;
+  padding:7px 9px;
 
   border:
     1px solid
-    rgba(150,167,255,.22);
+    rgba(245,201,95,.20);
 
-  border-radius:
-    999px;
+  border-radius:999px;
 
-  color:#dbe1ff;
+  color:#ffe6a2;
 
   background:
-    rgba(130,150,255,.08);
+    rgba(245,201,95,.07);
 
   font-size:7px;
-
   font-weight:1000;
-
 }
 
-
-/* =========================================================
-   CONTROLS
-========================================================= */
+/* CONTROLS */
 
 .controls{
-
   display:grid;
 
   grid-template-columns:
-    minmax(0,1fr)
-    auto
-    auto;
+    1fr auto;
 
   gap:8px;
 
-  margin-bottom:
-    12px;
-
+  margin-bottom:12px;
 }
 
-select{
-
-  width:100%;
-
+.market-lock{
   min-height:48px;
 
-  padding:
-    0 13px;
+  display:flex;
+  align-items:center;
 
-  color:white;
-
-  outline:none;
+  padding:0 14px;
 
   border:
     1px solid
     var(--border);
 
-  border-radius:
-    14px;
+  border-radius:14px;
 
-  background:
-    #0a1017;
+  background:#0a1017;
 
+  font-size:11px;
+  font-weight:900;
 }
 
-.primary,
-.secondary-action{
-
-  min-height:48px;
-
-  padding:
-    0 15px;
-
-  color:white;
-
-  border-radius:
-    14px;
-
-  font-size:10px;
-
-  font-weight:1000;
-
-  white-space:nowrap;
-
+.market-lock span{
+  color:var(--gold);
+  margin-right:7px;
 }
 
 .primary{
+  min-height:48px;
+
+  padding:0 17px;
+
+  color:white;
 
   border:0;
+  border-radius:14px;
+
+  font-size:10px;
+  font-weight:1000;
 
   background:
-
     linear-gradient(
       135deg,
       #809cff,
@@ -616,43 +392,17 @@ select{
     );
 
   box-shadow:
-
     0 10px 30px
     rgba(96,112,255,.23);
-
 }
 
-.secondary-action{
-
-  border:
-    1px solid
-    var(--border);
-
-  background:
-    rgba(255,255,255,.04);
-
-}
-
-button:disabled{
-
-  opacity:.45;
-
-}
-
-
-/* =========================================================
-   ERROR
-========================================================= */
+/* ERROR */
 
 .error-box{
-
   display:none;
 
-  margin-bottom:
-    12px;
-
-  padding:
-    12px;
+  margin-bottom:12px;
+  padding:12px;
 
   color:#ffabb5;
 
@@ -660,297 +410,160 @@ button:disabled{
     1px solid
     rgba(255,101,120,.28);
 
-  border-radius:
-    14px;
+  border-radius:14px;
 
   background:
     rgba(255,101,120,.07);
 
   font-size:10px;
-
   line-height:1.5;
-
 }
 
-
-/* =========================================================
-   HERO
-========================================================= */
+/* HERO */
 
 .hero{
-
   position:relative;
-
   overflow:hidden;
 
-  margin-bottom:
-    14px;
-
-  padding:
-    18px;
+  margin-bottom:14px;
+  padding:18px;
 
   border:
     1px solid
     var(--border);
 
-  border-radius:
-    24px;
+  border-radius:24px;
 
   background:
-
     linear-gradient(
       145deg,
       rgba(17,24,34,.99),
       rgba(6,10,16,.99)
     );
 
-  box-shadow:
-    var(--shadow);
-
+  box-shadow:var(--shadow);
 }
 
 .hero.BUY{
-
   border-color:
-    rgba(66,227,161,.23);
-
+    rgba(66,227,161,.25);
 }
 
 .hero.SELL{
-
   border-color:
-    rgba(255,101,120,.23);
-
-}
-
-.hero::after{
-
-  content:"";
-
-  position:absolute;
-
-  width:300px;
-  height:300px;
-
-  right:-130px;
-  bottom:-175px;
-
-  border-radius:50%;
-
-  background:
-
-    radial-gradient(
-      circle,
-      rgba(85,106,255,.15),
-      transparent 70%
-    );
-
+    rgba(255,101,120,.25);
 }
 
 .hero-top{
-
-  position:relative;
-
-  z-index:2;
-
   display:flex;
-
-  justify-content:
-    space-between;
-
+  justify-content:space-between;
   align-items:flex-start;
-
   gap:14px;
-
 }
 
 .symbol{
-
-  color:
-    var(--muted);
+  color:var(--gold);
 
   font-size:9px;
-
   font-weight:1000;
-
   letter-spacing:1px;
-
 }
 
 .price{
-
-  margin:
-    7px 0 5px;
+  margin:7px 0 5px;
 
   font-size:
-    clamp(
-      37px,
-      9vw,
-      62px
-    );
+    clamp(37px,9vw,62px);
 
   font-weight:1000;
-
   letter-spacing:-2.5px;
-
   line-height:1;
-
 }
 
 .change{
-
-  color:
-    var(--muted);
-
+  color:var(--muted);
   font-size:9px;
-
   font-weight:850;
-
 }
 
 .change.up{
-
-  color:
-    var(--green);
-
+  color:var(--green);
 }
 
 .change.down{
-
-  color:
-    var(--red);
-
+  color:var(--red);
 }
 
 .signal{
-
   min-width:95px;
-
   height:43px;
 
   display:grid;
-
   place-items:center;
 
   border:
     1px solid
     var(--border);
 
-  border-radius:
-    14px;
+  border-radius:14px;
 
   font-size:13px;
-
   font-weight:1000;
-
-  letter-spacing:.8px;
-
 }
 
 .signal.BUY{
-
-  color:
-    var(--green);
+  color:var(--green);
 
   border-color:
     rgba(66,227,161,.20);
 
   background:
     rgba(66,227,161,.09);
-
 }
 
 .signal.SELL{
-
-  color:
-    var(--red);
+  color:var(--red);
 
   border-color:
     rgba(255,101,120,.20);
 
   background:
     rgba(255,101,120,.09);
-
 }
 
 .signal.WAIT{
-
-  color:
-    var(--gold);
+  color:var(--gold);
 
   border-color:
     rgba(245,201,95,.19);
 
   background:
     rgba(245,201,95,.08);
-
 }
 
-
-/* =========================================================
-   SPARK CHART
-========================================================= */
-
 #sparkline{
-
-  position:relative;
-
-  z-index:2;
-
   width:100%;
-
   height:105px;
-
   margin-top:12px;
-
 }
 
 #sparkPoints{
-
   fill:none;
-
   stroke:#8ca6ff;
-
   stroke-width:3;
-
   stroke-linejoin:round;
-
   stroke-linecap:round;
-
-  filter:
-
-    drop-shadow(
-      0 0 8px
-      rgba(120,145,255,.4)
-    );
-
 }
 
 #sparkPoints.BUY{
-
-  stroke:
-    var(--green);
-
+  stroke:var(--green);
 }
 
 #sparkPoints.SELL{
-
-  stroke:
-    var(--red);
-
+  stroke:var(--red);
 }
 
-
-/* =========================================================
-   HEALTH
-========================================================= */
-
 .health{
-
-  position:relative;
-
-  z-index:2;
-
   display:grid;
 
   grid-template-columns:
@@ -959,143 +572,96 @@ button:disabled{
   gap:7px;
 
   margin-top:10px;
-
 }
 
 .health-box{
-
   min-width:0;
 
-  padding:
-    9px;
+  padding:9px;
 
   border:
     1px solid
     var(--border);
 
-  border-radius:
-    12px;
+  border-radius:12px;
 
   background:
     rgba(255,255,255,.028);
-
 }
 
 .health-box small{
-
   display:block;
 
   margin-bottom:5px;
 
-  color:
-    var(--muted);
-
+  color:var(--muted);
   font-size:6px;
-
   text-transform:uppercase;
-
-  white-space:nowrap;
-
-  overflow:hidden;
-
-  text-overflow:ellipsis;
-
 }
 
 .health-box strong{
-
   display:block;
 
   font-size:9px;
 
   white-space:nowrap;
-
   overflow:hidden;
-
   text-overflow:ellipsis;
-
 }
 
-
-/* =========================================================
-   MAIN GRID
-========================================================= */
+/* GRID */
 
 .grid{
-
   display:grid;
 
   grid-template-columns:
     1.35fr .9fr;
 
   gap:14px;
-
 }
 
 .stack{
-
   display:grid;
-
   align-content:start;
-
   gap:14px;
-
 }
 
 .card{
-
-  padding:
-    15px;
+  padding:15px;
 
   border:
     1px solid
     var(--border);
 
-  border-radius:
-    19px;
+  border-radius:19px;
 
   background:
     rgba(13,19,27,.96);
 
-  box-shadow:
-    var(--shadow);
-
+  box-shadow:var(--shadow);
 }
 
 .card-title{
-
   display:flex;
-
-  justify-content:
-    space-between;
-
+  justify-content:space-between;
   align-items:center;
-
   gap:8px;
 
-  margin-bottom:
-    12px;
+  margin-bottom:12px;
 
-  color:
-    var(--muted);
+  color:var(--muted);
 
   font-size:8px;
-
   font-weight:1000;
-
   letter-spacing:1.05px;
 
   text-transform:uppercase;
-
 }
 
 .card-badge{
+  padding:5px 7px;
 
-  padding:
-    5px 7px;
-
-  border-radius:
-    999px;
+  border-radius:999px;
 
   background:
     rgba(255,255,255,.04);
@@ -1103,15 +669,10 @@ button:disabled{
   color:#b5c0d0;
 
   font-size:7px;
-
-  letter-spacing:0;
-
 }
 
 .card-badge.approved{
-
-  color:
-    var(--green);
+  color:var(--green);
 
   border:
     1px solid
@@ -1119,13 +680,10 @@ button:disabled{
 
   background:
     rgba(66,227,161,.07);
-
 }
 
 .card-badge.blocked{
-
-  color:
-    var(--red);
+  color:var(--red);
 
   border:
     1px solid
@@ -1133,16 +691,11 @@ button:disabled{
 
   background:
     rgba(255,101,120,.07);
-
 }
 
-
-/* =========================================================
-   DECISION
-========================================================= */
+/* DECISION */
 
 .decision{
-
   display:grid;
 
   grid-template-columns:
@@ -1151,11 +704,9 @@ button:disabled{
   align-items:center;
 
   gap:14px;
-
 }
 
 .confidence{
-
   --p:0;
 
   width:98px;
@@ -1164,24 +715,20 @@ button:disabled{
   position:relative;
 
   display:grid;
-
   place-items:center;
 
   border-radius:50%;
 
   background:
-
     conic-gradient(
       var(--blue)
       calc(var(--p) * 1%),
       rgba(255,255,255,.07)
       0
     );
-
 }
 
 .confidence::before{
-
   content:"";
 
   position:absolute;
@@ -1192,59 +739,37 @@ button:disabled{
   border-radius:50%;
 
   background:#101620;
-
 }
 
 .confidence span{
-
   position:relative;
 
   font-size:19px;
-
   font-weight:1000;
-
 }
 
 .summary{
-
   color:#e0e6ef;
-
   font-size:11px;
-
   line-height:1.58;
-
 }
 
 .grade{
-
   display:inline-block;
 
   margin-top:8px;
+  padding:5px 8px;
 
-  padding:
-    5px 8px;
-
-  border-radius:
-    8px;
-
-  color:#d4dbe7;
+  border-radius:8px;
 
   background:
     rgba(255,255,255,.045);
 
   font-size:8px;
-
   font-weight:1000;
-
 }
 
-
-/* =========================================================
-   LEVELS
-========================================================= */
-
 .levels{
-
   display:grid;
 
   grid-template-columns:
@@ -1253,65 +778,48 @@ button:disabled{
   gap:7px;
 
   margin-top:14px;
-
 }
 
 .level{
-
   min-width:0;
 
-  padding:
-    10px 8px;
+  padding:10px 8px;
 
   border:
     1px solid
     var(--border);
 
-  border-radius:
-    12px;
+  border-radius:12px;
 
-  background:
-    var(--panel3);
-
+  background:var(--panel3);
 }
 
 .level small{
-
   display:block;
 
   margin-bottom:5px;
 
-  color:
-    var(--muted);
+  color:var(--muted);
 
   font-size:6px;
-
   text-transform:uppercase;
-
 }
 
 .level strong{
-
   display:block;
 
   font-size:10px;
 
   overflow:hidden;
-
   text-overflow:ellipsis;
-
   white-space:nowrap;
-
 }
 
 .secondary{
-
   width:100%;
 
   margin-top:10px;
-
-  padding:
-    11px;
+  padding:11px;
 
   color:white;
 
@@ -1319,153 +827,101 @@ button:disabled{
     1px solid
     var(--border);
 
-  border-radius:
-    13px;
+  border-radius:13px;
 
   background:
     rgba(255,255,255,.035);
 
   font-weight:900;
-
 }
 
-
-/* =========================================================
-   ENSEMBLE
-========================================================= */
+/* MODULES */
 
 .ensemble-list{
-
   display:grid;
-
   gap:8px;
-
 }
 
 .engine-row{
-
   display:grid;
 
   grid-template-columns:
-    78px
-    72px
-    1fr
-    38px;
+    75px 67px 1fr 40px;
 
   align-items:center;
 
   gap:8px;
 
-  padding:
-    9px;
+  padding:9px;
 
   border:
     1px solid
     rgba(255,255,255,.05);
 
-  border-radius:
-    11px;
+  border-radius:11px;
 
   background:
     rgba(255,255,255,.025);
-
 }
 
 .engine-name{
-
-  color:
-    var(--muted);
+  color:var(--muted);
 
   font-size:8px;
-
   font-weight:1000;
-
   text-transform:uppercase;
-
 }
 
 .engine-bias{
-
   font-size:8px;
-
   font-weight:1000;
-
 }
 
-.engine-bias.BULLISH{
-
-  color:
-    var(--green);
-
+.BULLISH{
+  color:var(--green);
 }
 
-.engine-bias.BEARISH{
-
-  color:
-    var(--red);
-
+.BEARISH{
+  color:var(--red);
 }
 
-.engine-bias.NEUTRAL{
-
-  color:
-    var(--gold);
-
+.NEUTRAL{
+  color:var(--gold);
 }
 
 .engine-meter{
-
   height:6px;
 
   overflow:hidden;
 
-  border-radius:
-    999px;
+  border-radius:999px;
 
   background:
     rgba(255,255,255,.06);
-
 }
 
 .engine-meter span{
-
   display:block;
-
   height:100%;
 
-  border-radius:
-    999px;
+  border-radius:999px;
 
   background:
-
     linear-gradient(
       90deg,
       #617aff,
       #9eb3ff
     );
-
-  transition:
-    width .4s ease;
-
 }
 
 .engine-score{
-
   text-align:right;
 
   font-size:8px;
-
   font-weight:1000;
-
 }
 
-
-/* =========================================================
-   SCORE GRID
-========================================================= */
-
 .score-grid{
-
   display:grid;
 
   grid-template-columns:
@@ -1474,426 +930,39 @@ button:disabled{
   gap:7px;
 
   margin-top:11px;
-
 }
 
 .score-box{
-
-  padding:
-    10px 7px;
+  padding:10px 7px;
 
   border:
     1px solid
     var(--border);
 
-  border-radius:
-    11px;
+  border-radius:11px;
 
-  background:
-    #090d13;
+  background:#090d13;
 
   text-align:center;
-
 }
 
 .score-box small{
-
   display:block;
 
   margin-bottom:4px;
 
-  color:
-    var(--muted);
+  color:var(--muted);
 
   font-size:6px;
-
-  text-transform:uppercase;
-
 }
 
 .score-box strong{
-
   font-size:12px;
-
 }
 
-
-/* =========================================================
-   PERMISSION
-========================================================= */
-
-.permission-state{
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:
-    space-between;
-
-  gap:12px;
-
-  margin-bottom:
-    12px;
-
-  padding:
-    13px;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:
-    14px;
-
-  background:
-    rgba(255,255,255,.025);
-
-}
-
-.permission-state strong{
-
-  font-size:16px;
-
-}
-
-.permission-state.APPROVED strong{
-
-  color:
-    var(--green);
-
-}
-
-.permission-state.BLOCKED strong{
-
-  color:
-    var(--red);
-
-}
-
-.check-list{
-
-  display:grid;
-
-  gap:7px;
-
-}
-
-.check-row{
-
-  display:grid;
-
-  grid-template-columns:
-    19px
-    1fr;
-
-  align-items:flex-start;
-
-  gap:7px;
-
-  padding:
-    8px;
-
-  border-radius:
-    10px;
-
-  background:
-    rgba(255,255,255,.025);
-
-  font-size:8px;
-
-  line-height:1.45;
-
-}
-
-.check-icon.pass{
-
-  color:
-    var(--green);
-
-}
-
-.check-icon.fail{
-
-  color:
-    var(--red);
-
-}
-
-
-/* =========================================================
-   REGIME
-========================================================= */
-
-.regime-name{
-
-  margin-bottom:4px;
-
-  font-size:21px;
-
-  font-weight:1000;
-
-}
-
-.regime-sub{
-
-  color:
-    var(--muted);
-
-  font-size:8px;
-
-}
-
-.regime-meter{
-
-  height:8px;
-
-  margin:
-    12px 0;
-
-  overflow:hidden;
-
-  border-radius:
-    999px;
-
-  background:
-    rgba(255,255,255,.06);
-
-}
-
-.regime-meter span{
-
-  display:block;
-
-  width:0%;
-
-  height:100%;
-
-  border-radius:
-    inherit;
-
-  background:
-
-    linear-gradient(
-      90deg,
-      #655fff,
-      #58b8ff,
-      #45e0a1
-    );
-
-  transition:
-    width .4s ease;
-
-}
-
-
-/* =========================================================
-   LIQUIDITY
-========================================================= */
-
-.liquidity-main{
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(2,1fr);
-
-  gap:8px;
-
-  margin-bottom:
-    11px;
-
-}
-
-.liq-box{
-
-  padding:
-    11px;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:
-    12px;
-
-  background:
-    #090d13;
-
-}
-
-.liq-box small{
-
-  display:block;
-
-  margin-bottom:6px;
-
-  color:
-    var(--muted);
-
-  font-size:6px;
-
-  text-transform:uppercase;
-
-}
-
-.liq-box strong{
-
-  display:block;
-
-  font-size:10px;
-
-}
-
-.liq-box span{
-
-  display:block;
-
-  margin-top:4px;
-
-  color:
-    var(--muted);
-
-  font-size:7px;
-
-}
-
-.pool-list{
-
-  display:grid;
-
-  gap:6px;
-
-}
-
-.pool-row{
-
-  display:grid;
-
-  grid-template-columns:
-    1fr auto auto;
-
-  gap:8px;
-
-  padding:
-    8px;
-
-  border-radius:
-    10px;
-
-  background:
-    rgba(255,255,255,.025);
-
-  font-size:8px;
-
-}
-
-.pool-side.BUY_SIDE{
-
-  color:
-    var(--green);
-
-}
-
-.pool-side.SELL_SIDE{
-
-  color:
-    var(--red);
-
-}
-
-
-/* =========================================================
-   TIMEFRAMES
-========================================================= */
-
-.tf-row{
-
-  display:grid;
-
-  grid-template-columns:
-    45px 1fr auto;
-
-  align-items:center;
-
-  gap:9px;
-
-  padding:
-    9px 0;
-
-  border-bottom:
-    1px solid
-    rgba(255,255,255,.05);
-
-}
-
-.tf-row:last-child{
-
-  border-bottom:0;
-
-}
-
-.tf-name{
-
-  color:
-    var(--muted);
-
-  font-size:8px;
-
-  font-weight:1000;
-
-}
-
-.bar{
-
-  height:6px;
-
-  overflow:hidden;
-
-  border-radius:
-    999px;
-
-  background:
-    rgba(255,255,255,.06);
-
-}
-
-.bar span{
-
-  display:block;
-
-  height:100%;
-
-  border-radius:999px;
-
-  background:
-
-    linear-gradient(
-      90deg,
-      #6179ff,
-      #9cb3ff
-    );
-
-  transition:
-    width .4s ease;
-
-}
-
-.bias{
-
-  font-size:8px;
-
-  font-weight:1000;
-
-}
-
-
-/* =========================================================
-   KEY VALUE
-========================================================= */
+/* KV */
 
 .kv{
-
   display:grid;
 
   grid-template-columns:
@@ -1903,81 +972,56 @@ button:disabled{
 
   gap:10px;
 
-  padding:
-    8px 0;
+  padding:8px 0;
 
   border-bottom:
     1px solid
     rgba(255,255,255,.05);
 
   font-size:9px;
-
 }
 
 .kv:last-child{
-
   border-bottom:0;
-
 }
 
 .kv span{
-
-  color:
-    var(--muted);
-
+  color:var(--muted);
 }
 
 .kv strong{
-
-  max-width:
-    220px;
-
+  max-width:230px;
   text-align:right;
-
   overflow-wrap:anywhere;
-
 }
 
-
-/* =========================================================
-   CHIPS
-========================================================= */
+/* CHIPS */
 
 .chips{
-
   display:flex;
-
   flex-wrap:wrap;
-
   gap:6px;
-
 }
 
 .chip{
-
-  padding:
-    7px 8px;
+  padding:7px 8px;
 
   border:
     1px solid
     rgba(255,255,255,.06);
 
-  border-radius:
-    999px;
-
-  color:#d3dbe8;
+  border-radius:999px;
 
   background:
     rgba(255,255,255,.04);
 
+  color:#d3dbe8;
+
   font-size:7px;
-
   line-height:1.4;
-
 }
 
 .chip.good{
-
   color:#aaf4d2;
 
   border-color:
@@ -1985,11 +1029,9 @@ button:disabled{
 
   background:
     rgba(66,227,161,.05);
-
 }
 
 .chip.risk{
-
   color:#ffb7c0;
 
   border-color:
@@ -1997,119 +1039,116 @@ button:disabled{
 
   background:
     rgba(255,101,120,.055);
-
 }
 
+/* PERMISSION */
 
-/* =========================================================
-   HISTORY / SCANNER
-========================================================= */
+.permission-state{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 
-.history,
-.scanner{
+  gap:12px;
 
+  margin-bottom:12px;
+  padding:13px;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:14px;
+
+  background:
+    rgba(255,255,255,.025);
+}
+
+.permission-state.APPROVED strong{
+  color:var(--green);
+}
+
+.permission-state.BLOCKED strong{
+  color:var(--red);
+}
+
+.check-list{
   display:grid;
-
   gap:7px;
-
 }
 
-.history-row{
-
+.check-row{
   display:grid;
 
   grid-template-columns:
-    52px 1fr auto;
+    19px 1fr;
 
-  align-items:center;
+  gap:7px;
+
+  padding:8px;
+
+  border-radius:10px;
+
+  background:
+    rgba(255,255,255,.025);
+
+  font-size:8px;
+  line-height:1.45;
+}
+
+.pass{
+  color:var(--green);
+}
+
+.fail{
+  color:var(--red);
+}
+
+.warning{
+  color:var(--gold);
+}
+
+/* GOLD LEVELS */
+
+.gold-level-grid{
+  display:grid;
+
+  grid-template-columns:
+    repeat(2,1fr);
 
   gap:8px;
+}
 
-  padding:
-    9px;
+.gold-level{
+  padding:11px;
 
   border:
     1px solid
-    rgba(255,255,255,.05);
+    var(--border);
 
-  border-radius:
-    10px;
+  border-radius:12px;
 
-  background:
-    rgba(255,255,255,.025);
-
-  font-size:8px;
-
+  background:#090d13;
 }
 
-.history-row small{
+.gold-level small{
+  display:block;
 
-  color:
-    var(--muted);
+  margin-bottom:6px;
 
+  color:var(--muted);
+
+  font-size:6px;
+  text-transform:uppercase;
 }
 
-.mini{
-
-  font-weight:1000;
-
+.gold-level strong{
+  font-size:13px;
 }
 
-.mini.BUY{
+.liq-score{
+  height:7px;
 
-  color:
-    var(--green);
-
-}
-
-.mini.SELL{
-
-  color:
-    var(--red);
-
-}
-
-.mini.WAIT{
-
-  color:
-    var(--gold);
-
-}
-
-.scanner-row{
-
-  display:grid;
-
-  grid-template-columns:
-    68px
-    48px
-    1fr
-    34px;
-
-  align-items:center;
-
-  gap:7px;
-
-  padding:
-    8px;
-
-  border:
-    1px solid
-    rgba(255,255,255,.05);
-
-  border-radius:
-    10px;
-
-  background:
-    rgba(255,255,255,.025);
-
-  font-size:8px;
-
-}
-
-.scan-score{
-
-  height:5px;
+  margin-top:7px;
 
   overflow:hidden;
 
@@ -2117,117 +1156,191 @@ button:disabled{
 
   background:
     rgba(255,255,255,.06);
-
 }
 
-.scan-score span{
+.liq-score span{
+  display:block;
+  height:100%;
+}
 
+.liq-score .bull{
+  background:var(--green);
+}
+
+.liq-score .bear{
+  background:var(--red);
+}
+
+/* TIMEFRAMES */
+
+.tf-grid{
+  display:grid;
+  grid-template-columns:
+    repeat(4,1fr);
+
+  gap:7px;
+}
+
+.tf-box{
+  padding:11px 7px;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:11px;
+
+  background:#090d13;
+
+  text-align:center;
+}
+
+.tf-box small{
   display:block;
 
-  height:100%;
+  color:var(--muted);
 
-  border-radius:999px;
-
-  background:
-
-    linear-gradient(
-      90deg,
-      #637cff,
-      #9cb3ff
-    );
-
+  font-size:7px;
+  font-weight:1000;
 }
 
+.tf-box strong{
+  display:block;
 
-/* =========================================================
-   SETTINGS
-========================================================= */
+  margin-top:6px;
+
+  font-size:9px;
+}
+
+/* FORM */
 
 .settings-grid{
-
   display:grid;
 
   grid-template-columns:
     repeat(2,1fr);
 
   gap:8px;
-
 }
 
 .field label{
-
   display:block;
 
   margin-bottom:5px;
 
-  color:
-    var(--muted);
+  color:var(--muted);
 
   font-size:7px;
-
 }
 
+.field input,
+.field select{
+  width:100%;
+  min-height:42px;
 
-/* =========================================================
-   META
-========================================================= */
+  padding:0 10px;
 
-.meta{
+  color:white;
 
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:11px;
+
+  outline:none;
+
+  background:#090d13;
+}
+
+.checkbox-row{
   display:flex;
+  align-items:center;
+  gap:8px;
 
-  justify-content:
-    space-between;
+  margin-top:9px;
+
+  color:var(--muted);
+  font-size:8px;
+}
+
+/* HISTORY */
+
+.history{
+  display:grid;
+  gap:7px;
+}
+
+.history-row{
+  display:grid;
+
+  grid-template-columns:
+    52px 1fr auto;
 
   gap:8px;
 
-  margin-top:
-    14px;
+  padding:9px;
 
-  color:
-    var(--muted);
+  border:
+    1px solid
+    rgba(255,255,255,.05);
 
+  border-radius:10px;
+
+  background:
+    rgba(255,255,255,.025);
+
+  font-size:8px;
+}
+
+.mini{
+  font-weight:1000;
+}
+
+.mini.BUY{
+  color:var(--green);
+}
+
+.mini.SELL{
+  color:var(--red);
+}
+
+.mini.WAIT{
+  color:var(--gold);
+}
+
+.meta{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+
+  margin-top:14px;
+
+  color:var(--muted);
   font-size:7px;
-
 }
 
 .footer{
-
-  margin-top:
-    15px;
+  margin-top:15px;
 
   color:#647082;
 
   text-align:center;
 
   font-size:7px;
-
   line-height:1.55;
-
 }
 
-
-/* =========================================================
-   TOAST
-========================================================= */
-
 .toast{
-
   position:fixed;
-
   z-index:9999;
 
   left:50%;
 
   bottom:
-
     max(
       24px,
-      calc(
-        env(safe-area-inset-bottom)
-        +
-        12px
-      )
+      calc(env(safe-area-inset-bottom) + 12px)
     );
 
   width:
@@ -2236,8 +1349,7 @@ button:disabled{
       430px
     );
 
-  padding:
-    12px;
+  padding:12px;
 
   color:white;
 
@@ -2245,248 +1357,100 @@ button:disabled{
     1px solid
     var(--border2);
 
-  border-radius:
-    14px;
+  border-radius:14px;
 
   background:
     rgba(12,17,24,.97);
 
-  box-shadow:
-    0 20px 60px
-    rgba(0,0,0,.45);
-
-  font-size:9px;
-
   opacity:0;
 
   transform:
-    translate(
-      -50%,
-      100px
-    );
+    translate(-50%,100px);
 
-  transition:
-    .25s ease;
-
+  transition:.25s ease;
 }
 
 .toast.show{
-
   opacity:1;
 
   transform:
-    translate(
-      -50%,
-      0
-    );
-
+    translate(-50%,0);
 }
 
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media(
-  max-width:760px
-){
+@media(max-width:760px){
 
   .grid{
-
-    grid-template-columns:
-      1fr;
-
-  }
-
-  .controls{
-
-    grid-template-columns:
-      1fr auto;
-
-  }
-
-  #scanAllBtn{
-
-    grid-column:
-      1 / -1;
-
+    grid-template-columns:1fr;
   }
 
   .health{
-
     grid-template-columns:
       repeat(3,1fr);
-
   }
 
   .levels{
-
     grid-template-columns:
       repeat(2,1fr);
-
   }
 
   .levels .level:last-child{
-
     grid-column:
       1 / -1;
-
   }
 
   .decision{
-
     grid-template-columns:
       80px 1fr;
-
   }
 
   .confidence{
-
     width:80px;
     height:80px;
-
   }
 
   .confidence::before{
-
     width:62px;
     height:62px;
-
   }
 
   .confidence span{
-
     font-size:16px;
-
-  }
-
-  .score-grid{
-
-    grid-template-columns:
-      repeat(2,1fr);
-
-  }
-
-  .settings-grid{
-
-    grid-template-columns:
-      1fr;
-
-  }
-
-}
-
-@media(
-  max-width:430px
-){
-
-  .brand h1{
-
-    font-size:15px;
-
-  }
-
-  .brand p{
-
-    font-size:7px;
-
-  }
-
-  .logo{
-
-    width:43px;
-    height:43px;
-
-  }
-
-  .status{
-
-    max-width:
-      115px;
-
-  }
-
-  #statusText{
-
-    overflow:hidden;
-
-    text-overflow:ellipsis;
-
-  }
-
-  .price{
-
-    font-size:40px;
-
-  }
-
-  .signal{
-
-    min-width:76px;
-
-    font-size:11px;
-
-  }
-
-  .engine-row{
-
-    grid-template-columns:
-      65px
-      58px
-      1fr
-      32px;
-
   }
 
 }
 
 </style>
-
 </head>
-
 
 <body>
 
 <main class="app">
-
-
-<!-- ======================================================
-     HEADER
-====================================================== -->
 
 <div class="topbar">
 
   <div class="brand">
 
     <div class="logo">
-      M
+      Au
     </div>
 
     <div>
-
-      <h1>
-        MKAYFX EXTREME AI
-      </h1>
+      <h1>MKAYFX GOLD</h1>
 
       <p>
-        Ensemble Market Intelligence · V7
+        XAU/USD Extreme Scalping Engine
       </p>
-
     </div>
 
   </div>
-
 
   <div class="header-right">
 
     <button
       id="soundBtn"
       class="icon-btn">
-
       🔔
-
     </button>
-
 
     <div class="status">
 
@@ -2506,24 +1470,20 @@ button:disabled{
 </div>
 
 
-<!-- ======================================================
-     AI ENGINE BANNER
-====================================================== -->
+<div class="gold-banner">
 
-<div class="ai-banner">
+  <div class="gold-left">
 
-  <div class="ai-left">
-
-    <div class="ai-orb"></div>
+    <div class="gold-orb"></div>
 
     <div>
 
       <strong>
-        Extreme Ensemble Engine
+        XAU/USD Specialist Engine
       </strong>
 
-      <small id="engineSubtitle">
-        Trend · Structure · Liquidity · Momentum · Regime · Session
+      <small>
+        M1 Entry · M5 Confirmation · M15 Trend · H1 Context
       </small>
 
     </div>
@@ -2531,62 +1491,23 @@ button:disabled{
   </div>
 
   <div class="mode">
-    EXTREME V7
+    GOLD V6
   </div>
 
 </div>
 
 
-<!-- ======================================================
-     CONTROLS
-====================================================== -->
-
 <div class="controls">
 
-  <select id="symbolSelect">
-
-    <option value="XAU/USD">
-      XAU/USD · GOLD
-    </option>
-
-    <option value="EUR/USD">
-      EUR/USD
-    </option>
-
-    <option value="GBP/USD">
-      GBP/USD
-    </option>
-
-    <option value="USD/JPY">
-      USD/JPY
-    </option>
-
-    <option value="BTC/USD">
-      BTC/USD
-    </option>
-
-    <option value="XBR/USD">
-      XBR/USD · BRENT
-    </option>
-
-  </select>
-
+  <div class="market-lock">
+    <span>●</span>
+    XAU/USD · GOLD ONLY
+  </div>
 
   <button
     id="analyzeBtn"
     class="primary">
-
-    ANALYZE
-
-  </button>
-
-
-  <button
-    id="scanAllBtn"
-    class="secondary-action">
-
-    SCAN ALL MARKETS
-
+    ANALYZE GOLD
   </button>
 
 </div>
@@ -2598,10 +1519,6 @@ button:disabled{
 </div>
 
 
-<!-- ======================================================
-     HERO
-====================================================== -->
-
 <section
   id="hero"
   class="hero">
@@ -2610,41 +1527,28 @@ button:disabled{
 
     <div>
 
-      <div
-        id="heroSymbol"
-        class="symbol">
-
-        XAU/USD
-
+      <div class="symbol">
+        XAU/USD · GOLD
       </div>
-
 
       <div
         id="price"
         class="price">
-
         —
-
       </div>
-
 
       <div
         id="change"
         class="change">
-
-        Waiting for market data...
-
+        Waiting for gold data...
       </div>
 
     </div>
 
-
     <div
       id="signalBadge"
       class="signal WAIT">
-
       WAIT
-
     </div>
 
   </div>
@@ -2665,82 +1569,34 @@ button:disabled{
 
   <div class="health">
 
-
     <div class="health-box">
-
-      <small>
-        Setup
-      </small>
-
-      <strong id="setupGrade">
-        —
-      </strong>
-
+      <small>Strength</small>
+      <strong id="heroStrength">—</strong>
     </div>
 
-
     <div class="health-box">
-
-      <small>
-        Confidence
-      </small>
-
-      <strong id="heroConfidence">
-        —
-      </strong>
-
+      <small>Quality</small>
+      <strong id="heroQuality">—</strong>
     </div>
 
-
     <div class="health-box">
-
-      <small>
-        Quality
-      </small>
-
-      <strong id="heroQuality">
-        —
-      </strong>
-
+      <small>Agreement</small>
+      <strong id="heroAgreement">—</strong>
     </div>
 
-
     <div class="health-box">
-
-      <small>
-        Agreement
-      </small>
-
-      <strong id="heroAgreement">
-        —
-      </strong>
-
+      <small>Session</small>
+      <strong id="heroSession">—</strong>
     </div>
 
-
     <div class="health-box">
-
-      <small>
-        Regime
-      </small>
-
-      <strong id="heroRegime">
-        —
-      </strong>
-
+      <small>Regime</small>
+      <strong id="heroRegime">—</strong>
     </div>
 
-
     <div class="health-box">
-
-      <small>
-        Permission
-      </small>
-
-      <strong id="heroPermission">
-        —
-      </strong>
-
+      <small>Permission</small>
+      <strong id="heroPermission">—</strong>
     </div>
 
   </div>
@@ -2748,36 +1604,25 @@ button:disabled{
 </section>
 
 
-<!-- ======================================================
-     GRID
-====================================================== -->
-
 <section class="grid">
-
-
-<!-- ======================================================
-     LEFT
-====================================================== -->
 
 <div class="stack">
 
 
-<!-- AI DECISION -->
+<!-- FINAL DECISION -->
 
 <div class="card">
 
   <div class="card-title">
 
     <span>
-      Final AI Decision
+      Gold Scalping Decision
     </span>
 
     <span
       id="decisionBadge"
       class="card-badge">
-
       WAITING
-
     </span>
 
   </div>
@@ -2790,7 +1635,7 @@ button:disabled{
       class="confidence">
 
       <span id="confidenceText">
-        0%
+        0
       </span>
 
     </div>
@@ -2801,18 +1646,13 @@ button:disabled{
       <div
         id="summary"
         class="summary">
-
         Waiting for analysis.
-
       </div>
-
 
       <div
         id="gradeBadge"
         class="grade">
-
         NO SETUP
-
       </div>
 
     </div>
@@ -2822,190 +1662,86 @@ button:disabled{
 
   <div class="levels">
 
-
     <div class="level">
-
-      <small>
-        Entry
-      </small>
-
-      <strong id="entry">
-        —
-      </strong>
-
+      <small>Entry</small>
+      <strong id="entry">—</strong>
     </div>
 
-
     <div class="level">
-
-      <small>
-        Stop Loss
-      </small>
-
-      <strong id="sl">
-        —
-      </strong>
-
+      <small>Stop Loss</small>
+      <strong id="sl">—</strong>
     </div>
 
-
     <div class="level">
-
-      <small>
-        TP1
-      </small>
-
-      <strong id="tp1">
-        —
-      </strong>
-
+      <small>TP1</small>
+      <strong id="tp1">—</strong>
     </div>
 
-
     <div class="level">
-
-      <small>
-        TP2
-      </small>
-
-      <strong id="tp2">
-        —
-      </strong>
-
+      <small>TP2</small>
+      <strong id="tp2">—</strong>
     </div>
 
-
     <div class="level">
-
-      <small>
-        Entry Type
-      </small>
-
-      <strong id="entryType">
-        —
-      </strong>
-
+      <small>Max Hold</small>
+      <strong id="maxHold">—</strong>
     </div>
 
   </div>
 
-
   <button
     class="secondary"
     onclick="copyTradePlan()">
-
-    Copy Full Trade Plan
-
+    Copy Trade Plan
   </button>
 
 </div>
 
 
-<!-- ======================================================
-     ENSEMBLE
-====================================================== -->
+<!-- ENSEMBLE -->
 
 <div class="card">
 
   <div class="card-title">
 
     <span>
-      Extreme AI Ensemble
+      Gold Ensemble
     </span>
 
     <span
       id="ensembleDirection"
       class="card-badge">
-
       WAITING
-
     </span>
 
   </div>
 
-
   <div
     id="ensembleList"
     class="ensemble-list">
-
-    <div class="engine-row">
-
-      <span class="engine-name">
-        TREND
-      </span>
-
-      <span class="engine-bias NEUTRAL">
-        NEUTRAL
-      </span>
-
-      <div class="engine-meter">
-
-        <span style="width:0%">
-        </span>
-
-      </div>
-
-      <span class="engine-score">
-        0%
-      </span>
-
-    </div>
-
   </div>
 
 
   <div class="score-grid">
 
-
     <div class="score-box">
-
-      <small>
-        BUY SCORE
-      </small>
-
-      <strong id="buyScore">
-        0
-      </strong>
-
+      <small>BUY</small>
+      <strong id="buyScore">0</strong>
     </div>
 
-
     <div class="score-box">
-
-      <small>
-        SELL SCORE
-      </small>
-
-      <strong id="sellScore">
-        0
-      </strong>
-
+      <small>SELL</small>
+      <strong id="sellScore">0</strong>
     </div>
 
-
     <div class="score-box">
-
-      <small>
-        QUALITY
-      </small>
-
-      <strong id="qualityScore">
-        0%
-      </strong>
-
+      <small>QUALITY</small>
+      <strong id="qualityScore">0%</strong>
     </div>
 
-
     <div class="score-box">
-
-      <small>
-        AGREEMENT
-      </small>
-
-      <strong id="agreementScore">
-        0%
-      </strong>
-
+      <small>AGREEMENT</small>
+      <strong id="agreementScore">0%</strong>
     </div>
 
   </div>
@@ -3013,24 +1749,20 @@ button:disabled{
 </div>
 
 
-<!-- ======================================================
-     TRADE PERMISSION
-====================================================== -->
+<!-- PERMISSION -->
 
 <div class="card">
 
   <div class="card-title">
 
     <span>
-      Trade Permission Engine
+      Trade Permission
     </span>
 
     <span
       id="permissionBadge"
       class="card-badge blocked">
-
       BLOCKED
-
     </span>
 
   </div>
@@ -3041,24 +1773,19 @@ button:disabled{
     class="permission-state BLOCKED">
 
     <div>
-
       <small style="color:var(--muted);font-size:7px">
-        FINAL EXECUTION STATE
+        EXECUTION STATE
       </small>
 
       <strong id="permissionStateText">
         BLOCKED
       </strong>
-
     </div>
-
 
     <div
       id="permissionIcon"
       style="font-size:25px">
-
       ⛔
-
     </div>
 
   </div>
@@ -3067,157 +1794,106 @@ button:disabled{
   <div
     id="permissionChecks"
     class="check-list">
-
-    <div class="check-row">
-
-      <span class="check-icon fail">
-        ✕
-      </span>
-
-      <span>
-        Waiting for permission checks.
-      </span>
-
-    </div>
-
   </div>
 
 </div>
 
 
-<!-- ======================================================
-     LIQUIDITY MAP
-====================================================== -->
+<!-- GOLD LIQUIDITY -->
 
 <div class="card">
 
   <div class="card-title">
+    Gold Liquidity Map
+  </div>
 
-    <span>
-      Institutional Liquidity Map
-    </span>
 
+  <div class="gold-level-grid">
+
+    <div class="gold-level">
+      <small>Asian High</small>
+      <strong id="asianHigh">—</strong>
+    </div>
+
+    <div class="gold-level">
+      <small>Asian Low</small>
+      <strong id="asianLow">—</strong>
+    </div>
+
+    <div class="gold-level">
+      <small>Previous Day High</small>
+      <strong id="pdh">—</strong>
+    </div>
+
+    <div class="gold-level">
+      <small>Previous Day Low</small>
+      <strong id="pdl">—</strong>
+    </div>
+
+  </div>
+
+
+  <div class="kv" style="margin-top:10px">
+
+    <span>Bullish liquidity pressure</span>
+
+    <strong id="bullLiquidity">
+      0%
+    </strong>
+
+  </div>
+
+  <div class="liq-score">
     <span
-      id="liquidityCount"
-      class="card-badge">
-
-      0 LEVELS
-
+      id="bullLiquidityBar"
+      class="bull"
+      style="width:0%">
     </span>
-
   </div>
 
 
-  <div class="liquidity-main">
+  <div class="kv">
 
+    <span>Bearish liquidity pressure</span>
 
-    <div class="liq-box">
+    <strong id="bearLiquidity">
+      0%
+    </strong>
 
-      <small>
-        Nearest Buy-Side
-      </small>
+  </div>
 
-      <strong id="nearestBuyLiquidity">
-        —
-      </strong>
-
-      <span id="nearestBuyPrice">
-        —
-      </span>
-
-    </div>
-
-
-    <div class="liq-box">
-
-      <small>
-        Nearest Sell-Side
-      </small>
-
-      <strong id="nearestSellLiquidity">
-        —
-      </strong>
-
-      <span id="nearestSellPrice">
-        —
-      </span>
-
-    </div>
-
-
+  <div class="liq-score">
+    <span
+      id="bearLiquidityBar"
+      class="bear"
+      style="width:0%">
+    </span>
   </div>
 
 
   <div
-    id="poolList"
-    class="pool-list">
-
-    <div class="pool-row">
-
-      <span>
-        Waiting for liquidity analysis
-      </span>
-
-      <span>—</span>
-
-      <span>—</span>
-
-    </div>
-
+    id="goldSignals"
+    class="chips"
+    style="margin-top:12px">
   </div>
 
 </div>
 
 
-<!-- ======================================================
-     REASONS
-====================================================== -->
+<!-- RISKS -->
 
 <div class="card">
 
   <div class="card-title">
-    Why The Engine Chose This
+    Risks / Blockers
   </div>
-
-
-  <div
-    id="reasons"
-    class="chips">
-
-    <span class="chip">
-      Waiting for analysis
-    </span>
-
-  </div>
-
-</div>
-
-
-<!-- ======================================================
-     RISKS
-====================================================== -->
-
-<div class="card">
-
-  <div class="card-title">
-    Risk / Contradiction Engine
-  </div>
-
 
   <div
     id="risks"
     class="chips">
-
-    <span class="chip risk">
-      Waiting for risk analysis
-    </span>
-
   </div>
 
-
-  <div
-    class="kv"
-    style="margin-top:10px">
+  <div class="kv" style="margin-top:10px">
 
     <span>
       Invalidation
@@ -3228,7 +1904,6 @@ button:disabled{
     </strong>
 
   </div>
-
 
   <div class="kv">
 
@@ -3245,731 +1920,375 @@ button:disabled{
 </div>
 
 
-<!-- ======================================================
-     SCANNER
-====================================================== -->
+<!-- HISTORY -->
 
 <div class="card">
 
   <div class="card-title">
-
-    <span>
-      Extreme Market Scanner
-    </span>
-
-    <span
-      id="scannerStatus"
-      class="card-badge">
-
-      READY
-
-    </span>
-
+    Recent Gold Signals
   </div>
-
-
-  <div
-    id="scanner"
-    class="scanner">
-
-    <div class="scanner-row">
-
-      <span>
-        —
-      </span>
-
-      <strong>
-        WAIT
-      </strong>
-
-      <div class="scan-score">
-
-        <span style="width:0%">
-        </span>
-
-      </div>
-
-      <span>
-        0
-      </span>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-<!-- ======================================================
-     HISTORY
-====================================================== -->
-
-<div class="card">
-
-  <div class="card-title">
-    Recent Signals
-  </div>
-
 
   <div
     id="history"
     class="history">
-
-    <div class="history-row">
-
-      <small>—</small>
-
-      <span>
-        No signals yet
-      </span>
-
-      <span>—</span>
-
-    </div>
-
   </div>
 
 </div>
 
-
 </div>
 
-
-<!-- ======================================================
-     RIGHT COLUMN
-====================================================== -->
 
 <div class="stack">
 
 
-<!-- ======================================================
-     REGIME
-====================================================== -->
+<!-- TIMEFRAMES -->
 
 <div class="card">
 
   <div class="card-title">
-    Market Regime AI
+    Gold Timeframes
   </div>
 
+  <div class="tf-grid">
+
+    <div class="tf-box">
+      <small>M1</small>
+      <strong id="m1Bias">—</strong>
+    </div>
+
+    <div class="tf-box">
+      <small>M5</small>
+      <strong id="m5Bias">—</strong>
+    </div>
+
+    <div class="tf-box">
+      <small>M15</small>
+      <strong id="m15Bias">—</strong>
+    </div>
+
+    <div class="tf-box">
+      <small>H1</small>
+      <strong id="h1Bias">—</strong>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- REGIME -->
+
+<div class="card">
+
+  <div class="card-title">
+    Gold Regime
+  </div>
+
+  <div class="kv">
+    <span>Regime</span>
+    <strong id="regimeName">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Quality</span>
+    <strong id="regimeQuality">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Volatility</span>
+    <strong id="regimeVolatility">—</strong>
+  </div>
+
+</div>
+
+
+<!-- RISK -->
+
+<div class="card">
+
+  <div class="card-title">
+    Scalp Risk Plan
+  </div>
+
+  <div class="kv">
+    <span>TP1 RR</span>
+    <strong id="rr1">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>TP2 RR</span>
+    <strong id="rr2">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Stop Distance</span>
+    <strong id="riskDistance">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Stop ATR</span>
+    <strong id="stopAtr">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Target Liquidity</span>
+    <strong id="targetLiquidity">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Breakeven</span>
+    <strong id="breakevenAt">—</strong>
+  </div>
+
+</div>
+
+
+<!-- R200 PROTECTION -->
+
+<div class="card">
+
+  <div class="card-title">
+    R200 Account Protection
+  </div>
+
+  <div class="kv">
+    <span>Account Equity</span>
+    <strong id="accountEquity">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Risk / Trade</span>
+    <strong id="riskPct">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Maximum Risk</span>
+    <strong id="maxRisk">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Daily Loss Limit</span>
+    <strong id="dailyLossLimit">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Trades Today</span>
+    <strong id="tradesTodayDisplay">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Loss Streak</span>
+    <strong id="lossStreakDisplay">—</strong>
+  </div>
+
+</div>
+
+
+<!-- EXECUTION -->
+
+<div class="card">
+
+  <div class="card-title">
+    Broker Execution
+  </div>
+
+  <div class="kv">
+    <span>Execution Ready</span>
+    <strong id="executionReady">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Spread</span>
+    <strong id="spread">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Calculated Lot</span>
+    <strong id="lotSize">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Estimated Risk</span>
+    <strong id="estimatedRisk">—</strong>
+  </div>
 
   <div
-    id="regimeName"
-    class="regime-name">
-
+    id="executionReason"
+    class="summary"
+    style="margin-top:9px">
     —
-
   </div>
 
+</div>
+
+
+<!-- NEWS -->
+
+<div class="card">
+
+  <div class="card-title">
+    Gold News Guard
+  </div>
+
+  <div class="kv">
+    <span>Calendar Connected</span>
+    <strong id="newsConnected">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Trading Allowed</span>
+    <strong id="newsAllowed">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Minutes to USD News</span>
+    <strong id="newsMinutes">—</strong>
+  </div>
 
   <div
-    id="regimeSub"
-    class="regime-sub">
-
-    Waiting for regime classification.
-
-  </div>
-
-
-  <div class="regime-meter">
-
-    <span id="regimeMeter">
-    </span>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Quality
-    </span>
-
-    <strong id="regimeQuality">
-      —
-    </strong>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Volatility
-    </span>
-
-    <strong id="regimeVolatility">
-      —
-    </strong>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Volatility Percentile
-    </span>
-
-    <strong id="volatilityPercentile">
-      —
-    </strong>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      ADX
-    </span>
-
-    <strong id="regimeAdx">
-      —
-    </strong>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Range / ATR
-    </span>
-
-    <strong id="rangeAtr">
-      —
-    </strong>
-
-  </div>
-
-</div>
-
-
-<!-- ======================================================
-     TIMEFRAMES
-====================================================== -->
-
-<div class="card">
-
-  <div class="card-title">
-    Multi-Timeframe Intelligence
-  </div>
-
-
-  <div class="tf-row">
-
-    <span class="tf-name">
-      M5
-    </span>
-
-    <div class="bar">
-
-      <span
-        id="m5Bar"
-        style="width:50%">
-      </span>
-
-    </div>
-
-    <span
-      id="m5Bias"
-      class="bias">
-
-      NEUTRAL
-
-    </span>
-
-  </div>
-
-
-  <div class="tf-row">
-
-    <span class="tf-name">
-      M15
-    </span>
-
-    <div class="bar">
-
-      <span
-        id="m15Bar"
-        style="width:50%">
-      </span>
-
-    </div>
-
-    <span
-      id="m15Bias"
-      class="bias">
-
-      NEUTRAL
-
-    </span>
-
-  </div>
-
-
-  <div class="tf-row">
-
-    <span class="tf-name">
-      H1
-    </span>
-
-    <div class="bar">
-
-      <span
-        id="h1Bar"
-        style="width:50%">
-      </span>
-
-    </div>
-
-    <span
-      id="h1Bias"
-      class="bias">
-
-      NEUTRAL
-
-    </span>
-
-  </div>
-
-
-  <div class="tf-row">
-
-    <span class="tf-name">
-      H4
-    </span>
-
-    <div class="bar">
-
-      <span
-        id="h4Bar"
-        style="width:50%">
-      </span>
-
-    </div>
-
-    <span
-      id="h4Bias"
-      class="bias">
-
-      NEUTRAL
-
-    </span>
-
-  </div>
-
-</div>
-
-
-<!-- ======================================================
-     SMART RISK PLAN
-====================================================== -->
-
-<div class="card">
-
-  <div class="card-title">
-    Smart Risk Plan
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Entry Type
-    </span>
-
-    <strong id="riskEntryType">
-      —
-    </strong>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Risk / Reward
-    </span>
-
-    <strong id="rr">
-      —
-    </strong>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Stop Distance
-    </span>
-
-    <strong id="riskDistance">
-      —
-    </strong>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Stop ATR
-    </span>
-
-    <strong id="stopAtr">
-      —
-    </strong>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Stretch ATR
-    </span>
-
-    <strong id="stretchAtr">
-      —
-    </strong>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Target Liquidity
-    </span>
-
-    <strong id="targetLiquidity">
-      —
-    </strong>
-
-  </div>
-
-</div>
-
-
-<!-- ======================================================
-     MARKET READ
-====================================================== -->
-
-<div class="card">
-
-  <div class="card-title">
-    Extreme Market Read
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Structure
-    </span>
-
-    <strong id="structure">
-      —
-    </strong>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Momentum
-    </span>
-
-    <strong id="momentum">
-      —
-    </strong>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Liquidity
-    </span>
-
-    <strong id="liquidity">
-      —
-    </strong>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Session
-    </span>
-
-    <strong id="session">
-      —
-    </strong>
-
-  </div>
-
-</div>
-
-
-<!-- ======================================================
-     AI REVIEWER
-====================================================== -->
-
-<div class="card">
-
-  <div class="card-title">
-    Independent AI Reviewer
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Verdict
-    </span>
-
-    <strong id="reviewVerdict">
-      —
-    </strong>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Confidence
-    </span>
-
-    <strong id="reviewConfidence">
-      —
-    </strong>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      News Block
-    </span>
-
-    <strong id="newsBlock">
-      —
-    </strong>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      News Risk
-    </span>
-
-    <strong id="newsRisk">
-      —
-    </strong>
-
-  </div>
-
-</div>
-
-
-<!-- ======================================================
-     CRITIC
-====================================================== -->
-
-<div class="card">
-
-  <div class="card-title">
-    Adversarial AI Critic
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Verdict
-    </span>
-
-    <strong id="criticVerdict">
-      —
-    </strong>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Risk Level
-    </span>
-
-    <strong id="criticRisk">
-      —
-    </strong>
-
-  </div>
-
-
-  <div
-    id="criticSummary"
+    id="newsReason"
     class="summary"
     style="margin-top:9px">
-
-    Waiting for critic.
-
+    —
   </div>
 
 </div>
 
 
-<!-- ======================================================
-     NEWS
-====================================================== -->
+<!-- USER STATE -->
 
 <div class="card">
 
   <div class="card-title">
-    Macro / News Intelligence
+    Account Inputs
   </div>
-
-
-  <div class="kv">
-
-    <span>
-      Macro Bias
-    </span>
-
-    <strong id="macroBias">
-      —
-    </strong>
-
-  </div>
-
-
-  <div
-    id="newsSummary"
-    class="summary"
-    style="margin-top:9px">
-
-    Waiting for macro analysis.
-
-  </div>
-
-</div>
-
-
-<!-- ======================================================
-     ENGINE
-====================================================== -->
-
-<div class="card">
-
-  <div class="card-title">
-    Engine Status
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Model
-    </span>
-
-    <strong id="modelName">
-      —
-    </strong>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Data Mode
-    </span>
-
-    <strong id="dataMode">
-      —
-    </strong>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Cache
-    </span>
-
-    <strong id="cacheStatus">
-      —
-    </strong>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Data Age
-    </span>
-
-    <strong id="dataAge">
-      —
-    </strong>
-
-  </div>
-
-
-  <div class="kv">
-
-    <span>
-      Connection
-    </span>
-
-    <strong id="connectionState">
-      ONLINE
-    </strong>
-
-  </div>
-
-
-  <div
-    id="guardrail"
-    class="summary"
-    style="margin-top:9px">
-
-    Waiting for engine.
-
-  </div>
-
-</div>
-
-
-<!-- ======================================================
-     SETTINGS
-====================================================== -->
-
-<div class="card">
-
-  <div class="card-title">
-    Controls
-  </div>
-
 
   <div class="settings-grid">
 
+    <div class="field">
+
+      <label>
+        Equity (R)
+      </label>
+
+      <input
+        id="equityInput"
+        type="number"
+        value="200"
+        min="1"
+        step="1"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Daily P/L (R)
+      </label>
+
+      <input
+        id="dailyPnLInput"
+        type="number"
+        value="0"
+        step=".01"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Trades Today
+      </label>
+
+      <input
+        id="tradesTodayInput"
+        type="number"
+        value="0"
+        min="0"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Consecutive Losses
+      </label>
+
+      <input
+        id="lossesInput"
+        type="number"
+        value="0"
+        min="0"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Minutes Since Loss
+      </label>
+
+      <input
+        id="lossCooldownInput"
+        type="number"
+        value="999"
+        min="0"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Minutes To High-Impact USD News
+      </label>
+
+      <input
+        id="newsMinutesInput"
+        type="number"
+        placeholder="Optional"
+        min="0"
+      >
+
+    </div>
+
+  </div>
+
+
+  <div class="checkbox-row">
+
+    <input
+      id="newsRiskInput"
+      type="checkbox"
+    >
+
+    <label for="newsRiskInput">
+      High-impact USD news currently active
+    </label>
+
+  </div>
+
+</div>
+
+
+<!-- AUTO SETTINGS -->
+
+<div class="card">
+
+  <div class="card-title">
+    App Settings
+  </div>
+
+  <div class="settings-grid">
 
     <div class="field">
 
@@ -3979,6 +2298,10 @@ button:disabled{
 
       <select id="refreshSetting">
 
+        <option value="15">
+          15 seconds
+        </option>
+
         <option value="30">
           30 seconds
         </option>
@@ -3986,16 +2309,7 @@ button:disabled{
         <option
           value="60"
           selected>
-
           60 seconds
-        </option>
-
-        <option value="120">
-          2 minutes
-        </option>
-
-        <option value="300">
-          5 minutes
         </option>
 
         <option value="0">
@@ -4010,42 +2324,32 @@ button:disabled{
     <div class="field">
 
       <label>
-        Alert Confidence
+        Alert Strength
       </label>
 
       <select id="confidenceSetting">
 
-        <option value="60">
-          60%
-        </option>
-
-        <option value="70">
-          70%
+        <option value="65">
+          65
         </option>
 
         <option
-          value="75"
+          value="70"
           selected>
+          70
+        </option>
 
-          75%
+        <option value="75">
+          75
         </option>
 
         <option value="80">
-          80%
-        </option>
-
-        <option value="85">
-          85%
-        </option>
-
-        <option value="90">
-          90%
+          80
         </option>
 
       </select>
 
     </div>
-
 
   </div>
 
@@ -4053,13 +2357,10 @@ button:disabled{
   <button
     class="secondary"
     onclick="enableNotifications()">
-
-    Enable BUY / SELL Alerts
-
+    Enable Gold Alerts
   </button>
 
 </div>
-
 
 </div>
 
@@ -4073,7 +2374,7 @@ button:disabled{
   </span>
 
   <span id="countdown">
-    Next scan: —
+    Next analysis: —
   </span>
 
 </div>
@@ -4081,12 +2382,11 @@ button:disabled{
 
 <div class="footer">
 
-  MKAYFX provides probabilistic market analysis.
-  AI confidence is not a guarantee of profit.
-  Test strategies before using real funds.
+  MKAYFX GOLD is a deterministic market-analysis system.
+  Setup strength is not a guaranteed win probability.
+  Small accounts are highly sensitive to spread and broker minimum lot size.
 
 </div>
-
 
 </main>
 
@@ -4099,11 +2399,6 @@ button:disabled{
 
 <script>
 
-/* =========================================================
-   MKAYFX EXTREME AI V7 FRONTEND
-========================================================= */
-
-
 const $ =
   id =>
     document.getElementById(
@@ -4111,22 +2406,7 @@ const $ =
     );
 
 
-const SYMBOLS =
-[
-  "XAU/USD",
-  "EUR/USD",
-  "GBP/USD",
-  "USD/JPY",
-  "BTC/USD",
-  "XBR/USD"
-];
-
-
 let busy =
-  false;
-
-
-let scannerBusy =
   false;
 
 
@@ -4141,7 +2421,7 @@ let previousAlertKey =
 let refreshSeconds =
   Number(
     localStorage.getItem(
-      "mkayfx_refresh"
+      "mkayfx_gold_refresh"
     ) ||
     60
   );
@@ -4153,14 +2433,9 @@ let nextScan =
 
 let soundEnabled =
   localStorage.getItem(
-    "mkayfx_sound"
+    "mkayfx_gold_sound"
   ) !==
   "off";
-
-
-/* =========================================================
-   SETTINGS INITIALISE
-========================================================= */
 
 
 $("refreshSetting").value =
@@ -4171,17 +2446,9 @@ $("refreshSetting").value =
 
 $("confidenceSetting").value =
   localStorage.getItem(
-    "mkayfx_confidence"
+    "mkayfx_gold_alert"
   ) ||
-  "75";
-
-
-updateSoundButton();
-
-
-/* =========================================================
-   HELPERS
-========================================================= */
+  "70";
 
 
 function clamp(
@@ -4189,7 +2456,6 @@ function clamp(
   min,
   max
 ){
-
   return Math.max(
     min,
     Math.min(
@@ -4197,150 +2463,67 @@ function clamp(
       value
     )
   );
-
 }
 
 
-function safeNumber(
+function num(
   value,
   fallback = 0
 ){
+  const n =
+    Number(value);
 
-  const number =
-    Number(
-      value
-    );
-
-
-  return Number.isFinite(
-    number
-  )
-    ?
-    number
-    :
-    fallback;
-
+  return Number.isFinite(n)
+    ? n
+    : fallback;
 }
 
 
 function fmt(
   value
 ){
-
-  if(
-    value ===
-      null ||
-    value ===
-      undefined ||
-    value ===
-      "" ||
-    !Number.isFinite(
-      Number(
-        value
-      )
-    )
-  ){
-
-    return "—";
-
-  }
-
-
   const n =
-    Number(
-      value
-    );
-
+    Number(value);
 
   if(
-    Math.abs(
-      n
-    ) >=
-    1000
+    !Number.isFinite(n)
   ){
-
-    return n
-      .toFixed(
-        2
-      );
-
+    return "—";
   }
 
-
-  if(
-    Math.abs(
-      n
-    ) >=
-    10
-  ){
-
-    return n
-      .toFixed(
-        3
-      );
-
-  }
-
-
-  return n
-    .toFixed(
-      5
-    );
-
+  return n.toFixed(2);
 }
 
 
 function escapeHtml(
   value
 ){
-
   return String(
     value ??
     ""
   )
   .replace(
     /[&<>'"]/g,
-    char =>
+    c =>
       ({
         "&":"&amp;",
         "<":"&lt;",
         ">":"&gt;",
         "'":"&#39;",
         '"':"&quot;"
-      })[char]
+      })[c]
   );
-
-}
-
-
-function setStatus(
-  type,
-  text
-){
-
-  $("statusDot")
-    .className =
-      `dot ${type || ""}`;
-
-
-  $("statusText")
-    .textContent =
-      text;
-
 }
 
 
 function toast(
   message
 ){
-
   const element =
     $("toast");
 
-
   element.textContent =
     message;
-
 
   element
     .classList
@@ -4348,37 +2531,119 @@ function toast(
       "show"
     );
 
-
   clearTimeout(
     toast.timer
   );
 
-
   toast.timer =
     setTimeout(
-      () => {
-
+      () =>
         element
           .classList
           .remove(
             "show"
-          );
+          ),
+      2200
+    );
+}
 
-      },
-      2300
+
+function setStatus(
+  type,
+  text
+){
+  $("statusDot")
+    .className =
+      `dot ${type || ""}`;
+
+  $("statusText")
+    .textContent =
+      text;
+}
+
+
+function inputNumber(
+  id,
+  fallback
+){
+  const value =
+    Number(
+      $(id).value
     );
 
+  return Number.isFinite(value)
+    ? value
+    : fallback;
 }
 
 
 /* =========================================================
-   API CALL
+   API
 ========================================================= */
 
+async function apiAnalyze(){
 
-async function apiAnalyze(
-  symbol
-){
+  const body = {
+
+    symbol:
+      "XAU/USD",
+
+    equity:
+      inputNumber(
+        "equityInput",
+        200
+      ),
+
+    dailyPnL:
+      inputNumber(
+        "dailyPnLInput",
+        0
+      ),
+
+    tradesToday:
+      inputNumber(
+        "tradesTodayInput",
+        0
+      ),
+
+    consecutiveLosses:
+      inputNumber(
+        "lossesInput",
+        0
+      ),
+
+    minutesSinceLastLoss:
+      inputNumber(
+        "lossCooldownInput",
+        999
+      ),
+
+    highImpactUsdNews:
+      $("newsRiskInput")
+        .checked
+
+  };
+
+
+  const newsMinutes =
+    Number(
+      $("newsMinutesInput")
+        .value
+    );
+
+
+  if(
+    Number.isFinite(
+      newsMinutes
+    ) &&
+    $("newsMinutesInput")
+      .value !==
+      ""
+  ){
+    body.minutesToHighImpactUsdNews =
+      newsMinutes;
+  }
+
 
   const controller =
     new AbortController();
@@ -4398,23 +2663,17 @@ async function apiAnalyze(
       await fetch(
         "/api/analyze",
         {
-
           method:
             "POST",
 
-          headers:
-          {
-
+          headers:{
             "Content-Type":
               "application/json"
-
           },
 
           body:
             JSON.stringify(
-              {
-                symbol
-              }
+              body
             ),
 
           cache:
@@ -4422,75 +2681,27 @@ async function apiAnalyze(
 
           signal:
             controller.signal
-
         }
       );
 
 
-    let data;
-
-
-    try{
-
-      data =
-        await response
-          .json();
-
-    }
-    catch{
-
-      throw new Error(
-        "Backend returned invalid JSON."
-      );
-
-    }
+    const data =
+      await response.json();
 
 
     if(
-      !response.ok
-    ){
-
-      throw new Error(
-        data.error ||
-        `API error ${response.status}`
-      );
-
-    }
-
-
-    if(
+      !response.ok ||
       data.success ===
       false
     ){
-
       throw new Error(
         data.error ||
-        "Analysis failed."
+        "Gold analysis failed."
       );
-
     }
 
 
     return data;
-
-  }
-  catch(
-    error
-  ){
-
-    if(
-      error.name ===
-      "AbortError"
-    ){
-
-      throw new Error(
-        "Analysis timed out."
-      );
-
-    }
-
-
-    throw error;
 
   }
   finally{
@@ -4505,9 +2716,8 @@ async function apiAnalyze(
 
 
 /* =========================================================
-   NORMALISE RESPONSE
+   NORMALIZE
 ========================================================= */
-
 
 function normalizeResponse(
   raw
@@ -4518,13 +2728,62 @@ function normalizeResponse(
     {};
 
 
+  const technical =
+    source.technical ||
+    {};
+
+
+  const permission =
+    source.tradePermission ||
+    raw.trade_permission ||
+    {};
+
+
+  const regime =
+    (
+      source.regime &&
+      typeof source.regime ===
+      "object"
+    )
+      ? source.regime
+      : (
+          raw.regime &&
+          typeof raw.regime ===
+          "object"
+        )
+        ? raw.regime
+        : {};
+
+
+  const gold =
+    source.goldContext ||
+    raw.gold_context ||
+    {};
+
+
+  const account =
+    source.accountProtection ||
+    raw.account_protection ||
+    {};
+
+
+  const sizing =
+    source.executionSizing ||
+    raw.execution_sizing ||
+    {};
+
+
+  const news =
+    source.newsGuard ||
+    raw.news_guard ||
+    {};
+
+
   let action =
     String(
       source.action ||
-      source.decision ||
       "WAIT"
-    )
-    .toUpperCase();
+    ).toUpperCase();
 
 
   if(
@@ -4536,50 +2795,19 @@ function normalizeResponse(
       action
     )
   ){
-
     action =
       "WAIT";
-
   }
-
-
-  const ensemble =
-    source.ensemble ||
-    raw.ensemble ||
-    {};
-
-
-  const permission =
-    source.tradePermission ||
-    raw.trade_permission ||
-    {};
-
-
-  const regimeDetails =
-    source.regimeDetails ||
-    raw.regime_details ||
-    {};
-
-
-  const liquidityMap =
-    source.liquidityMap ||
-    raw.liquidity_map ||
-    {};
 
 
   return {
 
-    success:
-      raw.success !==
-      false,
-
     symbol:
-      raw.symbol ||
-      $("symbolSelect").value,
+      "XAU/USD",
 
     price:
       raw.price ??
-      raw.current_price ??
+      source.currentPrice ??
       null,
 
     timestamp:
@@ -4589,42 +2817,28 @@ function normalizeResponse(
 
     model:
       raw.model ||
-      "MKAYFX ENGINE",
+      "MKAYFX GOLD SCALPER V6",
 
-    dataMode:
-      raw.data_mode ||
-      "LIVE",
+    chart:
+      Array.isArray(
+        raw.chart
+      )
+        ? raw.chart
+        : [],
 
     cacheHit:
       Boolean(
         raw.cache_hit
       ),
 
-    guardrail:
-      raw.guardrail_note ||
-      "",
-
-    session:
-      raw.session ||
-      "UNKNOWN",
-
-    chart:
-      Array.isArray(
-        raw.chart
-      )
-        ?
-        raw.chart
-        :
-        [],
-
-    analysis:
-    {
+    analysis:{
 
       action,
 
-      confidence:
+      setupStrength:
         clamp(
-          safeNumber(
+          num(
+            source.setupStrength ??
             source.confidence,
             0
           ),
@@ -4632,14 +2846,28 @@ function normalizeResponse(
           100
         ),
 
-      setupGrade:
-        source.setupGrade ??
-        source.setup_grade ??
-        "WAIT",
+      session:
+        source.session ||
+        raw.session ||
+        "UNKNOWN",
 
-      summary:
-        source.summary ||
-        "No summary returned.",
+      regime,
+
+      timeframeBias:
+        source.timeframeBias ||
+        {},
+
+      gold,
+
+      permission,
+
+      account,
+
+      sizing,
+
+      news,
+
+      technical,
 
       entry:
         source.entry ??
@@ -4647,111 +2875,35 @@ function normalizeResponse(
 
       stopLoss:
         source.stopLoss ??
-        source.stop_loss ??
         null,
 
       takeProfit1:
         source.takeProfit1 ??
-        source.take_profit_1 ??
         null,
 
       takeProfit2:
         source.takeProfit2 ??
-        source.take_profit_2 ??
         null,
 
-      entryType:
-        source.entryType ??
-        source.entry_type ??
+      riskRewardTP1:
+        source.riskRewardTP1 ||
         "—",
 
-      riskReward:
-        source.riskReward ??
-        source.risk_reward ??
+      riskRewardTP2:
+        source.riskRewardTP2 ||
         "—",
 
-      structure:
-        source.structure ||
-        "—",
-
-      momentum:
-        source.momentum ||
-        "—",
-
-      liquiditySummary:
-        source.liquiditySummary ??
-        source.liquidity_summary ??
-        "—",
-
-      macroBias:
-        source.macroBias ??
-        source.macro_bias ??
-        "UNKNOWN",
-
-      newsRisk:
-        source.newsRisk ??
-        source.news_risk ??
-        "UNKNOWN",
-
-      newsSummary:
-        source.newsSummary ??
-        source.news_summary ??
-        "No news analysis.",
+      management:
+        source.management ||
+        null,
 
       invalidation:
         source.invalidation ||
         "—",
 
       nextTrigger:
-        source.nextTrigger ??
-        source.next_trigger ??
-        "—",
-
-      reasons:
-        Array.isArray(
-          source.reasons
-        )
-          ?
-          source.reasons
-          :
-          [],
-
-      risks:
-        Array.isArray(
-          source.risks
-        )
-          ?
-          source.risks
-          :
-          [],
-
-      timeframes:
-        source.timeframes ||
-        {},
-
-      timeframeBias:
-        source.timeframeBias ||
-        {},
-
-      ensemble,
-
-      permission,
-
-      regimeDetails,
-
-      liquidityMap,
-
-      aiReview:
-        source.aiReview ||
-        null,
-
-      aiCritic:
-        source.aiCritic ||
-        null,
-
-      riskPlan:
-        source.riskPlan ||
-        {}
+        source.nextTrigger ||
+        "—"
 
     }
 
@@ -4764,46 +2916,19 @@ function normalizeResponse(
    CHART
 ========================================================= */
 
-
-function getChartValues(
+function chartValues(
   chart
 ){
 
   return chart
-
     .map(
-      item => {
-
-        if(
-          typeof item ===
-          "number"
-        ){
-
-          return item;
-
-        }
-
-
-        if(
-          typeof item ===
-          "string"
-        ){
-
-          return Number(
-            item
-          );
-
-        }
-
-
-        return Number(
+      item =>
+        Number(
           item?.c ??
-          item?.close
-        );
-
-      }
+          item?.close ??
+          item
+        )
     )
-
     .filter(
       Number.isFinite
     );
@@ -4817,7 +2942,7 @@ function drawChart(
 ){
 
   const values =
-    getChartValues(
+    chartValues(
       chart
     );
 
@@ -4836,14 +2961,12 @@ function drawChart(
     values.length <
     2
   ){
-
     line.setAttribute(
       "points",
       ""
     );
 
     return;
-
   }
 
 
@@ -4865,17 +2988,8 @@ function drawChart(
     1;
 
 
-  const width =
-    700;
-
-
-  const height =
-    105;
-
-
   const points =
     values
-
       .map(
         (
           value,
@@ -4888,11 +3002,11 @@ function drawChart(
               values.length -
               1
             ) *
-            width;
+            700;
 
 
           const y =
-            height -
+            105 -
             (
               (
                 value -
@@ -4911,7 +3025,6 @@ function drawChart(
 
         }
       )
-
       .join(
         " "
       );
@@ -4926,111 +3039,33 @@ function drawChart(
 
 
 /* =========================================================
-   CHANGE
+   MODULES
 ========================================================= */
 
-
-function recentChange(
-  chart,
-  currentPrice
+function renderModules(
+  technical
 ){
-
-  const values =
-    getChartValues(
-      chart
-    );
-
-
-  if(
-    values.length <
-      2 ||
-    !Number.isFinite(
-      Number(
-        currentPrice
-      )
-    )
-  ){
-
-    return null;
-
-  }
-
-
-  const bars =
-    Math.min(
-      12,
-      values.length -
-      1
-    );
-
-
-  const old =
-    values[
-      values.length -
-      1 -
-      bars
-    ];
-
-
-  if(
-    !old
-  ){
-
-    return null;
-
-  }
-
-
-  return (
-    (
-      Number(
-        currentPrice
-      ) /
-      old
-    ) -
-    1
-  ) *
-  100;
-
-}
-
-
-/* =========================================================
-   ENSEMBLE RENDER
-========================================================= */
-
-
-function renderEnsemble(
-  analysis
-){
-
-  const ensemble =
-    analysis.ensemble ||
-    {};
-
 
   const modules =
     Array.isArray(
-      ensemble.modules
+      technical.modules
     )
-      ?
-      ensemble.modules
-      :
-      [];
+      ? technical.modules
+      : [];
 
 
   $("ensembleDirection")
     .textContent =
-      ensemble.direction ||
-      analysis.action;
+      technical.selected ||
+      technical.provisional ||
+      "WAIT";
 
 
   $("buyScore")
     .textContent =
       Math.round(
-        safeNumber(
-          ensemble.buyScore,
-          0
+        num(
+          technical.buyScore
         )
       );
 
@@ -5038,9 +3073,8 @@ function renderEnsemble(
   $("sellScore")
     .textContent =
       Math.round(
-        safeNumber(
-          ensemble.sellScore,
-          0
+        num(
+          technical.sellScore
         )
       );
 
@@ -5048,9 +3082,8 @@ function renderEnsemble(
   $("qualityScore")
     .textContent =
       `${Math.round(
-        safeNumber(
-          ensemble.quality,
-          0
+        num(
+          technical.quality
         )
       )}%`;
 
@@ -5058,9 +3091,8 @@ function renderEnsemble(
   $("agreementScore")
     .textContent =
       `${Math.round(
-        safeNumber(
-          ensemble.agreementPct,
-          0
+        num(
+          technical.agreementPct
         )
       )}%`;
 
@@ -5068,43 +3100,19 @@ function renderEnsemble(
   if(
     !modules.length
   ){
-
     $("ensembleList")
       .innerHTML =
-        `
-          <div class="engine-row">
-
-            <span class="engine-name">
-              ENGINE
-            </span>
-
-            <span class="engine-bias NEUTRAL">
-              WAITING
-            </span>
-
-            <div class="engine-meter">
-
-              <span style="width:0%">
-              </span>
-
-            </div>
-
-            <span class="engine-score">
-              0%
-            </span>
-
-          </div>
-        `;
+        `<div class="summary">
+          No module data.
+        </div>`;
 
     return;
-
   }
 
 
   $("ensembleList")
     .innerHTML =
       modules
-
         .map(
           module => {
 
@@ -5116,14 +3124,21 @@ function renderEnsemble(
               .toUpperCase();
 
 
-            const confidence =
+            const reliability =
               clamp(
-                safeNumber(
-                  module.confidence,
-                  0
+                num(
+                  module.reliability
                 ),
                 0,
                 100
+              );
+
+
+            const signal =
+              Math.abs(
+                num(
+                  module.signal
+                )
               );
 
 
@@ -5137,14 +3152,9 @@ function renderEnsemble(
                 </span>
 
                 <span
-                  class="engine-bias
-                  ${escapeHtml(
-                    bias
-                  )}">
+                  class="engine-bias ${bias}">
 
-                  ${escapeHtml(
-                    bias
-                  )}
+                  ${bias}
 
                 </span>
 
@@ -5153,18 +3163,16 @@ function renderEnsemble(
                   <span
                     style="
                       width:
-                      ${confidence}%
+                      ${reliability}%
                     ">
                   </span>
 
                 </div>
 
                 <span class="engine-score">
-
                   ${Math.round(
-                    confidence
-                  )}%
-
+                    signal
+                  )}
                 </span>
 
               </div>
@@ -5172,7 +3180,6 @@ function renderEnsemble(
 
           }
         )
-
         .join(
           ""
         );
@@ -5181,31 +3188,18 @@ function renderEnsemble(
 
 
 /* =========================================================
-   PERMISSION RENDER
+   PERMISSION
 ========================================================= */
 
-
 function renderPermission(
-  analysis
+  permission
 ){
-
-  const permission =
-    analysis.permission ||
-    {};
-
 
   const state =
     String(
       permission.state ||
-      (
-        permission.finalAllowed
-          ?
-          "APPROVED"
-          :
-          "BLOCKED"
-      )
-    )
-    .toUpperCase();
+      "BLOCKED"
+    ).toUpperCase();
 
 
   const approved =
@@ -5222,10 +3216,8 @@ function renderPermission(
     .className =
       `card-badge ${
         approved
-          ?
-          "approved"
-          :
-          "blocked"
+          ? "approved"
+          : "blocked"
       }`;
 
 
@@ -5233,10 +3225,8 @@ function renderPermission(
     .className =
       `permission-state ${
         approved
-          ?
-          "APPROVED"
-          :
-          "BLOCKED"
+          ? "APPROVED"
+          : "BLOCKED"
       }`;
 
 
@@ -5248,10 +3238,8 @@ function renderPermission(
   $("permissionIcon")
     .textContent =
       approved
-        ?
-        "✅"
-        :
-        "⛔";
+        ? "✅"
+        : "⛔";
 
 
   $("heroPermission")
@@ -5259,98 +3247,90 @@ function renderPermission(
       state;
 
 
-  const checks =
-    permission.preAi?.checks ||
+  const blockers =
+    Array.isArray(
+      permission.blockers
+    )
+      ? permission.blockers
+      : [];
+
+
+  const warnings =
+    Array.isArray(
+      permission.warnings
+    )
+      ? permission.warnings
+      : [];
+
+
+  const rows =
     [];
 
 
   if(
-    !checks.length
+    approved
   ){
+    rows.push({
+      type:"pass",
+      icon:"✓",
+      text:
+        "All mandatory gold trade checks passed."
+    });
+  }
 
-    $("permissionChecks")
-      .innerHTML =
-        `
-          <div class="check-row">
 
-            <span class="check-icon fail">
-              ✕
-            </span>
+  blockers.forEach(
+    item =>
+      rows.push({
+        type:"fail",
+        icon:"✕",
+        text:item
+      })
+  );
 
-            <span>
-              No permission checks returned.
-            </span>
 
-          </div>
-        `;
+  warnings.forEach(
+    item =>
+      rows.push({
+        type:"warning",
+        icon:"!",
+        text:item
+      })
+  );
 
-    return;
 
+  if(
+    !rows.length
+  ){
+    rows.push({
+      type:"fail",
+      icon:"✕",
+      text:
+        "No permission information returned."
+    });
   }
 
 
   $("permissionChecks")
     .innerHTML =
-      checks
-
+      rows
         .map(
-          check => {
+          row => `
+            <div class="check-row">
 
-            const pass =
-              Boolean(
-                check.pass
-              );
+              <span class="${row.type}">
+                ${row.icon}
+              </span>
 
+              <span>
+                ${escapeHtml(
+                  row.text
+                )}
+              </span>
 
-            return `
-              <div class="check-row">
-
-                <span
-                  class="check-icon ${
-                    pass
-                      ?
-                      "pass"
-                      :
-                      "fail"
-                  }">
-
-                  ${
-                    pass
-                      ?
-                      "✓"
-                      :
-                      "✕"
-                  }
-
-                </span>
-
-                <span>
-
-                  <strong>
-                    ${escapeHtml(
-                      check.name
-                    )}
-                  </strong>
-
-                  ${
-                    !pass &&
-                    check.detail
-                      ?
-                      `<br>${escapeHtml(
-                        check.detail
-                      )}`
-                      :
-                      ""
-                  }
-
-                </span>
-
-              </div>
-            `;
-
-          }
+            </div>
+          `
         )
-
         .join(
           ""
         );
@@ -5359,593 +3339,344 @@ function renderPermission(
 
 
 /* =========================================================
-   REGIME RENDER
+   GOLD CONTEXT
 ========================================================= */
 
-
-function renderRegime(
-  analysis
+function renderGold(
+  gold
 ){
 
-  const regime =
-    analysis.regimeDetails ||
-    {};
+  $("asianHigh")
+    .textContent =
+      fmt(
+        gold.asianRange
+          ?.high
+      );
 
 
-  const name =
-    regime.name ||
-    "UNKNOWN";
+  $("asianLow")
+    .textContent =
+      fmt(
+        gold.asianRange
+          ?.low
+      );
 
 
-  const quality =
+  $("pdh")
+    .textContent =
+      fmt(
+        gold.previousDay
+          ?.high
+      );
+
+
+  $("pdl")
+    .textContent =
+      fmt(
+        gold.previousDay
+          ?.low
+      );
+
+
+  const bull =
     clamp(
-      safeNumber(
-        regime.quality,
-        0
+      num(
+        gold.bullishLiquidityScore
       ),
       0,
       100
     );
 
 
-  $("regimeName")
-    .textContent =
-      name;
-
-
-  $("heroRegime")
-    .textContent =
-      name;
-
-
-  $("regimeQuality")
-    .textContent =
-      `${Math.round(
-        quality
-      )}%`;
-
-
-  $("regimeVolatility")
-    .textContent =
-      regime.volatility ||
-      "UNKNOWN";
-
-
-  $("volatilityPercentile")
-    .textContent =
-      Number.isFinite(
-        Number(
-          regime.volatilityPercentile
-        )
-      )
-        ?
-        `${Math.round(
-          regime.volatilityPercentile
-        )}%`
-        :
-        "—";
-
-
-  $("regimeAdx")
-    .textContent =
-      regime.adx ??
-      "—";
-
-
-  $("rangeAtr")
-    .textContent =
-      regime.rangeAtr ??
-      "—";
-
-
-  $("regimeMeter")
-    .style.width =
-      `${quality}%`;
-
-
-  const notes =
-    Array.isArray(
-      regime.notes
-    )
-      ?
-      regime.notes
-      :
-      [];
-
-
-  $("regimeSub")
-    .textContent =
-      notes.length
-        ?
-        notes.join(
-          " "
-        )
-        :
-        "No regime notes returned.";
-
-}
-
-
-/* =========================================================
-   LIQUIDITY RENDER
-========================================================= */
-
-
-function renderLiquidity(
-  analysis
-){
-
-  const map =
-    analysis.liquidityMap ||
-    {};
-
-
-  const buy =
-    map.nearestBuySide;
-
-
-  const sell =
-    map.nearestSellSide;
-
-
-  $("nearestBuyLiquidity")
-    .textContent =
-      buy?.label ||
-      "None mapped";
-
-
-  $("nearestBuyPrice")
-    .textContent =
-      buy
-        ?
-        `${fmt(
-          buy.price
-        )} · ${buy.distanceAtr ?? "—"} ATR`
-        :
-        "—";
-
-
-  $("nearestSellLiquidity")
-    .textContent =
-      sell?.label ||
-      "None mapped";
-
-
-  $("nearestSellPrice")
-    .textContent =
-      sell
-        ?
-        `${fmt(
-          sell.price
-        )} · ${sell.distanceAtr ?? "—"} ATR`
-        :
-        "—";
-
-
-  const pools =
-    Array.isArray(
-      map.pools
-    )
-      ?
-      map.pools
-      :
-      [];
-
-
-  $("liquidityCount")
-    .textContent =
-      `${pools.length} LEVELS`;
-
-
-  if(
-    !pools.length
-  ){
-
-    $("poolList")
-      .innerHTML =
-        `
-          <div class="pool-row">
-
-            <span>
-              No mapped pools
-            </span>
-
-            <span>
-              —
-            </span>
-
-            <span>
-              —
-            </span>
-
-          </div>
-        `;
-
-    return;
-
-  }
-
-
-  $("poolList")
-    .innerHTML =
-      pools
-
-        .slice(
-          0,
-          8
-        )
-
-        .map(
-          pool => {
-
-            return `
-              <div class="pool-row">
-
-                <span>
-                  ${escapeHtml(
-                    pool.label
-                  )}
-                </span>
-
-                <span>
-                  ${fmt(
-                    pool.price
-                  )}
-                </span>
-
-                <span
-                  class="pool-side
-                  ${escapeHtml(
-                    pool.side
-                  )}">
-
-                  ${
-                    pool.distanceAtr ??
-                    "—"
-                  } ATR
-
-                </span>
-
-              </div>
-            `;
-
-          }
-        )
-
-        .join(
-          ""
-        );
-
-}
-
-
-/* =========================================================
-   TIMEFRAMES
-========================================================= */
-
-
-function renderTimeframes(
-  analysis
-){
-
-  const timeframes =
-    analysis.timeframes ||
-    {};
-
-
-  [
-    "m5",
-    "m15",
-    "h1",
-    "h4"
-  ]
-  .forEach(
-    timeframe => {
-
-      const data =
-        timeframes[
-          timeframe
-        ] ||
-        {};
-
-
-      const bias =
-        String(
-          data.bias ||
-          analysis.timeframeBias?.[
-            timeframe.toUpperCase()
-          ] ||
-          "NEUTRAL"
-        )
-        .toUpperCase();
-
-
-      const strength =
-        clamp(
-          safeNumber(
-            data.strength,
-            45
-          ),
-          10,
-          100
-        );
-
-
-      $(
-        `${timeframe}Bias`
-      )
-      .textContent =
-        `${bias} ${
-          Math.round(
-            strength
-          )
-        }%`;
-
-
-      $(
-        `${timeframe}Bar`
-      )
-      .style.width =
-        `${strength}%`;
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   RISK PLAN
-========================================================= */
-
-
-function renderRiskPlan(
-  analysis
-){
-
-  const risk =
-    analysis.riskPlan ||
-    {};
-
-
-  $("riskEntryType")
-    .textContent =
-      risk.entryType ||
-      analysis.entryType ||
-      "—";
-
-
-  $("entryType")
-    .textContent =
-      risk.entryType ||
-      analysis.entryType ||
-      "—";
-
-
-  $("rr")
-    .textContent =
-      analysis.riskReward ||
-      "—";
-
-
-  $("riskDistance")
-    .textContent =
-      fmt(
-        risk.riskDistance
-      );
-
-
-  $("stopAtr")
-    .textContent =
-      risk.stopAtr ??
-      "—";
-
-
-  $("stretchAtr")
-    .textContent =
-      risk.stretchAtr ??
-      "—";
-
-
-  $("targetLiquidity")
-    .textContent =
-      risk.targetLiquidity?.name ||
-      risk.nearestLiquidity?.name ||
-      "—";
-
-}
-
-
-/* =========================================================
-   AI REVIEW
-========================================================= */
-
-
-function renderAiReview(
-  analysis
-){
-
-  const review =
-    analysis.aiReview;
-
-
-  if(
-    review
-  ){
-
-    $("reviewVerdict")
-      .textContent =
-        review.verdict ||
-        "—";
-
-
-    $("reviewConfidence")
-      .textContent =
-        Number.isFinite(
-          Number(
-            review.confidence
-          )
-        )
-          ?
-          `${review.confidence}%`
-          :
-          "—";
-
-
-    $("newsBlock")
-      .textContent =
-        review.newsBlock
-          ?
-          "ACTIVE"
-          :
-          "CLEAR";
-
-  }
-  else{
-
-    $("reviewVerdict")
-      .textContent =
-        "UNAVAILABLE";
-
-
-    $("reviewConfidence")
-      .textContent =
-        "—";
-
-
-    $("newsBlock")
-      .textContent =
-        "—";
-
-  }
-
-
-  $("newsRisk")
-    .textContent =
-      analysis.newsRisk ||
-      "UNKNOWN";
-
-
-  const critic =
-    analysis.aiCritic;
-
-
-  if(
-    critic
-  ){
-
-    $("criticVerdict")
-      .textContent =
-        critic.verdict ||
-        "—";
-
-
-    $("criticRisk")
-      .textContent =
-        critic.riskLevel ||
-        "—";
-
-
-    $("criticSummary")
-      .textContent =
-        critic.summary ||
-        "No critic summary.";
-
-  }
-  else{
-
-    $("criticVerdict")
-      .textContent =
-        "NOT RUN";
-
-
-    $("criticRisk")
-      .textContent =
-        "—";
-
-
-    $("criticSummary")
-      .textContent =
-        "The critic runs only after a candidate passes the earlier filters.";
-
-  }
-
-}
-
-
-/* =========================================================
-   CHIPS
-========================================================= */
-
-
-function renderChips(
-  id,
-  items,
-  type
-){
-
-  const container =
-    $(
-      id
+  const bear =
+    clamp(
+      num(
+        gold.bearishLiquidityScore
+      ),
+      0,
+      100
     );
 
 
-  if(
-    !items.length
-  ){
-
-    container.innerHTML =
-      `
-        <span
-          class="chip ${
-            type ===
-            "risk"
-              ?
-              "risk"
-              :
-              ""
-          }">
-
-          No details returned.
-
-        </span>
-      `;
-
-    return;
-
-  }
+  $("bullLiquidity")
+    .textContent =
+      `${Math.round(
+        bull
+      )}%`;
 
 
-  container.innerHTML =
-    items
+  $("bearLiquidity")
+    .textContent =
+      `${Math.round(
+        bear
+      )}%`;
 
-      .map(
-        item => {
 
-          return `
-            <span
-              class="chip ${
-                type ===
-                "risk"
-                  ?
-                  "risk"
-                  :
-                  "good"
-              }">
+  $("bullLiquidityBar")
+    .style.width =
+      `${bull}%`;
 
-              ${escapeHtml(
-                item
-              )}
 
-            </span>
-          `;
+  $("bearLiquidityBar")
+    .style.width =
+      `${bear}%`;
 
-        }
+
+  const signals =
+    Array.isArray(
+      gold.signals
+    )
+      ? gold.signals
+      : [];
+
+
+  $("goldSignals")
+    .innerHTML =
+      signals.length
+        ? signals
+            .map(
+              signal =>
+                `<span class="chip good">
+                  ${escapeHtml(
+                    signal
+                  )}
+                </span>`
+            )
+            .join("")
+        : `<span class="chip">
+            No major gold liquidity event detected.
+          </span>`;
+
+}
+
+
+/* =========================================================
+   ACCOUNT
+========================================================= */
+
+function renderAccount(
+  account
+){
+
+  $("accountEquity")
+    .textContent =
+      Number.isFinite(
+        Number(
+          account.equityZAR
+        )
       )
+        ? `R${Number(
+            account.equityZAR
+          ).toFixed(2)}`
+        : "—";
 
-      .join(
-        ""
+
+  $("riskPct")
+    .textContent =
+      Number.isFinite(
+        Number(
+          account.riskPercent
+        )
+      )
+        ? `${account.riskPercent}%`
+        : "—";
+
+
+  $("maxRisk")
+    .textContent =
+      Number.isFinite(
+        Number(
+          account.maxRiskZAR
+        )
+      )
+        ? `R${Number(
+            account.maxRiskZAR
+          ).toFixed(2)}`
+        : "—";
+
+
+  $("dailyLossLimit")
+    .textContent =
+      Number.isFinite(
+        Number(
+          account.dailyLossLimitZAR
+        )
+      )
+        ? `R${Number(
+            account.dailyLossLimitZAR
+          ).toFixed(2)}`
+        : "—";
+
+
+  $("tradesTodayDisplay")
+    .textContent =
+      account.tradesToday ??
+      "—";
+
+
+  $("lossStreakDisplay")
+    .textContent =
+      account.consecutiveLosses ??
+      "—";
+
+}
+
+
+/* =========================================================
+   EXECUTION
+========================================================= */
+
+function renderExecution(
+  sizing
+){
+
+  $("executionReady")
+    .textContent =
+      sizing.executionReady
+        ? "YES"
+        : "NO";
+
+
+  $("spread")
+    .textContent =
+      Number.isFinite(
+        Number(
+          sizing.spread
+        )
+      )
+        ? `$${Number(
+            sizing.spread
+          ).toFixed(2)}`
+        : "NOT PROVIDED";
+
+
+  $("lotSize")
+    .textContent =
+      Number.isFinite(
+        Number(
+          sizing.lot
+        )
+      )
+        ? Number(
+            sizing.lot
+          ).toFixed(4)
+        : "—";
+
+
+  $("estimatedRisk")
+    .textContent =
+      Number.isFinite(
+        Number(
+          sizing.estimatedRiskZAR
+        )
+      )
+        ? `R${Number(
+            sizing.estimatedRiskZAR
+          ).toFixed(2)}`
+        : "—";
+
+
+  $("executionReason")
+    .textContent =
+      sizing.reason ||
+      (
+        sizing.executionReady
+          ? "Broker sizing passed."
+          : "Broker contract specifications are required for exact lot sizing."
       );
+
+}
+
+
+/* =========================================================
+   NEWS
+========================================================= */
+
+function renderNews(
+  news
+){
+
+  $("newsConnected")
+    .textContent =
+      news.connected
+        ? "YES"
+        : "NO";
+
+
+  $("newsAllowed")
+    .textContent =
+      news.allowed
+        ? "YES"
+        : "BLOCKED";
+
+
+  $("newsMinutes")
+    .textContent =
+      Number.isFinite(
+        Number(
+          news.minutesToNews
+        )
+      )
+        ? `${news.minutesToNews} min`
+        : "—";
+
+
+  $("newsReason")
+    .textContent =
+      news.reason ||
+      news.warning ||
+      "No active USD news block.";
+
+}
+
+
+/* =========================================================
+   RISKS
+========================================================= */
+
+function renderRisks(
+  analysis
+){
+
+  const items = [
+    ...(
+      analysis.technical
+        ?.penalties ||
+      []
+    ),
+
+    ...(
+      analysis.permission
+        ?.blockers ||
+      []
+    )
+  ];
+
+
+  const unique =
+    [
+      ...new Set(
+        items
+      )
+    ];
+
+
+  $("risks")
+    .innerHTML =
+      unique.length
+        ? unique
+            .map(
+              item =>
+                `<span class="chip risk">
+                  ${escapeHtml(
+                    item
+                  )}
+                </span>`
+            )
+            .join("")
+        : `<span class="chip good">
+            No major contradiction detected.
+          </span>`;
 
 }
 
@@ -5954,23 +3685,18 @@ function renderChips(
    HISTORY
 ========================================================= */
 
-
-function getHistory(){
+function historyData(){
 
   try{
-
     return JSON.parse(
       localStorage.getItem(
-        "mkayfx_history"
+        "mkayfx_gold_history"
       ) ||
       "[]"
     );
-
   }
   catch{
-
     return [];
-
   }
 
 }
@@ -5981,28 +3707,21 @@ function saveHistory(
 ){
 
   const history =
-    getHistory();
+    historyData();
 
 
-  const analysis =
-    data.analysis;
-
-
-  const item =
-  {
+  const item = {
 
     time:
       Date.now(),
 
-    symbol:
-      data.symbol,
+    action:
+      data.analysis.action,
 
-    signal:
-      analysis.action,
-
-    confidence:
+    strength:
       Math.round(
-        analysis.confidence
+        data.analysis
+          .setupStrength
       ),
 
     price:
@@ -6017,32 +3736,26 @@ function saveHistory(
 
   if(
     !last ||
-    last.symbol !==
-      item.symbol ||
-    last.signal !==
-      item.signal ||
+    last.action !==
+      item.action ||
     Math.abs(
-      safeNumber(
-        last.confidence
-      ) -
-      item.confidence
+      last.strength -
+      item.strength
     ) >=
-      7
+      6
   ){
-
     history.unshift(
       item
     );
-
   }
 
 
   localStorage.setItem(
-    "mkayfx_history",
+    "mkayfx_gold_history",
     JSON.stringify(
       history.slice(
         0,
-        30
+        25
       )
     )
   );
@@ -6056,128 +3769,81 @@ function saveHistory(
 function renderHistory(){
 
   const history =
-    getHistory();
-
-
-  if(
-    !history.length
-  ){
-
-    $("history")
-      .innerHTML =
-        `
-          <div class="history-row">
-
-            <small>
-              —
-            </small>
-
-            <span>
-              No signals yet
-            </span>
-
-            <span>
-              —
-            </span>
-
-          </div>
-        `;
-
-    return;
-
-  }
+    historyData();
 
 
   $("history")
     .innerHTML =
-      history
+      history.length
+        ? history
+            .slice(
+              0,
+              7
+            )
+            .map(
+              item => {
 
-        .slice(
-          0,
-          7
-        )
-
-        .map(
-          item => {
-
-            const time =
-              new Date(
-                item.time
-              )
-              .toLocaleTimeString(
-                [],
-                {
-                  hour:
-                    "2-digit",
-
-                  minute:
-                    "2-digit"
-                }
-              );
+                const time =
+                  new Date(
+                    item.time
+                  )
+                  .toLocaleTimeString(
+                    [],
+                    {
+                      hour:"2-digit",
+                      minute:"2-digit"
+                    }
+                  );
 
 
-            return `
-              <div class="history-row">
+                return `
+                  <div class="history-row">
 
-                <small>
-                  ${time}
-                </small>
+                    <small>
+                      ${time}
+                    </small>
 
-                <span>
+                    <span>
+                      XAU/USD ·
+                      ${fmt(
+                        item.price
+                      )}
+                    </span>
 
-                  ${escapeHtml(
-                    item.symbol
-                  )}
+                    <span
+                      class="mini ${item.action}">
 
-                  ·
+                      ${item.action}
+                      ${item.strength}
 
-                  ${fmt(
-                    item.price
-                  )}
+                    </span>
 
-                </span>
+                  </div>
+                `;
 
-                <span
-                  class="mini
-                  ${escapeHtml(
-                    item.signal
-                  )}">
-
-                  ${escapeHtml(
-                    item.signal
-                  )}
-
-                  ${item.confidence}%
-
-                </span>
-
-              </div>
-            `;
-
-          }
-        )
-
-        .join(
-          ""
-        );
+              }
+            )
+            .join("")
+        : `<div class="history-row">
+            <small>—</small>
+            <span>No signals yet</span>
+            <span>—</span>
+          </div>`;
 
 }
 
 
 /* =========================================================
-   SOUND
+   SOUND / ALERTS
 ========================================================= */
-
 
 function updateSoundButton(){
 
   $("soundBtn")
     .textContent =
       soundEnabled
-        ?
-        "🔔"
-        :
-        "🔕";
+        ? "🔔"
+        : "🔕";
 
 }
 
@@ -6189,9 +3855,7 @@ function playSound(
   if(
     !soundEnabled
   ){
-
     return;
-
   }
 
 
@@ -6205,9 +3869,7 @@ function playSound(
     if(
       !AudioContext
     ){
-
       return;
-
     }
 
 
@@ -6216,13 +3878,11 @@ function playSound(
 
 
     const oscillator =
-      context
-        .createOscillator();
+      context.createOscillator();
 
 
     const gain =
-      context
-        .createGain();
+      context.createGain();
 
 
     oscillator.connect(
@@ -6238,10 +3898,8 @@ function playSound(
     oscillator.frequency.value =
       action ===
       "BUY"
-        ?
-        720
-        :
-        430;
+        ? 760
+        : 420;
 
 
     gain.gain.value =
@@ -6253,18 +3911,13 @@ function playSound(
 
     oscillator.stop(
       context.currentTime +
-      .14
+      .15
     );
 
   }
   catch{}
 
 }
-
-
-/* =========================================================
-   NOTIFICATIONS
-========================================================= */
 
 
 async function enableNotifications(){
@@ -6275,13 +3928,11 @@ async function enableNotifications(){
       window
     )
   ){
-
     toast(
-      "Notifications are unavailable in this browser."
+      "Notifications unavailable."
     );
 
     return;
-
   }
 
 
@@ -6293,10 +3944,8 @@ async function enableNotifications(){
   toast(
     result ===
       "granted"
-      ?
-      "Trading alerts enabled"
-      :
-      "Notifications not enabled"
+      ? "Gold alerts enabled"
+      : "Alerts not enabled"
   );
 
 }
@@ -6306,17 +3955,23 @@ function maybeAlert(
   data
 ){
 
-  const analysis =
+  const a =
     data.analysis;
 
 
   if(
-    analysis.action ===
+    a.action ===
     "WAIT"
   ){
-
     return;
+  }
 
+
+  if(
+    a.permission.state !==
+    "APPROVED"
+  ){
+    return;
   }
 
 
@@ -6328,45 +3983,25 @@ function maybeAlert(
 
 
   if(
-    analysis.confidence <
+    a.setupStrength <
     minimum
   ){
-
     return;
-
-  }
-
-
-  if(
-    analysis.permission?.state !==
-    "APPROVED"
-  ){
-
-    return;
-
   }
 
 
   const key =
-    `${
-      data.symbol
-    }-${
-      analysis.action
-    }-${
-      Math.floor(
-        analysis.confidence /
-        5
-      )
-    }`;
+    `${a.action}-${Math.floor(
+      a.setupStrength /
+      5
+    )}`;
 
 
   if(
     key ===
     previousAlertKey
   ){
-
     return;
-
   }
 
 
@@ -6375,7 +4010,7 @@ function maybeAlert(
 
 
   playSound(
-    analysis.action
+    a.action
   );
 
 
@@ -6387,33 +4022,18 @@ function maybeAlert(
   ){
 
     new Notification(
-      `${
-        data.symbol
-      } ${
-        analysis.action
-      }`,
-
+      `GOLD ${a.action}`,
       {
-
         body:
-          `${
-            Math.round(
-              analysis.confidence
-            )
-          }% confidence | Entry ${
-            fmt(
-              analysis.entry
-            )
-          } | SL ${
-            fmt(
-              analysis.stopLoss
-            )
-          } | TP1 ${
-            fmt(
-              analysis.takeProfit1
-            )
-          }`
-
+          `Strength ${Math.round(
+            a.setupStrength
+          )} | Entry ${fmt(
+            a.entry
+          )} | SL ${fmt(
+            a.stopLoss
+          )} | TP2 ${fmt(
+            a.takeProfit2
+          )}`
       }
     );
 
@@ -6426,83 +4046,72 @@ function maybeAlert(
    COPY PLAN
 ========================================================= */
 
-
 async function copyTradePlan(){
 
   if(
     !currentData
   ){
-
     toast(
-      "Analyze first"
+      "Analyze gold first."
     );
 
     return;
-
   }
 
 
-  const analysis =
+  const a =
     currentData.analysis;
 
 
   const text =
-`MKAYFX EXTREME AI V7
+`MKAYFX GOLD SCALPER
 
-${currentData.symbol}
+XAU/USD
 
-FINAL SIGNAL
-${analysis.action}
+Signal:
+${a.action}
 
-Confidence:
-${Math.round(analysis.confidence)}%
+Setup Strength:
+${Math.round(a.setupStrength)}/100
 
-Ensemble Quality:
-${Math.round(
-  safeNumber(
-    analysis.ensemble?.quality
-  )
-)}%
-
-Agreement:
-${Math.round(
-  safeNumber(
-    analysis.ensemble?.agreementPct
-  )
-)}%
-
-Entry Type:
-${analysis.entryType}
-
-Entry:
-${fmt(analysis.entry)}
-
-Stop Loss:
-${fmt(analysis.stopLoss)}
-
-TP1:
-${fmt(analysis.takeProfit1)}
-
-TP2:
-${fmt(analysis.takeProfit2)}
-
-Risk / Reward:
-${analysis.riskReward}
+Session:
+${a.session}
 
 Regime:
-${analysis.regimeDetails?.name || "—"}
+${a.regime?.name || "—"}
+
+Entry:
+${fmt(a.entry)}
+
+Stop Loss:
+${fmt(a.stopLoss)}
+
+TP1:
+${fmt(a.takeProfit1)}
+
+TP2:
+${fmt(a.takeProfit2)}
+
+TP1 RR:
+${a.riskRewardTP1}
+
+TP2 RR:
+${a.riskRewardTP2}
 
 Trade Permission:
-${analysis.permission?.state || "BLOCKED"}
+${a.permission?.state || "BLOCKED"}
 
-Analysis:
-${analysis.summary}
+Max Account Risk:
+R${num(
+  a.account?.maxRiskZAR,
+  0
+).toFixed(2)}
 
 Invalidation:
-${analysis.invalidation}
+${a.invalidation}
 
 Next Trigger:
-${analysis.nextTrigger}`;
+${a.nextTrigger}`;
 
 
   try{
@@ -6515,7 +4124,7 @@ ${analysis.nextTrigger}`;
 
 
     toast(
-      "Trade plan copied"
+      "Gold trade plan copied"
     );
 
   }
@@ -6531,9 +4140,8 @@ ${analysis.nextTrigger}`;
 
 
 /* =========================================================
-   MAIN RENDER
+   RENDER
 ========================================================= */
-
 
 function render(
   raw
@@ -6549,28 +4157,18 @@ function render(
     data;
 
 
-  const analysis =
+  const a =
     data.analysis;
 
 
-  const ensemble =
-    analysis.ensemble ||
+  const t =
+    a.technical ||
     {};
-
-
-  /* HERO */
 
 
   $("hero")
     .className =
-      `hero ${
-        analysis.action
-      }`;
-
-
-  $("heroSymbol")
-    .textContent =
-      data.symbol;
+      `hero ${a.action}`;
 
 
   $("price")
@@ -6582,93 +4180,79 @@ function render(
 
   $("signalBadge")
     .textContent =
-      analysis.action;
+      a.action;
 
 
   $("signalBadge")
     .className =
-      `signal ${
-        analysis.action
-      }`;
-
-
-  const change =
-    recentChange(
-      data.chart,
-      data.price
-    );
-
-
-  $("change")
-    .className =
-      "change";
-
-
-  if(
-    change ===
-    null
-  ){
-
-    $("change")
-      .textContent =
-        "Live market data loaded";
-
-  }
-  else{
-
-    $("change")
-      .textContent =
-        `${
-          change >=
-          0
-            ?
-            "+"
-            :
-            ""
-        }${change.toFixed(3)}% · recent move`;
-
-
-    $("change")
-      .classList
-      .add(
-        change >=
-        0
-          ?
-          "up"
-          :
-          "down"
-      );
-
-  }
+      `signal ${a.action}`;
 
 
   drawChart(
     data.chart,
-    analysis.action
+    a.action
   );
 
 
-  /* HEALTH */
+  const values =
+    chartValues(
+      data.chart
+    );
 
 
-  $("setupGrade")
-    .textContent =
-      analysis.setupGrade;
+  if(
+    values.length >
+    10
+  ){
+
+    const old =
+      values[
+        values.length -
+        11
+      ];
 
 
-  $("heroConfidence")
+    const change =
+      (
+        data.price /
+        old -
+        1
+      ) *
+      100;
+
+
+    $("change")
+      .textContent =
+        `${
+          change >= 0
+            ? "+"
+            : ""
+        }${change.toFixed(3)}% recent move`;
+
+
+    $("change")
+      .className =
+        `change ${
+          change >= 0
+            ? "up"
+            : "down"
+        }`;
+
+  }
+
+
+  $("heroStrength")
     .textContent =
       `${Math.round(
-        analysis.confidence
-      )}%`;
+        a.setupStrength
+      )}/100`;
 
 
   $("heroQuality")
     .textContent =
       `${Math.round(
-        safeNumber(
-          ensemble.quality,
-          0
+        num(
+          t.quality
         )
       )}%`;
 
@@ -6676,215 +4260,259 @@ function render(
   $("heroAgreement")
     .textContent =
       `${Math.round(
-        safeNumber(
-          ensemble.agreementPct,
-          0
+        num(
+          t.agreementPct
         )
       )}%`;
 
 
-  /* DECISION */
+  $("heroSession")
+    .textContent =
+      a.session;
+
+
+  $("heroRegime")
+    .textContent =
+      a.regime?.name ||
+      "—";
 
 
   $("confidence")
     .style
     .setProperty(
       "--p",
-      analysis.confidence
+      a.setupStrength
     );
 
 
   $("confidenceText")
     .textContent =
       `${Math.round(
-        analysis.confidence
-      )}%`;
+        a.setupStrength
+      )}`;
 
 
   $("summary")
     .textContent =
-      analysis.summary;
+      a.action ===
+      "WAIT"
+        ? (
+            a.permission.blockers
+              ?.join(" ") ||
+            "No gold setup currently qualifies."
+          )
+        : `${a.action} gold scalp passed the deterministic entry and risk filters.`;
 
 
   $("gradeBadge")
     .textContent =
-      analysis.action ===
+      a.action ===
       "WAIT"
-        ?
-        "WAIT · NO TRADE"
-        :
-        `${
-          analysis.setupGrade
-        } SETUP`;
+        ? "WAIT · NO TRADE"
+        : `${a.action} SCALP`;
 
 
   $("decisionBadge")
     .textContent =
-      analysis.action;
+      a.action;
 
 
   $("entry")
     .textContent =
       fmt(
-        analysis.entry
+        a.entry
       );
 
 
   $("sl")
     .textContent =
       fmt(
-        analysis.stopLoss
+        a.stopLoss
       );
 
 
   $("tp1")
     .textContent =
       fmt(
-        analysis.takeProfit1
+        a.takeProfit1
       );
 
 
   $("tp2")
     .textContent =
       fmt(
-        analysis.takeProfit2
+        a.takeProfit2
       );
 
 
-  /* ADVANCED SECTIONS */
+  $("maxHold")
+    .textContent =
+      a.management
+        ?.maxHoldMinutes
+        ? `${a.management.maxHoldMinutes}m`
+        : "—";
 
 
-  renderEnsemble(
-    analysis
+  renderModules(
+    t
   );
 
 
   renderPermission(
-    analysis
+    a.permission
   );
 
 
-  renderRegime(
-    analysis
+  renderGold(
+    a.gold
   );
 
 
-  renderLiquidity(
-    analysis
+  renderAccount(
+    a.account
   );
 
 
-  renderTimeframes(
-    analysis
+  renderExecution(
+    a.sizing
   );
 
 
-  renderRiskPlan(
-    analysis
+  renderNews(
+    a.news
   );
 
 
-  renderAiReview(
-    analysis
+  renderRisks(
+    a
   );
 
 
-  /* MARKET READ */
-
-
-  $("structure")
+  $("m1Bias")
     .textContent =
-      analysis.structure;
+      a.timeframeBias.M1 ||
+      "—";
 
 
-  $("momentum")
+  $("m5Bias")
     .textContent =
-      analysis.momentum;
+      a.timeframeBias.M5 ||
+      "—";
 
 
-  $("liquidity")
+  $("m15Bias")
     .textContent =
-      analysis.liquiditySummary;
+      a.timeframeBias.M15 ||
+      "—";
 
 
-  $("session")
+  $("h1Bias")
     .textContent =
-      data.session;
+      a.timeframeBias.H1 ||
+      "—";
 
 
-  /* NEWS */
+  [
+    "m1Bias",
+    "m5Bias",
+    "m15Bias",
+    "h1Bias"
+  ]
+  .forEach(
+    id => {
+
+      const element =
+        $(id);
 
 
-  $("macroBias")
+      const bias =
+        element
+          .textContent
+          .toUpperCase();
+
+
+      element.className =
+        bias;
+
+    }
+  );
+
+
+  $("regimeName")
     .textContent =
-      analysis.macroBias;
+      a.regime?.name ||
+      "—";
 
 
-  $("newsSummary")
+  $("regimeQuality")
     .textContent =
-      analysis.newsSummary;
+      Number.isFinite(
+        Number(
+          a.regime?.quality
+        )
+      )
+        ? `${a.regime.quality}%`
+        : "—";
 
 
-  /* RISKS */
+  $("regimeVolatility")
+    .textContent =
+      a.regime?.volatility ||
+      "—";
+
+
+  $("rr1")
+    .textContent =
+      a.riskRewardTP1;
+
+
+  $("rr2")
+    .textContent =
+      a.riskRewardTP2;
+
+
+  $("riskDistance")
+    .textContent =
+      fmt(
+        raw.analysis
+          ?.riskPlan
+          ?.riskDistance
+      );
+
+
+  $("stopAtr")
+    .textContent =
+      raw.analysis
+        ?.riskPlan
+        ?.stopAtr ??
+      "—";
+
+
+  $("targetLiquidity")
+    .textContent =
+      raw.analysis
+        ?.riskPlan
+        ?.targetLiquidity ||
+      "—";
+
+
+  $("breakevenAt")
+    .textContent =
+      a.management
+        ?.moveStopToBreakevenAtR !=
+        null
+        ? `${a.management.moveStopToBreakevenAtR}R`
+        : "—";
 
 
   $("invalidation")
     .textContent =
-      analysis.invalidation;
+      a.invalidation;
 
 
   $("nextTrigger")
     .textContent =
-      analysis.nextTrigger;
-
-
-  renderChips(
-    "reasons",
-    analysis.reasons,
-    "good"
-  );
-
-
-  renderChips(
-    "risks",
-    analysis.risks,
-    "risk"
-  );
-
-
-  /* ENGINE */
-
-
-  $("modelName")
-    .textContent =
-      data.model;
-
-
-  $("dataMode")
-    .textContent =
-      data.dataMode;
-
-
-  $("cacheStatus")
-    .textContent =
-      data.cacheHit
-        ?
-        "CACHE HIT"
-        :
-        "FRESH DATA";
-
-
-  $("guardrail")
-    .textContent =
-      data.guardrail ||
-      "Engine response received.";
-
-
-  $("engineSubtitle")
-    .textContent =
-      `${data.model} · ${
-        data.session
-      }`;
+      a.nextTrigger;
 
 
   $("updated")
@@ -6893,24 +4521,7 @@ function render(
       new Date(
         data.timestamp
       )
-      .toLocaleTimeString(
-        [],
-        {
-
-          hour:
-            "2-digit",
-
-          minute:
-            "2-digit",
-
-          second:
-            "2-digit"
-
-        }
-      );
-
-
-  updateDataAge();
+      .toLocaleTimeString();
 
 
   saveHistory(
@@ -6929,28 +4540,23 @@ function render(
    ANALYZE
 ========================================================= */
 
-
 async function analyze(){
 
   if(
     busy
   ){
-
     return;
-
   }
 
 
   if(
     !navigator.onLine
   ){
-
     toast(
-      "No internet connection"
+      "No internet connection."
     );
 
     return;
-
   }
 
 
@@ -6963,11 +4569,6 @@ async function analyze(){
       true;
 
 
-  $("scanAllBtn")
-    .disabled =
-      true;
-
-
   $("errorBox")
     .style.display =
       "none";
@@ -6975,21 +4576,14 @@ async function analyze(){
 
   setStatus(
     "loading",
-    "AI ANALYSING"
+    "ANALYSING GOLD"
   );
 
 
   try{
 
-    const symbol =
-      $("symbolSelect")
-        .value;
-
-
     const result =
-      await apiAnalyze(
-        symbol
-      );
+      await apiAnalyze();
 
 
     render(
@@ -6999,7 +4593,7 @@ async function analyze(){
 
     setStatus(
       "",
-      "ENGINE ONLINE"
+      "GOLD ONLINE"
     );
 
 
@@ -7042,356 +4636,43 @@ async function analyze(){
       .disabled =
         false;
 
-
-    $("scanAllBtn")
-      .disabled =
-        scannerBusy;
-
   }
 
 }
 
 
 /* =========================================================
-   MARKET SCANNER
+   EVENTS
 ========================================================= */
 
-
-async function scanAll(){
-
-  if(
-    scannerBusy
-  ){
-
-    return;
-
-  }
+$("analyzeBtn")
+  .addEventListener(
+    "click",
+    analyze
+  );
 
 
-  scannerBusy =
-    true;
+$("soundBtn")
+  .addEventListener(
+    "click",
+    () => {
+
+      soundEnabled =
+        !soundEnabled;
 
 
-  $("scanAllBtn")
-    .disabled =
-      true;
+      localStorage.setItem(
+        "mkayfx_gold_sound",
+        soundEnabled
+          ? "on"
+          : "off"
+      );
 
 
-  $("analyzeBtn")
-    .disabled =
-      true;
-
-
-  $("scannerStatus")
-    .textContent =
-      "SCANNING";
-
-
-  $("scanner")
-    .innerHTML =
-      `
-        <div class="scanner-row">
-
-          <span>
-            Markets
-          </span>
-
-          <strong>
-            ...
-          </strong>
-
-          <div class="scan-score">
-
-            <span style="width:30%">
-            </span>
-
-          </div>
-
-          <span>
-            AI
-          </span>
-
-        </div>
-      `;
-
-
-  const results =
-    [];
-
-
-  try{
-
-    for(
-      const symbol of
-      SYMBOLS
-    ){
-
-      try{
-
-        const raw =
-          await apiAnalyze(
-            symbol
-          );
-
-
-        results.push(
-          normalizeResponse(
-            raw
-          )
-        );
-
-      }
-      catch(
-        error
-      ){
-
-        results.push(
-          {
-
-            symbol,
-
-            analysis:
-            {
-
-              action:
-                "WAIT",
-
-              confidence:
-                0,
-
-              ensemble:
-              {
-
-                quality:
-                  0
-
-              }
-
-            }
-
-          }
-        );
-
-      }
+      updateSoundButton();
 
     }
-
-
-    results.sort(
-      (
-        a,
-        b
-      ) => {
-
-        const scoreA =
-          safeNumber(
-            a.analysis.confidence
-          ) +
-          safeNumber(
-            a.analysis.ensemble?.quality
-          );
-
-
-        const scoreB =
-          safeNumber(
-            b.analysis.confidence
-          ) +
-          safeNumber(
-            b.analysis.ensemble?.quality
-          );
-
-
-        return scoreB -
-          scoreA;
-
-      }
-    );
-
-
-    $("scanner")
-      .innerHTML =
-        results
-
-          .map(
-            item => {
-
-              const action =
-                item.analysis.action;
-
-
-              const confidence =
-                Math.round(
-                  safeNumber(
-                    item.analysis.confidence
-                  )
-                );
-
-
-              return `
-                <div class="scanner-row">
-
-                  <span>
-                    ${escapeHtml(
-                      item.symbol
-                    )}
-                  </span>
-
-                  <strong
-                    class="mini
-                    ${escapeHtml(
-                      action
-                    )}">
-
-                    ${escapeHtml(
-                      action
-                    )}
-
-                  </strong>
-
-                  <div class="scan-score">
-
-                    <span
-                      style="
-                        width:
-                        ${clamp(
-                          confidence,
-                          0,
-                          100
-                        )}%
-                      ">
-                    </span>
-
-                  </div>
-
-                  <span>
-                    ${confidence}
-                  </span>
-
-                </div>
-              `;
-
-            }
-          )
-
-          .join(
-            ""
-          );
-
-
-    $("scannerStatus")
-      .textContent =
-        "COMPLETE";
-
-
-    toast(
-      "Market scan complete"
-    );
-
-  }
-  finally{
-
-    scannerBusy =
-      false;
-
-
-    $("scanAllBtn")
-      .disabled =
-        false;
-
-
-    $("analyzeBtn")
-      .disabled =
-        busy;
-
-  }
-
-}
-
-
-/* =========================================================
-   DATA AGE
-========================================================= */
-
-
-function updateDataAge(){
-
-  if(
-    !currentData
-  ){
-
-    $("dataAge")
-      .textContent =
-        "—";
-
-    return;
-
-  }
-
-
-  const timestamp =
-    new Date(
-      currentData.timestamp
-    )
-    .getTime();
-
-
-  if(
-    !Number.isFinite(
-      timestamp
-    )
-  ){
-
-    $("dataAge")
-      .textContent =
-        "UNKNOWN";
-
-    return;
-
-  }
-
-
-  const seconds =
-    Math.max(
-      0,
-      Math.floor(
-        (
-          Date.now() -
-          timestamp
-        ) /
-        1000
-      )
-    );
-
-
-  if(
-    seconds <
-    60
-  ){
-
-    $("dataAge")
-      .textContent =
-        `${seconds}s`;
-
-  }
-  else{
-
-    $("dataAge")
-      .textContent =
-        `${
-          Math.floor(
-            seconds /
-            60
-          )
-        }m`;
-
-  }
-
-}
-
-
-/* =========================================================
-   SETTINGS EVENTS
-========================================================= */
+  );
 
 
 $("refreshSetting")
@@ -7407,7 +4688,7 @@ $("refreshSetting")
 
 
       localStorage.setItem(
-        "mkayfx_refresh",
+        "mkayfx_gold_refresh",
         String(
           refreshSeconds
         )
@@ -7416,15 +4697,6 @@ $("refreshSetting")
 
       nextScan =
         refreshSeconds;
-
-
-      toast(
-        refreshSeconds
-          ?
-          `Auto analyze: ${refreshSeconds}s`
-          :
-          "Auto analyze disabled"
-      );
 
     }
   );
@@ -7436,7 +4708,7 @@ $("confidenceSetting")
     () => {
 
       localStorage.setItem(
-        "mkayfx_confidence",
+        "mkayfx_gold_alert",
         $("confidenceSetting")
           .value
       );
@@ -7445,41 +4717,8 @@ $("confidenceSetting")
   );
 
 
-$("soundBtn")
-  .addEventListener(
-    "click",
-    () => {
-
-      soundEnabled =
-        !soundEnabled;
-
-
-      localStorage.setItem(
-        "mkayfx_sound",
-        soundEnabled
-          ?
-          "on"
-          :
-          "off"
-      );
-
-
-      updateSoundButton();
-
-    }
-  );
-
-
-/* =========================================================
-   AUTO SCAN TIMER
-========================================================= */
-
-
 setInterval(
   () => {
-
-    updateDataAge();
-
 
     if(
       refreshSeconds ===
@@ -7488,20 +4727,16 @@ setInterval(
 
       $("countdown")
         .textContent =
-          "Auto analyze: OFF";
+          "Auto analysis: OFF";
 
       return;
-
     }
 
 
     if(
-      !busy &&
-      !scannerBusy
+      !busy
     ){
-
       nextScan--;
-
     }
 
 
@@ -7513,7 +4748,6 @@ setInterval(
       nextScan =
         refreshSeconds;
 
-
       analyze();
 
     }
@@ -7521,161 +4755,47 @@ setInterval(
 
     $("countdown")
       .textContent =
-        `Next analysis: ${
-          Math.max(
-            nextScan,
-            0
-          )
-        }s`;
+        `Next analysis: ${Math.max(
+          nextScan,
+          0
+        )}s`;
 
   },
   1000
 );
 
 
-/* =========================================================
-   CONNECTION
-========================================================= */
-
-
-function updateConnection(){
-
-  const online =
-    navigator.onLine;
-
-
-  $("connectionState")
-    .textContent =
-      online
-        ?
-        "ONLINE"
-        :
-        "OFFLINE";
-
-
-  if(
-    !online
-  ){
-
-    setStatus(
-      "offline",
-      "OFFLINE"
-    );
-
-  }
-  else if(
-    !busy
-  ){
-
-    setStatus(
-      "",
-      "ENGINE ONLINE"
-    );
-
-  }
-
-}
-
-
 window.addEventListener(
   "online",
-  () => {
-
-    updateConnection();
-
-
-    toast(
-      "Internet restored"
-    );
-
-  }
+  () =>
+    setStatus(
+      "",
+      "GOLD ONLINE"
+    )
 );
 
 
 window.addEventListener(
   "offline",
-  () => {
-
-    updateConnection();
-
-
-    toast(
-      "Internet lost"
-    );
-
-  }
+  () =>
+    setStatus(
+      "offline",
+      "OFFLINE"
+    )
 );
 
 
 /* =========================================================
-   BUTTON EVENTS
+   START
 ========================================================= */
 
-
-$("analyzeBtn")
-  .addEventListener(
-    "click",
-    analyze
-  );
-
-
-$("scanAllBtn")
-  .addEventListener(
-    "click",
-    scanAll
-  );
-
-
-$("symbolSelect")
-  .addEventListener(
-    "change",
-    () => {
-
-      previousAlertKey =
-        null;
-
-
-      analyze();
-
-    }
-  );
-
-
-document.addEventListener(
-  "visibilitychange",
-  () => {
-
-    if(
-      document.visibilityState ===
-      "visible"
-    ){
-
-      updateConnection();
-
-
-      updateDataAge();
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   STARTUP
-========================================================= */
-
+updateSoundButton();
 
 renderHistory();
-
-
-updateConnection();
-
 
 analyze();
 
 </script>
 
 </body>
-
 </html>
