@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 
 <meta
@@ -8,7 +10,10 @@
   content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"
 >
 
-<meta name="theme-color" content="#05070b">
+<meta
+  name="theme-color"
+  content="#040608"
+>
 
 <meta
   name="apple-mobile-web-app-capable"
@@ -20,44 +25,27 @@
   content="black-translucent"
 >
 
-<meta
-  name="apple-mobile-web-app-title"
-  content="MKAYFX GOLD"
->
+<title>MKAYFX GOLD V8</title>
 
-<title>MKAYFX Gold V7 Live</title>
 
 <style>
 
 :root{
-  --bg:#040609;
-  --panel:#0a0e15;
-  --panel2:#0f1520;
-  --panel3:#070a0f;
 
-  --border:rgba(255,255,255,.07);
-  --border2:rgba(255,255,255,.13);
+  --bg:#040608;
+  --card:#0b1017;
+  --card2:#080c12;
 
-  --text:#f7f8fb;
+  --border:rgba(255,255,255,.075);
+
+  --text:#f5f7fa;
   --muted:#778395;
-  --muted2:#556070;
 
-  --blue:#718bff;
-  --purple:#826cff;
-  --cyan:#57caff;
+  --green:#36e5a1;
+  --red:#ff6176;
+  --gold:#f5ca61;
+  --blue:#7690ff;
 
-  --green:#31e69e;
-  --green2:#13b979;
-
-  --red:#ff5f73;
-  --red2:#ca344d;
-
-  --gold:#f4c75d;
-  --orange:#ff9e5c;
-
-  --shadow:
-    0 24px 70px
-    rgba(0,0,0,.42);
 }
 
 *{
@@ -65,44 +53,47 @@
   -webkit-tap-highlight-color:transparent;
 }
 
-html{
-  scroll-behavior:smooth;
-}
-
 body{
+
   margin:0;
+
   min-height:100vh;
 
   color:var(--text);
 
   font-family:
-    Inter,
     -apple-system,
     BlinkMacSystemFont,
-    "SF Pro Display",
     "Segoe UI",
     sans-serif;
 
   background:
 
     radial-gradient(
-      circle at 15% -5%,
-      rgba(93,111,255,.23),
-      transparent 28%
+      circle at 15% 0%,
+      rgba(90,110,255,.2),
+      transparent 27%
     ),
 
     radial-gradient(
-      circle at 100% 10%,
-      rgba(245,199,93,.08),
-      transparent 25%
+      circle at 100% 0%,
+      rgba(245,202,97,.08),
+      transparent 24%
     ),
 
-    #040609;
+    var(--bg);
 
   padding:
-    max(10px,env(safe-area-inset-top))
-    10px
-    max(110px,env(safe-area-inset-bottom));
+    max(
+      12px,
+      env(safe-area-inset-top)
+    )
+    9px
+    max(
+      90px,
+      env(safe-area-inset-bottom)
+    );
+
 }
 
 button,
@@ -111,802 +102,476 @@ select{
   font:inherit;
 }
 
-button{
-  cursor:pointer;
-}
-
-button:active{
-  transform:scale(.98);
-}
-
-button:disabled{
-  opacity:.45;
-}
-
 .app{
   width:100%;
-  max-width:1050px;
+  max-width:950px;
   margin:auto;
 }
 
-/* =========================================================
-   HEADER
-========================================================= */
 
-.topbar{
+/* HEADER */
+
+header{
+
   display:flex;
-  justify-content:space-between;
+
+  justify-content:
+    space-between;
+
   align-items:center;
 
   gap:10px;
 
   margin-bottom:10px;
+
 }
 
 .brand{
-  display:flex;
-  align-items:center;
-  gap:10px;
 
-  min-width:0;
+  display:flex;
+
+  align-items:center;
+
+  gap:9px;
+
 }
 
 .logo{
-  width:43px;
-  height:43px;
 
-  flex:none;
+  width:44px;
+  height:44px;
 
   display:grid;
+
   place-items:center;
 
   border-radius:14px;
 
-  color:#171204;
+  color:#151003;
 
   font-size:14px;
+
   font-weight:1000;
 
   background:
+
     linear-gradient(
       145deg,
-      #fff3b2,
-      #f4c75d 47%,
-      #9d701d
+      #fff0ab,
+      #f5ca61,
+      #9e711d
     );
 
-  box-shadow:
-    0 8px 30px
-    rgba(244,199,93,.2);
 }
 
 .brand h1{
+
   margin:0;
 
   font-size:14px;
-  line-height:1.05;
 
-  font-weight:1000;
 }
 
 .brand p{
-  margin:4px 0 0;
+
+  margin:
+    3px 0 0;
 
   color:var(--muted);
 
   font-size:7px;
-}
 
-.top-actions{
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-
-.icon{
-  width:36px;
-  height:36px;
-
-  display:grid;
-  place-items:center;
-
-  color:white;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:11px;
-
-  background:
-    rgba(255,255,255,.035);
 }
 
 .status{
-  height:36px;
 
   display:flex;
+
   align-items:center;
+
   gap:6px;
 
-  padding:0 10px;
+  padding:
+    8px 9px;
 
   border:
     1px solid
     var(--border);
 
-  border-radius:999px;
-
-  background:
-    rgba(255,255,255,.025);
+  border-radius:
+    999px;
 
   font-size:7px;
-  font-weight:1000;
 
-  white-space:nowrap;
+  font-weight:900;
+
 }
 
 .dot{
+
   width:7px;
   height:7px;
 
   border-radius:50%;
 
-  background:var(--green);
+  background:
+    var(--green);
 
   box-shadow:
     0 0 12px
     var(--green);
+
 }
 
 .dot.loading{
-  background:var(--gold);
+
+  background:
+    var(--gold);
 
   box-shadow:
     0 0 12px
     var(--gold);
+
 }
 
 .dot.error{
-  background:var(--red);
 
-  box-shadow:
-    0 0 12px
+  background:
     var(--red);
+
 }
 
-.dot.offline{
-  background:#657080;
-  box-shadow:none;
-}
 
-/* =========================================================
-   LIVE STATE
-========================================================= */
+/* LIVE SIGNAL */
 
-.live-state{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+.signal-banner{
+
+  display:grid;
+
+  grid-template-columns:
+    1fr auto;
 
   gap:10px;
 
-  margin-bottom:9px;
+  align-items:center;
 
-  padding:10px 12px;
+  padding:12px;
+
+  margin-bottom:9px;
 
   border:
     1px solid
-    rgba(113,139,255,.14);
+    var(--border);
 
-  border-radius:14px;
+  border-radius:15px;
 
   background:
     linear-gradient(
       135deg,
-      rgba(90,111,255,.09),
-      rgba(255,255,255,.015)
+      rgba(113,140,255,.10),
+      rgba(255,255,255,.02)
     );
+
 }
 
-.live-state-left{
-  min-width:0;
-}
+.signal-banner small{
 
-.live-state small{
   display:block;
 
-  margin-bottom:3px;
+  margin-bottom:4px;
 
   color:var(--muted);
 
   font-size:6px;
 
-  text-transform:uppercase;
   letter-spacing:1px;
+
 }
 
-.live-state strong{
+.signal-banner strong{
+
   display:block;
 
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-
   font-size:10px;
+
 }
 
-.live-badge{
-  flex:none;
+.signal-badge{
 
-  padding:6px 9px;
+  min-width:72px;
 
-  border-radius:999px;
+  padding:9px 10px;
 
-  color:var(--gold);
+  text-align:center;
 
-  background:
-    rgba(244,199,93,.08);
+  border-radius:10px;
+
+  font-size:11px;
+
+  font-weight:1000;
+
+}
+
+.signal-badge.BUY{
+
+  color:var(--green);
 
   border:
     1px solid
-    rgba(244,199,93,.17);
-
-  font-size:7px;
-  font-weight:1000;
-}
-
-.live-badge.ENTRY_ZONE{
-  color:var(--green);
+    rgba(54,229,161,.2);
 
   background:
-    rgba(49,230,158,.08);
+    rgba(54,229,161,.08);
 
-  border-color:
-    rgba(49,230,158,.18);
 }
 
-.live-badge.CHASE_BLOCK,
-.live-badge.SETUP_INVALID{
+.signal-badge.SELL{
+
   color:var(--red);
 
-  background:
-    rgba(255,95,115,.08);
+  border:
+    1px solid
+    rgba(255,97,118,.2);
 
-  border-color:
-    rgba(255,95,115,.18);
+  background:
+    rgba(255,97,118,.08);
+
 }
 
-/* =========================================================
-   TERMINAL
-========================================================= */
+.signal-badge.WAIT{
+
+  color:var(--gold);
+
+  border:
+    1px solid
+    rgba(245,202,97,.18);
+
+  background:
+    rgba(245,202,97,.07);
+
+}
+
+
+/* TERMINAL */
 
 .terminal{
-  position:relative;
+
   overflow:hidden;
 
   border:
     1px solid
     var(--border);
 
-  border-radius:21px;
+  border-radius:20px;
 
   background:
     linear-gradient(
       145deg,
-      rgba(11,15,22,.99),
-      rgba(4,7,11,.99)
+      #0b1017,
+      #05080c
     );
 
-  box-shadow:var(--shadow);
 }
 
-.terminal-header{
-  position:relative;
-  z-index:3;
+.market-head{
 
   display:flex;
-  justify-content:space-between;
+
+  justify-content:
+    space-between;
+
   align-items:flex-start;
 
   gap:10px;
 
-  padding:14px 14px 7px;
+  padding:
+    14px 14px 5px;
+
 }
 
-.market-name{
-  color:#dfe4eb;
+.market-label{
 
-  font-size:9px;
+  color:var(--gold);
+
+  font-size:8px;
+
   font-weight:1000;
 
-  letter-spacing:1.2px;
+  letter-spacing:1px;
+
 }
 
 .price{
+
   margin-top:4px;
 
   font-size:
-    clamp(29px,8vw,49px);
+    clamp(
+      34px,
+      10vw,
+      55px
+    );
 
   font-weight:1000;
 
   line-height:1;
 
-  letter-spacing:-1.6px;
 }
 
-.price-meta{
+.market-meta{
+
   margin-top:5px;
 
   color:var(--muted);
 
   font-size:7px;
+
 }
 
-.signal-stack{
-  display:grid;
-  justify-items:end;
-  gap:5px;
-}
+.permission{
 
-.signal{
-  min-width:80px;
+  padding:
+    7px 9px;
 
-  padding:9px 11px;
+  border-radius:
+    9px;
 
-  text-align:center;
-
-  border-radius:11px;
-
-  font-size:11px;
-  font-weight:1000;
-
-  letter-spacing:.8px;
-}
-
-.signal.BUY{
-  color:var(--green);
-
-  background:
-    rgba(49,230,158,.09);
-
-  border:
-    1px solid
-    rgba(49,230,158,.20);
-}
-
-.signal.SELL{
   color:var(--red);
 
-  background:
-    rgba(255,95,115,.09);
-
   border:
     1px solid
-    rgba(255,95,115,.20);
-}
-
-.signal.WAIT{
-  color:var(--gold);
+    rgba(255,97,118,.16);
 
   background:
-    rgba(244,199,93,.07);
+    rgba(255,97,118,.055);
 
-  border:
-    1px solid
-    rgba(244,199,93,.17);
+  font-size:7px;
+
+  font-weight:1000;
+
 }
 
-.session-chip{
-  padding:5px 7px;
+.permission.APPROVED{
 
-  color:var(--muted);
+  color:var(--green);
 
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:999px;
+  border-color:
+    rgba(54,229,161,.18);
 
   background:
-    rgba(255,255,255,.025);
+    rgba(54,229,161,.06);
 
-  font-size:6px;
-  font-weight:900;
 }
 
-/* =========================================================
-   CHART
-========================================================= */
+
+/* CHART */
 
 .chart-wrap{
+
   position:relative;
 
   width:100%;
-  height:390px;
 
-  overflow:hidden;
+  height:355px;
 
-  background:
-    linear-gradient(
-      180deg,
-      rgba(9,13,19,.4),
-      rgba(3,5,8,.88)
-    );
 }
 
 #chart{
-  position:absolute;
-
-  inset:0;
 
   width:100%;
   height:100%;
 
   display:block;
+
 }
 
-.chart-overlay{
-  position:absolute;
 
-  z-index:4;
+/* LIVE STATE */
 
-  top:8px;
-  left:8px;
-  right:8px;
+.state{
 
   display:flex;
-  flex-wrap:wrap;
-  gap:5px;
 
-  pointer-events:none;
-}
-
-.annotation-chip{
-  padding:5px 7px;
-
-  border:
-    1px solid
-    rgba(255,255,255,.08);
-
-  border-radius:7px;
-
-  color:#bfc8d6;
-
-  background:
-    rgba(5,8,13,.83);
-
-  backdrop-filter:
-    blur(7px);
-
-  font-size:6px;
-  font-weight:900;
-}
-
-.annotation-chip.bull{
-  color:#94f1c8;
-
-  border-color:
-    rgba(49,230,158,.17);
-}
-
-.annotation-chip.bear{
-  color:#ff9dab;
-
-  border-color:
-    rgba(255,95,115,.17);
-}
-
-.annotation-chip.gold{
-  color:#ffe2a0;
-
-  border-color:
-    rgba(244,199,93,.18);
-}
-
-/* =========================================================
-   CHART FOOT
-========================================================= */
-
-.chart-footer{
-  display:grid;
-
-  grid-template-columns:
-    repeat(4,1fr);
-
-  gap:5px;
-
-  padding:8px;
-}
-
-.metric{
-  min-width:0;
-
-  padding:8px;
-
-  border:
-    1px solid
-    rgba(255,255,255,.05);
-
-  border-radius:9px;
-
-  background:
-    rgba(255,255,255,.02);
-}
-
-.metric small{
-  display:block;
-
-  margin-bottom:4px;
-
-  color:var(--muted);
-
-  font-size:5px;
-
-  text-transform:uppercase;
-}
-
-.metric strong{
-  display:block;
-
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-
-  font-size:8px;
-}
-
-/* =========================================================
-   SIGNAL PLAN
-========================================================= */
-
-.trade-card{
-  margin-top:10px;
-
-  padding:15px;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:18px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #0c1119,
-      #070a0f
-    );
-
-  box-shadow:var(--shadow);
-}
-
-.trade-title{
-  margin-bottom:13px;
-
-  color:#aeb8c7;
-
-  text-align:center;
-
-  font-size:10px;
-  font-weight:1000;
-
-  letter-spacing:1.1px;
-}
-
-.entry-main{
-  text-align:center;
-}
-
-.entry-main small{
-  display:block;
-
-  color:var(--muted);
-
-  font-size:6px;
-}
-
-.entry-main strong{
-  display:block;
-
-  margin-top:5px;
-
-  color:#8ca5ff;
-
-  font-size:24px;
-  font-weight:1000;
-}
-
-.tp-sl-grid{
-  display:grid;
-
-  grid-template-columns:
-    repeat(2,1fr);
+  justify-content:
+    space-between;
 
   gap:8px;
 
-  margin-top:13px;
-}
+  align-items:center;
 
-.plan-box{
-  padding:12px;
+  padding:
+    10px 12px;
 
-  border-radius:13px;
-
-  text-align:center;
-}
-
-.plan-box.tp{
-  background:
-    rgba(49,230,158,.055);
-
-  border:
+  border-top:
     1px solid
-    rgba(49,230,158,.12);
+    var(--border);
+
 }
 
-.plan-box.sl{
-  background:
-    rgba(255,95,115,.055);
+.state small{
 
-  border:
-    1px solid
-    rgba(255,95,115,.12);
-}
-
-.plan-box small{
   display:block;
-
-  margin-bottom:5px;
 
   color:var(--muted);
 
   font-size:6px;
+
 }
 
-.plan-box strong{
-  font-size:16px;
+.state strong{
+
+  display:block;
+
+  margin-top:3px;
+
+  font-size:8px;
+
 }
 
-.plan-box.tp strong{
-  color:var(--green);
-}
+.state-pill{
 
-.plan-box.sl strong{
-  color:var(--red);
-}
+  flex:none;
 
-.plan-secondary{
-  display:grid;
+  padding:
+    6px 8px;
 
-  grid-template-columns:
-    repeat(3,1fr);
+  border-radius:
+    999px;
 
-  gap:7px;
+  color:var(--gold);
 
-  margin-top:8px;
-}
-
-.small-plan{
-  padding:9px 6px;
-
-  text-align:center;
+  background:
+    rgba(245,202,97,.07);
 
   border:
     1px solid
-    var(--border);
+    rgba(245,202,97,.15);
 
-  border-radius:10px;
+  font-size:6px;
 
-  background:
-    rgba(255,255,255,.02);
-}
-
-.small-plan small{
-  display:block;
-
-  margin-bottom:4px;
-
-  color:var(--muted);
-
-  font-size:5px;
-}
-
-.small-plan strong{
-  font-size:8px;
-}
-
-/* =========================================================
-   STRENGTH
-========================================================= */
-
-.strength-row{
-  display:grid;
-
-  grid-template-columns:
-    74px 1fr;
-
-  gap:12px;
-
-  align-items:center;
-
-  margin-top:10px;
-}
-
-.ring{
-  --p:0;
-
-  width:74px;
-  height:74px;
-
-  position:relative;
-
-  display:grid;
-  place-items:center;
-
-  border-radius:50%;
-
-  background:
-    conic-gradient(
-      var(--gold)
-      calc(var(--p) * 1%),
-      rgba(255,255,255,.055)
-      0
-    );
-}
-
-.ring::before{
-  content:"";
-
-  position:absolute;
-
-  width:58px;
-  height:58px;
-
-  border-radius:50%;
-
-  background:#0a0e15;
-}
-
-.ring span{
-  position:relative;
-
-  font-size:14px;
   font-weight:1000;
+
 }
 
-.summary{
-  color:#d3dae5;
+.state-pill.ENTRY_ZONE{
 
-  font-size:9px;
+  color:var(--green);
 
-  line-height:1.55;
+  border-color:
+    rgba(54,229,161,.18);
+
+  background:
+    rgba(54,229,161,.06);
+
 }
 
-/* =========================================================
-   GRID
-========================================================= */
 
-.main-grid{
-  display:grid;
-
-  grid-template-columns:
-    1.15fr .85fr;
-
-  gap:10px;
-
-  margin-top:10px;
-}
-
-.stack{
-  display:grid;
-  align-content:start;
-
-  gap:10px;
-}
+/* TRADE PLAN */
 
 .card{
+
+  margin-top:9px;
+
   padding:13px;
 
   border:
@@ -916,59 +581,72 @@ button:disabled{
   border-radius:16px;
 
   background:
-    rgba(10,14,21,.97);
+    var(--card);
 
-  box-shadow:
-    var(--shadow);
 }
 
-.card-title{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-
-  gap:8px;
+.title{
 
   margin-bottom:10px;
 
   color:var(--muted);
 
   font-size:7px;
+
   font-weight:1000;
 
   letter-spacing:1px;
 
   text-transform:uppercase;
+
 }
 
-.card-badge{
-  padding:5px 7px;
+.entry{
 
-  border-radius:999px;
+  text-align:center;
 
-  background:
-    rgba(255,255,255,.04);
+  padding:
+    6px 0 12px;
 
-  color:#b7c0cd;
+}
+
+.entry small{
+
+  display:block;
+
+  color:var(--muted);
 
   font-size:6px;
+
 }
 
-/* =========================================================
-   RISK CALCULATOR
-========================================================= */
+.entry strong{
 
-.risk-grid{
+  display:block;
+
+  margin-top:5px;
+
+  color:var(--blue);
+
+  font-size:25px;
+
+}
+
+.level-grid{
+
   display:grid;
 
   grid-template-columns:
     repeat(3,1fr);
 
   gap:7px;
+
 }
 
-.risk-box{
-  padding:11px 6px;
+.level{
+
+  padding:
+    10px 5px;
 
   text-align:center;
 
@@ -976,12 +654,15 @@ button:disabled{
     1px solid
     var(--border);
 
-  border-radius:11px;
+  border-radius:10px;
 
-  background:#070a0f;
+  background:
+    var(--card2);
+
 }
 
-.risk-box small{
+.level small{
+
   display:block;
 
   margin-bottom:5px;
@@ -989,78 +670,248 @@ button:disabled{
   color:var(--muted);
 
   font-size:5px;
+
 }
 
-.risk-box strong{
-  display:block;
+.level strong{
 
-  font-size:12px;
+  font-size:11px;
+
 }
 
-.risk-box.lot strong{
-  color:#9fb2ff;
-}
-
-.risk-box.risk strong{
-  color:var(--red);
-}
-
-.risk-box.reward strong{
+.level.tp strong{
   color:var(--green);
 }
 
-/* =========================================================
-   MODULES
-========================================================= */
-
-.module-list{
-  display:grid;
-  gap:6px;
+.level.sl strong{
+  color:var(--red);
 }
 
-.module{
+
+/* STRENGTH */
+
+.strength{
+
   display:grid;
 
   grid-template-columns:
-    68px 55px 1fr 30px;
+    78px 1fr;
 
-  gap:7px;
+  gap:11px;
+
+  align-items:center;
+
+  margin-top:11px;
+
+}
+
+.ring{
+
+  --p:0;
+
+  width:74px;
+  height:74px;
+
+  position:relative;
+
+  display:grid;
+
+  place-items:center;
+
+  border-radius:50%;
+
+  background:
+
+    conic-gradient(
+      var(--blue)
+      calc(
+        var(--p) * 1%
+      ),
+      rgba(255,255,255,.06)
+      0
+    );
+
+}
+
+.ring:before{
+
+  content:"";
+
+  position:absolute;
+
+  width:58px;
+  height:58px;
+
+  border-radius:50%;
+
+  background:
+    #0b1017;
+
+}
+
+.ring span{
+
+  position:relative;
+
+  font-size:15px;
+
+  font-weight:1000;
+
+}
+
+.summary{
+
+  color:#d2d9e4;
+
+  font-size:8px;
+
+  line-height:1.55;
+
+}
+
+
+/* GRID */
+
+.grid{
+
+  display:grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap:9px;
+
+}
+
+.kv{
+
+  display:grid;
+
+  grid-template-columns:
+    1fr auto;
+
+  gap:8px;
+
+  padding:
+    7px 0;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.045);
+
+  font-size:7px;
+
+}
+
+.kv:last-child{
+  border-bottom:0;
+}
+
+.kv span{
+  color:var(--muted);
+}
+
+.kv strong{
+  text-align:right;
+}
+
+
+/* TIMEFRAMES */
+
+.tfs{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(4,1fr);
+
+  gap:5px;
+
+}
+
+.tf{
+
+  padding:
+    9px 3px;
+
+  text-align:center;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:9px;
+
+  background:
+    var(--card2);
+
+}
+
+.tf small{
+
+  display:block;
+
+  margin-bottom:5px;
+
+  color:var(--muted);
+
+  font-size:5px;
+
+}
+
+.tf strong{
+
+  font-size:6px;
+
+}
+
+.BULLISH{
+  color:var(--green);
+}
+
+.BEARISH{
+  color:var(--red);
+}
+
+.NEUTRAL{
+  color:var(--gold);
+}
+
+
+/* MODULES */
+
+.modules{
+
+  display:grid;
+
+  gap:5px;
+
+}
+
+.module{
+
+  display:grid;
+
+  grid-template-columns:
+    64px 52px 1fr;
+
+  gap:6px;
 
   align-items:center;
 
   padding:7px;
 
-  border-radius:9px;
+  border-radius:8px;
 
   background:
     rgba(255,255,255,.02);
-}
-
-.module-name{
-  color:var(--muted);
 
   font-size:6px;
-  font-weight:1000;
+
 }
 
-.module-bias{
-  font-size:6px;
-  font-weight:1000;
-}
+.bar{
 
-.module-bias.BULLISH{
-  color:var(--green);
-}
-
-.module-bias.BEARISH{
-  color:var(--red);
-}
-
-.module-bias.NEUTRAL{
-  color:var(--gold);
-}
-
-.module-bar{
   height:5px;
 
   overflow:hidden;
@@ -1069,9 +920,11 @@ button:disabled{
 
   background:
     rgba(255,255,255,.05);
+
 }
 
-.module-bar span{
+.bar span{
+
   display:block;
 
   height:100%;
@@ -1079,198 +932,63 @@ button:disabled{
   border-radius:999px;
 
   background:
-    linear-gradient(
-      90deg,
-      #617bff,
-      #9fb3ff
-    );
+    var(--blue);
+
 }
 
-.module-score{
-  text-align:right;
 
-  font-size:6px;
-  font-weight:900;
-}
-
-/* =========================================================
-   LEVELS
-========================================================= */
-
-.level-list{
-  display:grid;
-  gap:5px;
-}
-
-.level-row{
-  display:grid;
-
-  grid-template-columns:
-    1fr auto;
-
-  gap:8px;
-
-  align-items:center;
-
-  padding:7px 0;
-
-  border-bottom:
-    1px solid
-    rgba(255,255,255,.045);
-
-  font-size:7px;
-}
-
-.level-row:last-child{
-  border-bottom:0;
-}
-
-.level-row span{
-  color:var(--muted);
-}
-
-.level-row strong{
-  font-size:8px;
-}
-
-/* =========================================================
-   PERMISSION
-========================================================= */
-
-.permission{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-
-  gap:10px;
-
-  padding:11px;
-
-  border-radius:11px;
-
-  background:
-    rgba(255,95,115,.05);
-
-  border:
-    1px solid
-    rgba(255,95,115,.10);
-}
-
-.permission.APPROVED{
-  background:
-    rgba(49,230,158,.05);
-
-  border-color:
-    rgba(49,230,158,.12);
-}
-
-.permission strong{
-  color:var(--red);
-
-  font-size:13px;
-}
-
-.permission.APPROVED strong{
-  color:var(--green);
-}
+/* BLOCKERS */
 
 .blockers{
-  display:grid;
-  gap:6px;
 
-  margin-top:9px;
+  display:grid;
+
+  gap:5px;
+
 }
 
 .blocker{
-  padding:7px 8px;
 
-  border-radius:8px;
+  padding:7px;
+
+  border-radius:7px;
+
+  color:#ffb0bb;
 
   background:
-    rgba(255,255,255,.02);
+    rgba(255,97,118,.045);
 
-  color:#b6c0ce;
-
-  font-size:7px;
+  font-size:6px;
 
   line-height:1.4;
+
 }
 
-.blocker.bad{
-  color:#ffadb7;
+.warning{
+
+  color:#f8dc99;
+
+  background:
+    rgba(245,202,97,.045);
+
 }
 
-.blocker.warn{
-  color:#f6d994;
-}
 
-/* =========================================================
-   TIMEFRAMES
-========================================================= */
+/* CONTROLS */
 
-.tf-grid{
-  display:grid;
+.controls{
 
-  grid-template-columns:
-    repeat(4,1fr);
-
-  gap:6px;
-}
-
-.tf{
-  padding:9px 4px;
-
-  text-align:center;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:9px;
-
-  background:#070a0f;
-}
-
-.tf small{
-  display:block;
-
-  margin-bottom:5px;
-
-  color:var(--muted);
-
-  font-size:5px;
-}
-
-.tf strong{
-  font-size:7px;
-}
-
-.tf strong.BULLISH{
-  color:var(--green);
-}
-
-.tf strong.BEARISH{
-  color:var(--red);
-}
-
-.tf strong.NEUTRAL{
-  color:var(--gold);
-}
-
-/* =========================================================
-   INPUTS
-========================================================= */
-
-.settings-grid{
   display:grid;
 
   grid-template-columns:
     repeat(2,1fr);
 
   gap:7px;
+
 }
 
 .field label{
+
   display:block;
 
   margin-bottom:4px;
@@ -1278,18 +996,20 @@ button:disabled{
   color:var(--muted);
 
   font-size:6px;
+
 }
 
-.field input,
-.field select{
+input,
+select{
+
   width:100%;
+
   height:38px;
 
-  padding:0 9px;
+  padding:
+    0 9px;
 
   color:white;
-
-  outline:none;
 
   border:
     1px solid
@@ -1297,39 +1017,20 @@ button:disabled{
 
   border-radius:9px;
 
-  background:#070a0f;
+  outline:none;
 
-  font-size:9px;
+  background:
+    var(--card2);
+
 }
 
-.action{
+button{
+
   width:100%;
 
   margin-top:8px;
+
   padding:11px;
-
-  color:white;
-
-  border:0;
-
-  border-radius:10px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #728cff,
-      #6559f4
-    );
-
-  font-size:8px;
-  font-weight:1000;
-}
-
-.secondary{
-  width:100%;
-
-  margin-top:7px;
-  padding:10px;
 
   color:white;
 
@@ -1340,229 +1041,71 @@ button:disabled{
   border-radius:10px;
 
   background:
-    rgba(255,255,255,.025);
+    linear-gradient(
+      135deg,
+      #718cff,
+      #665cff
+    );
 
   font-size:8px;
-  font-weight:900;
+
+  font-weight:1000;
+
 }
 
-/* =========================================================
-   HISTORY
-========================================================= */
+.meta{
 
-.history{
-  display:grid;
-  gap:5px;
-}
+  display:flex;
 
-.history-row{
-  display:grid;
+  justify-content:
+    space-between;
 
-  grid-template-columns:
-    45px 1fr auto;
+  margin-top:10px;
 
-  gap:7px;
-
-  padding:7px;
-
-  border-radius:8px;
-
-  background:
-    rgba(255,255,255,.02);
+  color:var(--muted);
 
   font-size:6px;
+
 }
 
-.history-row small{
-  color:var(--muted);
-}
+.error{
 
-.history-signal{
-  font-weight:1000;
-}
-
-.history-signal.BUY{
-  color:var(--green);
-}
-
-.history-signal.SELL{
-  color:var(--red);
-}
-
-.history-signal.WAIT{
-  color:var(--gold);
-}
-
-/* =========================================================
-   ERROR
-========================================================= */
-
-#errorBox{
   display:none;
 
   margin-bottom:8px;
-  padding:9px;
 
-  color:#ffb0ba;
+  padding:8px;
 
-  border:
-    1px solid
-    rgba(255,95,115,.17);
+  border-radius:8px;
 
-  border-radius:10px;
+  color:#ffabb7;
 
   background:
-    rgba(255,95,115,.05);
+    rgba(255,97,118,.06);
 
-  font-size:8px;
+  font-size:7px;
+
 }
 
-/* =========================================================
-   BOTTOM
-========================================================= */
 
-.bottom-meta{
-  display:flex;
-  justify-content:space-between;
+@media(max-width:720px){
 
-  gap:8px;
-
-  margin:10px 2px 0;
-
-  color:var(--muted2);
-
-  font-size:6px;
-}
-
-.footer{
-  margin-top:10px;
-
-  color:#566170;
-
-  text-align:center;
-
-  font-size:6px;
-  line-height:1.45;
-}
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-.toast{
-  position:fixed;
-  z-index:9999;
-
-  left:50%;
-
-  bottom:
-    max(
-      22px,
-      calc(env(safe-area-inset-bottom) + 10px)
-    );
-
-  width:
-    min(
-      calc(100% - 24px),
-      400px
-    );
-
-  padding:10px;
-
-  color:white;
-
-  border:
-    1px solid
-    var(--border2);
-
-  border-radius:11px;
-
-  background:
-    rgba(9,13,19,.97);
-
-  box-shadow:
-    0 18px 55px
-    rgba(0,0,0,.48);
-
-  font-size:8px;
-
-  opacity:0;
-
-  transform:
-    translate(-50%,80px);
-
-  transition:.22s ease;
-}
-
-.toast.show{
-  opacity:1;
-
-  transform:
-    translate(-50%,0);
-}
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media(max-width:760px){
-
-  body{
-    padding-left:8px;
-    padding-right:8px;
-  }
-
-  .main-grid{
+  .grid{
     grid-template-columns:1fr;
-  }
-
-  .chart-wrap{
-    height:365px;
-  }
-
-}
-
-@media(max-width:430px){
-
-  .brand h1{
-    font-size:13px;
-  }
-
-  .status{
-    max-width:92px;
-  }
-
-  #statusText{
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-
-  .chart-wrap{
-    height:350px;
-  }
-
-  .chart-footer{
-    grid-template-columns:
-      repeat(2,1fr);
-  }
-
-  .module{
-    grid-template-columns:
-      60px 50px 1fr 28px;
   }
 
 }
 
 </style>
+
 </head>
+
 
 <body>
 
 <main class="app">
 
-<!-- HEADER -->
-
-<div class="topbar">
+<header>
 
   <div class="brand">
 
@@ -1577,7 +1120,7 @@ button:disabled{
       </h1>
 
       <p>
-        XAU/USD · V7 LIVE SCALPER
+        V8 LIVE · XAU/USD
       </p>
 
     </div>
@@ -1585,78 +1128,61 @@ button:disabled{
   </div>
 
 
-  <div class="top-actions">
+  <div class="status">
 
-    <button
-      id="soundBtn"
-      class="icon">
-      🔔
-    </button>
+    <span
+      id="dot"
+      class="dot loading">
+    </span>
 
-    <button
-      id="refreshBtn"
-      class="icon">
-      ↻
-    </button>
-
-    <div class="status">
-
-      <span
-        id="statusDot"
-        class="dot loading">
-      </span>
-
-      <span id="statusText">
-        STARTING
-      </span>
-
-    </div>
+    <span id="status">
+      STARTING
+    </span>
 
   </div>
 
+</header>
+
+
+<div
+  id="error"
+  class="error">
 </div>
 
 
-<div id="errorBox"></div>
+<div class="signal-banner">
 
-
-<!-- LIVE STATE -->
-
-<div class="live-state">
-
-  <div class="live-state-left">
+  <div>
 
     <small>
-      Live Gold Engine
+      CURRENT GOLD DIRECTION
     </small>
 
-    <strong id="liveMessage">
-      Searching for XAU/USD setup...
+    <strong id="signalMessage">
+      Analysing XAU/USD immediately...
     </strong>
 
   </div>
 
-  <span
-    id="liveStateBadge"
-    class="live-badge">
+  <div
+    id="signal"
+    class="signal-badge WAIT">
 
-    SEARCHING
+    WAIT
 
-  </span>
+  </div>
 
 </div>
 
 
-<!-- TERMINAL -->
-
 <section class="terminal">
 
-  <div class="terminal-header">
+  <div class="market-head">
 
     <div>
 
-      <div class="market-name">
-        XAUUSD · M1
+      <div class="market-label">
+        XAUUSD · GOLD
       </div>
 
       <div
@@ -1667,26 +1193,20 @@ button:disabled{
 
       <div
         id="priceMeta"
-        class="price-meta">
-        Waiting for live gold price
+        class="market-meta">
+
+        Loading live gold...
+
       </div>
 
     </div>
 
 
-    <div class="signal-stack">
+    <div
+      id="permission"
+      class="permission">
 
-      <div
-        id="signal"
-        class="signal WAIT">
-        WAIT
-      </div>
-
-      <div
-        id="sessionChip"
-        class="session-chip">
-        —
-      </div>
+      BLOCKED
 
     </div>
 
@@ -1697,34 +1217,29 @@ button:disabled{
 
     <canvas id="chart"></canvas>
 
-    <div
-      id="chartAnnotations"
-      class="chart-overlay">
-    </div>
-
   </div>
 
 
-  <div class="chart-footer">
+  <div class="state">
 
-    <div class="metric">
-      <small>Regime</small>
-      <strong id="regimeMetric">—</strong>
+    <div>
+
+      <small>
+        LIVE EXECUTION STATE
+      </small>
+
+      <strong id="liveMessage">
+        Analysing market...
+      </strong>
+
     </div>
 
-    <div class="metric">
-      <small>Quality</small>
-      <strong id="qualityMetric">—</strong>
-    </div>
+    <div
+      id="liveState"
+      class="state-pill">
 
-    <div class="metric">
-      <small>Agreement</small>
-      <strong id="agreementMetric">—</strong>
-    </div>
+      ANALYSING
 
-    <div class="metric">
-      <small>Signal Candle</small>
-      <strong id="signalTimeMetric">—</strong>
     </div>
 
   </div>
@@ -1732,19 +1247,17 @@ button:disabled{
 </section>
 
 
-<!-- SIGNAL PLAN -->
+<section class="card">
 
-<section class="trade-card">
-
-  <div class="trade-title">
-    XAUUSD TRADE PLAN
+  <div class="title">
+    Live Gold Trade Plan
   </div>
 
 
-  <div class="entry-main">
+  <div class="entry">
 
     <small>
-      LIVE ENTRY
+      ENTRY
     </small>
 
     <strong id="entry">
@@ -1754,22 +1267,9 @@ button:disabled{
   </div>
 
 
-  <div class="tp-sl-grid">
+  <div class="level-grid">
 
-    <div class="plan-box tp">
-
-      <small>
-        TAKE PROFIT 1
-      </small>
-
-      <strong id="tp1">
-        —
-      </strong>
-
-    </div>
-
-
-    <div class="plan-box sl">
+    <div class="level sl">
 
       <small>
         STOP LOSS
@@ -1781,12 +1281,21 @@ button:disabled{
 
     </div>
 
-  </div>
+
+    <div class="level tp">
+
+      <small>
+        TP1
+      </small>
+
+      <strong id="tp1">
+        —
+      </strong>
+
+    </div>
 
 
-  <div class="plan-secondary">
-
-    <div class="small-plan">
+    <div class="level tp">
 
       <small>
         TP2
@@ -1798,42 +1307,16 @@ button:disabled{
 
     </div>
 
-
-    <div class="small-plan">
-
-      <small>
-        RR
-      </small>
-
-      <strong id="rr">
-        —
-      </strong>
-
-    </div>
-
-
-    <div class="small-plan">
-
-      <small>
-        MAX HOLD
-      </small>
-
-      <strong id="maxHold">
-        —
-      </strong>
-
-    </div>
-
   </div>
 
 
-  <div class="strength-row">
+  <div class="strength">
 
     <div
-      id="strengthRing"
+      id="ring"
       class="ring">
 
-      <span id="strengthText">
+      <span id="strength">
         0
       </span>
 
@@ -1842,10 +1325,10 @@ button:disabled{
     <div>
 
       <div
-        id="analysisSummary"
+        id="summary"
         class="summary">
 
-        Waiting for live gold analysis.
+        MKAYFX is analysing immediately.
 
       </div>
 
@@ -1856,381 +1339,339 @@ button:disabled{
 </section>
 
 
-<section class="main-grid">
+<div class="grid">
 
 
-<!-- LEFT -->
+<section class="card">
 
-<div class="stack">
-
-
-<!-- AUTO RISK -->
-
-<div class="card">
-
-  <div class="card-title">
-
-    <span>
-      Auto Risk Calculator
-    </span>
-
-    <span
-      id="riskPctBadge"
-      class="card-badge">
-      0.25%
-    </span>
-
+  <div class="title">
+    Timeframes
   </div>
 
-
-  <div class="risk-grid">
-
-    <div class="risk-box lot">
-
-      <small>
-        LOT SIZE
-      </small>
-
-      <strong id="lotSize">
-        —
-      </strong>
-
-    </div>
-
-
-    <div class="risk-box risk">
-
-      <small>
-        RISK
-      </small>
-
-      <strong id="riskMoney">
-        —
-      </strong>
-
-    </div>
-
-
-    <div class="risk-box reward">
-
-      <small>
-        MAX REWARD
-      </small>
-
-      <strong id="rewardMoney">
-        —
-      </strong>
-
-    </div>
-
-  </div>
-
-
-  <div class="level-list">
-
-    <div class="level-row">
-      <span>Account equity</span>
-      <strong id="equityDisplay">R200.00</strong>
-    </div>
-
-    <div class="level-row">
-      <span>Daily loss limit</span>
-      <strong id="dailyLimitDisplay">—</strong>
-    </div>
-
-    <div class="level-row">
-      <span>Execution ready</span>
-      <strong id="executionReady">—</strong>
-    </div>
-
-    <div class="level-row">
-      <span>Spread</span>
-      <strong id="spreadDisplay">—</strong>
-    </div>
-
-  </div>
-
-</div>
-
-
-<!-- MODULES -->
-
-<div class="card">
-
-  <div class="card-title">
-
-    <span>
-      Gold Intelligence
-    </span>
-
-    <span
-      id="candidateBadge"
-      class="card-badge">
-      —
-    </span>
-
-  </div>
-
-  <div
-    id="moduleList"
-    class="module-list">
-  </div>
-
-</div>
-
-
-<!-- LIQUIDITY -->
-
-<div class="card">
-
-  <div class="card-title">
-    Institutional Liquidity
-  </div>
-
-  <div class="level-list">
-
-    <div class="level-row">
-      <span>Asian High</span>
-      <strong id="asianHigh">—</strong>
-    </div>
-
-    <div class="level-row">
-      <span>Asian Low</span>
-      <strong id="asianLow">—</strong>
-    </div>
-
-    <div class="level-row">
-      <span>Previous Day High</span>
-      <strong id="pdh">—</strong>
-    </div>
-
-    <div class="level-row">
-      <span>Previous Day Low</span>
-      <strong id="pdl">—</strong>
-    </div>
-
-    <div class="level-row">
-      <span>Bull Liquidity Score</span>
-      <strong id="bullLiquidity">—</strong>
-    </div>
-
-    <div class="level-row">
-      <span>Bear Liquidity Score</span>
-      <strong id="bearLiquidity">—</strong>
-    </div>
-
-  </div>
-
-  <div
-    id="liquiditySignals"
-    class="blockers">
-  </div>
-
-</div>
-
-
-<!-- HISTORY -->
-
-<div class="card">
-
-  <div class="card-title">
-    Recent Gold Signals
-  </div>
-
-  <div
-    id="history"
-    class="history">
-  </div>
-
-</div>
-
-</div>
-
-
-<!-- RIGHT -->
-
-<div class="stack">
-
-
-<!-- PERMISSION -->
-
-<div class="card">
-
-  <div class="card-title">
-    Trade Permission
-  </div>
-
-  <div
-    id="permissionBox"
-    class="permission">
-
-    <div>
-      <small style="font-size:6px;color:var(--muted)">
-        FINAL STATE
-      </small>
-
-      <strong id="permissionText">
-        BLOCKED
-      </strong>
-    </div>
-
-    <span id="permissionIcon">
-      ⛔
-    </span>
-
-  </div>
-
-  <div
-    id="permissionReasons"
-    class="blockers">
-  </div>
-
-</div>
-
-
-<!-- TIMEFRAMES -->
-
-<div class="card">
-
-  <div class="card-title">
-    Multi-Timeframe Read
-  </div>
-
-  <div class="tf-grid">
+  <div class="tfs">
 
     <div class="tf">
+
       <small>M1</small>
-      <strong id="m1Bias">—</strong>
+
+      <strong id="m1">
+        —
+      </strong>
+
     </div>
 
     <div class="tf">
+
       <small>M5</small>
-      <strong id="m5Bias">—</strong>
+
+      <strong id="m5">
+        —
+      </strong>
+
     </div>
 
     <div class="tf">
+
       <small>M15</small>
-      <strong id="m15Bias">—</strong>
+
+      <strong id="m15">
+        —
+      </strong>
+
     </div>
 
     <div class="tf">
+
       <small>H1</small>
-      <strong id="h1Bias">—</strong>
+
+      <strong id="h1">
+        —
+      </strong>
+
     </div>
 
   </div>
 
-</div>
+</section>
 
 
-<!-- MARKET STATUS -->
+<section class="card">
 
-<div class="card">
-
-  <div class="card-title">
-    Gold Market Read
+  <div class="title">
+    Market Read
   </div>
 
-  <div class="level-list">
+  <div class="kv">
 
-    <div class="level-row">
-      <span>Regime</span>
-      <strong id="regime">—</strong>
-    </div>
+    <span>
+      Session
+    </span>
 
-    <div class="level-row">
-      <span>Volatility</span>
-      <strong id="volatility">—</strong>
-    </div>
-
-    <div class="level-row">
-      <span>BUY Score</span>
-      <strong id="buyScore">—</strong>
-    </div>
-
-    <div class="level-row">
-      <span>SELL Score</span>
-      <strong id="sellScore">—</strong>
-    </div>
-
-    <div class="level-row">
-      <span>Signal Quality</span>
-      <strong id="quality">—</strong>
-    </div>
-
-    <div class="level-row">
-      <span>Agreement</span>
-      <strong id="agreement">—</strong>
-    </div>
-
-    <div class="level-row">
-      <span>Live deviation</span>
-      <strong id="liveDeviation">—</strong>
-    </div>
+    <strong id="session">
+      —
+    </strong>
 
   </div>
 
-</div>
+  <div class="kv">
 
+    <span>
+      Regime
+    </span>
 
-<!-- NEWS -->
+    <strong id="regime">
+      —
+    </strong>
 
-<div class="card">
-
-  <div class="card-title">
-    USD News Guard
   </div>
 
-  <div class="level-list">
+  <div class="kv">
 
-    <div class="level-row">
-      <span>Calendar connected</span>
-      <strong id="newsConnected">—</strong>
-    </div>
+    <span>
+      BUY Score
+    </span>
 
-    <div class="level-row">
-      <span>Trading allowed</span>
-      <strong id="newsAllowed">—</strong>
-    </div>
+    <strong id="buy">
+      —
+    </strong>
 
-    <div class="level-row">
-      <span>Minutes to event</span>
-      <strong id="newsMinutesDisplay">—</strong>
-    </div>
+  </div>
 
+  <div class="kv">
+
+    <span>
+      SELL Score
+    </span>
+
+    <strong id="sell">
+      —
+    </strong>
+
+  </div>
+
+  <div class="kv">
+
+    <span>
+      Quality
+    </span>
+
+    <strong id="quality">
+      —
+    </strong>
+
+  </div>
+
+  <div class="kv">
+
+    <span>
+      Agreement
+    </span>
+
+    <strong id="agreement">
+      —
+    </strong>
+
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="title">
+    Gold Liquidity
+  </div>
+
+  <div class="kv">
+
+    <span>
+      Asian High
+    </span>
+
+    <strong id="asianHigh">
+      —
+    </strong>
+
+  </div>
+
+  <div class="kv">
+
+    <span>
+      Asian Low
+    </span>
+
+    <strong id="asianLow">
+      —
+    </strong>
+
+  </div>
+
+  <div class="kv">
+
+    <span>
+      PDH
+    </span>
+
+    <strong id="pdh">
+      —
+    </strong>
+
+  </div>
+
+  <div class="kv">
+
+    <span>
+      PDL
+    </span>
+
+    <strong id="pdl">
+      —
+    </strong>
+
+  </div>
+
+  <div class="kv">
+
+    <span>
+      Bull liquidity
+    </span>
+
+    <strong id="bullLiquidity">
+      —
+    </strong>
+
+  </div>
+
+  <div class="kv">
+
+    <span>
+      Bear liquidity
+    </span>
+
+    <strong id="bearLiquidity">
+      —
+    </strong>
+
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="title">
+    Account Protection
+  </div>
+
+  <div class="kv">
+
+    <span>
+      Equity
+    </span>
+
+    <strong id="equityDisplay">
+      R200
+    </strong>
+
+  </div>
+
+  <div class="kv">
+
+    <span>
+      Risk %
+    </span>
+
+    <strong id="riskPercent">
+      —
+    </strong>
+
+  </div>
+
+  <div class="kv">
+
+    <span>
+      Max risk
+    </span>
+
+    <strong id="maxRisk">
+      —
+    </strong>
+
+  </div>
+
+  <div class="kv">
+
+    <span>
+      Lot size
+    </span>
+
+    <strong id="lot">
+      —
+    </strong>
+
+  </div>
+
+  <div class="kv">
+
+    <span>
+      RR
+    </span>
+
+    <strong id="rr">
+      —
+    </strong>
+
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="title">
+    Ensemble
   </div>
 
   <div
-    id="newsMessage"
-    class="summary"
-    style="margin-top:8px">
-    —
+    id="modules"
+    class="modules">
   </div>
 
-</div>
+</section>
 
 
-<!-- SETTINGS -->
+<section class="card">
 
-<div class="card">
+  <div class="title">
+    Trade Checks
+  </div>
 
-  <div class="card-title">
+  <div
+    id="blockers"
+    class="blockers">
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="title">
     Live Controls
   </div>
 
-  <div class="settings-grid">
+  <div class="controls">
 
     <div class="field">
 
       <label>
-        Equity (ZAR)
+        Equity
       </label>
 
       <input
-        id="equityInput"
+        id="equity"
         type="number"
         value="200"
-        step="1"
       >
 
     </div>
@@ -2243,10 +1684,9 @@ button:disabled{
       </label>
 
       <input
-        id="dailyPnLInput"
+        id="pnl"
         type="number"
         value="0"
-        step=".01"
       >
 
     </div>
@@ -2259,10 +1699,9 @@ button:disabled{
       </label>
 
       <input
-        id="tradesInput"
+        id="trades"
         type="number"
         value="0"
-        min="0"
       >
 
     </div>
@@ -2275,10 +1714,9 @@ button:disabled{
       </label>
 
       <input
-        id="lossesInput"
+        id="losses"
         type="number"
         value="0"
-        min="0"
       >
 
     </div>
@@ -2291,7 +1729,7 @@ button:disabled{
       </label>
 
       <input
-        id="lossCooldownInput"
+        id="cooldown"
         type="number"
         value="999"
       >
@@ -2302,42 +1740,27 @@ button:disabled{
     <div class="field">
 
       <label>
-        Minutes To USD News
+        Refresh
       </label>
 
-      <input
-        id="newsMinutesInput"
-        type="number"
-        placeholder="Optional"
-      >
+      <select id="refresh">
 
-    </div>
+        <option value="10">
+          10 seconds
+        </option>
 
-
-    <div class="field">
-
-      <label>
-        Live Refresh
-      </label>
-
-      <select id="refreshSelect">
+        <option value="20">
+          20 seconds
+        </option>
 
         <option
-          value="10"
+          value="30"
           selected>
-          10 sec
-        </option>
-
-        <option value="15">
-          15 sec
-        </option>
-
-        <option value="30">
-          30 sec
+          30 seconds
         </option>
 
         <option value="60">
-          60 sec
+          1 minute
         </option>
 
         <option value="0">
@@ -2348,127 +1771,38 @@ button:disabled{
 
     </div>
 
-
-    <div class="field">
-
-      <label>
-        Alert Strength
-      </label>
-
-      <select id="alertStrength">
-
-        <option value="65">
-          65
-        </option>
-
-        <option
-          value="70"
-          selected>
-          70
-        </option>
-
-        <option value="75">
-          75
-        </option>
-
-        <option value="80">
-          80
-        </option>
-
-      </select>
-
-    </div>
-
   </div>
 
 
-  <label
-    style="
-      display:flex;
-      gap:7px;
-      align-items:center;
-      margin-top:9px;
-      color:var(--muted);
-      font-size:7px
-    ">
-
-    <input
-      id="newsActiveInput"
-      type="checkbox"
-    >
-
-    High-impact USD event active
-
-  </label>
-
-
-  <button
-    id="analyzeBtn"
-    class="action">
-
+  <button id="analyze">
     ANALYZE GOLD NOW
-
   </button>
-
-
-  <button
-    class="secondary"
-    onclick="enableNotifications()">
-
-    ENABLE BUY / SELL ALERTS
-
-  </button>
-
-
-  <button
-    class="secondary"
-    onclick="copyTradePlan()">
-
-    COPY TRADE PLAN
-
-  </button>
-
-</div>
-
-</div>
 
 </section>
 
 
-<div class="bottom-meta">
-
-  <span id="updated">
-    Not updated
-  </span>
-
-  <span id="countdown">
-    Next scan —
-  </span>
-
 </div>
 
 
-<div class="footer">
+<div class="meta">
 
-  MKAYFX setup strength is not a guaranteed win probability.
-  Gold can move rapidly around high-impact USD events.
-  Broker spread and minimum lot size can materially change execution risk.
+  <span id="updated">
+    Starting...
+  </span>
+
+  <span id="countdown">
+    Immediate analysis
+  </span>
 
 </div>
 
 </main>
 
 
-<div
-  id="toast"
-  class="toast">
-</div>
-
-
 <script>
 
 /* =========================================================
-   STATE
+   MKAYFX FRONTEND
 ========================================================= */
 
 const $ =
@@ -2478,19 +1812,12 @@ const $ =
     );
 
 
-let currentData =
-  null;
-
-
 let busy =
   false;
 
 
-let soundEnabled =
-  localStorage.getItem(
-    "mkayfx_sound"
-  ) !==
-  "off";
+let current =
+  null;
 
 
 let refreshSeconds =
@@ -2498,34 +1825,19 @@ let refreshSeconds =
     localStorage.getItem(
       "mkayfx_refresh"
     ) ||
-    10
+    30
   );
 
 
-let nextScan =
+let countdown =
   refreshSeconds;
 
 
-let previousAlert =
-  null;
-
-
-$("refreshSelect").value =
+$("refresh").value =
   String(
     refreshSeconds
   );
 
-
-$("alertStrength").value =
-  localStorage.getItem(
-    "mkayfx_alert_strength"
-  ) ||
-  "70";
-
-
-/* =========================================================
-   HELPERS
-========================================================= */
 
 function finite(
   value
@@ -2539,42 +1851,15 @@ function finite(
     value ===
       ""
   ){
-
     return null;
-
   }
 
-
   const n =
-    Number(
-      value
-    );
+    Number(value);
 
-
-  return Number.isFinite(
-    n
-  )
-    ?
-    n
-    :
-    null;
-
-}
-
-
-function clamp(
-  value,
-  min,
-  max
-){
-
-  return Math.max(
-    min,
-    Math.min(
-      max,
-      value
-    )
-  );
+  return Number.isFinite(n)
+    ? n
+    : null;
 
 }
 
@@ -2584,97 +1869,11 @@ function fmt(
 ){
 
   const n =
-    finite(
-      value
-    );
+    finite(value);
 
-
-  return n ===
-    null
-      ?
-      "—"
-      :
-      n.toFixed(
-        2
-      );
-
-}
-
-
-function escapeHtml(
-  value
-){
-
-  return String(
-    value ??
-    ""
-  )
-  .replace(
-    /[&<>'"]/g,
-    c =>
-      ({
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        "'":"&#39;",
-        '"':"&quot;"
-      })[c]
-  );
-
-}
-
-
-function toast(
-  message
-){
-
-  const element =
-    $("toast");
-
-
-  element.textContent =
-    message;
-
-
-  element
-    .classList
-    .add(
-      "show"
-    );
-
-
-  clearTimeout(
-    toast.timer
-  );
-
-
-  toast.timer =
-    setTimeout(
-      () =>
-        element
-          .classList
-          .remove(
-            "show"
-          ),
-      2200
-    );
-
-}
-
-
-function setStatus(
-  type,
-  text
-){
-
-  $("statusDot")
-    .className =
-      `dot ${type || ""}`;
-
-
-  $("statusText")
-    .textContent =
-      text;
+  return n === null
+    ? "—"
+    : n.toFixed(2);
 
 }
 
@@ -2689,13 +1888,25 @@ function inputNumber(
       $(id).value
     );
 
+  return n === null
+    ? fallback
+    : n;
 
-  return n ===
-    null
-      ?
-      fallback
-      :
-      n;
+}
+
+
+function setStatus(
+  type,
+  text
+){
+
+  $("dot")
+    .className =
+      `dot ${type || ""}`;
+
+  $("status")
+    .textContent =
+      text;
 
 }
 
@@ -2704,390 +1915,77 @@ function inputNumber(
    API
 ========================================================= */
 
-async function apiAnalyze(){
+async function getAnalysis(){
 
-  const body =
-  {
+  const response =
+    await fetch(
+      "/api/analyze",
+      {
+        method:
+          "POST",
 
-    symbol:
-      "XAU/USD",
+        headers:{
+          "Content-Type":
+            "application/json"
+        },
 
-    equity:
-      inputNumber(
-        "equityInput",
-        200
-      ),
+        cache:
+          "no-store",
 
-    dailyPnL:
-      inputNumber(
-        "dailyPnLInput",
-        0
-      ),
+        body:
+          JSON.stringify({
+            equity:
+              inputNumber(
+                "equity",
+                200
+              ),
 
-    tradesToday:
-      inputNumber(
-        "tradesInput",
-        0
-      ),
+            dailyPnL:
+              inputNumber(
+                "pnl",
+                0
+              ),
 
-    consecutiveLosses:
-      inputNumber(
-        "lossesInput",
-        0
-      ),
+            tradesToday:
+              inputNumber(
+                "trades",
+                0
+              ),
 
-    minutesSinceLastLoss:
-      inputNumber(
-        "lossCooldownInput",
-        999
-      ),
+            consecutiveLosses:
+              inputNumber(
+                "losses",
+                0
+              ),
 
-    highImpactUsdNews:
-      $("newsActiveInput")
-        .checked
-
-  };
-
-
-  const newsMinutes =
-    finite(
-      $("newsMinutesInput")
-        .value
+            minutesSinceLastLoss:
+              inputNumber(
+                "cooldown",
+                999
+              )
+          })
+      }
     );
+
+
+  const data =
+    await response.json();
 
 
   if(
-    newsMinutes !==
-    null
+    !response.ok ||
+    data.success === false
   ){
 
-    body.minutesToHighImpactUsdNews =
-      newsMinutes;
-
-  }
-
-
-  const controller =
-    new AbortController();
-
-
-  const timeout =
-    setTimeout(
-      () =>
-        controller.abort(),
-      35000
-    );
-
-
-  try{
-
-    const response =
-      await fetch(
-        "/api/analyze",
-        {
-
-          method:
-            "POST",
-
-          headers:
-          {
-            "Content-Type":
-              "application/json"
-          },
-
-          body:
-            JSON.stringify(
-              body
-            ),
-
-          cache:
-            "no-store",
-
-          signal:
-            controller.signal
-
-        }
-      );
-
-
-    let data;
-
-
-    try{
-
-      data =
-        await response.json();
-
-    }
-    catch{
-
-      throw new Error(
-        "Backend returned invalid JSON."
-      );
-
-    }
-
-
-    if(
-      !response.ok ||
-      data.success ===
-      false
-    ){
-
-      throw new Error(
-        data.error ||
-        `API error ${response.status}`
-      );
-
-    }
-
-
-    return data;
-
-  }
-  catch(
-    error
-  ){
-
-    if(
-      error.name ===
-      "AbortError"
-    ){
-
-      throw new Error(
-        "Gold analysis timed out."
-      );
-
-    }
-
-
-    throw error;
-
-  }
-  finally{
-
-    clearTimeout(
-      timeout
+    throw new Error(
+      data.error ||
+      "Gold analysis failed."
     );
 
   }
 
-}
 
-
-/* =========================================================
-   NORMALIZE
-========================================================= */
-
-function normalize(
-  raw
-){
-
-  const a =
-    raw.analysis ||
-    {};
-
-
-  const technical =
-    a.technical ||
-    {};
-
-
-  const permission =
-    a.tradePermission ||
-    raw.trade_permission ||
-    {};
-
-
-  const gold =
-    a.goldContext ||
-    raw.gold_context ||
-    {};
-
-
-  const account =
-    a.accountProtection ||
-    raw.account_protection ||
-    {};
-
-
-  const sizing =
-    a.executionSizing ||
-    raw.execution_sizing ||
-    {};
-
-
-  const news =
-    a.newsGuard ||
-    raw.news_guard ||
-    {};
-
-
-  const liveState =
-    a.liveState ||
-    raw.live_state ||
-    {};
-
-
-  const riskPlan =
-    a.riskPlan ||
-    {};
-
-
-  const regime =
-    a.regime ||
-    raw.regime ||
-    {};
-
-
-  let action =
-    String(
-      a.action ||
-      "WAIT"
-    )
-    .toUpperCase();
-
-
-  if(
-    ![
-      "BUY",
-      "SELL",
-      "WAIT"
-    ].includes(
-      action
-    )
-  ){
-
-    action =
-      "WAIT";
-
-  }
-
-
-  return {
-
-    price:
-      finite(
-        raw.price ??
-        a.currentPrice
-      ),
-
-    timestamp:
-      raw.timestamp ||
-      new Date()
-        .toISOString(),
-
-    chart:
-      Array.isArray(
-        raw.chart
-      )
-        ?
-        raw.chart
-        :
-        [],
-
-    analysisFresh:
-      Boolean(
-        raw.analysis_fresh
-      ),
-
-    livePriceSource:
-      raw.live_price_source ||
-      "—",
-
-    action,
-
-    candidateDirection:
-      a.candidateDirection ||
-      technical.selected ||
-      "WAIT",
-
-    strength:
-      clamp(
-        finite(
-          a.setupStrength ??
-          a.confidence
-        ) ??
-        0,
-        0,
-        100
-      ),
-
-    session:
-      a.session ||
-      raw.session ||
-      "UNKNOWN",
-
-    regime,
-
-    timeframeBias:
-      a.timeframeBias ||
-      {},
-
-    gold,
-
-    technical,
-
-    permission,
-
-    account,
-
-    sizing,
-
-    news,
-
-    liveState,
-
-    riskPlan,
-
-    entry:
-      a.entry ??
-      riskPlan.entry ??
-      null,
-
-    sl:
-      a.stopLoss ??
-      riskPlan.stopLoss ??
-      null,
-
-    tp1:
-      a.takeProfit1 ??
-      riskPlan.takeProfit1 ??
-      null,
-
-    tp2:
-      a.takeProfit2 ??
-      riskPlan.takeProfit2 ??
-      null,
-
-    rr1:
-      a.riskRewardTP1 ||
-      riskPlan.riskRewardTP1 ||
-      "—",
-
-    rr2:
-      a.riskRewardTP2 ||
-      riskPlan.riskRewardTP2 ||
-      "—",
-
-    management:
-      a.management ||
-      riskPlan.management ||
-      null,
-
-    invalidation:
-      a.invalidation ||
-      "—",
-
-    nextTrigger:
-      a.nextTrigger ||
-      "—",
-
-    signalCandleTime:
-      a.signalCandleTime ||
-      null
-
-  };
+  return data;
 
 }
 
@@ -3115,17 +2013,13 @@ function drawChart(
 
 
   canvas.width =
-    Math.floor(
-      rect.width *
-      dpr
-    );
+    rect.width *
+    dpr;
 
 
   canvas.height =
-    Math.floor(
-      rect.height *
-      dpr
-    );
+    rect.height *
+    dpr;
 
 
   const ctx =
@@ -3157,53 +2051,18 @@ function drawChart(
 
 
   const candles =
-    data.chart
-      .map(
-        c => ({
-
-          o:
-            finite(c.o),
-
-          h:
-            finite(c.h),
-
-          l:
-            finite(c.l),
-
-          c:
-            finite(c.c),
-
-          t:
-            c.t
-
-        })
-      )
-      .filter(
-        c =>
-          [
-            c.o,
-            c.h,
-            c.l,
-            c.c
-          ]
-          .every(
-            v =>
-              v !==
-              null
-          )
-      )
-      .slice(
-        -90
-      );
+    (
+      data.chart ||
+      []
+    )
+    .slice(-80);
 
 
   if(
     candles.length <
     2
   ){
-
     return;
-
   }
 
 
@@ -3211,27 +2070,33 @@ function drawChart(
     [];
 
 
-  function addLevel(
+  const analysis =
+    data.analysis ||
+    {};
+
+
+  const gold =
+    analysis.goldContext ||
+    {};
+
+
+  function level(
     value,
     label,
-    type
+    color
   ){
 
     const n =
-      finite(
-        value
-      );
-
+      finite(value);
 
     if(
-      n !==
-      null
+      n !== null
     ){
 
       levels.push({
         value:n,
         label,
-        type
+        color
       });
 
     }
@@ -3239,103 +2104,88 @@ function drawChart(
   }
 
 
-  addLevel(
-    data.gold
-      ?.asianRange
-      ?.high,
+  level(
+    gold.asianRange?.high,
     "ASIA H",
-    "gold"
+    "#f5ca61"
   );
 
 
-  addLevel(
-    data.gold
-      ?.asianRange
-      ?.low,
+  level(
+    gold.asianRange?.low,
     "ASIA L",
-    "gold"
+    "#f5ca61"
   );
 
 
-  addLevel(
-    data.gold
-      ?.previousDay
-      ?.high,
+  level(
+    gold.previousDay?.high,
     "PDH",
-    "blue"
+    "#7690ff"
   );
 
 
-  addLevel(
-    data.gold
-      ?.previousDay
-      ?.low,
+  level(
+    gold.previousDay?.low,
     "PDL",
-    "blue"
+    "#7690ff"
   );
 
 
-  addLevel(
-    data.entry,
+  level(
+    analysis.entry,
     "ENTRY",
-    data.candidateDirection ===
+    analysis.signal ===
       "SELL"
-      ?
-      "red"
-      :
-      "green"
+      ? "#ff6176"
+      : "#36e5a1"
   );
 
 
-  addLevel(
-    data.sl,
+  level(
+    analysis.stopLoss,
     "SL",
-    "red"
+    "#ff6176"
   );
 
 
-  addLevel(
-    data.tp1,
+  level(
+    analysis.takeProfit1,
     "TP1",
-    "green"
+    "#36e5a1"
   );
 
 
-  addLevel(
-    data.tp2,
+  level(
+    analysis.takeProfit2,
     "TP2",
-    "green"
+    "#36e5a1"
   );
 
 
-  const allPrices =
+  const values =
     candles.flatMap(
-      c =>
-        [
-          c.h,
-          c.l
-        ]
+      c => [
+        Number(c.h),
+        Number(c.l)
+      ]
     );
 
 
   levels.forEach(
-    level =>
-      allPrices.push(
-        level.value
+    x =>
+      values.push(
+        x.value
       )
   );
 
 
   const minimum =
-    Math.min(
-      ...allPrices
-    );
+    Math.min(...values);
 
 
   const maximum =
-    Math.max(
-      ...allPrices
-    );
+    Math.max(...values);
 
 
   const rawRange =
@@ -3344,19 +2194,16 @@ function drawChart(
     1;
 
 
-  const pad =
-    rawRange *
-    .10;
-
-
   const low =
     minimum -
-    pad;
+    rawRange *
+    .08;
 
 
   const high =
     maximum +
-    pad;
+    rawRange *
+    .08;
 
 
   const range =
@@ -3364,35 +2211,18 @@ function drawChart(
     low;
 
 
-  const top =
-    20;
-
-
-  const bottom =
-    height -
-    23;
-
-
-  const left =
-    7;
-
-
+  const left = 6;
   const right =
     width -
-    48;
+    45;
+
+  const top = 12;
+  const bottom =
+    height -
+    15;
 
 
-  const plotHeight =
-    bottom -
-    top;
-
-
-  const plotWidth =
-    right -
-    left;
-
-
-  function yFor(
+  function y(
     price
   ){
 
@@ -3403,7 +2233,10 @@ function drawChart(
         price
       ) /
       range *
-      plotHeight
+      (
+        bottom -
+        top
+      )
     );
 
   }
@@ -3411,24 +2244,22 @@ function drawChart(
 
   /* GRID */
 
-
   ctx.strokeStyle =
     "rgba(255,255,255,.035)";
 
 
-  ctx.lineWidth =
-    1;
-
-
   for(
     let i = 0;
-    i <= 5;
+    i < 6;
     i++
   ){
 
-    const y =
+    const yy =
       top +
-      plotHeight /
+      (
+        bottom -
+        top
+      ) /
       5 *
       i;
 
@@ -3437,42 +2268,12 @@ function drawChart(
 
     ctx.moveTo(
       left,
-      y
+      yy
     );
 
     ctx.lineTo(
       right,
-      y
-    );
-
-    ctx.stroke();
-
-  }
-
-
-  for(
-    let i = 0;
-    i <= 5;
-    i++
-  ){
-
-    const x =
-      left +
-      plotWidth /
-      5 *
-      i;
-
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-      x,
-      top
-    );
-
-    ctx.lineTo(
-      x,
-      bottom
+      yy
     );
 
     ctx.stroke();
@@ -3482,132 +2283,80 @@ function drawChart(
 
   /* LEVELS */
 
+  for(
+    const item of
+    levels
+  ){
 
-  const levelColors =
-  {
-    green:
-      "rgba(49,230,158,.75)",
-
-    red:
-      "rgba(255,95,115,.75)",
-
-    gold:
-      "rgba(244,199,93,.72)",
-
-    blue:
-      "rgba(113,139,255,.70)"
-  };
-
-
-  levels.forEach(
-    level => {
-
-      const y =
-        yFor(
-          level.value
-        );
-
-
-      ctx.save();
-
-
-      ctx.strokeStyle =
-        levelColors[
-          level.type
-        ] ||
-        levelColors.blue;
-
-
-      ctx.lineWidth =
-        1;
-
-
-      ctx.setLineDash(
-        [
-          5,
-          5
-        ]
+    const yy =
+      y(
+        item.value
       );
 
 
-      ctx.beginPath();
-
-      ctx.moveTo(
-        left,
-        y
-      );
-
-      ctx.lineTo(
-        right,
-        y
-      );
-
-      ctx.stroke();
+    ctx.setLineDash(
+      [4,4]
+    );
 
 
-      ctx.setLineDash(
-        []
-      );
+    ctx.strokeStyle =
+      item.color;
 
 
-      ctx.font =
-        "600 7px -apple-system, sans-serif";
+    ctx.globalAlpha =
+      .65;
 
 
-      const text =
-        `${level.label} ${level.value.toFixed(2)}`;
+    ctx.beginPath();
+
+    ctx.moveTo(
+      left,
+      yy
+    );
+
+    ctx.lineTo(
+      right,
+      yy
+    );
+
+    ctx.stroke();
 
 
-      const textWidth =
-        ctx.measureText(
-          text
-        ).width;
+    ctx.setLineDash(
+      []
+    );
 
 
-      ctx.fillStyle =
-        "rgba(5,8,13,.90)";
+    ctx.globalAlpha =
+      1;
 
 
-      ctx.fillRect(
-        right -
-        textWidth -
-        7,
-        y -
-        7,
-        textWidth +
-        7,
-        13
-      );
+    ctx.fillStyle =
+      item.color;
 
 
-      ctx.fillStyle =
-        levelColors[
-          level.type
-        ] ||
-        levelColors.blue;
+    ctx.font =
+      "600 7px sans-serif";
 
 
-      ctx.fillText(
-        text,
-        right -
-        textWidth -
-        3,
-        y +
-        2
-      );
+    ctx.fillText(
+      item.label,
+      right -
+      36,
+      yy -
+      3
+    );
 
-
-      ctx.restore();
-
-    }
-  );
+  }
 
 
   /* CANDLES */
 
-
   const step =
-    plotWidth /
+    (
+      right -
+      left
+    ) /
     candles.length;
 
 
@@ -3617,7 +2366,7 @@ function drawChart(
       Math.min(
         6,
         step *
-        .62
+        .6
       )
     );
 
@@ -3630,47 +2379,45 @@ function drawChart(
 
       const x =
         left +
-        step *
-        index +
+        index *
+        step +
         step /
         2;
 
 
-      const openY =
-        yFor(
-          candle.o
-        );
-
-
-      const closeY =
-        yFor(
-          candle.c
-        );
-
-
-      const highY =
-        yFor(
-          candle.h
-        );
-
-
-      const lowY =
-        yFor(
-          candle.l
-        );
-
-
       const bullish =
-        candle.c >=
-        candle.o;
+        Number(candle.c) >=
+        Number(candle.o);
 
 
       const color =
         bullish
-          ?
-          "#31e69e"
-          :
-          "#ff5f73";
+          ? "#36e5a1"
+          : "#ff6176";
+
+
+      const open =
+        y(
+          Number(candle.o)
+        );
+
+
+      const close =
+        y(
+          Number(candle.c)
+        );
+
+
+      const highY =
+        y(
+          Number(candle.h)
+        );
+
+
+      const lowY =
+        y(
+          Number(candle.l)
+        );
 
 
       ctx.strokeStyle =
@@ -3679,14 +2426,6 @@ function drawChart(
 
       ctx.fillStyle =
         color;
-
-
-      ctx.globalAlpha =
-        .90;
-
-
-      ctx.lineWidth =
-        1;
 
 
       ctx.beginPath();
@@ -3704,35 +2443,23 @@ function drawChart(
       ctx.stroke();
 
 
-      const bodyTop =
-        Math.min(
-          openY,
-          closeY
-        );
-
-
-      const bodyHeight =
-        Math.max(
-          1.4,
-          Math.abs(
-            closeY -
-            openY
-          )
-        );
-
-
       ctx.fillRect(
         x -
         candleWidth /
         2,
-        bodyTop,
+        Math.min(
+          open,
+          close
+        ),
         candleWidth,
-        bodyHeight
+        Math.max(
+          1,
+          Math.abs(
+            open -
+            close
+          )
+        )
       );
-
-
-      ctx.globalAlpha =
-        1;
 
     }
   );
@@ -3740,50 +2467,39 @@ function drawChart(
 
   /* LIVE PRICE */
 
-
-  const livePrice =
+  const price =
     finite(
       data.price
     );
 
 
   if(
-    livePrice !==
-    null
+    price !== null
   ){
 
-    const y =
-      yFor(
-        livePrice
-      );
-
-
-    ctx.strokeStyle =
-      "rgba(255,255,255,.65)";
-
-
-    ctx.lineWidth =
-      1;
+    const yy =
+      y(price);
 
 
     ctx.setLineDash(
-      [
-        2,
-        3
-      ]
+      [2,3]
     );
+
+
+    ctx.strokeStyle =
+      "rgba(255,255,255,.7)";
 
 
     ctx.beginPath();
 
     ctx.moveTo(
       left,
-      y
+      yy
     );
 
     ctx.lineTo(
       right,
-      y
+      yy
     );
 
     ctx.stroke();
@@ -3795,21 +2511,17 @@ function drawChart(
 
 
     ctx.fillStyle =
-      "#f4f6fa";
+      "white";
 
 
     ctx.font =
-      "700 7px -apple-system, sans-serif";
+      "700 7px sans-serif";
 
 
     ctx.fillText(
-      livePrice.toFixed(
-        2
-      ),
-      right +
-      4,
-      y +
-      2
+      price.toFixed(2),
+      right + 3,
+      yy + 2
     );
 
   }
@@ -3818,993 +2530,174 @@ function drawChart(
 
 
 /* =========================================================
-   ANNOTATIONS
+   RENDER
 ========================================================= */
 
-function renderAnnotations(
+function render(
   data
 ){
 
-  const items =
-    [];
+  current =
+    data;
 
 
-  const modules =
-    Array.isArray(
-      data.technical
-        ?.modules
-    )
-      ?
-      data.technical.modules
-      :
-      [];
-
-
-  for(
-    const module of
-    modules
-  ){
-
-    for(
-      const reason of
-      module.reasons ||
-      []
-    ){
-
-      const text =
-        String(
-          reason
-        );
-
-
-      if(
-        /BOS|CHOCH|sweep|displacement|liquidity/i.test(
-          text
-        )
-      ){
-
-        items.push(
-          text
-        );
-
-      }
-
-    }
-
-  }
-
-
-  for(
-    const signal of
-    data.gold
-      ?.signals ||
-    []
-  ){
-
-    items.push(
-      signal
-    );
-
-  }
-
-
-  const unique =
-    [
-      ...new Set(
-        items
-      )
-    ]
-    .slice(
-      0,
-      6
-    );
-
-
-  $("chartAnnotations")
-    .innerHTML =
-      unique
-        .map(
-          item => {
-
-            let cls =
-              "gold";
-
-
-            if(
-              /bull|low swept|sellside/i.test(
-                item
-              )
-            ){
-
-              cls =
-                "bull";
-
-            }
-
-
-            if(
-              /bear|high swept|buyside/i.test(
-                item
-              )
-            ){
-
-              cls =
-                "bear";
-
-            }
-
-
-            return `
-              <span
-                class="annotation-chip ${cls}">
-                ${escapeHtml(
-                  item
-                )}
-              </span>
-            `;
-
-          }
-        )
-        .join(
-          ""
-        );
-
-}
-
-
-/* =========================================================
-   MODULES
-========================================================= */
-
-function renderModules(
-  data
-){
-
-  const modules =
-    Array.isArray(
-      data.technical
-        ?.modules
-    )
-      ?
-      data.technical.modules
-      :
-      [];
-
-
-  $("moduleList")
-    .innerHTML =
-      modules.length
-        ?
-        modules
-          .map(
-            module => {
-
-              const bias =
-                String(
-                  module.bias ||
-                  "NEUTRAL"
-                )
-                .toUpperCase();
-
-
-              const reliability =
-                clamp(
-                  finite(
-                    module.reliability
-                  ) ||
-                  0,
-                  0,
-                  100
-                );
-
-
-              return `
-                <div class="module">
-
-                  <span class="module-name">
-                    ${escapeHtml(
-                      module.name
-                    )}
-                  </span>
-
-                  <span
-                    class="module-bias ${bias}">
-                    ${bias}
-                  </span>
-
-                  <div class="module-bar">
-                    <span
-                      style="
-                        width:${reliability}%
-                      ">
-                    </span>
-                  </div>
-
-                  <span class="module-score">
-                    ${Math.round(
-                      Math.abs(
-                        finite(
-                          module.signal
-                        ) ||
-                        0
-                      )
-                    )}
-                  </span>
-
-                </div>
-              `;
-
-            }
-          )
-          .join(
-            ""
-          )
-        :
-        `
-          <div class="summary">
-            No module data.
-          </div>
-        `;
-
-}
-
-
-/* =========================================================
-   PERMISSION
-========================================================= */
-
-function renderPermission(
-  data
-){
-
-  const permission =
-    data.permission ||
+  const a =
+    data.analysis ||
     {};
 
 
-  const state =
+  const signal =
     String(
-      permission.state ||
-      "BLOCKED"
+      a.signal ||
+      data.signal ||
+      "WAIT"
+    )
+    .toUpperCase();
+
+
+  const action =
+    String(
+      a.action ||
+      "WAIT"
     )
     .toUpperCase();
 
 
   const approved =
-    state ===
-    "APPROVED";
+    Boolean(
+      a.tradeApproved
+    );
 
 
-  $("permissionBox")
+  const technical =
+    a.technical ||
+    {};
+
+
+  const state =
+    a.liveState ||
+    data.live_state ||
+    {};
+
+
+  const gold =
+    a.goldContext ||
+    {};
+
+
+  const account =
+    a.accountProtection ||
+    {};
+
+
+  const sizing =
+    a.executionSizing ||
+    {};
+
+
+  /* SIGNAL */
+
+
+  $("signal")
+    .textContent =
+      signal;
+
+
+  $("signal")
     .className =
-      `permission ${
+      `signal-badge ${signal}`;
+
+
+  if(
+    signal === "BUY"
+  ){
+
+    $("signalMessage")
+      .textContent =
         approved
-          ?
-          "APPROVED"
-          :
-          ""
-      }`;
+          ? "BUY signal approved for execution."
+          : "Bullish gold pressure detected.";
 
-
-  $("permissionText")
-    .textContent =
-      state;
-
-
-  $("permissionIcon")
-    .textContent =
-      approved
-        ?
-        "✅"
-        :
-        "⛔";
-
-
-  const rows =
-    [];
-
-
-  for(
-    const blocker of
-    permission.blockers ||
-    []
+  }
+  else if(
+    signal === "SELL"
   ){
 
-    rows.push({
-      cls:"bad",
-      text:blocker
-    });
+    $("signalMessage")
+      .textContent =
+        approved
+          ? "SELL signal approved for execution."
+          : "Bearish gold pressure detected.";
+
+  }
+  else{
+
+    $("signalMessage")
+      .textContent =
+        "No strong directional gold signal yet.";
 
   }
 
 
-  for(
-    const warning of
-    permission.warnings ||
-    []
-  ){
-
-    rows.push({
-      cls:"warn",
-      text:warning
-    });
-
-  }
-
-
-  if(
-    approved &&
-    !rows.length
-  ){
-
-    rows.push({
-      cls:"",
-      text:
-        "All mandatory trade checks passed."
-    });
-
-  }
-
-
-  $("permissionReasons")
-    .innerHTML =
-      rows
-        .map(
-          row => `
-            <div class="blocker ${row.cls}">
-              ${escapeHtml(
-                row.text
-              )}
-            </div>
-          `
-        )
-        .join(
-          ""
-        );
-
-}
-
-
-/* =========================================================
-   HISTORY
-========================================================= */
-
-function getHistory(){
-
-  try{
-
-    return JSON.parse(
-      localStorage.getItem(
-        "mkayfx_v7_history"
-      ) ||
-      "[]"
-    );
-
-  }
-  catch{
-
-    return [];
-
-  }
-
-}
-
-
-function saveHistory(
-  data
-){
-
-  const history =
-    getHistory();
-
-
-  const item =
-  {
-
-    time:
-      Date.now(),
-
-    action:
-      data.action,
-
-    candidate:
-      data.candidateDirection,
-
-    strength:
-      Math.round(
-        data.strength
-      ),
-
-    price:
-      data.price,
-
-    liveState:
-      data.liveState
-        ?.state ||
-      "SEARCHING"
-
-  };
-
-
-  const last =
-    history[0];
-
-
-  if(
-    !last ||
-    last.action !==
-      item.action ||
-    last.candidate !==
-      item.candidate ||
-    last.liveState !==
-      item.liveState ||
-    Math.abs(
-      last.strength -
-      item.strength
-    ) >=
-      6
-  ){
-
-    history.unshift(
-      item
-    );
-
-  }
-
-
-  localStorage.setItem(
-    "mkayfx_v7_history",
-    JSON.stringify(
-      history.slice(
-        0,
-        25
-      )
-    )
-  );
-
-
-  renderHistory();
-
-}
-
-
-function renderHistory(){
-
-  const history =
-    getHistory();
-
-
-  $("history")
-    .innerHTML =
-      history.length
-        ?
-        history
-          .slice(
-            0,
-            7
-          )
-          .map(
-            item => {
-
-              const time =
-                new Date(
-                  item.time
-                )
-                .toLocaleTimeString(
-                  [],
-                  {
-                    hour:"2-digit",
-                    minute:"2-digit"
-                  }
-                );
-
-
-              return `
-                <div class="history-row">
-
-                  <small>
-                    ${time}
-                  </small>
-
-                  <span>
-                    ${fmt(
-                      item.price
-                    )}
-                    ·
-                    ${escapeHtml(
-                      item.liveState
-                    )}
-                  </span>
-
-                  <span
-                    class="history-signal ${item.action}">
-                    ${item.action}
-                    ${item.strength}
-                  </span>
-
-                </div>
-              `;
-
-            }
-          )
-          .join(
-            ""
-          )
-        :
-        `
-          <div class="history-row">
-            <small>—</small>
-            <span>No gold signals yet</span>
-            <span>—</span>
-          </div>
-        `;
-
-}
-
-
-/* =========================================================
-   ALERTS
-========================================================= */
-
-function updateSoundButton(){
-
-  $("soundBtn")
-    .textContent =
-      soundEnabled
-        ?
-        "🔔"
-        :
-        "🔕";
-
-}
-
-
-function playSound(
-  direction
-){
-
-  if(
-    !soundEnabled
-  ){
-
-    return;
-
-  }
-
-
-  try{
-
-    const AC =
-      window.AudioContext ||
-      window.webkitAudioContext;
-
-
-    if(
-      !AC
-    ){
-
-      return;
-
-    }
-
-
-    const ctx =
-      new AC();
-
-
-    const osc =
-      ctx.createOscillator();
-
-
-    const gain =
-      ctx.createGain();
-
-
-    osc.connect(
-      gain
-    );
-
-
-    gain.connect(
-      ctx.destination
-    );
-
-
-    osc.frequency.value =
-      direction ===
-      "BUY"
-        ?
-        760
-        :
-        430;
-
-
-    gain.gain.value =
-      .045;
-
-
-    osc.start();
-
-
-    osc.stop(
-      ctx.currentTime +
-      .16
-    );
-
-  }
-  catch{}
-
-}
-
-
-async function enableNotifications(){
-
-  if(
-    !(
-      "Notification" in
-      window
-    )
-  ){
-
-    toast(
-      "Notifications unavailable."
-    );
-
-    return;
-
-  }
-
-
-  const permission =
-    await Notification
-      .requestPermission();
-
-
-  toast(
-    permission ===
-      "granted"
-      ?
-      "Gold alerts enabled"
-      :
-      "Notifications were not enabled"
-  );
-
-}
-
-
-function maybeAlert(
-  data
-){
-
-  if(
-    data.action ===
-    "WAIT"
-  ){
-
-    return;
-
-  }
-
-
-  if(
-    data.permission
-      ?.state !==
-      "APPROVED"
-  ){
-
-    return;
-
-  }
-
-
-  const minimum =
-    Number(
-      $("alertStrength")
-        .value
-    );
-
-
-  if(
-    data.strength <
-    minimum
-  ){
-
-    return;
-
-  }
-
-
-  const key =
-    `${
-      data.action
-    }-${
-      data.signalCandleTime
-    }`;
-
-
-  if(
-    key ===
-    previousAlert
-  ){
-
-    return;
-
-  }
-
-
-  previousAlert =
-    key;
-
-
-  playSound(
-    data.action
-  );
-
-
-  if(
-    "Notification" in
-      window &&
-    Notification.permission ===
-      "granted"
-  ){
-
-    new Notification(
-      `XAU/USD ${data.action}`,
-      {
-
-        body:
-          `Entry ${fmt(
-            data.entry
-          )} | SL ${fmt(
-            data.sl
-          )} | TP1 ${fmt(
-            data.tp1
-          )} | Strength ${Math.round(
-            data.strength
-          )}`
-
-      }
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   COPY
-========================================================= */
-
-async function copyTradePlan(){
-
-  if(
-    !currentData
-  ){
-
-    toast(
-      "Analyze gold first."
-    );
-
-    return;
-
-  }
-
-
-  const d =
-    currentData;
-
-
-  const text =
-`MKAYFX GOLD V7 LIVE
-
-XAU/USD
-
-ACTION:
-${d.action}
-
-CANDIDATE:
-${d.candidateDirection}
-
-LIVE STATE:
-${d.liveState?.state || "SEARCHING"}
-
-SETUP STRENGTH:
-${Math.round(d.strength)}/100
-
-PRICE:
-${fmt(d.price)}
-
-ENTRY:
-${fmt(d.entry)}
-
-STOP LOSS:
-${fmt(d.sl)}
-
-TP1:
-${fmt(d.tp1)}
-
-TP2:
-${fmt(d.tp2)}
-
-RR TP1:
-${d.rr1}
-
-RR TP2:
-${d.rr2}
-
-SESSION:
-${d.session}
-
-REGIME:
-${d.regime?.name || "—"}
-
-PERMISSION:
-${d.permission?.state || "BLOCKED"}
-
-INVALIDATION:
-${d.invalidation}
-
-NEXT:
-${d.nextTrigger}`;
-
-
-  try{
-
-    await navigator
-      .clipboard
-      .writeText(
-        text
-      );
-
-
-    toast(
-      "Trade plan copied"
-    );
-
-  }
-  catch{
-
-    alert(
-      text
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   MAIN RENDER
-========================================================= */
-
-function render(
-  raw
-){
-
-  const d =
-    normalize(
-      raw
-    );
-
-
-  currentData =
-    d;
+  /* PRICE */
 
 
   $("price")
     .textContent =
       fmt(
-        d.price
+        data.price
       );
 
 
   $("priceMeta")
     .textContent =
-      `${
-        d.livePriceSource
-      } · ${
-        d.analysisFresh
-          ?
-          "NEW M1 ANALYSIS"
-          :
-          "LIVE PRICE UPDATE"
-      }`;
+      approved
+        ? `${signal} TRADE APPROVED`
+        : `${signal} ANALYSIS · ${a.session || "—"}`;
 
 
-  $("signal")
+  /* PERMISSION */
+
+
+  $("permission")
     .textContent =
-      d.action;
+      approved
+        ? "✅ APPROVED"
+        : "⛔ BLOCKED";
 
 
-  $("signal")
+  $("permission")
     .className =
-      `signal ${d.action}`;
-
-
-  $("sessionChip")
-    .textContent =
-      d.session;
+      `permission ${
+        approved
+          ? "APPROVED"
+          : ""
+      }`;
 
 
   /* LIVE STATE */
 
 
-  const liveState =
-    d.liveState
-      ?.state ||
+  const stateName =
+    state.state ||
     "SEARCHING";
 
 
-  $("liveStateBadge")
+  $("liveState")
     .textContent =
-      liveState;
+      stateName;
 
 
-  $("liveStateBadge")
+  $("liveState")
     .className =
-      `live-badge ${liveState}`;
+      `state-pill ${stateName}`;
 
 
   $("liveMessage")
     .textContent =
-      d.liveState
-        ?.message ||
-      d.nextTrigger ||
-      "Searching for setup...";
-
-
-  /* METRICS */
-
-
-  $("regimeMetric")
-    .textContent =
-      d.regime
-        ?.name ||
-      "—";
-
-
-  $("qualityMetric")
-    .textContent =
-      `${
-        Math.round(
-          finite(
-            d.technical
-              ?.quality
-          ) ||
-          0
-        )
-      }%`;
-
-
-  $("agreementMetric")
-    .textContent =
-      `${
-        Math.round(
-          finite(
-            d.technical
-              ?.agreementPct
-          ) ||
-          0
-        )
-      }%`;
-
-
-  $("signalTimeMetric")
-    .textContent =
-      d.signalCandleTime
-        ?
-        new Date(
-          d.signalCandleTime
-        )
-        .toLocaleTimeString(
-          [],
-          {
-            hour:"2-digit",
-            minute:"2-digit"
-          }
-        )
-        :
-        "—";
+      state.message ||
+      a.nextTrigger ||
+      "Monitoring gold...";
 
 
   /* PLAN */
@@ -4813,233 +2706,165 @@ function render(
   $("entry")
     .textContent =
       fmt(
-        d.entry
+        a.entry
       );
 
 
   $("sl")
     .textContent =
       fmt(
-        d.sl
+        a.stopLoss
       );
 
 
   $("tp1")
     .textContent =
       fmt(
-        d.tp1
+        a.takeProfit1
       );
 
 
   $("tp2")
     .textContent =
       fmt(
-        d.tp2
+        a.takeProfit2
       );
 
 
   $("rr")
     .textContent =
-      d.rr2 ||
+      a.riskRewardTP2 ||
       "—";
-
-
-  $("maxHold")
-    .textContent =
-      d.management
-        ?.maxHoldMinutes
-        ?
-        `${d.management.maxHoldMinutes}m`
-        :
-        "—";
 
 
   /* STRENGTH */
 
 
-  $("strengthRing")
+  const strength =
+    finite(
+      a.setupStrength
+    ) ??
+    0;
+
+
+  $("ring")
     .style
     .setProperty(
       "--p",
-      d.strength
+      strength
     );
 
 
-  $("strengthText")
+  $("strength")
     .textContent =
       Math.round(
-        d.strength
+        strength
       );
 
 
   if(
-    d.action !==
+    signal !==
     "WAIT"
   ){
 
-    $("analysisSummary")
+    $("summary")
       .textContent =
-        `${d.action} setup is approved. ${
-          d.liveState?.message ||
-          ""
-        }`;
-
-  }
-  else if(
-    d.candidateDirection !==
-    "WAIT"
-  ){
-
-    $("analysisSummary")
-      .textContent =
-        `${d.candidateDirection} candidate detected. ${
-          d.liveState?.message ||
-          d.nextTrigger
+        `${signal} detected with ${Math.round(
+          strength
+        )}/100 setup strength. ${
+          approved
+            ? "All required trade filters currently pass."
+            : state.message ||
+              "Waiting for final confirmation."
         }`;
 
   }
   else{
 
-    $("analysisSummary")
+    $("summary")
       .textContent =
-        d.nextTrigger;
+        "MKAYFX is actively scanning gold for the next M1 liquidity, structure and momentum setup.";
 
   }
 
 
-  /* CANDIDATE */
+  /* TF */
 
 
-  $("candidateBadge")
+  for(
+    const [
+      id,
+      key
+    ] of [
+      ["m1","M1"],
+      ["m5","M5"],
+      ["m15","M15"],
+      ["h1","H1"]
+    ]
+  ){
+
+    const value =
+      String(
+        a.timeframeBias?.[
+          key
+        ] ||
+        "NEUTRAL"
+      );
+
+
+    $(id)
+      .textContent =
+        value;
+
+
+    $(id)
+      .className =
+        value;
+
+  }
+
+
+  /* MARKET */
+
+
+  $("session")
     .textContent =
-      d.candidateDirection;
-
-
-  /* SCORES */
+      a.session ||
+      "—";
 
 
   $("regime")
     .textContent =
-      d.regime
-        ?.name ||
+      a.regime?.name ||
       "—";
 
 
-  $("volatility")
+  $("buy")
     .textContent =
-      d.regime
-        ?.volatility ||
+      technical.buyScore ??
       "—";
 
 
-  $("buyScore")
+  $("sell")
     .textContent =
-      d.technical
-        ?.buyScore ??
-      "—";
-
-
-  $("sellScore")
-    .textContent =
-      d.technical
-        ?.sellScore ??
+      technical.sellScore ??
       "—";
 
 
   $("quality")
     .textContent =
-      `${
-        Math.round(
-          finite(
-            d.technical
-              ?.quality
-          ) ||
-          0
-        )
-      }%`;
+      technical.quality != null
+        ? `${technical.quality}%`
+        : "—";
 
 
   $("agreement")
     .textContent =
-      `${
-        Math.round(
-          finite(
-            d.technical
-              ?.agreementPct
-          ) ||
-          0
-        )
-      }%`;
-
-
-  $("liveDeviation")
-    .textContent =
-      finite(
-        d.liveState
-          ?.distanceAtr
-      ) !==
-      null
-        ?
-        `${
-          Number(
-            d.liveState
-              .distanceAtr
-        )
-        .toFixed(2)
-      } ATR`
-        :
-        "—";
-
-
-  /* TIMEFRAMES */
-
-
-  [
-    [
-      "m1Bias",
-      "M1"
-    ],
-    [
-      "m5Bias",
-      "M5"
-    ],
-    [
-      "m15Bias",
-      "M15"
-    ],
-    [
-      "h1Bias",
-      "H1"
-    ]
-  ]
-  .forEach(
-    (
-      [
-        id,
-        tf
-      ]
-    ) => {
-
-      const bias =
-        String(
-          d.timeframeBias
-            ?.[tf] ||
-          "NEUTRAL"
-        )
-        .toUpperCase();
-
-
-      $(id)
-        .textContent =
-          bias;
-
-
-      $(id)
-        .className =
-          bias;
-
-    }
-  );
+      technical.agreementPct != null
+        ? `${Math.round(
+            technical.agreementPct
+          )}%`
+        : "—";
 
 
   /* LIQUIDITY */
@@ -5048,343 +2873,207 @@ function render(
   $("asianHigh")
     .textContent =
       fmt(
-        d.gold
-          ?.asianRange
-          ?.high
+        gold.asianRange?.high
       );
 
 
   $("asianLow")
     .textContent =
       fmt(
-        d.gold
-          ?.asianRange
-          ?.low
+        gold.asianRange?.low
       );
 
 
   $("pdh")
     .textContent =
       fmt(
-        d.gold
-          ?.previousDay
-          ?.high
+        gold.previousDay?.high
       );
 
 
   $("pdl")
     .textContent =
       fmt(
-        d.gold
-          ?.previousDay
-          ?.low
+        gold.previousDay?.low
       );
 
 
   $("bullLiquidity")
     .textContent =
-      `${
-        Math.round(
-          finite(
-            d.gold
-              ?.bullishLiquidityScore
-          ) ||
-          0
-        )
-      }%`;
+      `${gold.bullishLiquidityScore ?? 0}%`;
 
 
   $("bearLiquidity")
     .textContent =
-      `${
-        Math.round(
-          finite(
-            d.gold
-              ?.bearishLiquidityScore
-          ) ||
-          0
-        )
-      }%`;
+      `${gold.bearishLiquidityScore ?? 0}%`;
 
 
-  const liquiditySignals =
-    d.gold
-      ?.signals ||
-    [];
-
-
-  $("liquiditySignals")
-    .innerHTML =
-      liquiditySignals.length
-        ?
-        liquiditySignals
-          .map(
-            signal => `
-              <div class="blocker">
-                ${escapeHtml(
-                  signal
-                )}
-              </div>
-            `
-          )
-          .join(
-            ""
-          )
-        :
-        `
-          <div class="blocker">
-            No major liquidity sweep currently active.
-          </div>
-        `;
-
-
-  /* RISK */
-
-
-  const account =
-    d.account ||
-    {};
-
-
-  $("riskPctBadge")
-    .textContent =
-      finite(
-        account.riskPercent
-      ) !==
-      null
-        ?
-        `${account.riskPercent}%`
-        :
-        "—";
+  /* ACCOUNT */
 
 
   $("equityDisplay")
     .textContent =
-      finite(
-        account.equityZAR
-      ) !==
-      null
-        ?
-        `R${Number(
-          account.equityZAR
-        ).toFixed(2)}`
-        :
-        "—";
+      account.equityZAR != null
+        ? `R${Number(
+            account.equityZAR
+          ).toFixed(2)}`
+        : "—";
 
 
-  $("dailyLimitDisplay")
+  $("riskPercent")
     .textContent =
-      finite(
-        account.dailyLossLimitZAR
-      ) !==
-      null
-        ?
-        `R${Number(
-          account.dailyLossLimitZAR
-        ).toFixed(2)}`
-        :
-        "—";
+      account.riskPercent != null
+        ? `${account.riskPercent}%`
+        : "—";
 
 
-  $("riskMoney")
+  $("maxRisk")
     .textContent =
-      finite(
-        d.sizing
-          ?.estimatedRiskZAR
-      ) !==
-      null
-        ?
-        `R${Number(
-          d.sizing
-            .estimatedRiskZAR
-        ).toFixed(2)}`
-        :
-        finite(
-          account.maxRiskZAR
-        ) !==
-        null
-          ?
-          `≤ R${Number(
+      account.maxRiskZAR != null
+        ? `R${Number(
             account.maxRiskZAR
           ).toFixed(2)}`
-          :
-          "—";
+        : "—";
 
 
-  $("lotSize")
+  $("lot")
     .textContent =
-      finite(
-        d.sizing
-          ?.lot
-      ) !==
-      null
-        ?
-        Number(
-          d.sizing
-            .lot
-        ).toFixed(2)
-        :
-        "—";
+      sizing.lot != null
+        ? Number(
+            sizing.lot
+          ).toFixed(2)
+        : "—";
 
 
-  const maxRisk =
-    finite(
-      d.sizing
-        ?.estimatedRiskZAR
-    ) ??
-    finite(
-      account.maxRiskZAR
+  /* MODULES */
+
+
+  const modules =
+    technical.modules ||
+    [];
+
+
+  $("modules")
+    .innerHTML =
+      modules
+        .map(
+          module => {
+
+            const bias =
+              module.bias ||
+              "NEUTRAL";
+
+
+            return `
+              <div class="module">
+
+                <strong>
+                  ${module.name}
+                </strong>
+
+                <span class="${bias}">
+                  ${bias}
+                </span>
+
+                <div class="bar">
+                  <span
+                    style="
+                      width:${module.reliability || 0}%
+                    ">
+                  </span>
+                </div>
+
+              </div>
+            `;
+
+          }
+        )
+        .join("");
+
+
+  /* BLOCKERS */
+
+
+  const permission =
+    a.tradePermission ||
+    {};
+
+
+  const rows = [];
+
+
+  for(
+    const text of
+    permission.blockers ||
+    []
+  ){
+
+    rows.push(
+      `<div class="blocker">${text}</div>`
     );
 
-
-  const rrNumber =
-    d.riskPlan
-      ?.riskRewardTP2
-      ?
-      Number(
-        String(
-          d.riskPlan
-            .riskRewardTP2
-        )
-        .split(":")
-        .at(-1)
-      )
-      :
-      null;
+  }
 
 
-  $("rewardMoney")
-    .textContent =
-      maxRisk !==
-        null &&
-      Number.isFinite(
-        rrNumber
-      )
-        ?
-        `R${(
-          maxRisk *
-          rrNumber
-        ).toFixed(2)}`
-        :
-        "—";
+  for(
+    const text of
+    permission.warnings ||
+    []
+  ){
+
+    rows.push(
+      `<div class="blocker warning">${text}</div>`
+    );
+
+  }
 
 
-  $("executionReady")
-    .textContent =
-      d.sizing
-        ?.executionReady
-        ?
-        "YES"
-        :
-        "NO";
+  if(
+    !rows.length
+  ){
+
+    rows.push(
+      `<div class="blocker warning">
+        No active blockers.
+      </div>`
+    );
+
+  }
 
 
-  $("spreadDisplay")
-    .textContent =
-      finite(
-        d.sizing
-          ?.spread
-      ) !==
-      null
-        ?
-        `$${Number(
-          d.sizing
-            .spread
-        ).toFixed(2)}`
-        :
-        "NOT CONNECTED";
+  $("blockers")
+    .innerHTML =
+      rows.join("");
 
 
-  /* NEWS */
-
-
-  $("newsConnected")
-    .textContent =
-      d.news
-        ?.connected
-        ?
-        "YES"
-        :
-        "NO";
-
-
-  $("newsAllowed")
-    .textContent =
-      d.news
-        ?.allowed
-        ?
-        "YES"
-        :
-        "BLOCKED";
-
-
-  $("newsMinutesDisplay")
-    .textContent =
-      finite(
-        d.news
-          ?.minutesToNews
-      ) !==
-      null
-        ?
-        `${
-          d.news
-            .minutesToNews
-        } min`
-        :
-        "—";
-
-
-  $("newsMessage")
-    .textContent =
-      d.news
-        ?.reason ||
-      d.news
-        ?.warning ||
-      "No active high-impact USD block.";
-
-
-  renderModules(
-    d
-  );
-
-
-  renderPermission(
-    d
-  );
-
-
-  renderAnnotations(
-    d
-  );
+  /* CHART */
 
 
   drawChart(
-    d
+    data
   );
 
 
-  saveHistory(
-    d
-  );
-
-
-  maybeAlert(
-    d
-  );
+  /* UPDATED */
 
 
   $("updated")
     .textContent =
       "Updated " +
       new Date(
-        d.timestamp
+        data.timestamp
       )
       .toLocaleTimeString(
         [],
         {
-          hour:"2-digit",
-          minute:"2-digit",
-          second:"2-digit"
+          hour:
+            "2-digit",
+
+          minute:
+            "2-digit",
+
+          second:
+            "2-digit"
         }
       );
 
@@ -5400,22 +3089,7 @@ async function analyze(){
   if(
     busy
   ){
-
     return;
-
-  }
-
-
-  if(
-    !navigator.onLine
-  ){
-
-    toast(
-      "No internet connection."
-    );
-
-    return;
-
   }
 
 
@@ -5423,17 +3097,12 @@ async function analyze(){
     true;
 
 
-  $("analyzeBtn")
+  $("analyze")
     .disabled =
       true;
 
 
-  $("refreshBtn")
-    .disabled =
-      true;
-
-
-  $("errorBox")
+  $("error")
     .style.display =
       "none";
 
@@ -5446,12 +3115,12 @@ async function analyze(){
 
   try{
 
-    const raw =
-      await apiAnalyze();
+    const data =
+      await getAnalysis();
 
 
     render(
-      raw
+      data
     );
 
 
@@ -5461,7 +3130,7 @@ async function analyze(){
     );
 
 
-    nextScan =
+    countdown =
       refreshSeconds;
 
   }
@@ -5474,12 +3143,12 @@ async function analyze(){
     );
 
 
-    $("errorBox")
+    $("error")
       .textContent =
         error.message;
 
 
-    $("errorBox")
+    $("error")
       .style.display =
         "block";
 
@@ -5496,12 +3165,7 @@ async function analyze(){
       false;
 
 
-    $("analyzeBtn")
-      .disabled =
-        false;
-
-
-    $("refreshBtn")
+    $("analyze")
       .disabled =
         false;
 
@@ -5511,57 +3175,65 @@ async function analyze(){
 
 
 /* =========================================================
+   IMMEDIATE START
+========================================================= */
+
+async function startMKAYFX(){
+
+  /*
+     This is the important part.
+
+     There is NO countdown before the first signal analysis.
+  */
+
+  $("signal")
+    .textContent =
+      "…";
+
+
+  $("signalMessage")
+    .textContent =
+      "Reading live XAU/USD now...";
+
+
+  $("liveState")
+    .textContent =
+      "ANALYSING";
+
+
+  $("liveMessage")
+    .textContent =
+      "Checking M1, M5, M15, H1, liquidity and momentum...";
+
+
+  await analyze();
+
+
+  countdown =
+    refreshSeconds;
+
+}
+
+
+/* =========================================================
    EVENTS
 ========================================================= */
 
-$("analyzeBtn")
+$("analyze")
   .addEventListener(
     "click",
     analyze
   );
 
 
-$("refreshBtn")
-  .addEventListener(
-    "click",
-    analyze
-  );
-
-
-$("soundBtn")
-  .addEventListener(
-    "click",
-    () => {
-
-      soundEnabled =
-        !soundEnabled;
-
-
-      localStorage.setItem(
-        "mkayfx_sound",
-        soundEnabled
-          ?
-          "on"
-          :
-          "off"
-      );
-
-
-      updateSoundButton();
-
-    }
-  );
-
-
-$("refreshSelect")
+$("refresh")
   .addEventListener(
     "change",
     () => {
 
       refreshSeconds =
         Number(
-          $("refreshSelect")
-            .value
+          $("refresh").value
         );
 
 
@@ -5573,32 +3245,8 @@ $("refreshSelect")
       );
 
 
-      nextScan =
+      countdown =
         refreshSeconds;
-
-
-      toast(
-        refreshSeconds
-          ?
-          `Live refresh ${refreshSeconds}s`
-          :
-          "Auto refresh off"
-      );
-
-    }
-  );
-
-
-$("alertStrength")
-  .addEventListener(
-    "change",
-    () => {
-
-      localStorage.setItem(
-        "mkayfx_alert_strength",
-        $("alertStrength")
-          .value
-      );
 
     }
   );
@@ -5608,14 +3256,10 @@ window.addEventListener(
   "resize",
   () => {
 
-    if(
-      currentData
-    ){
-
+    if(current){
       drawChart(
-        currentData
+        current
       );
-
     }
 
   }
@@ -5623,7 +3267,7 @@ window.addEventListener(
 
 
 /* =========================================================
-   TIMER
+   LIVE TIMER
 ========================================================= */
 
 setInterval(
@@ -5636,7 +3280,7 @@ setInterval(
 
       $("countdown")
         .textContent =
-          "Auto scan OFF";
+          "Auto analysis OFF";
 
       return;
 
@@ -5646,18 +3290,16 @@ setInterval(
     if(
       !busy
     ){
-
-      nextScan--;
-
+      countdown--;
     }
 
 
     if(
-      nextScan <=
+      countdown <=
       0
     ){
 
-      nextScan =
+      countdown =
         refreshSeconds;
 
 
@@ -5668,12 +3310,10 @@ setInterval(
 
     $("countdown")
       .textContent =
-        `Next scan ${
-          Math.max(
-            nextScan,
-            0
-          )
-        }s`;
+        `Next scan ${Math.max(
+          countdown,
+          0
+        )}s`;
 
   },
   1000
@@ -5681,56 +3321,18 @@ setInterval(
 
 
 /* =========================================================
-   CONNECTION
+   START NOW
 ========================================================= */
 
-window.addEventListener(
-  "online",
-  () => {
+/*
+   DO NOT remove this.
+   This causes the immediate startup analysis.
+*/
 
-    setStatus(
-      "",
-      "LIVE"
-    );
-
-
-    toast(
-      "Internet restored"
-    );
-
-  }
-);
-
-
-window.addEventListener(
-  "offline",
-  () => {
-
-    setStatus(
-      "offline",
-      "OFFLINE"
-    );
-
-
-    toast(
-      "Internet connection lost"
-    );
-
-  }
-);
-
-
-/* =========================================================
-   START
-========================================================= */
-
-updateSoundButton();
-
-renderHistory();
-
-analyze();
+startMKAYFX();
 
 </script>
 
 </body>
+
 </html>
