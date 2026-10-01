@@ -1,19 +1,37 @@
 /* =========================================================
-   MKAYFX EXTREME QUANT V5
-   HARDENED DETERMINISTIC ENSEMBLE
-   TREND / STRUCTURE / LIQUIDITY / MOMENTUM / REGIME / SESSION
+   MKAYFX GOLD SCALPER V6
+   XAU/USD ONLY
+   SMALL-ACCOUNT / LIQUIDITY / SESSION / REGIME ENGINE
 
-   - NO GEMINI
-   - NO EXTERNAL AI FILTER
-   - WILDER RSI / ATR / ADX
-   - STALE DATA GUARD
-   - COMPLETED-CANDLE ENGINE
-   - HTF BAR QUALITY FILTER
-   - FVG LIFECYCLE CHECKS
-   - SWING AGE VALIDATION
-   - LIQUIDITY-ROOM FILTER
-   - HARDENED RISK ENGINE
-   - FIXED WAIT / PERMISSION LOGIC
+   CORE MODEL
+   ---------
+   H1  = Macro intraday context
+   M15 = Main directional bias
+   M5  = Confirmation
+   M1  = Entry trigger
+
+   GOLD-SPECIFIC FEATURES
+   ----------------------
+   - Asian range liquidity
+   - Previous-day high / low
+   - London liquidity behavior
+   - New York liquidity behavior
+   - Sweep + reclaim detection
+   - BOS / CHOCH
+   - Displacement candles
+   - Wilder RSI / ATR / ADX
+   - Momentum confirmation
+   - Volatility regime
+   - Anti-chase filter
+   - Spread protection
+   - Optional broker lot sizing
+   - High-impact USD news guard
+   - R200 account protection
+
+   IMPORTANT
+   ---------
+   "setupStrength" is NOT a win probability.
+
 ========================================================= */
 
 const TWELVE_DATA_API_KEY =
@@ -22,14 +40,17 @@ const TWELVE_DATA_API_KEY =
 const TWELVE_URL =
   "https://api.twelvedata.com/time_series";
 
+const SYMBOL =
+  "XAU/USD";
+
 /* =========================================================
-   DATA SETTINGS
+   DATA
 ========================================================= */
 
 const CACHE_MS =
   Number(
     process.env.CACHE_MS ||
-    55_000
+    50_000
   );
 
 const OUTPUT_SIZE =
@@ -38,12 +59,13 @@ const OUTPUT_SIZE =
     1000
   );
 
-const BASE_INTERVAL_MINUTES = 5;
+const BASE_INTERVAL_MINUTES =
+  1;
 
 const STALE_DATA_MS =
   Number(
     process.env.STALE_DATA_MS ||
-    15 * 60_000
+    5 * 60_000
   );
 
 const HTF_MIN_COMPLETENESS =
@@ -53,92 +75,147 @@ const HTF_MIN_COMPLETENESS =
   );
 
 /* =========================================================
-   RISK SETTINGS
+   ACCOUNT PROTECTION
 ========================================================= */
 
-const TP1_R =
+const DEFAULT_EQUITY_ZAR =
   Number(
-    process.env.TP1_R ||
-    1.25
+    process.env.DEFAULT_EQUITY_ZAR ||
+    200
   );
 
-const TP2_R =
+const RISK_PER_TRADE_PCT =
   Number(
-    process.env.TP2_R ||
-    1.8
+    process.env.RISK_PER_TRADE_PCT ||
+    0.25
   );
 
-const MIN_LIQUIDITY_ROOM_R =
+const MAX_RISK_PER_TRADE_PCT =
+  0.50;
+
+const DAILY_LOSS_LIMIT_PCT =
   Number(
-    process.env.MIN_LIQUIDITY_ROOM_R ||
-    1.05
+    process.env.DAILY_LOSS_LIMIT_PCT ||
+    1.50
   );
 
-const MAX_STOP_ATR =
+const MAX_TRADES_PER_DAY =
   Number(
-    process.env.MAX_STOP_ATR ||
-    2.6
+    process.env.MAX_TRADES_PER_DAY ||
+    6
   );
 
-const MAX_SWING_AGE_M5 =
+const MAX_CONSECUTIVE_LOSSES =
   Number(
-    process.env.MAX_SWING_AGE_M5 ||
-    24
+    process.env.MAX_CONSECUTIVE_LOSSES ||
+    3
+  );
+
+const LOSS_COOLDOWN_MINUTES =
+  Number(
+    process.env.LOSS_COOLDOWN_MINUTES ||
+    10
+  );
+
+/* =========================================================
+   GOLD EXECUTION FILTERS
+========================================================= */
+
+const MAX_SPREAD_USD =
+  Number(
+    process.env.MAX_SPREAD_USD ||
+    0.45
   );
 
 const MAX_ENTRY_STRETCH_ATR =
   Number(
     process.env.MAX_ENTRY_STRETCH_ATR ||
-    2.0
+    1.55
+  );
+
+const MAX_STOP_ATR =
+  Number(
+    process.env.MAX_STOP_ATR ||
+    1.75
+  );
+
+const MIN_STOP_ATR =
+  Number(
+    process.env.MIN_STOP_ATR ||
+    0.65
+  );
+
+const MAX_SWING_AGE_M1 =
+  Number(
+    process.env.MAX_SWING_AGE_M1 ||
+    18
   );
 
 /* =========================================================
-   ENSEMBLE SETTINGS
+   PROFIT TARGETS
+========================================================= */
+
+const TP1_R =
+  Number(
+    process.env.TP1_R ||
+    1.0
+  );
+
+const TP2_R =
+  Number(
+    process.env.TP2_R ||
+    1.6
+  );
+
+const MIN_LIQUIDITY_ROOM_R =
+  Number(
+    process.env.MIN_LIQUIDITY_ROOM_R ||
+    1.10
+  );
+
+const MAX_HOLD_MINUTES =
+  Number(
+    process.env.MAX_HOLD_MINUTES ||
+    25
+  );
+
+/* =========================================================
+   ENSEMBLE
 ========================================================= */
 
 const MIN_ENSEMBLE_SCORE =
   Number(
     process.env.MIN_ENSEMBLE_SCORE ||
-    64
+    67
   );
 
 const MIN_ENSEMBLE_MARGIN =
   Number(
     process.env.MIN_ENSEMBLE_MARGIN ||
-    30
+    34
   );
 
 const MIN_ENSEMBLE_QUALITY =
   Number(
     process.env.MIN_ENSEMBLE_QUALITY ||
-    55
+    60
   );
 
 const MIN_MODULE_AGREEMENT =
   Number(
     process.env.MIN_MODULE_AGREEMENT ||
-    55
+    60
   );
 
-const ENSEMBLE_WEIGHTS =
+const WEIGHTS =
   Object.freeze({
-    trend: 27,
-    structure: 23,
-    liquidity: 22,
-    momentum: 16,
+    trend: 24,
+    structure: 22,
+    liquidity: 26,
+    momentum: 12,
     regime: 8,
-    session: 4
+    gold: 8
   });
-
-const ALLOWED_SYMBOLS =
-  new Set([
-    "XAU/USD",
-    "EUR/USD",
-    "GBP/USD",
-    "USD/JPY",
-    "BTC/USD",
-    "XBR/USD"
-  ]);
 
 /* =========================================================
    CACHE
@@ -151,7 +228,7 @@ const inFlight =
   new Map();
 
 /* =========================================================
-   GENERIC UTILITIES
+   BASIC UTILITIES
 ========================================================= */
 
 function send(
@@ -196,32 +273,60 @@ function round(
   );
 }
 
-function priceDigits(
-  symbol
-) {
-  if (
-    symbol === "EUR/USD" ||
-    symbol === "GBP/USD"
-  ) {
-    return 5;
-  }
-
-  if (
-    symbol === "USD/JPY"
-  ) {
-    return 3;
-  }
-
-  return 2;
-}
-
 function priceRound(
-  symbol,
   value
 ) {
   return round(
     value,
-    priceDigits(symbol)
+    2
+  );
+}
+
+function mean(
+  values
+) {
+  if (
+    !values.length
+  ) {
+    return null;
+  }
+
+  return (
+    values.reduce(
+      (sum, value) =>
+        sum + value,
+      0
+    ) /
+    values.length
+  );
+}
+
+function stdDev(
+  values
+) {
+  if (
+    !values.length
+  ) {
+    return null;
+  }
+
+  const avg =
+    mean(values);
+
+  return Math.sqrt(
+    values.reduce(
+      (
+        sum,
+        value
+      ) =>
+        sum +
+        (
+          value -
+          avg
+        ) ** 2,
+      0
+    ) /
+      values.length
   );
 }
 
@@ -255,7 +360,9 @@ function parseUTC(
 function getRequestBody(
   req
 ) {
-  if (!req.body) {
+  if (
+    !req.body
+  ) {
     return {};
   }
 
@@ -275,48 +382,152 @@ function getRequestBody(
   }
 }
 
-function mean(
-  values
+/* =========================================================
+   TIMEZONE UTILITIES
+
+   London/NY local clocks are used so DST changes do not
+   destroy the session model.
+========================================================= */
+
+function zoneParts(
+  ms,
+  timeZone
 ) {
-  if (!values.length) {
-    return null;
+  const formatter =
+    new Intl.DateTimeFormat(
+      "en-GB",
+      {
+        timeZone,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23"
+      }
+    );
+
+  const parts =
+    formatter.formatToParts(
+      new Date(ms)
+    );
+
+  const object = {};
+
+  for (
+    const item of
+    parts
+  ) {
+    if (
+      item.type !==
+      "literal"
+    ) {
+      object[
+        item.type
+      ] =
+        item.value;
+    }
   }
 
-  return (
-    values.reduce(
-      (sum, value) =>
-        sum + value,
-      0
-    ) /
-    values.length
-  );
+  return {
+    year:
+      Number(
+        object.year
+      ),
+
+    month:
+      Number(
+        object.month
+      ),
+
+    day:
+      Number(
+        object.day
+      ),
+
+    hour:
+      Number(
+        object.hour
+      ),
+
+    minute:
+      Number(
+        object.minute
+      ),
+
+    dateKey:
+      `${object.year}-${object.month}-${object.day}`
+  };
 }
 
-function stdDev(
-  values
+function sessionForTimestamp(
+  ms
 ) {
-  if (!values.length) {
-    return null;
+  if (
+    !Number.isFinite(ms)
+  ) {
+    return "UNKNOWN";
   }
 
-  const avg =
-    mean(values);
+  const london =
+    zoneParts(
+      ms,
+      "Europe/London"
+    );
 
-  const variance =
-    values.reduce(
-      (sum, value) =>
-        sum +
-        (
-          value -
-          avg
-        ) ** 2,
-      0
-    ) /
-    values.length;
+  const ny =
+    zoneParts(
+      ms,
+      "America/New_York"
+    );
 
-  return Math.sqrt(
-    variance
-  );
+  /*
+     Main overlap.
+  */
+
+  if (
+    london.hour >= 12 &&
+    london.hour < 16 &&
+    ny.hour >= 7 &&
+    ny.hour < 11
+  ) {
+    return "LONDON_NEW_YORK_OVERLAP";
+  }
+
+  /*
+     London AM.
+  */
+
+  if (
+    london.hour >= 8 &&
+    london.hour < 12
+  ) {
+    return "LONDON";
+  }
+
+  /*
+     NY AM / early PM.
+  */
+
+  if (
+    ny.hour >= 8 &&
+    ny.hour < 13
+  ) {
+    return "NEW_YORK";
+  }
+
+  /*
+     London-local overnight / Asia.
+  */
+
+  if (
+    london.hour >= 0 &&
+    london.hour < 8
+  ) {
+    return "ASIA";
+  }
+
+  return "TRANSITION";
 }
 
 /* =========================================================
@@ -326,7 +537,7 @@ function stdDev(
 async function fetchJson(
   url,
   options = {},
-  timeoutMs = 25_000
+  timeoutMs = 15_000
 ) {
   const controller =
     new AbortController();
@@ -361,17 +572,17 @@ async function fetchJson(
       data
     };
   } finally {
-    clearTimeout(timer);
+    clearTimeout(
+      timer
+    );
   }
 }
 
 /* =========================================================
-   TWELVE DATA
+   TWELVE DATA M1
 ========================================================= */
 
-async function requestM5(
-  symbol
-) {
+async function requestGoldM1() {
   if (
     !TWELVE_DATA_API_KEY
   ) {
@@ -382,14 +593,23 @@ async function requestM5(
 
   const params =
     new URLSearchParams({
-      symbol,
-      interval: "5min",
+      symbol:
+        SYMBOL,
+
+      interval:
+        "1min",
+
       outputsize:
         String(
           OUTPUT_SIZE
         ),
-      timezone: "UTC",
-      format: "JSON",
+
+      timezone:
+        "UTC",
+
+      format:
+        "JSON",
+
       apikey:
         TWELVE_DATA_API_KEY
     });
@@ -399,9 +619,7 @@ async function requestM5(
     data
   } =
     await fetchJson(
-      `${TWELVE_URL}?${params.toString()}`,
-      {},
-      15_000
+      `${TWELVE_URL}?${params.toString()}`
     );
 
   if (
@@ -414,7 +632,7 @@ async function requestM5(
   ) {
     throw new Error(
       data.message ||
-      "Twelve Data request failed."
+      "Twelve Data XAU/USD request failed."
     );
   }
 
@@ -461,35 +679,25 @@ async function requestM5(
             candle.c
           ].every(
             Number.isFinite
-          ) &&
-          Number.isFinite(
-            parseUTC(
-              candle.t
-            )
           )
       )
       .reverse();
 
   if (
     candles.length <
-    240
+    300
   ) {
     throw new Error(
-      "Not enough M5 candles returned."
+      "Not enough XAU/USD M1 candles."
     );
   }
 
   return candles;
 }
 
-async function getM5Cached(
-  symbol
-) {
+async function getGoldM1Cached() {
   const key =
-    symbol.toUpperCase();
-
-  const now =
-    Date.now();
+    SYMBOL;
 
   const cached =
     marketCache.get(
@@ -498,7 +706,7 @@ async function getM5Cached(
 
   if (
     cached &&
-    now -
+    Date.now() -
       cached.time <
       CACHE_MS
   ) {
@@ -506,12 +714,15 @@ async function getM5Cached(
       candles:
         cached.candles,
 
-      cacheHit: true
+      cacheHit:
+        true
     };
   }
 
   if (
-    inFlight.has(key)
+    inFlight.has(
+      key
+    )
   ) {
     return {
       candles:
@@ -519,12 +730,13 @@ async function getM5Cached(
           key
         ),
 
-      cacheHit: true
+      cacheHit:
+        true
     };
   }
 
   const pending =
-    requestM5(key)
+    requestGoldM1()
       .then(
         candles => {
           marketCache.set(
@@ -556,22 +768,19 @@ async function getM5Cached(
     candles:
       await pending,
 
-    cacheHit: false
+    cacheHit:
+      false
   };
 }
 
 /* =========================================================
-   DATA QUALITY
+   COMPLETED M1 CANDLES
 ========================================================= */
 
-function getCompletedM5(
+function completedM1(
   candles,
   nowMs = Date.now()
 ) {
-  const barMs =
-    BASE_INTERVAL_MINUTES *
-    60_000;
-
   return candles.filter(
     candle => {
       const start =
@@ -579,165 +788,16 @@ function getCompletedM5(
           candle.t
         );
 
-      if (
-        !Number.isFinite(
-          start
-        )
-      ) {
-        return false;
-      }
-
       return (
+        Number.isFinite(
+          start
+        ) &&
         start +
-        barMs <=
-        nowMs
+          60_000 <=
+          nowMs
       );
     }
   );
-}
-
-function marketDataAgeMs(
-  candles
-) {
-  if (!candles.length) {
-    return Infinity;
-  }
-
-  const latest =
-    candles.at(-1);
-
-  const start =
-    parseUTC(
-      latest.t
-    );
-
-  if (
-    !Number.isFinite(
-      start
-    )
-  ) {
-    return Infinity;
-  }
-
-  const completedAt =
-    start +
-    BASE_INTERVAL_MINUTES *
-      60_000;
-
-  return Math.max(
-    0,
-    Date.now() -
-      completedAt
-  );
-}
-
-function buildDataQuality(
-  raw,
-  completed,
-  m15,
-  h1,
-  h4
-) {
-  const ageMs =
-    marketDataAgeMs(
-      completed
-    );
-
-  const stale =
-    ageMs >
-    STALE_DATA_MS;
-
-  const issues =
-    [];
-
-  if (
-    raw.length < 240
-  ) {
-    issues.push(
-      "Insufficient raw M5 history."
-    );
-  }
-
-  if (
-    completed.length < 200
-  ) {
-    issues.push(
-      "Insufficient completed M5 history."
-    );
-  }
-
-  if (
-    m15.length < 60
-  ) {
-    issues.push(
-      "Insufficient M15 history."
-    );
-  }
-
-  if (
-    h1.length < 30
-  ) {
-    issues.push(
-      "Insufficient H1 history."
-    );
-  }
-
-  if (
-    h4.length < 8
-  ) {
-    issues.push(
-      "Insufficient H4 history."
-    );
-  }
-
-  if (stale) {
-    issues.push(
-      `Market data is stale by approximately ${round(
-        ageMs /
-          60_000,
-        1
-      )} minutes.`
-    );
-  }
-
-  return {
-    valid:
-      issues.length ===
-      0,
-
-    stale,
-
-    ageMs,
-
-    ageMinutes:
-      round(
-        ageMs /
-          60_000,
-        1
-      ),
-
-    latestCompletedCandle:
-      completed.at(-1)
-        ?.t ||
-      null,
-
-    rawBars:
-      raw.length,
-
-    completedM5Bars:
-      completed.length,
-
-    m15Bars:
-      m15.length,
-
-    h1Bars:
-      h1.length,
-
-    h4Bars:
-      h4.length,
-
-    issues
-  };
 }
 
 /* =========================================================
@@ -752,11 +812,10 @@ function resample(
     minutes *
     60_000;
 
-  const expectedBars =
-    minutes /
-    BASE_INTERVAL_MINUTES;
+  const expected =
+    minutes;
 
-  const groups =
+  const map =
     new Map();
 
   for (
@@ -784,38 +843,38 @@ function resample(
       bucketMs;
 
     if (
-      !groups.has(
+      !map.has(
         bucket
       )
     ) {
-      groups.set(
+      map.set(
         bucket,
         []
       );
     }
 
-    groups
+    map
       .get(bucket)
       .push(
         candle
       );
   }
 
-  const result =
+  const output =
     [];
 
   for (
     const [
       timestamp,
-      rawGroup
-    ] of groups
+      groupRaw
+    ] of map
   ) {
     const unique =
       new Map();
 
     for (
       const candle of
-      rawGroup
+      groupRaw
     ) {
       unique.set(
         parseUTC(
@@ -836,7 +895,7 @@ function resample(
 
     const completeness =
       group.length /
-      expectedBars;
+      expected;
 
     if (
       completeness <
@@ -851,11 +910,12 @@ function resample(
     const last =
       group.at(-1);
 
-    result.push({
+    output.push({
       t:
         new Date(
           timestamp
-        ).toISOString(),
+        )
+          .toISOString(),
 
       o:
         first.o,
@@ -863,16 +923,16 @@ function resample(
       h:
         Math.max(
           ...group.map(
-            item =>
-              item.h
+            x =>
+              x.h
           )
         ),
 
       l:
         Math.min(
           ...group.map(
-            item =>
-              item.l
+            x =>
+              x.l
           )
         ),
 
@@ -883,11 +943,11 @@ function resample(
         group.reduce(
           (
             sum,
-            item
+            x
           ) =>
             sum +
             (
-              item.v ||
+              x.v ||
               0
             ),
           0
@@ -901,7 +961,7 @@ function resample(
     });
   }
 
-  return result.sort(
+  return output.sort(
     (a, b) =>
       parseUTC(a.t) -
       parseUTC(b.t)
@@ -909,29 +969,8 @@ function resample(
 }
 
 /* =========================================================
-   MOVING AVERAGES
+   EMA
 ========================================================= */
-
-function sma(
-  values,
-  period
-) {
-  if (
-    values.length <
-    period
-  ) {
-    return null;
-  }
-
-  const slice =
-    values.slice(
-      -period
-    );
-
-  return mean(
-    slice
-  );
-}
 
 function emaSeries(
   values,
@@ -959,7 +998,7 @@ function emaSeries(
       )
     );
 
-  const output =
+  const out =
     Array(
       period -
       1
@@ -970,35 +1009,33 @@ function emaSeries(
   let current =
     seed;
 
-  output.push(
+  out.push(
     current
   );
 
   for (
-    let index =
+    let i =
       period;
 
-    index <
+    i <
       values.length;
 
-    index++
+    i++
   ) {
     current =
       (
-        values[
-          index
-        ] -
+        values[i] -
         current
       ) *
         multiplier +
       current;
 
-    output.push(
+    out.push(
       current
     );
   }
 
-  return output;
+  return out;
 }
 
 function ema(
@@ -1031,8 +1068,8 @@ function rsi(
     return null;
   }
 
-  let gainSum = 0;
-  let lossSum = 0;
+  let gains = 0;
+  let losses = 0;
 
   for (
     let i = 1;
@@ -1048,10 +1085,10 @@ function rsi(
     if (
       change >= 0
     ) {
-      gainSum +=
+      gains +=
         change;
     } else {
-      lossSum +=
+      losses +=
         Math.abs(
           change
         );
@@ -1059,11 +1096,11 @@ function rsi(
   }
 
   let avgGain =
-    gainSum /
+    gains /
     period;
 
   let avgLoss =
-    lossSum /
+    losses /
     period;
 
   for (
@@ -1137,19 +1174,20 @@ function rsi(
 }
 
 /* =========================================================
-   TRUE RANGE / WILDER ATR
+   TRUE RANGE / ATR
 ========================================================= */
 
 function trueRanges(
   candles
 ) {
-  const ranges =
+  const out =
     [];
 
   for (
     let i = 1;
     i <
       candles.length;
+
     i++
   ) {
     const current =
@@ -1160,7 +1198,7 @@ function trueRanges(
         i - 1
       ];
 
-    ranges.push(
+    out.push(
       Math.max(
         current.h -
           current.l,
@@ -1178,7 +1216,7 @@ function trueRanges(
     );
   }
 
-  return ranges;
+  return out;
 }
 
 function wilderSeries(
@@ -1192,10 +1230,7 @@ function wilderSeries(
     return [];
   }
 
-  const output =
-    [];
-
-  let smoothed =
+  let current =
     mean(
       values.slice(
         0,
@@ -1203,19 +1238,23 @@ function wilderSeries(
       )
     );
 
-  output.push(
-    smoothed
-  );
+  const out =
+    [
+      current
+    ];
 
   for (
-    let i = period;
+    let i =
+      period;
+
     i <
       values.length;
+
     i++
   ) {
-    smoothed =
+    current =
       (
-        smoothed *
+        current *
           (
             period -
             1
@@ -1224,44 +1263,22 @@ function wilderSeries(
       ) /
       period;
 
-    output.push(
-      smoothed
+    out.push(
+      current
     );
   }
 
-  return output;
+  return out;
 }
 
 function atrSeries(
   candles,
-  period = 14,
-  lookback = 160
+  period = 14
 ) {
-  if (
-    candles.length <=
-    period
-  ) {
-    return [];
-  }
-
-  const subset =
-    candles.slice(
-      -Math.max(
-        lookback +
-          period +
-          5,
-        period +
-          2
-      )
-    );
-
-  const trs =
-    trueRanges(
-      subset
-    );
-
   return wilderSeries(
-    trs,
+    trueRanges(
+      candles
+    ),
     period
   );
 }
@@ -1273,8 +1290,7 @@ function atr(
   const series =
     atrSeries(
       candles,
-      period,
-      candles.length
+      period
     );
 
   return series.length
@@ -1283,7 +1299,7 @@ function atr(
 }
 
 /* =========================================================
-   WILDER ADX
+   ADX
 ========================================================= */
 
 function adx(
@@ -1306,6 +1322,7 @@ function adx(
     let i = 1;
     i <
       candles.length;
+
     i++
   ) {
     const current =
@@ -1316,27 +1333,27 @@ function adx(
         i - 1
       ];
 
-    const upMove =
+    const up =
       current.h -
       previous.h;
 
-    const downMove =
+    const down =
       previous.l -
       current.l;
 
     plusDM.push(
-      upMove >
-          downMove &&
-        upMove > 0
-        ? upMove
+      up >
+          down &&
+        up > 0
+        ? up
         : 0
     );
 
     minusDM.push(
-      downMove >
-          upMove &&
-        downMove > 0
-        ? downMove
+      down >
+          up &&
+        down > 0
+        ? down
         : 0
     );
 
@@ -1358,13 +1375,6 @@ function adx(
     );
   }
 
-  if (
-    tr.length <
-    period
-  ) {
-    return null;
-  }
-
   let smoothedTR =
     tr
       .slice(
@@ -1380,7 +1390,7 @@ function adx(
         0
       );
 
-  let smoothedPlusDM =
+  let smoothedPlus =
     plusDM
       .slice(
         0,
@@ -1395,7 +1405,7 @@ function adx(
         0
       );
 
-  let smoothedMinusDM =
+  let smoothedMinus =
     minusDM
       .slice(
         0,
@@ -1410,10 +1420,10 @@ function adx(
         0
       );
 
-  const dxValues =
+  const dx =
     [];
 
-  function pushDx() {
+  function calculateDx() {
     if (
       smoothedTR <= 0
     ) {
@@ -1422,44 +1432,43 @@ function adx(
 
     const plusDI =
       100 *
-      (
-        smoothedPlusDM /
-        smoothedTR
-      );
+      smoothedPlus /
+      smoothedTR;
 
     const minusDI =
       100 *
-      (
-        smoothedMinusDM /
-        smoothedTR
-      );
+      smoothedMinus /
+      smoothedTR;
 
-    const denominator =
+    const total =
       plusDI +
       minusDI;
 
     if (
-      denominator <= 0
+      total <= 0
     ) {
       return;
     }
 
-    dxValues.push(
+    dx.push(
       100 *
       Math.abs(
         plusDI -
         minusDI
       ) /
-      denominator
+      total
     );
   }
 
-  pushDx();
+  calculateDx();
 
   for (
-    let i = period;
+    let i =
+      period;
+
     i <
       tr.length;
+
     i++
   ) {
     smoothedTR =
@@ -1468,57 +1477,66 @@ function adx(
         period +
       tr[i];
 
-    smoothedPlusDM =
-      smoothedPlusDM -
-      smoothedPlusDM /
+    smoothedPlus =
+      smoothedPlus -
+      smoothedPlus /
         period +
       plusDM[i];
 
-    smoothedMinusDM =
-      smoothedMinusDM -
-      smoothedMinusDM /
+    smoothedMinus =
+      smoothedMinus -
+      smoothedMinus /
         period +
       minusDM[i];
 
-    pushDx();
+    calculateDx();
   }
 
   if (
-    dxValues.length <
+    !dx.length
+  ) {
+    return null;
+  }
+
+  if (
+    dx.length <
     period
   ) {
     return mean(
-      dxValues
+      dx
     );
   }
 
-  let currentAdx =
+  let result =
     mean(
-      dxValues.slice(
+      dx.slice(
         0,
         period
       )
     );
 
   for (
-    let i = period;
+    let i =
+      period;
+
     i <
-      dxValues.length;
+      dx.length;
+
     i++
   ) {
-    currentAdx =
+    result =
       (
-        currentAdx *
+        result *
           (
             period -
             1
           ) +
-        dxValues[i]
+        dx[i]
       ) /
       period;
   }
 
-  return currentAdx;
+  return result;
 }
 
 /* =========================================================
@@ -1540,13 +1558,14 @@ function macd(
       26
     );
 
-  const macdValues =
+  const values =
     [];
 
   for (
     let i = 0;
     i <
       closes.length;
+
     i++
   ) {
     if (
@@ -1556,14 +1575,14 @@ function macd(
       continue;
     }
 
-    macdValues.push(
+    values.push(
       fast[i] -
       slow[i]
     );
   }
 
   if (
-    macdValues.length <
+    values.length <
     9
   ) {
     return {
@@ -1574,17 +1593,16 @@ function macd(
   }
 
   const line =
-    macdValues.at(-1);
+    values.at(-1);
 
   const signal =
     ema(
-      macdValues,
+      values,
       9
     );
 
   return {
     line,
-
     signal,
 
     histogram:
@@ -1598,92 +1616,7 @@ function macd(
 }
 
 /* =========================================================
-   BOLLINGER
-========================================================= */
-
-function bollingerMetrics(
-  closes,
-  period = 20,
-  multiplier = 2
-) {
-  if (
-    closes.length <
-    period
-  ) {
-    return {
-      middle: null,
-      upper: null,
-      lower: null,
-      widthPct: null,
-      position: null
-    };
-  }
-
-  const window =
-    closes.slice(
-      -period
-    );
-
-  const middle =
-    mean(
-      window
-    );
-
-  const deviation =
-    stdDev(
-      window
-    );
-
-  const upper =
-    middle +
-    multiplier *
-      deviation;
-
-  const lower =
-    middle -
-    multiplier *
-      deviation;
-
-  const width =
-    upper -
-    lower;
-
-  const price =
-    closes.at(-1);
-
-  return {
-    middle,
-    upper,
-    lower,
-
-    widthPct:
-      middle
-        ? (
-            width /
-            Math.abs(
-              middle
-            )
-          ) *
-          100
-        : null,
-
-    position:
-      width > 0
-        ? clamp(
-            (
-              price -
-              lower
-            ) /
-              width,
-            0,
-            1
-          )
-        : 0.5
-  };
-}
-
-/* =========================================================
-   MOMENTUM HELPERS
+   ROC
 ========================================================= */
 
 function roc(
@@ -1697,7 +1630,7 @@ function roc(
     return null;
   }
 
-  const oldPrice =
+  const old =
     closes.at(
       -(
         period +
@@ -1705,30 +1638,31 @@ function roc(
       )
     );
 
-  const latest =
+  const now =
     closes.at(-1);
 
   if (
     !Number.isFinite(
-      oldPrice
+      old
     ) ||
-    oldPrice === 0 ||
-    !Number.isFinite(
-      latest
-    )
+    old === 0
   ) {
     return null;
   }
 
   return (
     (
-      latest /
-      oldPrice
+      now /
+      old
     ) -
     1
   ) *
   100;
 }
+
+/* =========================================================
+   ATR PERCENTILE
+========================================================= */
 
 function percentileRank(
   values,
@@ -1750,8 +1684,8 @@ function percentileRank(
 
   const count =
     clean.filter(
-      value =>
-        value <=
+      x =>
+        x <=
         current
     ).length;
 
@@ -1762,213 +1696,9 @@ function percentileRank(
   100;
 }
 
-function normalizedEmaSlope(
-  closes,
-  candles,
-  period = 20,
-  bars = 5
-) {
-  const series =
-    emaSeries(
-      closes,
-      period
-    );
-
-  if (
-    !series.length ||
-    series.length <=
-      bars
-  ) {
-    return null;
-  }
-
-  const latest =
-    series.at(-1);
-
-  const earlier =
-    series.at(
-      -(
-        bars +
-        1
-      )
-    );
-
-  const atr14 =
-    atr(
-      candles,
-      14
-    );
-
-  if (
-    !Number.isFinite(
-      latest
-    ) ||
-    !Number.isFinite(
-      earlier
-    ) ||
-    !Number.isFinite(
-      atr14
-    ) ||
-    atr14 <= 0
-  ) {
-    return null;
-  }
-
-  return (
-    latest -
-    earlier
-  ) /
-  atr14;
-}
-
-function candleEfficiency(
-  candles,
-  bars = 10
-) {
-  const window =
-    candles.slice(
-      -bars
-    );
-
-  if (
-    window.length <
-    2
-  ) {
-    return null;
-  }
-
-  const net =
-    Math.abs(
-      window.at(-1).c -
-      window[0].o
-    );
-
-  const path =
-    window.reduce(
-      (
-        sum,
-        candle
-      ) =>
-        sum +
-        Math.abs(
-          candle.c -
-          candle.o
-        ),
-      0
-    );
-
-  if (!path) {
-    return 0;
-  }
-
-  return clamp(
-    net /
-      path,
-    0,
-    1
-  );
-}
-
-function candleMomentum(
-  candles
-) {
-  const recent =
-    candles.slice(
-      -6
-    );
-
-  let bull = 0;
-  let bear = 0;
-
-  for (
-    const candle of
-    recent
-  ) {
-    const range =
-      Math.max(
-        candle.h -
-          candle.l,
-        1e-9
-      );
-
-    const bodyRatio =
-      Math.abs(
-        candle.c -
-        candle.o
-      ) /
-      range;
-
-    if (
-      candle.c >
-      candle.o
-    ) {
-      bull +=
-        bodyRatio;
-    }
-
-    if (
-      candle.c <
-      candle.o
-    ) {
-      bear +=
-        bodyRatio;
-    }
-  }
-
-  if (
-    bull >
-    bear *
-      1.25
-  ) {
-    return "BULLISH";
-  }
-
-  if (
-    bear >
-    bull *
-      1.25
-  ) {
-    return "BEARISH";
-  }
-
-  return "MIXED";
-}
-
 /* =========================================================
-   MARKET STRUCTURE
+   SWINGS
 ========================================================= */
-
-function recentRange(
-  candles,
-  bars = 20
-) {
-  const window =
-    candles.slice(
-      -bars
-    );
-
-  return {
-    high:
-      window.length
-        ? Math.max(
-            ...window.map(
-              candle =>
-                candle.h
-            )
-          )
-        : null,
-
-    low:
-      window.length
-        ? Math.min(
-            ...window.map(
-              candle =>
-                candle.l
-            )
-          )
-        : null
-  };
-}
 
 function findSwings(
   candles,
@@ -1982,14 +1712,15 @@ function findSwings(
     let i = left;
     i <
       candles.length -
-        right;
+      right;
+
     i++
   ) {
-    const candle =
-      candles[i];
+    let high =
+      true;
 
-    let isHigh = true;
-    let isLow = true;
+    let low =
+      true;
 
     for (
       let j =
@@ -2010,20 +1741,22 @@ function findSwings(
 
       if (
         candles[j].h >=
-        candle.h
+        candles[i].h
       ) {
-        isHigh = false;
+        high =
+          false;
       }
 
       if (
         candles[j].l <=
-        candle.l
+        candles[i].l
       ) {
-        isLow = false;
+        low =
+          false;
       }
     }
 
-    if (isHigh) {
+    if (high) {
       highs.push({
         index: i,
 
@@ -2033,14 +1766,14 @@ function findSwings(
           i,
 
         price:
-          candle.h,
+          candles[i].h,
 
         t:
-          candle.t
+          candles[i].t
       });
     }
 
-    if (isLow) {
+    if (low) {
       lows.push({
         index: i,
 
@@ -2050,10 +1783,10 @@ function findSwings(
           i,
 
         price:
-          candle.l,
+          candles[i].l,
 
         t:
-          candle.t
+          candles[i].t
       });
     }
   }
@@ -2114,10 +1847,10 @@ function detectBosChoch(
   const close =
     candles.at(-1)?.c;
 
-  const previousHigh =
+  const high =
     swings.highs.at(-1);
 
-  const previousLow =
+  const low =
     swings.lows.at(-1);
 
   const structure =
@@ -2132,9 +1865,9 @@ function detectBosChoch(
     "NONE";
 
   if (
-    previousHigh &&
+    high &&
     close >
-      previousHigh.price
+      high.price
   ) {
     bos =
       "BULLISH_BOS";
@@ -2149,9 +1882,9 @@ function detectBosChoch(
   }
 
   if (
-    previousLow &&
+    low &&
     close <
-      previousLow.price
+      low.price
   ) {
     bos =
       "BEARISH_BOS";
@@ -2173,10 +1906,10 @@ function detectBosChoch(
 }
 
 /* =========================================================
-   LIQUIDITY SWEEP
+   LIQUIDITY SWEEPS
 ========================================================= */
 
-function detectLiquiditySweep(
+function detectGenericSweep(
   candles,
   lookback = 20
 ) {
@@ -2186,8 +1919,11 @@ function detectLiquiditySweep(
       2
   ) {
     return {
-      type: "NONE",
-      level: null
+      type:
+        "NONE",
+
+      level:
+        null
     };
   }
 
@@ -2203,693 +1939,253 @@ function detectLiquiditySweep(
       -1
     );
 
-  const priorHigh =
+  const high =
     Math.max(
       ...prior.map(
-        candle =>
-          candle.h
+        x =>
+          x.h
       )
     );
 
-  const priorLow =
+  const low =
     Math.min(
       ...prior.map(
-        candle =>
-          candle.l
+        x =>
+          x.l
       )
     );
 
   if (
     last.h >
-      priorHigh &&
+      high &&
     last.c <
-      priorHigh
+      high
   ) {
     return {
       type:
         "BEARISH_BUYSIDE_SWEEP",
 
       level:
-        priorHigh
+        high
     };
   }
 
   if (
     last.l <
-      priorLow &&
+      low &&
     last.c >
-      priorLow
+      low
   ) {
     return {
       type:
         "BULLISH_SELLSIDE_SWEEP",
 
       level:
-        priorLow
+        low
     };
   }
 
   return {
-    type: "NONE",
-    level: null
+    type:
+      "NONE",
+
+    level:
+      null
   };
 }
 
-/* =========================================================
-   EQUAL HIGHS / LOWS
-========================================================= */
-
-function detectEqualLevels(
+function sweptLevelRecently(
   candles,
-  atrValue,
-  lookback = 50
+  level,
+  type,
+  lookback = 5
 ) {
-  const subset =
+  const n =
+    Number(level);
+
+  if (
+    !Number.isFinite(
+      n
+    )
+  ) {
+    return false;
+  }
+
+  const recent =
     candles.slice(
       -lookback
     );
 
-  const swings =
-    findSwings(
-      subset,
-      2,
-      2
-    );
-
-  const latestPrice =
-    candles.at(-1)?.c ||
-    0;
-
-  const tolerance =
-    Math.max(
-      (
-        atrValue ||
-        0
-      ) *
-        0.18,
-
-      Math.abs(
-        latestPrice
-      ) *
-        0.00008
-    );
-
-  let equalHigh =
-    null;
-
-  let equalLow =
-    null;
-
-  for (
-    let i =
-      swings.highs.length -
-      1;
-
-    i > 0;
-
-    i--
-  ) {
-    const first =
-      swings.highs[
-        i
-      ];
-
-    const second =
-      swings.highs[
-        i -
-        1
-      ];
-
-    if (
-      Math.abs(
-        first.price -
-        second.price
-      ) <=
-      tolerance
-    ) {
-      equalHigh =
-        (
-          first.price +
-          second.price
-        ) /
-        2;
-
-      break;
-    }
-  }
-
-  for (
-    let i =
-      swings.lows.length -
-      1;
-
-    i > 0;
-
-    i--
-  ) {
-    const first =
-      swings.lows[
-        i
-      ];
-
-    const second =
-      swings.lows[
-        i -
-        1
-      ];
-
-    if (
-      Math.abs(
-        first.price -
-        second.price
-      ) <=
-      tolerance
-    ) {
-      equalLow =
-        (
-          first.price +
-          second.price
-        ) /
-        2;
-
-      break;
-    }
-  }
-
-  return {
-    equalHigh,
-    equalLow
-  };
-}
-
-/* =========================================================
-   FVG LIFECYCLE
-========================================================= */
-
-function detectFVG(
-  candles,
-  lookback = 50
-) {
-  const start =
-    Math.max(
-      2,
-      candles.length -
-      lookback
-    );
-
-  const bullishCandidates =
-    [];
-
-  const bearishCandidates =
-    [];
-
-  for (
-    let i = start;
-    i <
-      candles.length;
-    i++
-  ) {
-    const first =
-      candles[
-        i -
-        2
-      ];
-
-    const third =
-      candles[i];
-
-    if (
-      third.l >
-      first.h
-    ) {
-      bullishCandidates.push({
-        index: i,
-
-        low:
-          first.h,
-
-        high:
-          third.l,
-
-        t:
-          third.t
-      });
-    }
-
-    if (
-      third.h <
-      first.l
-    ) {
-      bearishCandidates.push({
-        index: i,
-
-        low:
-          third.h,
-
-        high:
-          first.l,
-
-        t:
-          third.t
-      });
-    }
-  }
-
-  function validateBullish(
-    gap
-  ) {
-    const size =
-      gap.high -
-      gap.low;
-
-    if (
-      size <= 0
-    ) {
-      return null;
-    }
-
-    let lowest =
-      Infinity;
-
-    for (
-      let i =
-        gap.index +
-        1;
-
-      i <
-        candles.length;
-
-      i++
-    ) {
-      lowest =
-        Math.min(
-          lowest,
-          candles[i].l
-        );
-    }
-
-    if (
-      lowest <=
-      gap.low
-    ) {
-      return null;
-    }
-
-    let fillPct = 0;
-
-    if (
-      lowest <
-      gap.high
-    ) {
-      fillPct =
-        clamp(
-          (
-            gap.high -
-            lowest
-          ) /
-            size,
-          0,
-          1
-        );
-    }
-
-    return {
-      ...gap,
-
-      fillPct,
-
-      status:
-        fillPct > 0
-          ? "PARTIALLY_MITIGATED"
-          : "OPEN"
-    };
-  }
-
-  function validateBearish(
-    gap
-  ) {
-    const size =
-      gap.high -
-      gap.low;
-
-    if (
-      size <= 0
-    ) {
-      return null;
-    }
-
-    let highest =
-      -Infinity;
-
-    for (
-      let i =
-        gap.index +
-        1;
-
-      i <
-        candles.length;
-
-      i++
-    ) {
-      highest =
-        Math.max(
-          highest,
-          candles[i].h
-        );
-    }
-
-    if (
-      highest >=
-      gap.high
-    ) {
-      return null;
-    }
-
-    let fillPct = 0;
-
-    if (
-      highest >
-      gap.low
-    ) {
-      fillPct =
-        clamp(
-          (
-            highest -
-            gap.low
-          ) /
-            size,
-          0,
-          1
-        );
-    }
-
-    return {
-      ...gap,
-
-      fillPct,
-
-      status:
-        fillPct > 0
-          ? "PARTIALLY_MITIGATED"
-          : "OPEN"
-    };
-  }
-
-  let bullish =
-    null;
-
-  for (
-    let i =
-      bullishCandidates.length -
-      1;
-
-    i >= 0;
-
-    i--
-  ) {
-    bullish =
-      validateBullish(
-        bullishCandidates[i]
-      );
-
-    if (bullish) {
-      break;
-    }
-  }
-
-  let bearish =
-    null;
-
-  for (
-    let i =
-      bearishCandidates.length -
-      1;
-
-    i >= 0;
-
-    i--
-  ) {
-    bearish =
-      validateBearish(
-        bearishCandidates[i]
-      );
-
-    if (bearish) {
-      break;
-    }
-  }
-
-  return {
-    bullish,
-    bearish
-  };
-}
-
-/* =========================================================
-   ORDER BLOCK
-========================================================= */
-
-function detectOrderBlock(
-  candles,
-  bos
-) {
   if (
-    bos === "NONE"
+    type ===
+    "SELL_SIDE"
   ) {
-    return null;
+    return recent.some(
+      candle =>
+        candle.l <
+          n &&
+        candle.c >
+          n
+    );
   }
 
-  const bullishBos =
-    bos ===
-    "BULLISH_BOS";
-
-  const bearishBos =
-    bos ===
-    "BEARISH_BOS";
-
-  for (
-    let i =
-      candles.length -
-      2;
-
-    i >=
-      Math.max(
-        0,
-        candles.length -
-          18
-      );
-
-    i--
+  if (
+    type ===
+    "BUY_SIDE"
   ) {
-    const candle =
-      candles[i];
-
-    if (
-      bullishBos &&
-      candle.c <
-      candle.o
-    ) {
-      let invalidated =
-        false;
-
-      for (
-        let j =
-          i +
-          1;
-
-        j <
-          candles.length;
-
-        j++
-      ) {
-        if (
-          candles[j].c <
-          candle.l
-        ) {
-          invalidated =
-            true;
-
-          break;
-        }
-      }
-
-      if (
-        !invalidated
-      ) {
-        return {
-          type:
-            "BULLISH_OB",
-
-          low:
-            candle.l,
-
-          high:
-            candle.h,
-
-          t:
-            candle.t,
-
-          ageBars:
-            candles.length -
-            1 -
-            i
-        };
-      }
-    }
-
-    if (
-      bearishBos &&
-      candle.c >
-      candle.o
-    ) {
-      let invalidated =
-        false;
-
-      for (
-        let j =
-          i +
-          1;
-
-        j <
-          candles.length;
-
-        j++
-      ) {
-        if (
-          candles[j].c >
-          candle.h
-        ) {
-          invalidated =
-            true;
-
-          break;
-        }
-      }
-
-      if (
-        !invalidated
-      ) {
-        return {
-          type:
-            "BEARISH_OB",
-
-          low:
-            candle.l,
-
-          high:
-            candle.h,
-
-          t:
-            candle.t,
-
-          ageBars:
-            candles.length -
-            1 -
-            i
-        };
-      }
-    }
+    return recent.some(
+      candle =>
+        candle.h >
+          n &&
+        candle.c <
+          n
+    );
   }
 
-  return null;
+  return false;
 }
 
 /* =========================================================
-   PREMIUM / DISCOUNT
+   DISPLACEMENT
+
+   Gold often makes aggressive expansion candles after
+   liquidity is taken.
 ========================================================= */
 
-function premiumDiscount(
-  candles,
-  bars = 40
+function detectDisplacement(
+  candles
 ) {
-  const range =
-    recentRange(
+  const last =
+    candles.at(-1);
+
+  const atr14 =
+    atr(
       candles,
-      bars
+      14
     );
 
-  const price =
-    candles.at(-1).c;
-
   if (
-    range.high == null ||
-    range.low == null
+    !last ||
+    !Number.isFinite(
+      atr14
+    ) ||
+    atr14 <= 0
   ) {
     return {
-      zone:
-        "UNKNOWN",
+      direction:
+        "NONE",
 
-      midpoint:
-        null
+      strength:
+        0
     };
   }
 
-  const midpoint =
+  const range =
+    Math.max(
+      last.h -
+        last.l,
+      1e-9
+    );
+
+  const body =
+    Math.abs(
+      last.c -
+      last.o
+    );
+
+  const bodyAtr =
+    body /
+    atr14;
+
+  const closePosition =
     (
-      range.high +
-      range.low
+      last.c -
+      last.l
     ) /
-    2;
+    range;
+
+  if (
+    last.c >
+      last.o &&
+    bodyAtr >=
+      0.55 &&
+    closePosition >=
+      0.72
+  ) {
+    return {
+      direction:
+        "BULLISH",
+
+      strength:
+        round(
+          bodyAtr,
+          2
+        )
+    };
+  }
+
+  if (
+    last.c <
+      last.o &&
+    bodyAtr >=
+      0.55 &&
+    closePosition <=
+      0.28
+  ) {
+    return {
+      direction:
+        "BEARISH",
+
+      strength:
+        round(
+          bodyAtr,
+          2
+        )
+    };
+  }
 
   return {
-    zone:
-      price >
-      midpoint
-        ? "PREMIUM"
-        : price <
-          midpoint
-          ? "DISCOUNT"
-          : "EQUILIBRIUM",
+    direction:
+      "NONE",
 
-    midpoint
+    strength:
+      round(
+        bodyAtr,
+        2
+      )
   };
 }
 
 /* =========================================================
-   TREND BIAS
+   TREND
 ========================================================= */
 
 function trendBias(
   closes
 ) {
-  const price =
-    closes.at(-1);
-
   if (
-    !Number.isFinite(
-      price
-    ) ||
     closes.length <
-      20
+    50
   ) {
     return "NEUTRAL";
   }
 
-  const fastPeriod =
-    closes.length >=
-      50
-      ? 20
-      : 8;
+  const price =
+    closes.at(-1);
 
-  const slowPeriod =
-    closes.length >=
-      50
-      ? 50
-      : 20;
-
-  const fast =
+  const e20 =
     ema(
       closes,
-      fastPeriod
+      20
     );
 
-  const slow =
+  const e50 =
     ema(
       closes,
-      slowPeriod
+      50
     );
 
-  const ema200 =
+  const e200 =
     closes.length >=
       200
       ? ema(
@@ -2899,21 +2195,14 @@ function trendBias(
       : null;
 
   if (
-    fast == null ||
-    slow == null
-  ) {
-    return "NEUTRAL";
-  }
-
-  if (
     price >
-      fast &&
-    fast >
-      slow &&
+      e20 &&
+    e20 >
+      e50 &&
     (
-      ema200 == null ||
-      slow >
-        ema200
+      e200 == null ||
+      e50 >
+        e200
     )
   ) {
     return "BULLISH";
@@ -2921,13 +2210,13 @@ function trendBias(
 
   if (
     price <
-      fast &&
-    fast <
-      slow &&
+      e20 &&
+    e20 <
+      e50 &&
     (
-      ema200 == null ||
-      slow <
-        ema200
+      e200 == null ||
+      e50 <
+        e200
     )
   ) {
     return "BEARISH";
@@ -2937,22 +2226,98 @@ function trendBias(
 }
 
 /* =========================================================
+   CANDLE MOMENTUM
+========================================================= */
+
+function candleMomentum(
+  candles
+) {
+  const recent =
+    candles.slice(
+      -6
+    );
+
+  let bull = 0;
+  let bear = 0;
+
+  for (
+    const candle of
+    recent
+  ) {
+    const range =
+      Math.max(
+        candle.h -
+          candle.l,
+        1e-9
+      );
+
+    const body =
+      Math.abs(
+        candle.c -
+        candle.o
+      ) /
+      range;
+
+    if (
+      candle.c >
+      candle.o
+    ) {
+      bull +=
+        body;
+    }
+
+    if (
+      candle.c <
+      candle.o
+    ) {
+      bear +=
+        body;
+    }
+  }
+
+  if (
+    bull >
+    bear *
+      1.25
+  ) {
+    return "BULLISH";
+  }
+
+  if (
+    bear >
+    bull *
+      1.25
+  ) {
+    return "BEARISH";
+  }
+
+  return "MIXED";
+}
+
+/* =========================================================
    SNAPSHOT
 ========================================================= */
 
 function snapshot(
-  symbol,
   candles
 ) {
   const closes =
     candles.map(
-      candle =>
-        candle.c
+      x =>
+        x.c
     );
 
   const atr14 =
     atr(
       candles,
+      14
+    );
+
+  const atrHistory =
+    atrSeries(
+      candles.slice(
+        -220
+      ),
       14
     );
 
@@ -2963,37 +2328,16 @@ function snapshot(
       2
     );
 
-  const event =
+  const marketStructure =
     detectBosChoch(
       candles,
       swings
     );
 
-  const fvg =
-    detectFVG(
-      candles
-    );
-
   const sweep =
-    detectLiquiditySweep(
-      candles
-    );
-
-  const equalLevels =
-    detectEqualLevels(
+    detectGenericSweep(
       candles,
-      atr14
-    );
-
-  const pd =
-    premiumDiscount(
-      candles
-    );
-
-  const range =
-    recentRange(
-      candles,
-      30
+      20
     );
 
   const macdData =
@@ -3001,50 +2345,9 @@ function snapshot(
       closes
     );
 
-  const bollinger =
-    bollingerMetrics(
-      closes,
-      20,
-      2
-    );
-
-  const atrHistory =
-    atrSeries(
-      candles,
-      14,
-      160
-    );
-
-  const atrPercentile =
-    percentileRank(
-      atrHistory,
-      atr14
-    );
-
-  const slope20 =
-    normalizedEmaSlope(
-      closes,
-      candles,
-      20,
-      5
-    );
-
-  const efficiency =
-    candleEfficiency(
-      candles,
-      10
-    );
-
-  const roc10 =
-    roc(
-      closes,
-      10
-    );
-
-  const ob =
-    detectOrderBlock(
-      candles,
-      event.bos
+  const displacement =
+    detectDisplacement(
+      candles
     );
 
   const latestHigh =
@@ -3056,7 +2359,6 @@ function snapshot(
   return {
     price:
       priceRound(
-        symbol,
         closes.at(-1)
       ),
 
@@ -3066,17 +2368,18 @@ function snapshot(
       ),
 
     structure:
-      event.structure,
+      marketStructure.structure,
 
     momentum:
       candleMomentum(
         candles
       ),
 
+    displacement,
+
     indicators: {
       ema20:
         priceRound(
-          symbol,
           ema(
             closes,
             20
@@ -3085,7 +2388,6 @@ function snapshot(
 
       ema50:
         priceRound(
-          symbol,
           ema(
             closes,
             50
@@ -3094,11 +2396,24 @@ function snapshot(
 
       ema200:
         priceRound(
-          symbol,
           ema(
             closes,
             200
           )
+        ),
+
+      atr14:
+        priceRound(
+          atr14
+        ),
+
+      atrPercentile:
+        round(
+          percentileRank(
+            atrHistory,
+            atr14
+          ),
+          1
         ),
 
       rsi14:
@@ -3108,12 +2423,6 @@ function snapshot(
             14
           ),
           1
-        ),
-
-      atr14:
-        priceRound(
-          symbol,
-          atr14
         ),
 
       adx14:
@@ -3128,82 +2437,37 @@ function snapshot(
       macd:
         round(
           macdData.line,
-          6
+          5
         ),
 
       macdSignal:
         round(
           macdData.signal,
-          6
+          5
         ),
 
       macdHistogram:
         round(
           macdData.histogram,
-          6
-        ),
-
-      bollingerMiddle:
-        priceRound(
-          symbol,
-          bollinger.middle
-        ),
-
-      bollingerUpper:
-        priceRound(
-          symbol,
-          bollinger.upper
-        ),
-
-      bollingerLower:
-        priceRound(
-          symbol,
-          bollinger.lower
-        ),
-
-      bollingerWidthPct:
-        round(
-          bollinger.widthPct,
-          4
-        ),
-
-      bollingerPosition:
-        round(
-          bollinger.position,
-          3
-        ),
-
-      atrPercentile:
-        round(
-          atrPercentile,
-          1
-        ),
-
-      ema20SlopeAtr:
-        round(
-          slope20,
-          3
+          5
         ),
 
       roc10:
         round(
-          roc10,
+          roc(
+            closes,
+            10
+          ),
           4
-        ),
-
-      candleEfficiency:
-        round(
-          efficiency,
-          3
         )
     },
 
     ict: {
       bos:
-        event.bos,
+        marketStructure.bos,
 
       choch:
-        event.choch,
+        marketStructure.choch,
 
       sweep: {
         type:
@@ -3211,113 +2475,14 @@ function snapshot(
 
         level:
           priceRound(
-            symbol,
             sweep.level
           )
       },
 
-      equalHigh:
-        priceRound(
-          symbol,
-          equalLevels.equalHigh
-        ),
-
-      equalLow:
-        priceRound(
-          symbol,
-          equalLevels.equalLow
-        ),
-
-      bullishFVG:
-        fvg.bullish
-          ? {
-              low:
-                priceRound(
-                  symbol,
-                  fvg.bullish.low
-                ),
-
-              high:
-                priceRound(
-                  symbol,
-                  fvg.bullish.high
-                ),
-
-              status:
-                fvg.bullish.status,
-
-              fillPct:
-                round(
-                  fvg.bullish.fillPct *
-                    100,
-                  1
-                )
-            }
-          : null,
-
-      bearishFVG:
-        fvg.bearish
-          ? {
-              low:
-                priceRound(
-                  symbol,
-                  fvg.bearish.low
-                ),
-
-              high:
-                priceRound(
-                  symbol,
-                  fvg.bearish.high
-                ),
-
-              status:
-                fvg.bearish.status,
-
-              fillPct:
-                round(
-                  fvg.bearish.fillPct *
-                    100,
-                  1
-                )
-            }
-          : null,
-
-      orderBlock:
-        ob
-          ? {
-              type:
-                ob.type,
-
-              low:
-                priceRound(
-                  symbol,
-                  ob.low
-                ),
-
-              high:
-                priceRound(
-                  symbol,
-                  ob.high
-                ),
-
-              ageBars:
-                ob.ageBars
-            }
-          : null,
-
-      premiumDiscount:
-        pd.zone,
-
-      midpoint:
-        priceRound(
-          symbol,
-          pd.midpoint
-        ),
-
       lastSwingHigh:
         priceRound(
-          symbol,
-          latestHigh?.price
+          latestHigh
+            ?.price
         ),
 
       lastSwingHighAge:
@@ -3327,152 +2492,21 @@ function snapshot(
 
       lastSwingLow:
         priceRound(
-          symbol,
-          latestLow?.price
+          latestLow
+            ?.price
         ),
 
       lastSwingLowAge:
         latestLow
           ?.ageBars ??
         null
-    },
-
-    range: {
-      high:
-        priceRound(
-          symbol,
-          range.high
-        ),
-
-      low:
-        priceRound(
-          symbol,
-          range.low
-        )
-    },
-
-    candles:
-      candles
-        .slice(-16)
-        .map(
-          candle => ({
-            t:
-              candle.t,
-
-            o:
-              priceRound(
-                symbol,
-                candle.o
-              ),
-
-            h:
-              priceRound(
-                symbol,
-                candle.h
-              ),
-
-            l:
-              priceRound(
-                symbol,
-                candle.l
-              ),
-
-            c:
-              priceRound(
-                symbol,
-                candle.c
-              )
-          })
-        )
+    }
   };
 }
 
 /* =========================================================
-   SESSION ENGINE
+   NEW YORK TRADING DAY LEVELS
 ========================================================= */
-
-function sessionNameAtUtcHour(
-  hour
-) {
-  if (
-    hour < 7
-  ) {
-    return "ASIA";
-  }
-
-  if (
-    hour < 12
-  ) {
-    return "LONDON";
-  }
-
-  if (
-    hour < 16
-  ) {
-    return "LONDON_NEW_YORK_OVERLAP";
-  }
-
-  if (
-    hour < 21
-  ) {
-    return "NEW_YORK";
-  }
-
-  return "TRANSITION";
-}
-
-function sessionFromCandles(
-  candles
-) {
-  const timestamp =
-    parseUTC(
-      candles.at(-1)?.t
-    );
-
-  if (
-    !Number.isFinite(
-      timestamp
-    )
-  ) {
-    return "UNKNOWN";
-  }
-
-  return sessionNameAtUtcHour(
-    new Date(
-      timestamp
-    ).getUTCHours()
-  );
-}
-
-/* =========================================================
-   DAY LEVELS
-========================================================= */
-
-function utcDateKey(
-  datetime
-) {
-  const ms =
-    parseUTC(
-      datetime
-    );
-
-  if (
-    !Number.isFinite(
-      ms
-    )
-  ) {
-    return null;
-  }
-
-  return new Date(
-    ms
-  )
-    .toISOString()
-    .slice(
-      0,
-      10
-    );
-}
 
 function buildDayLevels(
   candles
@@ -3482,16 +2516,28 @@ function buildDayLevels(
 
   for (
     const candle of
-    candles.slice(-700)
+    candles.slice(
+      -900
+    )
   ) {
-    const key =
-      utcDateKey(
+    const ms =
+      parseUTC(
         candle.t
       );
 
-    if (!key) {
+    if (
+      !Number.isFinite(
+        ms
+      )
+    ) {
       continue;
     }
+
+    const key =
+      zoneParts(
+        ms,
+        "America/New_York"
+      ).dateKey;
 
     if (
       !groups.has(
@@ -3516,94 +2562,80 @@ function buildDayLevels(
       ...groups.keys()
     ].sort();
 
-  if (
-    !keys.length
+  function make(
+    key
   ) {
-    return {
-      currentDay:
-        null,
+    const group =
+      groups.get(
+        key
+      ) ||
+      [];
 
-      previousDay:
-        null
+    if (
+      !group.length
+    ) {
+      return null;
+    }
+
+    return {
+      date:
+        key,
+
+      open:
+        group[0].o,
+
+      high:
+        Math.max(
+          ...group.map(
+            x =>
+              x.h
+          )
+        ),
+
+      low:
+        Math.min(
+          ...group.map(
+            x =>
+              x.l
+          )
+        ),
+
+      close:
+        group.at(-1).c
     };
   }
 
-  const make =
-    key => {
-      const group =
-        groups.get(
-          key
-        ) ||
-        [];
-
-      if (
-        !group.length
-      ) {
-        return null;
-      }
-
-      group.sort(
-        (a, b) =>
-          parseUTC(a.t) -
-          parseUTC(b.t)
-      );
-
-      return {
-        date: key,
-
-        open:
-          group[0].o,
-
-        high:
-          Math.max(
-            ...group.map(
-              candle =>
-                candle.h
-            )
-          ),
-
-        low:
-          Math.min(
-            ...group.map(
-              candle =>
-                candle.l
-            )
-          ),
-
-        close:
-          group.at(-1).c
-      };
-    };
-
-  const currentKey =
+  const current =
     keys.at(-1);
 
-  const previousKey =
-    keys.length >=
-      2
-      ? keys.at(-2)
-      : null;
+  const previous =
+    keys.at(-2);
 
   return {
     currentDay:
-      make(
-        currentKey
-      ),
+      current
+        ? make(
+            current
+          )
+        : null,
 
     previousDay:
-      previousKey
+      previous
         ? make(
-            previousKey
+            previous
           )
         : null
   };
 }
 
 /* =========================================================
-   SESSION LEVELS
+   ASIAN RANGE
+
+   Defined using London-local time 00:00 -> 07:59.
+   Using London-local time automatically handles UK DST.
 ========================================================= */
 
-function buildCurrentSessionLevels(
+function buildAsianRange(
   candles
 ) {
   if (
@@ -3612,72 +2644,44 @@ function buildCurrentSessionLevels(
     return null;
   }
 
-  const latest =
-    candles.at(-1);
-
   const latestMs =
     parseUTC(
-      latest.t
+      candles.at(-1).t
     );
 
-  if (
-    !Number.isFinite(
-      latestMs
-    )
-  ) {
-    return null;
-  }
-
-  const session =
-    sessionNameAtUtcHour(
-      new Date(
-        latestMs
-      ).getUTCHours()
+  const latestLondon =
+    zoneParts(
+      latestMs,
+      "Europe/London"
     );
+
+  const currentDate =
+    latestLondon.dateKey;
 
   const group =
-    [];
+    candles.filter(
+      candle => {
+        const ms =
+          parseUTC(
+            candle.t
+          );
 
-  for (
-    let i =
-      candles.length -
-      1;
+        const parts =
+          zoneParts(
+            ms,
+            "Europe/London"
+          );
 
-    i >= 0;
-
-    i--
-  ) {
-    const ms =
-      parseUTC(
-        candles[i].t
-      );
-
-    if (
-      !Number.isFinite(
-        ms
-      )
-    ) {
-      continue;
-    }
-
-    const name =
-      sessionNameAtUtcHour(
-        new Date(
-          ms
-        ).getUTCHours()
-      );
-
-    if (
-      name !==
-      session
-    ) {
-      break;
-    }
-
-    group.push(
-      candles[i]
+        return (
+          parts.dateKey ===
+            currentDate &&
+          parts.hour >=
+            0 &&
+          parts.hour <
+            8
+        );
+      }
     );
-  }
 
   if (
     !group.length
@@ -3685,453 +2689,233 @@ function buildCurrentSessionLevels(
     return null;
   }
 
-  group.reverse();
-
   return {
-    session,
-
-    open:
-      group[0].o,
+    date:
+      currentDate,
 
     high:
       Math.max(
         ...group.map(
-          candle =>
-            candle.h
+          x =>
+            x.h
         )
       ),
 
     low:
       Math.min(
         ...group.map(
-          candle =>
-            candle.l
+          x =>
+            x.l
         )
       ),
 
-    close:
-      group.at(-1).c,
-
     bars:
-      group.length
+      group.length,
+
+    complete:
+      latestLondon.hour >=
+      8
   };
 }
 
 /* =========================================================
-   LIQUIDITY MAP
+   GOLD MARKET CONTEXT
 ========================================================= */
 
-function buildLiquidityMap(
-  symbol,
+function buildGoldContext(
   packet,
-  m5Candles
+  m1
 ) {
-  const price =
-    Number(
-      packet.currentPrice
-    );
-
-  const atr5 =
-    Math.max(
-      Number(
-        packet.M5
-          .indicators
-          .atr14 ||
-        0
-      ),
-
-      Math.abs(
-        price
-      ) *
-        0.0001
-    );
-
-  const tolerance =
-    Math.max(
-      atr5 *
-        0.10,
-
-      Math.abs(
-        price
-      ) *
-        0.00004
-    );
-
   const day =
     buildDayLevels(
-      m5Candles
+      m1
     );
 
-  const session =
-    buildCurrentSessionLevels(
-      m5Candles
+  const asia =
+    buildAsianRange(
+      m1
     );
 
-  const rawPools =
+  const previousDay =
+    day.previousDay;
+
+  const m1Displacement =
+    packet.M1
+      .displacement;
+
+  const m5Displacement =
+    packet.M5
+      .displacement;
+
+  const signals =
     [];
 
-  const addPool =
-    (
-      value,
-      label,
-      source,
-      kind
-    ) => {
-      const n =
-        Number(
-          value
-        );
+  let bullishLiquidity =
+    0;
 
-      if (
-        !Number.isFinite(
-          n
-        ) ||
-        !Number.isFinite(
-          price
-        ) ||
-        n === price
-      ) {
-        return;
-      }
-
-      rawPools.push({
-        price: n,
-        label,
-        source,
-        kind,
-
-        side:
-          n >
-          price
-            ? "BUY_SIDE"
-            : "SELL_SIDE",
-
-        distance:
-          Math.abs(
-            n -
-            price
-          ),
-
-        distanceAtr:
-          atr5 > 0
-            ? Math.abs(
-                n -
-                price
-              ) /
-              atr5
-            : null
-      });
-    };
-
-  addPool(
-    packet.M5.ict
-      .equalHigh,
-    "M5 equal high",
-    "M5",
-    "EQUAL_HIGH"
-  );
-
-  addPool(
-    packet.M5.ict
-      .equalLow,
-    "M5 equal low",
-    "M5",
-    "EQUAL_LOW"
-  );
-
-  addPool(
-    packet.M15.ict
-      .equalHigh,
-    "M15 equal high",
-    "M15",
-    "EQUAL_HIGH"
-  );
-
-  addPool(
-    packet.M15.ict
-      .equalLow,
-    "M15 equal low",
-    "M15",
-    "EQUAL_LOW"
-  );
-
-  addPool(
-    packet.M5.ict
-      .lastSwingHigh,
-    "M5 swing high",
-    "M5",
-    "SWING_HIGH"
-  );
-
-  addPool(
-    packet.M5.ict
-      .lastSwingLow,
-    "M5 swing low",
-    "M5",
-    "SWING_LOW"
-  );
-
-  addPool(
-    packet.M15.ict
-      .lastSwingHigh,
-    "M15 swing high",
-    "M15",
-    "SWING_HIGH"
-  );
-
-  addPool(
-    packet.M15.ict
-      .lastSwingLow,
-    "M15 swing low",
-    "M15",
-    "SWING_LOW"
-  );
-
-  addPool(
-    packet.H1.ict
-      .lastSwingHigh,
-    "H1 swing high",
-    "H1",
-    "SWING_HIGH"
-  );
-
-  addPool(
-    packet.H1.ict
-      .lastSwingLow,
-    "H1 swing low",
-    "H1",
-    "SWING_LOW"
-  );
-
-  addPool(
-    packet.M15.range
-      .high,
-    "M15 range high",
-    "M15",
-    "RANGE_HIGH"
-  );
-
-  addPool(
-    packet.M15.range
-      .low,
-    "M15 range low",
-    "M15",
-    "RANGE_LOW"
-  );
-
-  addPool(
-    packet.H1.range
-      .high,
-    "H1 range high",
-    "H1",
-    "RANGE_HIGH"
-  );
-
-  addPool(
-    packet.H1.range
-      .low,
-    "H1 range low",
-    "H1",
-    "RANGE_LOW"
-  );
+  let bearishLiquidity =
+    0;
 
   if (
-    day.previousDay
+    asia?.complete
   ) {
-    addPool(
-      day.previousDay
-        .high,
-      "Previous day high",
-      "DAILY",
-      "PDH"
-    );
-
-    addPool(
-      day.previousDay
-        .low,
-      "Previous day low",
-      "DAILY",
-      "PDL"
-    );
-  }
-
-  if (
-    day.currentDay
-  ) {
-    addPool(
-      day.currentDay
-        .high,
-      "Current day high",
-      "DAILY",
-      "CDH"
-    );
-
-    addPool(
-      day.currentDay
-        .low,
-      "Current day low",
-      "DAILY",
-      "CDL"
-    );
-  }
-
-  if (session) {
-    addPool(
-      session.high,
-      `${session.session} high`,
-      "SESSION",
-      "SESSION_HIGH"
-    );
-
-    addPool(
-      session.low,
-      `${session.session} low`,
-      "SESSION",
-      "SESSION_LOW"
-    );
-  }
-
-  rawPools.sort(
-    (a, b) =>
-      a.distance -
-      b.distance
-  );
-
-  const pools =
-    [];
-
-  for (
-    const pool of
-    rawPools
-  ) {
-    const duplicate =
-      pools.some(
-        existing =>
-          existing.side ===
-            pool.side &&
-          Math.abs(
-            existing.price -
-            pool.price
-          ) <=
-            tolerance
-      );
-
     if (
-      duplicate
+      sweptLevelRecently(
+        m1,
+        asia.low,
+        "SELL_SIDE",
+        8
+      )
     ) {
-      continue;
+      bullishLiquidity +=
+        35;
+
+      signals.push(
+        "Asian low swept and reclaimed."
+      );
     }
 
-    pools.push({
-      ...pool,
+    if (
+      sweptLevelRecently(
+        m1,
+        asia.high,
+        "BUY_SIDE",
+        8
+      )
+    ) {
+      bearishLiquidity +=
+        35;
 
-      price:
-        priceRound(
-          symbol,
-          pool.price
-        ),
-
-      distance:
-        priceRound(
-          symbol,
-          pool.distance
-        ),
-
-      distanceAtr:
-        round(
-          pool.distanceAtr,
-          2
-        )
-    });
+      signals.push(
+        "Asian high swept and rejected."
+      );
+    }
   }
 
-  const buySide =
-    pools
-      .filter(
-        pool =>
-          pool.side ===
-          "BUY_SIDE"
+  if (
+    previousDay
+  ) {
+    if (
+      sweptLevelRecently(
+        m1,
+        previousDay.low,
+        "SELL_SIDE",
+        10
       )
-      .sort(
-        (a, b) =>
-          a.distance -
-          b.distance
-      );
+    ) {
+      bullishLiquidity +=
+        28;
 
-  const sellSide =
-    pools
-      .filter(
-        pool =>
-          pool.side ===
-          "SELL_SIDE"
-      )
-      .sort(
-        (a, b) =>
-          a.distance -
-          b.distance
+      signals.push(
+        "Previous-day low swept and reclaimed."
       );
+    }
+
+    if (
+      sweptLevelRecently(
+        m1,
+        previousDay.high,
+        "BUY_SIDE",
+        10
+      )
+    ) {
+      bearishLiquidity +=
+        28;
+
+      signals.push(
+        "Previous-day high swept and rejected."
+      );
+    }
+  }
+
+  if (
+    packet.M1.ict
+      .sweep.type ===
+    "BULLISH_SELLSIDE_SWEEP"
+  ) {
+    bullishLiquidity +=
+      18;
+  }
+
+  if (
+    packet.M1.ict
+      .sweep.type ===
+    "BEARISH_BUYSIDE_SWEEP"
+  ) {
+    bearishLiquidity +=
+      18;
+  }
+
+  if (
+    m1Displacement.direction ===
+    "BULLISH"
+  ) {
+    bullishLiquidity +=
+      12;
+  }
+
+  if (
+    m1Displacement.direction ===
+    "BEARISH"
+  ) {
+    bearishLiquidity +=
+      12;
+  }
+
+  if (
+    m5Displacement.direction ===
+    "BULLISH"
+  ) {
+    bullishLiquidity +=
+      12;
+  }
+
+  if (
+    m5Displacement.direction ===
+    "BEARISH"
+  ) {
+    bearishLiquidity +=
+      12;
+  }
 
   return {
-    currentPrice:
-      priceRound(
-        symbol,
-        price
-      ),
-
-    atr5:
-      priceRound(
-        symbol,
-        atr5
-      ),
-
-    nearestBuySide:
-      buySide[0] ||
-      null,
-
-    nearestSellSide:
-      sellSide[0] ||
-      null,
-
-    buySidePools:
-      buySide.slice(
-        0,
-        6
-      ),
-
-    sellSidePools:
-      sellSide.slice(
-        0,
-        6
-      ),
-
-    pools:
-      pools.slice(
-        0,
-        14
-      ),
-
-    previousDay:
-      day.previousDay
+    asianRange:
+      asia
         ? {
             high:
               priceRound(
-                symbol,
-                day.previousDay
-                  .high
+                asia.high
               ),
 
             low:
               priceRound(
-                symbol,
-                day.previousDay
-                  .low
+                asia.low
+              ),
+
+            complete:
+              asia.complete,
+
+            bars:
+              asia.bars
+          }
+        : null,
+
+    previousDay:
+      previousDay
+        ? {
+            high:
+              priceRound(
+                previousDay.high
+              ),
+
+            low:
+              priceRound(
+                previousDay.low
               ),
 
             close:
               priceRound(
-                symbol,
-                day.previousDay
-                  .close
+                previousDay.close
               )
           }
         : null,
@@ -4141,102 +2925,55 @@ function buildLiquidityMap(
         ? {
             open:
               priceRound(
-                symbol,
-                day.currentDay
-                  .open
+                day.currentDay.open
               ),
 
             high:
               priceRound(
-                symbol,
-                day.currentDay
-                  .high
+                day.currentDay.high
               ),
 
             low:
               priceRound(
-                symbol,
-                day.currentDay
-                  .low
+                day.currentDay.low
               )
           }
         : null,
 
-    currentSession:
-      session
-        ? {
-            name:
-              session.session,
+    bullishLiquidityScore:
+      clamp(
+        bullishLiquidity,
+        0,
+        100
+      ),
 
-            open:
-              priceRound(
-                symbol,
-                session.open
-              ),
+    bearishLiquidityScore:
+      clamp(
+        bearishLiquidity,
+        0,
+        100
+      ),
 
-            high:
-              priceRound(
-                symbol,
-                session.high
-              ),
-
-            low:
-              priceRound(
-                symbol,
-                session.low
-              ),
-
-            bars:
-              session.bars
-          }
-        : null,
-
-    sweep: {
-      M5:
-        packet.M5.ict
-          .sweep,
-
-      M15:
-        packet.M15.ict
-          .sweep
-    },
-
-    zones: {
-      M5BullishFVG:
-        packet.M5.ict
-          .bullishFVG,
-
-      M5BearishFVG:
-        packet.M5.ict
-          .bearishFVG,
-
-      M15BullishFVG:
-        packet.M15.ict
-          .bullishFVG,
-
-      M15BearishFVG:
-        packet.M15.ict
-          .bearishFVG,
-
-      M5OrderBlock:
-        packet.M5.ict
-          .orderBlock,
-
-      M15OrderBlock:
-        packet.M15.ict
-          .orderBlock
-    }
+    signals
   };
 }
 
 /* =========================================================
-   REGIME ENGINE
+   REGIME
 ========================================================= */
 
-function detectRegimeDetails(
+function detectGoldRegime(
   packet
 ) {
-  const adxValue =
+  const adx5 =
+    Number(
+      packet.M5
+        .indicators
+        .adx14 ||
+      0
+    );
+
+  const adx15 =
     Number(
       packet.M15
         .indicators
@@ -4244,390 +2981,182 @@ function detectRegimeDetails(
       0
     );
 
-  const atrValue =
+  const atrPct =
     Number(
-      packet.M15
-        .indicators
-        .atr14 ||
-      0
-    );
-
-  const atrPercentile =
-    Number(
-      packet.M15
+      packet.M5
         .indicators
         .atrPercentile ??
       50
     );
 
-  const bbWidth =
-    Number(
-      packet.M15
-        .indicators
-        .bollingerWidthPct ||
-      0
-    );
+  if (
+    atrPct >=
+      95 &&
+    packet.M5.bias !==
+      packet.M15.bias
+  ) {
+    return {
+      name:
+        "EXTREME_CHOP",
 
-  const range =
-    Number(
-      packet.M15
-        .range
-        .high
-    ) -
-    Number(
-      packet.M15
-        .range
-        .low
-    );
+      quality:
+        25,
 
-  const rangeAtr =
-    atrValue > 0
-      ? range /
-        atrValue
-      : null;
+      volatility:
+        "EXTREME"
+    };
+  }
 
-  const h1 =
-    packet.H1.bias;
-
-  const m15 =
-    packet.M15.bias;
-
-  const m5 =
-    packet.M5.bias;
-
-  const alignedBull =
-    h1 ===
+  if (
+    packet.M15.bias ===
       "BULLISH" &&
-    m15 ===
-      "BULLISH";
+    packet.M5.bias ===
+      "BULLISH" &&
+    adx5 >=
+      23
+  ) {
+    return {
+      name:
+        "TRENDING_BULLISH",
 
-  const alignedBear =
-    h1 ===
+      quality:
+        clamp(
+          Math.round(
+            68 +
+            (
+              adx5 -
+              23
+            )
+          ),
+          68,
+          92
+        ),
+
+      volatility:
+        atrPct >=
+          75
+          ? "HIGH"
+          : "NORMAL"
+    };
+  }
+
+  if (
+    packet.M15.bias ===
       "BEARISH" &&
-    m15 ===
-      "BEARISH";
-
-  const hardConflict =
-    (
-      h1 ===
-        "BULLISH" &&
-      m15 ===
-        "BEARISH"
-    ) ||
-    (
-      h1 ===
-        "BEARISH" &&
-      m15 ===
-        "BULLISH"
-    );
-
-  const bos =
-    packet.M15.ict
-      .bos;
-
-  let name =
-    "MIXED";
-
-  let quality =
-    55;
-
-  let trend =
-    "NEUTRAL";
-
-  let volatility =
-    "NORMAL";
-
-  const notes =
-    [];
-
-  if (
-    atrPercentile >=
-    85
+    packet.M5.bias ===
+      "BEARISH" &&
+    adx5 >=
+      23
   ) {
-    volatility =
-      "EXTREME";
-  } else if (
-    atrPercentile >=
-    65
-  ) {
-    volatility =
-      "HIGH";
-  } else if (
-    atrPercentile <=
-    25
-  ) {
-    volatility =
-      "LOW";
-  }
+    return {
+      name:
+        "TRENDING_BEARISH",
 
-  if (
-    alignedBull &&
-    adxValue >=
-      24
-  ) {
-    name =
-      "TRENDING_BULLISH";
-
-    trend =
-      "BULLISH";
-
-    quality =
-      clamp(
-        Math.round(
-          68 +
-          (
-            adxValue -
-            24
-          ) *
-            1.1
+      quality:
+        clamp(
+          Math.round(
+            68 +
+            (
+              adx5 -
+              23
+            )
+          ),
+          68,
+          92
         ),
-        68,
-        92
-      );
 
-    notes.push(
-      "H1 and M15 bullish with ADX confirmation."
-    );
+      volatility:
+        atrPct >=
+          75
+          ? "HIGH"
+          : "NORMAL"
+    };
   }
 
   if (
-    alignedBear &&
-    adxValue >=
-      24
-  ) {
-    name =
-      "TRENDING_BEARISH";
-
-    trend =
-      "BEARISH";
-
-    quality =
-      clamp(
-        Math.round(
-          68 +
-          (
-            adxValue -
-            24
-          ) *
-            1.1
-        ),
-        68,
-        92
-      );
-
-    notes.push(
-      "H1 and M15 bearish with ADX confirmation."
-    );
-  }
-
-  if (
-    bos ===
+    packet.M5.ict.bos ===
       "BULLISH_BOS" &&
-    h1 !==
+    packet.M15.bias !==
       "BEARISH" &&
-    adxValue >=
-      19 &&
-    atrPercentile >=
-      45
+    adx5 >=
+      20
   ) {
-    name =
-      "BREAKOUT_BULLISH";
+    return {
+      name:
+        "BREAKOUT_BULLISH",
 
-    trend =
-      "BULLISH";
+      quality:
+        76,
 
-    quality =
-      clamp(
-        Math.round(
-          72 +
-          (
-            adxValue -
-            19
-          ) *
-            0.8
-        ),
-        72,
-        92
-      );
+      volatility:
+        atrPct >=
+          70
+          ? "HIGH"
+          : "NORMAL"
+    };
+  }
 
-    notes.push(
-      "M15 bullish BOS with volatility expansion."
-    );
-  } else if (
-    bos ===
+  if (
+    packet.M5.ict.bos ===
       "BEARISH_BOS" &&
-    h1 !==
+    packet.M15.bias !==
       "BULLISH" &&
-    adxValue >=
-      19 &&
-    atrPercentile >=
-      45
+    adx5 >=
+      20
   ) {
-    name =
-      "BREAKOUT_BEARISH";
+    return {
+      name:
+        "BREAKOUT_BEARISH",
 
-    trend =
-      "BEARISH";
+      quality:
+        76,
 
-    quality =
-      clamp(
-        Math.round(
-          72 +
-          (
-            adxValue -
-            19
-          ) *
-            0.8
-        ),
-        72,
-        92
-      );
+      volatility:
+        atrPct >=
+          70
+          ? "HIGH"
+          : "NORMAL"
+    };
+  }
 
-    notes.push(
-      "M15 bearish BOS with volatility expansion."
-    );
-  } else if (
-    adxValue <
+  if (
+    adx5 <
       17 &&
-    Number.isFinite(
-      rangeAtr
-    ) &&
-    rangeAtr <=
-      5.2
+    adx15 <
+      19
   ) {
-    name =
-      "COMPRESSION";
+    return {
+      name:
+        "RANGE",
 
-    trend =
-      "NEUTRAL";
+      quality:
+        42,
 
-    quality =
-      38;
-
-    notes.push(
-      "Low ADX and compressed M15 range."
-    );
-  } else if (
-    adxValue <
-      19 &&
-    name ===
-      "MIXED"
-  ) {
-    name =
-      "RANGE";
-
-    trend =
-      "NEUTRAL";
-
-    quality =
-      44;
-
-    notes.push(
-      "Weak directional strength."
-    );
-  }
-
-  if (
-    atrPercentile >=
-      90 &&
-    hardConflict
-  ) {
-    name =
-      "HIGH_VOLATILITY_CHOP";
-
-    trend =
-      "NEUTRAL";
-
-    quality =
-      25;
-
-    notes.push(
-      "Extreme volatility and H1/M15 conflict."
-    );
-  }
-
-  if (
-    hardConflict &&
-    name ===
-      "MIXED"
-  ) {
-    name =
-      "REVERSAL_RISK";
-
-    quality =
-      40;
-
-    notes.push(
-      "H1 and M15 direction conflict."
-    );
-  }
-
-  if (
-    m5 !==
-      "NEUTRAL" &&
-    m15 !==
-      "NEUTRAL" &&
-    m5 !==
-      m15
-  ) {
-    quality =
-      Math.max(
-        20,
-        quality -
-          6
-      );
-
-    notes.push(
-      "M5 is counter to M15."
-    );
+      volatility:
+        atrPct <=
+          30
+          ? "LOW"
+          : "NORMAL"
+    };
   }
 
   return {
-    name,
-    trend,
+    name:
+      "MIXED",
 
     quality:
-      clamp(
-        Math.round(
-          quality
-        ),
-        0,
-        100
-      ),
+      52,
 
-    volatility,
-
-    volatilityPercentile:
-      round(
-        atrPercentile,
-        1
-      ),
-
-    adx:
-      round(
-        adxValue,
-        1
-      ),
-
-    rangeAtr:
-      round(
-        rangeAtr,
-        2
-      ),
-
-    bollingerWidthPct:
-      round(
-        bbWidth,
-        4
-      ),
-
-    hardConflict,
-    notes
+    volatility:
+      atrPct >=
+        75
+        ? "HIGH"
+        : "NORMAL"
   };
 }
 
 /* =========================================================
-   ENSEMBLE MODULE HELPERS
+   BIAS SIGN
 ========================================================= */
 
 function biasSign(
@@ -4662,13 +3191,17 @@ function biasSign(
   return 0;
 }
 
+/* =========================================================
+   MODULE HELPER
+========================================================= */
+
 function moduleResult(
   name,
   signal,
   reliability,
   reasons = []
 ) {
-  const normalizedSignal =
+  const value =
     clamp(
       Math.round(
         signal
@@ -4677,60 +3210,29 @@ function moduleResult(
       100
     );
 
-  const normalizedReliability =
-    clamp(
-      Math.round(
-        reliability
-      ),
-      0,
-      100
-    );
-
   return {
     name,
 
     signal:
-      normalizedSignal,
+      value,
 
     reliability:
-      normalizedReliability,
+      clamp(
+        Math.round(
+          reliability
+        ),
+        0,
+        100
+      ),
 
     bias:
-      normalizedSignal >=
+      value >=
         12
         ? "BULLISH"
-        : normalizedSignal <=
+        : value <=
             -12
           ? "BEARISH"
           : "NEUTRAL",
-
-    strength:
-      clamp(
-        Math.round(
-          50 +
-          Math.abs(
-            normalizedSignal
-          ) *
-            0.5
-        ),
-        50,
-        100
-      ),
-
-    /* Compatibility field.
-       This is not a win probability. */
-    confidence:
-      clamp(
-        Math.round(
-          50 +
-          Math.abs(
-            normalizedSignal
-          ) *
-            0.5
-        ),
-        50,
-        100
-      ),
 
     reasons:
       reasons.slice(
@@ -4749,76 +3251,38 @@ function trendModule(
 ) {
   let signal =
     biasSign(
-      packet.H4.bias
-    ) *
-      27 +
-
-    biasSign(
       packet.H1.bias
     ) *
-      32 +
+      20 +
 
     biasSign(
       packet.M15.bias
     ) *
-      26 +
+      35 +
 
     biasSign(
       packet.M5.bias
     ) *
+      30 +
+
+    biasSign(
+      packet.M1.bias
+    ) *
       15;
-
-  const slopeH1 =
-    Number(
-      packet.H1
-        .indicators
-        .ema20SlopeAtr ||
-      0
-    );
-
-  const slopeM15 =
-    Number(
-      packet.M15
-        .indicators
-        .ema20SlopeAtr ||
-      0
-    );
-
-  signal +=
-    clamp(
-      slopeH1 *
-        9,
-      -9,
-      9
-    );
-
-  signal +=
-    clamp(
-      slopeM15 *
-        7,
-      -7,
-      7
-    );
 
   return moduleResult(
     "trend",
-    clamp(
-      signal,
-      -100,
-      100
-    ),
-
-    54 +
+    signal,
+    65 +
       Math.abs(
         signal
       ) *
-        0.38,
-
+        0.25,
     [
-      `H4 ${packet.H4.bias}`,
       `H1 ${packet.H1.bias}`,
       `M15 ${packet.M15.bias}`,
-      `M5 ${packet.M5.bias}`
+      `M5 ${packet.M5.bias}`,
+      `M1 ${packet.M1.bias}`
     ]
   );
 }
@@ -4834,21 +3298,21 @@ function structureModule(
 
   signal +=
     biasSign(
-      packet.H1
-        .structure
-    ) *
-      28;
-
-  signal +=
-    biasSign(
       packet.M15
         .structure
     ) *
-      24;
+      18;
 
   signal +=
     biasSign(
-      packet.M15
+      packet.M5
+        .structure
+    ) *
+      26;
+
+  signal +=
+    biasSign(
+      packet.M5
         .ict
         .bos
     ) *
@@ -4856,43 +3320,34 @@ function structureModule(
 
   signal +=
     biasSign(
-      packet.M15
-        .ict
-        .choch
-    ) *
-      14;
-
-  signal +=
-    biasSign(
-      packet.M5
+      packet.M1
         .ict
         .bos
     ) *
-      9;
+      20;
 
   signal +=
     biasSign(
-      packet.M5
+      packet.M1
         .ict
         .choch
     ) *
-      5;
+      16;
 
   return moduleResult(
     "structure",
     signal,
-
-    46 +
+    58 +
       Math.abs(
         signal
       ) *
-        0.47,
-
+        0.32,
     [
-      `H1 ${packet.H1.structure}`,
       `M15 ${packet.M15.structure}`,
-      `M15 ${packet.M15.ict.bos}`,
-      `M15 ${packet.M15.ict.choch}`
+      `M5 ${packet.M5.structure}`,
+      `M5 ${packet.M5.ict.bos}`,
+      `M1 ${packet.M1.ict.bos}`,
+      `M1 ${packet.M1.ict.choch}`
     ]
   );
 }
@@ -4904,207 +3359,45 @@ function structureModule(
 function liquidityModule(
   packet
 ) {
-  let signal = 0;
+  const gold =
+    packet.gold;
 
-  const reasons =
-    [];
+  let signal =
+    gold.bullishLiquidityScore -
+    gold.bearishLiquidityScore;
 
   if (
-    packet.M5.ict
-      .sweep.type ===
+    packet.M1
+      .ict
+      .sweep
+      .type ===
     "BULLISH_SELLSIDE_SWEEP"
   ) {
-    signal += 35;
-
-    reasons.push(
-      "M5 sell-side sweep reclaimed."
-    );
+    signal += 15;
   }
 
   if (
-    packet.M5.ict
-      .sweep.type ===
+    packet.M1
+      .ict
+      .sweep
+      .type ===
     "BEARISH_BUYSIDE_SWEEP"
   ) {
-    signal -= 35;
-
-    reasons.push(
-      "M5 buy-side sweep rejected."
-    );
-  }
-
-  if (
-    packet.M15.ict
-      .sweep.type ===
-    "BULLISH_SELLSIDE_SWEEP"
-  ) {
-    signal += 24;
-
-    reasons.push(
-      "M15 sell-side sweep reclaimed."
-    );
-  }
-
-  if (
-    packet.M15.ict
-      .sweep.type ===
-    "BEARISH_BUYSIDE_SWEEP"
-  ) {
-    signal -= 24;
-
-    reasons.push(
-      "M15 buy-side sweep rejected."
-    );
-  }
-
-  if (
-    packet.M15.ict
-      .premiumDiscount ===
-    "DISCOUNT"
-  ) {
-    signal += 13;
-
-    reasons.push(
-      "M15 in discount."
-    );
-  }
-
-  if (
-    packet.M15.ict
-      .premiumDiscount ===
-    "PREMIUM"
-  ) {
-    signal -= 13;
-
-    reasons.push(
-      "M15 in premium."
-    );
-  }
-
-  if (
-    packet.M15.ict
-      .bullishFVG
-  ) {
-    const fill =
-      Number(
-        packet.M15
-          .ict
-          .bullishFVG
-          .fillPct ||
-        0
-      );
-
-    signal +=
-      fill < 70
-        ? 8
-        : 3;
-  }
-
-  if (
-    packet.M15.ict
-      .bearishFVG
-  ) {
-    const fill =
-      Number(
-        packet.M15
-          .ict
-          .bearishFVG
-          .fillPct ||
-        0
-      );
-
-    signal -=
-      fill < 70
-        ? 8
-        : 3;
-  }
-
-  if (
-    packet.M15.ict
-      .orderBlock
-      ?.type ===
-    "BULLISH_OB"
-  ) {
-    signal += 9;
-  }
-
-  if (
-    packet.M15.ict
-      .orderBlock
-      ?.type ===
-    "BEARISH_OB"
-  ) {
-    signal -= 9;
-  }
-
-  const map =
-    packet.liquidityMap;
-
-  if (
-    map?.nearestBuySide &&
-    map?.nearestSellSide
-  ) {
-    const upside =
-      Number(
-        map
-          .nearestBuySide
-          .distanceAtr
-      );
-
-    const downside =
-      Number(
-        map
-          .nearestSellSide
-          .distanceAtr
-      );
-
-    if (
-      Number.isFinite(
-        upside
-      ) &&
-      Number.isFinite(
-        downside
-      )
-    ) {
-      if (
-        upside >=
-          1.4 &&
-        downside <=
-          0.8
-      ) {
-        signal += 5;
-
-        reasons.push(
-          "More clean liquidity room above."
-        );
-      }
-
-      if (
-        downside >=
-          1.4 &&
-        upside <=
-          0.8
-      ) {
-        signal -= 5;
-
-        reasons.push(
-          "More clean liquidity room below."
-        );
-      }
-    }
+    signal -= 15;
   }
 
   return moduleResult(
     "liquidity",
     signal,
-
-    44 +
-      Math.abs(
-        signal
-      ) *
-        0.5,
-
-    reasons
+    62 +
+      Math.min(
+        30,
+        Math.abs(
+          signal
+        ) *
+          0.25
+      ),
+    gold.signals
   );
 }
 
@@ -5115,24 +3408,26 @@ function liquidityModule(
 function momentumModule(
   packet
 ) {
-  let signal = 0;
+  let signal =
+    biasSign(
+      packet.M1.momentum
+    ) *
+      30 +
 
-  const reasons =
-    [];
-
-  signal +=
     biasSign(
       packet.M5.momentum
     ) *
-      26;
+      35;
 
-  signal +=
-    biasSign(
-      packet.M15.momentum
-    ) *
-      20;
+  const hist1 =
+    Number(
+      packet.M1
+        .indicators
+        .macdHistogram ||
+      0
+    );
 
-  const histogram5 =
+  const hist5 =
     Number(
       packet.M5
         .indicators
@@ -5140,31 +3435,23 @@ function momentumModule(
       0
     );
 
-  const histogram15 =
-    Number(
-      packet.M15
-        .indicators
-        .macdHistogram ||
-      0
-    );
-
   signal +=
-    histogram5 > 0
-      ? 14
-      : histogram5 < 0
-        ? -14
+    hist1 > 0
+      ? 15
+      : hist1 < 0
+        ? -15
         : 0;
 
   signal +=
-    histogram15 > 0
+    hist5 > 0
       ? 10
-      : histogram15 < 0
+      : hist5 < 0
         ? -10
         : 0;
 
-  const rsi5 =
+  const rsi1 =
     Number(
-      packet.M5
+      packet.M1
         .indicators
         .rsi14 ||
       50
@@ -5173,62 +3460,27 @@ function momentumModule(
   signal +=
     clamp(
       (
-        rsi5 -
+        rsi1 -
         50
       ) *
-        0.9,
-      -18,
-      18
+        0.6,
+      -10,
+      10
     );
-
-  const roc5 =
-    Number(
-      packet.M5
-        .indicators
-        .roc10 ||
-      0
-    );
-
-  signal +=
-    clamp(
-      roc5 *
-        4,
-      -12,
-      12
-    );
-
-  reasons.push(
-    `M5 momentum ${packet.M5.momentum}`
-  );
-
-  reasons.push(
-    `M15 momentum ${packet.M15.momentum}`
-  );
-
-  reasons.push(
-    `M5 RSI ${round(rsi5, 1)}`
-  );
-
-  reasons.push(
-    `M5 MACD histogram ${
-      histogram5 >=
-      0
-        ? "positive"
-        : "negative"
-    }`
-  );
 
   return moduleResult(
     "momentum",
     signal,
-
-    48 +
+    58 +
       Math.abs(
         signal
       ) *
-        0.42,
-
-    reasons
+        0.3,
+    [
+      `M1 ${packet.M1.momentum}`,
+      `M5 ${packet.M5.momentum}`,
+      `M1 RSI ${round(rsi1, 1)}`
+    ]
   );
 }
 
@@ -5239,143 +3491,261 @@ function momentumModule(
 function regimeModule(
   packet
 ) {
-  const regime =
-    packet.regimeDetails;
-
   let signal = 0;
 
-  if (
-    regime.name ===
-    "TRENDING_BULLISH"
+  switch (
+    packet.regime.name
   ) {
-    signal = 78;
-  } else if (
-    regime.name ===
-    "TRENDING_BEARISH"
-  ) {
-    signal = -78;
-  } else if (
-    regime.name ===
-    "BREAKOUT_BULLISH"
-  ) {
-    signal = 88;
-  } else if (
-    regime.name ===
-    "BREAKOUT_BEARISH"
-  ) {
-    signal = -88;
-  } else if (
-    regime.name ===
-    "REVERSAL_RISK"
-  ) {
-    signal =
-      biasSign(
-        packet.M15
-          .ict
-          .choch
-      ) *
-      42;
-  } else if (
-    regime.name ===
-    "MIXED"
-  ) {
-    signal =
-      biasSign(
-        packet.H1.bias
-      ) *
-        20 +
-      biasSign(
-        packet.M15.bias
-      ) *
-        15;
+    case "TRENDING_BULLISH":
+      signal = 80;
+      break;
+
+    case "TRENDING_BEARISH":
+      signal = -80;
+      break;
+
+    case "BREAKOUT_BULLISH":
+      signal = 88;
+      break;
+
+    case "BREAKOUT_BEARISH":
+      signal = -88;
+      break;
+
+    default:
+      signal = 0;
   }
 
   return moduleResult(
     "regime",
     signal,
-    regime.quality,
+    packet.regime
+      .quality,
     [
-      regime.name,
-      ...(
-        regime.notes ||
-        []
-      ).slice(
-        0,
-        2
-      )
+      packet.regime.name
     ]
   );
 }
 
 /* =========================================================
-   SESSION MODULE
+   GOLD-SPECIFIC MODULE
 ========================================================= */
 
-function sessionModule(
+function goldModule(
   packet
 ) {
-  const liquid =
+  let signal = 0;
+
+  const reasons =
+    [];
+
+  /*
+     Gold reacts best during London / NY liquidity.
+  */
+
+  if (
     [
       "LONDON",
       "LONDON_NEW_YORK_OVERLAP",
       "NEW_YORK"
     ].includes(
       packet.session
+    )
+  ) {
+    if (
+      packet.M15.bias ===
+      "BULLISH"
+    ) {
+      signal += 15;
+    }
+
+    if (
+      packet.M15.bias ===
+      "BEARISH"
+    ) {
+      signal -= 15;
+    }
+
+    reasons.push(
+      `${packet.session} gold liquidity window.`
     );
+  }
 
-  let signal = 0;
-
-  const reliability =
-    liquid
-      ? 58
-      : 30;
+  /*
+     Displacement is more important than a weak BOS.
+  */
 
   if (
-    packet.H1.bias ===
-      packet.M15.bias &&
-    packet.M15.bias !==
-      "NEUTRAL"
+    packet.M1
+      .displacement
+      .direction ===
+    "BULLISH"
   ) {
-    signal =
-      biasSign(
-        packet.M15.bias
-      ) *
-      (
-        liquid
-          ? 65
-          : 36
-      );
-  } else if (
-    packet.M15.bias !==
-    "NEUTRAL"
+    signal += 25;
+
+    reasons.push(
+      "M1 bullish displacement."
+    );
+  }
+
+  if (
+    packet.M1
+      .displacement
+      .direction ===
+    "BEARISH"
   ) {
-    signal =
-      biasSign(
-        packet.M15.bias
-      ) *
-      (
-        liquid
-          ? 32
-          : 18
-      );
+    signal -= 25;
+
+    reasons.push(
+      "M1 bearish displacement."
+    );
+  }
+
+  if (
+    packet.M5
+      .displacement
+      .direction ===
+    "BULLISH"
+  ) {
+    signal += 25;
+
+    reasons.push(
+      "M5 bullish displacement."
+    );
+  }
+
+  if (
+    packet.M5
+      .displacement
+      .direction ===
+    "BEARISH"
+  ) {
+    signal -= 25;
+
+    reasons.push(
+      "M5 bearish displacement."
+    );
   }
 
   return moduleResult(
-    "session",
+    "gold",
     signal,
-    reliability,
-    [
-      `${packet.session} session`,
-
-      liquid
-        ? "Active liquidity window."
-        : "Lower-liquidity window."
-    ]
+    68,
+    reasons
   );
 }
 
 /* =========================================================
-   TECHNICAL ENSEMBLE
+   ENTRY TRIGGER
+========================================================= */
+
+function hasEntryTrigger(
+  direction,
+  packet
+) {
+  if (
+    direction ===
+    "BUY"
+  ) {
+    const liquidity =
+      packet.M1.ict
+        .sweep.type ===
+        "BULLISH_SELLSIDE_SWEEP" ||
+      packet.gold
+        .bullishLiquidityScore >=
+        30;
+
+    const structure =
+      packet.M1.ict
+        .bos ===
+        "BULLISH_BOS" ||
+      packet.M1.ict
+        .choch ===
+        "BULLISH_CHOCH";
+
+    const displacement =
+      packet.M1
+        .displacement
+        .direction ===
+        "BULLISH" ||
+      packet.M5
+        .displacement
+        .direction ===
+        "BULLISH";
+
+    const momentum =
+      packet.M1.momentum ===
+        "BULLISH" ||
+      Number(
+        packet.M1
+          .indicators
+          .macdHistogram
+      ) > 0;
+
+    return (
+      (
+        liquidity ||
+        structure
+      ) &&
+      displacement &&
+      momentum
+    );
+  }
+
+  if (
+    direction ===
+    "SELL"
+  ) {
+    const liquidity =
+      packet.M1.ict
+        .sweep.type ===
+        "BEARISH_BUYSIDE_SWEEP" ||
+      packet.gold
+        .bearishLiquidityScore >=
+        30;
+
+    const structure =
+      packet.M1.ict
+        .bos ===
+        "BEARISH_BOS" ||
+      packet.M1.ict
+        .choch ===
+        "BEARISH_CHOCH";
+
+    const displacement =
+      packet.M1
+        .displacement
+        .direction ===
+        "BEARISH" ||
+      packet.M5
+        .displacement
+        .direction ===
+        "BEARISH";
+
+    const momentum =
+      packet.M1.momentum ===
+        "BEARISH" ||
+      Number(
+        packet.M1
+          .indicators
+          .macdHistogram
+      ) < 0;
+
+    return (
+      (
+        liquidity ||
+        structure
+      ) &&
+      displacement &&
+      momentum
+    );
+  }
+
+  return false;
+}
+
+/* =========================================================
+   TECHNICAL SCORE
 ========================================================= */
 
 function scoreTechnical(
@@ -5403,70 +3773,65 @@ function scoreTechnical(
         packet
       ),
 
-      sessionModule(
+      goldModule(
         packet
       )
     ];
 
-  let weightedSignal = 0;
-
-  let weightedReliability = 0;
-
+  let numerator = 0;
   let denominator = 0;
+  let reliabilityTotal = 0;
 
   for (
     const module of
     modules
   ) {
     const weight =
-      Number(
-        ENSEMBLE_WEIGHTS[
-          module.name
-        ] ||
-        0
-      );
+      WEIGHTS[
+        module.name
+      ];
 
-    const reliabilityFactor =
+    const reliability =
       Math.max(
         0.25,
         module.reliability /
           100
       );
 
-    weightedSignal +=
+    numerator +=
       module.signal *
       weight *
-      reliabilityFactor;
-
-    weightedReliability +=
-      module.reliability *
-      weight;
+      reliability;
 
     denominator +=
       weight *
-      reliabilityFactor;
+      reliability;
+
+    reliabilityTotal +=
+      module.reliability *
+      weight;
   }
 
   const signal =
     denominator
-      ? weightedSignal /
+      ? numerator /
         denominator
       : 0;
 
   const totalWeight =
     Object.values(
-      ENSEMBLE_WEIGHTS
+      WEIGHTS
     ).reduce(
       (
         sum,
-        value
+        x
       ) =>
-        sum + value,
+        sum + x,
       0
     );
 
   let quality =
-    weightedReliability /
+    reliabilityTotal /
     totalWeight;
 
   const buyScore =
@@ -5510,79 +3875,64 @@ function scoreTechnical(
         ? "SELL"
         : "WAIT";
 
-  const directionalModules =
+  const directional =
     modules.filter(
-      module =>
+      x =>
         Math.abs(
-          module.signal
+          x.signal
         ) >=
         12
     );
 
   const agreeing =
-    directionalModules.filter(
-      module => {
-        if (
-          provisional ===
-          "BUY"
-        ) {
-          return (
-            module.signal >
+    directional.filter(
+      module =>
+        provisional ===
+        "BUY"
+          ? module.signal >
             0
-          );
-        }
-
-        if (
-          provisional ===
-          "SELL"
-        ) {
-          return (
-            module.signal <
-            0
-          );
-        }
-
-        return false;
-      }
+          : provisional ===
+              "SELL"
+            ? module.signal <
+              0
+            : false
     ).length;
 
   const agreementPct =
-    directionalModules.length
-      ? (
-          agreeing /
-          directionalModules.length
-        ) *
+    directional.length
+      ? agreeing /
+        directional.length *
         100
       : 0;
 
   const penalties =
     [];
 
+  /*
+     Anti-chase logic.
+  */
+
   const price =
     Number(
       packet.currentPrice
     );
 
-  const atr5 =
+  const ema20 =
+    Number(
+      packet.M1
+        .indicators
+        .ema20
+    );
+
+  const atr1 =
     Math.max(
       Number(
-        packet.M5
+        packet.M1
           .indicators
           .atr14 ||
         0
       ),
-
-      Math.abs(
-        price
-      ) *
-        0.0001
-    );
-
-  const ema20 =
-    Number(
-      packet.M5
-        .indicators
-        .ema20
+      0.01
     );
 
   const stretch =
@@ -5593,143 +3943,101 @@ function scoreTechnical(
           price -
           ema20
         ) /
-        atr5
+        atr1
       : 0;
-
-  const rsiValue =
-    Number(
-      packet.M5
-        .indicators
-        .rsi14 ||
-      50
-    );
 
   if (
     stretch >
     MAX_ENTRY_STRETCH_ATR
   ) {
-    quality -= 15;
+    quality -= 18;
 
     penalties.push(
-      `Price is ${round(
+      `Price stretched ${round(
         stretch,
         2
-      )} ATR from M5 EMA20.`
-    );
-  } else if (
-    stretch >
-    1.5
-  ) {
-    quality -= 8;
-
-    penalties.push(
-      `Entry is extended ${round(
-        stretch,
-        2
-      )} ATR from M5 EMA20.`
+      )} ATR from M1 EMA20.`
     );
   }
 
-  if (
-    packet.regimeDetails
-      .name ===
-    "HIGH_VOLATILITY_CHOP"
-  ) {
-    quality -= 22;
-
-    penalties.push(
-      "High-volatility chop."
-    );
-  }
-
-  if (
-    [
-      "RANGE",
-      "COMPRESSION"
-    ].includes(
-      packet.regimeDetails
-        .name
-    )
-  ) {
-    quality -= 8;
-
-    penalties.push(
-      `${packet.regimeDetails.name} reduces continuation quality.`
-    );
-  }
-
-  if (
-    (
-      packet.H4.bias ===
-        "BULLISH" &&
-      packet.H1.bias ===
-        "BEARISH"
-    ) ||
-    (
-      packet.H4.bias ===
-        "BEARISH" &&
-      packet.H1.bias ===
-        "BULLISH"
-    )
-  ) {
-    quality -= 8;
-
-    penalties.push(
-      "H4/H1 conflict."
-    );
-  }
+  /*
+     Do not fight M5 + M15 together.
+  */
 
   if (
     provisional ===
       "BUY" &&
-    rsiValue >
-      76
+    packet.M5.bias ===
+      "BEARISH" &&
+    packet.M15.bias ===
+      "BEARISH"
   ) {
-    quality -= 8;
+    quality -= 20;
 
     penalties.push(
-      "M5 RSI overbought for fresh BUY."
+      "BUY conflicts with both M5 and M15."
     );
   }
 
   if (
     provisional ===
       "SELL" &&
-    rsiValue <
-      24
+    packet.M5.bias ===
+      "BULLISH" &&
+    packet.M15.bias ===
+      "BULLISH"
+  ) {
+    quality -= 20;
+
+    penalties.push(
+      "SELL conflicts with both M5 and M15."
+    );
+  }
+
+  if (
+    packet.regime.name ===
+    "EXTREME_CHOP"
+  ) {
+    quality -= 30;
+
+    penalties.push(
+      "Extreme-volatility chop."
+    );
+  }
+
+  if (
+    packet.session ===
+      "ASIA"
   ) {
     quality -= 8;
 
     penalties.push(
-      "M5 RSI oversold for fresh SELL."
+      "Asia session receives reduced gold scalp quality."
+    );
+  }
+
+  if (
+    packet.session ===
+      "TRANSITION"
+  ) {
+    quality -= 18;
+
+    penalties.push(
+      "Transition session."
     );
   }
 
   if (
     agreementPct <
-      MIN_MODULE_AGREEMENT &&
-    directionalModules.length >=
-      3
+    MIN_MODULE_AGREEMENT
   ) {
     quality -= 10;
 
     penalties.push(
-      `Only ${round(
+      `Module agreement only ${round(
         agreementPct,
         0
-      )}% module agreement.`
-    );
-  }
-
-  if (
-    !packet.dataQuality
-      .valid
-  ) {
-    quality -= 25;
-
-    penalties.push(
-      ...packet.dataQuality
-        .issues
+      )}%.`
     );
   }
 
@@ -5756,110 +4064,26 @@ function scoreTechnical(
       MIN_ENSEMBLE_QUALITY &&
     agreementPct >=
       MIN_MODULE_AGREEMENT &&
-    packet.dataQuality
-      .valid
+    hasEntryTrigger(
+      provisional,
+      packet
+    )
   ) {
     direction =
       provisional;
   }
 
-  const impact =
-    module =>
-      Math.abs(
-        module.signal
-      ) *
-      (
-        ENSEMBLE_WEIGHTS[
-          module.name
-        ] ||
-        0
-      ) *
-      (
-        module.reliability /
-        100
-      );
-
-  const ranked =
-    [
-      ...modules
-    ].sort(
-      (a, b) =>
-        impact(b) -
-        impact(a)
-    );
-
-  const reasons =
-    [];
-
-  for (
-    const module of
-    ranked
-  ) {
-    const aligned =
-      direction ===
-        "BUY"
-        ? module.signal >
-          0
-        : direction ===
-            "SELL"
-          ? module.signal <
-            0
-          : Math.abs(
-              module.signal
-            ) >=
-            12;
-
-    if (
-      !aligned
-    ) {
-      continue;
-    }
-
-    reasons.push(
-      `${module.name.toUpperCase()}: ${module.bias} (${module.strength}/100 strength)`
-    );
-
-    if (
-      module.reasons?.[0]
-    ) {
-      reasons.push(
-        module.reasons[0]
-      );
-    }
-
-    if (
-      reasons.length >=
-      8
-    ) {
-      break;
-    }
-  }
-
-  if (
-    direction ===
-      "WAIT" &&
-    !reasons.length
-  ) {
-    reasons.push(
-      "No sufficient directional separation."
-    );
-  }
-
   return {
     direction,
 
+    provisional,
+
     buyScore,
     sellScore,
-    margin,
-
     score:
       best,
 
-    signal:
-      round(
-        signal,
-        1
-      ),
+    margin,
 
     quality,
 
@@ -5869,29 +4093,38 @@ function scoreTechnical(
         1
       ),
 
+    signedSignal:
+      round(
+        signal,
+        1
+      ),
+
     stretchAtr:
       round(
         stretch,
         2
       ),
 
-    reasons:
-      reasons.slice(
-        0,
-        8
-      ),
+    entryTrigger:
+      provisional !==
+        "WAIT"
+        ? hasEntryTrigger(
+            provisional,
+            packet
+          )
+        : false,
 
-    penalties,
+    modules,
 
-    modules
+    penalties
   };
 }
 
 /* =========================================================
-   LIQUIDITY TARGETS
+   GOLD TARGET LIQUIDITY
 ========================================================= */
 
-function candidateLiquidityTargets(
+function buildTargets(
   direction,
   packet,
   entry
@@ -5899,121 +4132,111 @@ function candidateLiquidityTargets(
   const levels =
     [];
 
-  const add =
-    (
-      value,
-      name,
-      kind = "LEVEL"
-    ) => {
-      const numeric =
-        Number(
-          value
-        );
-
-      if (
-        !Number.isFinite(
-          numeric
-        )
-      ) {
-        return;
-      }
-
-      if (
-        direction ===
-          "BUY" &&
-        numeric >
-          entry
-      ) {
-        levels.push({
-          price:
-            numeric,
-
-          name,
-          kind
-        });
-      }
-
-      if (
-        direction ===
-          "SELL" &&
-        numeric <
-          entry
-      ) {
-        levels.push({
-          price:
-            numeric,
-
-          name,
-          kind
-        });
-      }
-    };
-
-  for (
-    const pool of
-    packet.liquidityMap
-      ?.pools ||
-    []
+  function add(
+    price,
+    name
   ) {
-    add(
-      pool.price,
-      pool.label,
-      pool.kind
-    );
+    const n =
+      Number(price);
+
+    if (
+      !Number.isFinite(
+        n
+      )
+    ) {
+      return;
+    }
+
+    if (
+      direction ===
+        "BUY" &&
+      n >
+        entry
+    ) {
+      levels.push({
+        price:
+          n,
+
+        name
+      });
+    }
+
+    if (
+      direction ===
+        "SELL" &&
+      n <
+        entry
+    ) {
+      levels.push({
+        price:
+          n,
+
+        name
+      });
+    }
   }
 
   add(
-    packet.M15.ict
-      .equalHigh,
-    "M15 equal high",
-    "EQUAL_HIGH"
+    packet.gold
+      .asianRange
+      ?.high,
+    "Asian high"
   );
 
   add(
-    packet.M15.ict
-      .equalLow,
-    "M15 equal low",
-    "EQUAL_LOW"
+    packet.gold
+      .asianRange
+      ?.low,
+    "Asian low"
   );
 
   add(
-    packet.H1.ict
+    packet.gold
+      .previousDay
+      ?.high,
+    "Previous-day high"
+  );
+
+  add(
+    packet.gold
+      .previousDay
+      ?.low,
+    "Previous-day low"
+  );
+
+  add(
+    packet.M5
+      .ict
       .lastSwingHigh,
-    "H1 swing high",
-    "SWING_HIGH"
+    "M5 swing high"
   );
 
   add(
-    packet.H1.ict
+    packet.M5
+      .ict
       .lastSwingLow,
-    "H1 swing low",
-    "SWING_LOW"
+    "M5 swing low"
   );
 
   add(
-    packet.H1.range
-      .high,
-    "H1 range high",
-    "RANGE_HIGH"
+    packet.M15
+      .ict
+      .lastSwingHigh,
+    "M15 swing high"
   );
 
   add(
-    packet.H1.range
-      .low,
-    "H1 range low",
-    "RANGE_LOW"
+    packet.M15
+      .ict
+      .lastSwingLow,
+    "M15 swing low"
   );
-
-  const tolerance =
-    Math.abs(
-      entry
-    ) *
-    0.00003;
 
   const unique =
     [];
 
-  const sorted =
+  for (
+    const item of
     levels.sort(
       (a, b) =>
         Math.abs(
@@ -6024,30 +4247,23 @@ function candidateLiquidityTargets(
           b.price -
           entry
         )
-    );
-
-  for (
-    const level of
-    sorted
+    )
   ) {
-    const duplicate =
-      unique.some(
-        existing =>
-          Math.abs(
-            existing.price -
-            level.price
-          ) <=
-          tolerance
-      );
-
     if (
-      duplicate
+      unique.some(
+        x =>
+          Math.abs(
+            x.price -
+            item.price
+          ) <=
+          0.05
+      )
     ) {
       continue;
     }
 
     unique.push(
-      level
+      item
     );
   }
 
@@ -6060,7 +4276,6 @@ function candidateLiquidityTargets(
 
 function buildRiskPlan(
   direction,
-  symbol,
   packet
 ) {
   if (
@@ -6068,32 +4283,11 @@ function buildRiskPlan(
     "WAIT"
   ) {
     return {
-      valid: false,
+      valid:
+        false,
 
       reason:
-        "No ensemble-qualified technical candidate.",
-
-      entryType:
-        "NONE"
-    };
-  }
-
-  if (
-    !packet.dataQuality
-      .valid
-  ) {
-    return {
-      valid: false,
-
-      reason:
-        packet.dataQuality
-          .issues
-          .join(
-            " "
-          ),
-
-      entryType:
-        "NONE"
+        "No qualified gold setup."
     };
   }
 
@@ -6102,174 +4296,73 @@ function buildRiskPlan(
       packet.currentPrice
     );
 
-  const atr5 =
-    Math.max(
-      Number(
-        packet.M5
-          .indicators
-          .atr14 ||
-        0
-      ),
-
-      Math.abs(
-        entry
-      ) *
-        0.0001
-    );
-
-  const ema20 =
+  const atr1 =
     Number(
-      packet.M5
+      packet.M1
         .indicators
-        .ema20
+        .atr14
     );
-
-  const stretchAtr =
-    Number.isFinite(
-      ema20
-    )
-      ? Math.abs(
-          entry -
-          ema20
-        ) /
-        atr5
-      : 0;
 
   if (
-    stretchAtr >
-    MAX_ENTRY_STRETCH_ATR
+    !Number.isFinite(
+      atr1
+    ) ||
+    atr1 <= 0
   ) {
     return {
-      valid: false,
+      valid:
+        false,
 
       reason:
-        `Price is stretched ${round(
-          stretchAtr,
-          2
-        )} ATR from M5 EMA20.`,
-
-      entryType:
-        "WAIT_RETEST",
-
-      suggestedEntry:
-        Number.isFinite(
-          ema20
-        )
-          ? priceRound(
-              symbol,
-              ema20
-            )
-          : null,
-
-      stretchAtr:
-        round(
-          stretchAtr,
-          2
-        )
+        "Invalid M1 ATR."
     };
   }
 
   const swingLow =
     Number(
-      packet.M5.ict
+      packet.M1.ict
         .lastSwingLow
     );
 
   const swingHigh =
     Number(
-      packet.M5.ict
+      packet.M1.ict
         .lastSwingHigh
     );
 
   const swingLowAge =
     Number(
-      packet.M5.ict
+      packet.M1.ict
         .lastSwingLowAge
     );
 
   const swingHighAge =
     Number(
-      packet.M5.ict
+      packet.M1.ict
         .lastSwingHighAge
     );
 
-  const validSwingLow =
+  const validLow =
     Number.isFinite(
       swingLow
     ) &&
-    Number.isFinite(
-      swingLowAge
-    ) &&
     swingLowAge <=
-      MAX_SWING_AGE_M5 &&
+      MAX_SWING_AGE_M1 &&
     swingLow <
       entry;
 
-  const validSwingHigh =
+  const validHigh =
     Number.isFinite(
       swingHigh
     ) &&
-    Number.isFinite(
-      swingHighAge
-    ) &&
     swingHighAge <=
-      MAX_SWING_AGE_M5 &&
+      MAX_SWING_AGE_M1 &&
     swingHigh >
       entry;
 
-  const regime =
-    packet.regimeDetails
-      ?.name ||
-    "MIXED";
-
-  let stopAtrFactor =
-    1.08;
-
-  if (
-    regime.startsWith(
-      "TRENDING_"
-    )
-  ) {
-    stopAtrFactor =
-      1.0;
-  }
-
-  if (
-    regime.startsWith(
-      "BREAKOUT_"
-    )
-  ) {
-    stopAtrFactor =
-      1.12;
-  }
-
-  if (
-    regime ===
-    "RANGE"
-  ) {
-    stopAtrFactor =
-      0.95;
-  }
-
-  if (
-    regime ===
-    "COMPRESSION"
-  ) {
-    stopAtrFactor =
-      1.0;
-  }
-
-  if (
-    regime ===
-    "HIGH_VOLATILITY_CHOP"
-  ) {
-    stopAtrFactor =
-      1.35;
-  }
-
   const buffer =
-    atr5 *
-    0.20;
+    atr1 *
+    0.15;
 
   let stop;
 
@@ -6277,92 +4370,75 @@ function buildRiskPlan(
     direction ===
     "BUY"
   ) {
-    const atrStop =
-      entry -
-      atr5 *
-        stopAtrFactor;
-
-    const structureStop =
-      validSwingLow
+    stop =
+      validLow
         ? swingLow -
           buffer
         : entry -
-          atr5 *
-            1.25;
-
-    stop =
-      Math.min(
-        atrStop,
-        structureStop
-      );
+          atr1 *
+            1.0;
   } else {
-    const atrStop =
-      entry +
-      atr5 *
-        stopAtrFactor;
-
-    const structureStop =
-      validSwingHigh
+    stop =
+      validHigh
         ? swingHigh +
           buffer
         : entry +
-          atr5 *
-            1.25;
-
-    stop =
-      Math.max(
-        atrStop,
-        structureStop
-      );
+          atr1 *
+            1.0;
   }
 
-  const risk =
+  let risk =
     Math.abs(
       entry -
       stop
     );
 
+  /*
+     Prevent unrealistically tight gold stops.
+  */
+
+  const minimumRisk =
+    atr1 *
+    MIN_STOP_ATR;
+
   if (
-    !Number.isFinite(
-      risk
-    ) ||
-    risk <= 0
+    risk <
+    minimumRisk
   ) {
-    return {
-      valid: false,
+    stop =
+      direction ===
+        "BUY"
+        ? entry -
+          minimumRisk
+        : entry +
+          minimumRisk;
 
-      reason:
-        "Invalid stop distance.",
-
-      entryType:
-        "NONE"
-    };
+    risk =
+      minimumRisk;
   }
 
   const stopAtr =
     risk /
-    atr5;
+    atr1;
 
   if (
     stopAtr >
     MAX_STOP_ATR
   ) {
     return {
-      valid: false,
+      valid:
+        false,
 
       reason:
         `Stop requires ${round(
           stopAtr,
           2
-        )} ATR; maximum is ${MAX_STOP_ATR}.`,
-
-      entryType:
-        "NONE"
+        )} ATR; too wide for scalp.`
     };
   }
 
   const targets =
-    candidateLiquidityTargets(
+    buildTargets(
       direction,
       packet,
       entry
@@ -6372,7 +4448,7 @@ function buildRiskPlan(
     targets[0] ||
     null;
 
-  const roomR =
+  const nearestR =
     nearest
       ? Math.abs(
           nearest.price -
@@ -6382,45 +4458,26 @@ function buildRiskPlan(
       : null;
 
   if (
-    roomR !== null &&
-    roomR <
+    nearestR !==
+      null &&
+    nearestR <
       MIN_LIQUIDITY_ROOM_R
   ) {
     return {
-      valid: false,
+      valid:
+        false,
 
       reason:
-        `Nearest target liquidity (${nearest.name}) is only ${round(
-          roomR,
+        `${nearest.name} is only ${round(
+          nearestR,
           2
-        )}R away.`,
-
-      entryType:
-        "NONE",
-
-      nearestLiquidity:
-        {
-          name:
-            nearest.name,
-
-          price:
-            priceRound(
-              symbol,
-              nearest.price
-            ),
-
-          roomR:
-            round(
-              roomR,
-              2
-            )
-        }
+        )}R away.`
     };
   }
 
   const sign =
     direction ===
-    "BUY"
+      "BUY"
       ? 1
       : -1;
 
@@ -6438,52 +4495,38 @@ function buildRiskPlan(
 
   if (
     nearest &&
-    roomR !== null &&
-    roomR >=
-      MIN_LIQUIDITY_ROOM_R &&
-    roomR <
-      TP1_R
+    nearestR >=
+      1.0 &&
+    nearestR <
+      TP1_R *
+        1.15
   ) {
     tp1 =
       nearest.price;
   }
 
-  const rr1Before =
-    Math.abs(
-      tp1 -
-      entry
-    ) /
-    risk;
-
-  const secondTarget =
+  const second =
     targets.find(
-      target => {
-        const r =
+      level => {
+        const rr =
           Math.abs(
-            target.price -
+            level.price -
             entry
           ) /
           risk;
 
         return (
-          r >=
-          Math.max(
-            1.45,
-            rr1Before +
-              0.20
-          ) &&
-          r <=
-            TP2_R *
-            1.35
+          rr >=
+            1.35 &&
+          rr <=
+            2.25
         );
       }
     );
 
-  if (
-    secondTarget
-  ) {
+  if (second) {
     tp2 =
-      secondTarget.price;
+      second.price;
   }
 
   const rr1 =
@@ -6502,98 +4545,51 @@ function buildRiskPlan(
 
   if (
     rr1 <
-      1.0 ||
+      0.95 ||
     rr2 <
-      1.4 ||
-    rr2 <=
-      rr1
+      1.35
   ) {
     return {
-      valid: false,
+      valid:
+        false,
 
       reason:
-        `Risk/reward rejected: TP1 ${round(
+        `Weak RR: TP1 ${round(
           rr1,
           2
-        )}R, TP2 ${round(
+        )}R / TP2 ${round(
           rr2,
           2
-        )}R.`,
-
-      entryType:
-        "NONE"
+        )}R.`
     };
   }
 
-  let entryType =
-    "MARKET";
-
-  if (
-    regime.startsWith(
-      "BREAKOUT_"
-    )
-  ) {
-    entryType =
-      "BREAKOUT_CONTINUATION";
-  } else if (
-    stretchAtr >=
-    1.25
-  ) {
-    entryType =
-      "CAUTION_EXTENDED";
-  } else if (
-    regime.startsWith(
-      "TRENDING_"
-    )
-  ) {
-    entryType =
-      "TREND_CONTINUATION";
-  }
-
   return {
-    valid: true,
-
-    entryType,
+    valid:
+      true,
 
     entry:
       priceRound(
-        symbol,
         entry
       ),
 
     stopLoss:
       priceRound(
-        symbol,
         stop
       ),
 
     takeProfit1:
       priceRound(
-        symbol,
         tp1
       ),
 
     takeProfit2:
       priceRound(
-        symbol,
         tp2
       ),
 
-    riskReward:
-      `1:${round(
-        rr2,
-        2
-      )}`,
-
-    riskRewardTP1:
-      `1:${round(
-        rr1,
-        2
-      )}`,
-
     riskDistance:
       priceRound(
-        symbol,
         risk
       ),
 
@@ -6603,245 +4599,763 @@ function buildRiskPlan(
         2
       ),
 
-    stretchAtr:
-      round(
-        stretchAtr,
+    riskRewardTP1:
+      `1:${round(
+        rr1,
         2
-      ),
+      )}`,
 
-    structuralStopUsed:
-      direction ===
-        "BUY"
-        ? validSwingLow
-        : validSwingHigh,
-
-    nearestLiquidity:
-      nearest
-        ? {
-            name:
-              nearest.name,
-
-            kind:
-              nearest.kind,
-
-            price:
-              priceRound(
-                symbol,
-                nearest.price
-              ),
-
-            roomR:
-              round(
-                roomR,
-                2
-              )
-          }
-        : null,
+    riskRewardTP2:
+      `1:${round(
+        rr2,
+        2
+      )}`,
 
     targetLiquidity:
-      secondTarget
-        ? {
-            name:
-              secondTarget.name,
+      second
+        ? second.name
+        : nearest
+          ? nearest.name
+          : null,
 
-            kind:
-              secondTarget.kind,
+    management: {
+      maxHoldMinutes:
+        MAX_HOLD_MINUTES,
 
-            price:
-              priceRound(
-                symbol,
-                secondTarget.price
-              )
-          }
-        : null
+      moveStopToBreakevenAtR:
+        0.8,
+
+      partialTakeProfitAtR:
+        1.0,
+
+      runnerTargetR:
+        round(
+          rr2,
+          2
+        )
+    }
   };
 }
 
 /* =========================================================
-   TRADE PERMISSION
+   SMALL ACCOUNT PROTECTION
 ========================================================= */
 
-function buildPreTradePermission(
-  packet,
-  technical,
+function buildAccountProtection(
+  body
+) {
+  const equity =
+    Number(
+      body.equity ??
+      DEFAULT_EQUITY_ZAR
+    );
+
+  const dailyPnL =
+    Number(
+      body.dailyPnL ??
+      0
+    );
+
+  const tradesToday =
+    Number(
+      body.tradesToday ??
+      0
+    );
+
+  const consecutiveLosses =
+    Number(
+      body.consecutiveLosses ??
+      0
+    );
+
+  const minutesSinceLastLoss =
+    Number(
+      body.minutesSinceLastLoss ??
+      999
+    );
+
+  const riskPct =
+    Math.min(
+      RISK_PER_TRADE_PCT,
+      MAX_RISK_PER_TRADE_PCT
+    );
+
+  const riskMoney =
+    equity *
+    (
+      riskPct /
+      100
+    );
+
+  const dailyLossLimit =
+    equity *
+    (
+      DAILY_LOSS_LIMIT_PCT /
+      100
+    );
+
+  const blockers =
+    [];
+
+  if (
+    !Number.isFinite(
+      equity
+    ) ||
+    equity <= 0
+  ) {
+    blockers.push(
+      "Invalid account equity."
+    );
+  }
+
+  if (
+    dailyPnL <=
+    -dailyLossLimit
+  ) {
+    blockers.push(
+      "Daily loss limit reached."
+    );
+  }
+
+  if (
+    tradesToday >=
+    MAX_TRADES_PER_DAY
+  ) {
+    blockers.push(
+      "Maximum daily trades reached."
+    );
+  }
+
+  if (
+    consecutiveLosses >=
+    MAX_CONSECUTIVE_LOSSES
+  ) {
+    blockers.push(
+      "Three-loss protection activated."
+    );
+  }
+
+  if (
+    minutesSinceLastLoss <
+    LOSS_COOLDOWN_MINUTES
+  ) {
+    blockers.push(
+      "Loss cooldown still active."
+    );
+  }
+
+  return {
+    allowed:
+      blockers.length ===
+      0,
+
+    equityZAR:
+      round(
+        equity,
+        2
+      ),
+
+    riskPercent:
+      riskPct,
+
+    maxRiskZAR:
+      round(
+        riskMoney,
+        2
+      ),
+
+    dailyLossLimitZAR:
+      round(
+        dailyLossLimit,
+        2
+      ),
+
+    tradesToday,
+
+    consecutiveLosses,
+
+    blockers
+  };
+}
+
+/* =========================================================
+   BROKER / POSITION SIZING
+
+   Send:
+   {
+     bid,
+     ask,
+     tickSize,
+     tickValuePerLot,
+     minLot,
+     lotStep
+   }
+
+   Do not assume XAU contract specs because brokers differ.
+========================================================= */
+
+function floorToStep(
+  value,
+  step
+) {
+  return (
+    Math.floor(
+      value /
+      step
+    ) *
+    step
+  );
+}
+
+function buildExecutionSizing(
+  body,
+  account,
   riskPlan
 ) {
-  const checks =
+  const bid =
+    Number(
+      body.bid
+    );
+
+  const ask =
+    Number(
+      body.ask
+    );
+
+  const tickSize =
+    Number(
+      body.tickSize
+    );
+
+  const tickValuePerLot =
+    Number(
+      body.tickValuePerLot
+    );
+
+  const minLot =
+    Number(
+      body.minLot
+    );
+
+  const lotStep =
+    Number(
+      body.lotStep
+    );
+
+  const spreadKnown =
+    Number.isFinite(
+      bid
+    ) &&
+    Number.isFinite(
+      ask
+    );
+
+  const spread =
+    spreadKnown
+      ? ask -
+        bid
+      : null;
+
+  if (
+    spreadKnown &&
+    spread >
+      MAX_SPREAD_USD
+  ) {
+    return {
+      valid:
+        false,
+
+      executionReady:
+        false,
+
+      spread:
+        priceRound(
+          spread
+        ),
+
+      reason:
+        `Gold spread ${priceRound(
+          spread
+        )} exceeds ${MAX_SPREAD_USD}.`
+    };
+  }
+
+  if (
+    !riskPlan.valid
+  ) {
+    return {
+      valid:
+        false,
+
+      executionReady:
+        false,
+
+      spread:
+        priceRound(
+          spread
+        ),
+
+      reason:
+        "No valid risk plan."
+    };
+  }
+
+  const sizingAvailable =
+    [
+      tickSize,
+      tickValuePerLot,
+      minLot,
+      lotStep
+    ].every(
+      value =>
+        Number.isFinite(
+          value
+        ) &&
+        value >
+          0
+    );
+
+  if (
+    !sizingAvailable
+  ) {
+    return {
+      valid:
+        true,
+
+      executionReady:
+        false,
+
+      spread:
+        priceRound(
+          spread
+        ),
+
+      reason:
+        "Signal valid, but broker tick value / lot specifications were not supplied."
+    };
+  }
+
+  const stopDistance =
+    Math.abs(
+      riskPlan.entry -
+      riskPlan.stopLoss
+    );
+
+  const ticks =
+    stopDistance /
+    tickSize;
+
+  const lossPerLot =
+    ticks *
+    tickValuePerLot;
+
+  if (
+    !Number.isFinite(
+      lossPerLot
+    ) ||
+    lossPerLot <= 0
+  ) {
+    return {
+      valid:
+        false,
+
+      executionReady:
+        false,
+
+      reason:
+        "Invalid broker tick-value calculation."
+    };
+  }
+
+  const rawLot =
+    account.maxRiskZAR /
+    lossPerLot;
+
+  const lot =
+    floorToStep(
+      rawLot,
+      lotStep
+    );
+
+  /*
+     Most important R200 protection:
+     do NOT force minimum lot if minimum lot risks too much.
+  */
+
+  if (
+    lot <
+    minLot
+  ) {
+    const minLotRisk =
+      lossPerLot *
+      minLot;
+
+    return {
+      valid:
+        false,
+
+      executionReady:
+        false,
+
+      requiredLot:
+        round(
+          rawLot,
+          4
+        ),
+
+      minimumLot:
+        minLot,
+
+      minimumLotRiskZAR:
+        round(
+          minLotRisk,
+          2
+        ),
+
+      maxAllowedRiskZAR:
+        account.maxRiskZAR,
+
+      reason:
+        "Broker minimum lot would exceed the account risk limit."
+    };
+  }
+
+  const actualRisk =
+    lot *
+    lossPerLot;
+
+  return {
+    valid:
+      actualRisk <=
+      account.maxRiskZAR *
+      1.05,
+
+    executionReady:
+      true,
+
+    spread:
+      priceRound(
+        spread
+      ),
+
+    lot:
+      round(
+        lot,
+        4
+      ),
+
+    estimatedRiskZAR:
+      round(
+        actualRisk,
+        2
+      ),
+
+    maxAllowedRiskZAR:
+      account.maxRiskZAR,
+
+    tickSize,
+
+    tickValuePerLot,
+
+    minimumLot:
+      minLot,
+
+    lotStep
+  };
+}
+
+/* =========================================================
+   OPTIONAL USD NEWS GUARD
+
+   Gold is extremely sensitive to:
+   CPI
+   Core CPI
+   NFP
+   Unemployment
+   PCE
+   FOMC
+   Powell
+   Fed rate decisions
+
+   Your frontend/news service can pass
+   minutesToHighImpactUsdNews.
+========================================================= */
+
+function buildNewsGuard(
+  body
+) {
+  const minutes =
+    Number(
+      body.minutesToHighImpactUsdNews
+    );
+
+  const explicitRisk =
+    Boolean(
+      body.highImpactUsdNews
+    );
+
+  if (
+    explicitRisk
+  ) {
+    return {
+      connected:
+        true,
+
+      allowed:
+        false,
+
+      reason:
+        "High-impact USD news risk is active."
+    };
+  }
+
+  if (
+    Number.isFinite(
+      minutes
+    )
+  ) {
+    if (
+      minutes >= 0 &&
+      minutes <= 20
+    ) {
+      return {
+        connected:
+          true,
+
+        allowed:
+          false,
+
+        minutesToNews:
+          minutes,
+
+        reason:
+          `High-impact USD news in ${minutes} minutes.`
+      };
+    }
+
+    return {
+      connected:
+        true,
+
+      allowed:
+        true,
+
+      minutesToNews:
+        minutes
+    };
+  }
+
+  return {
+    connected:
+      false,
+
+    allowed:
+      true,
+
+    warning:
+      "USD news calendar not connected."
+  };
+}
+
+/* =========================================================
+   DATA QUALITY
+========================================================= */
+
+function buildDataQuality(
+  m1
+) {
+  const last =
+    m1.at(-1);
+
+  if (!last) {
+    return {
+      valid:
+        false,
+
+      reason:
+        "No completed M1 candle."
+    };
+  }
+
+  const lastEnd =
+    parseUTC(
+      last.t
+    ) +
+    60_000;
+
+  const age =
+    Date.now() -
+    lastEnd;
+
+  return {
+    valid:
+      age <=
+      STALE_DATA_MS,
+
+    stale:
+      age >
+      STALE_DATA_MS,
+
+    ageMinutes:
+      round(
+        age /
+        60_000,
+        1
+      ),
+
+    latestCompletedM1:
+      last.t
+  };
+}
+
+/* =========================================================
+   FINAL PERMISSION
+========================================================= */
+
+function buildPermission(
+  packet,
+  technical,
+  riskPlan,
+  account,
+  sizing,
+  news
+) {
+  const blockers =
     [];
 
   const warnings =
     [];
 
-  const blockers =
-    [];
+  function require(
+    condition,
+    message
+  ) {
+    if (
+      !condition
+    ) {
+      blockers.push(
+        message
+      );
+    }
+  }
 
-  const addCheck =
-    (
-      name,
-      pass,
-      detail,
-      hard = true
-    ) => {
-      const ok =
-        Boolean(
-          pass
-        );
-
-      checks.push({
-        name,
-        pass: ok,
-        detail
-      });
-
-      if (
-        !ok &&
-        hard
-      ) {
-        blockers.push(
-          detail ||
-          name
-        );
-      }
-
-      if (
-        !ok &&
-        !hard
-      ) {
-        warnings.push(
-          detail ||
-          name
-        );
-      }
-    };
-
-  addCheck(
-    "DATA_FRESHNESS",
-
+  require(
     packet.dataQuality
       .valid,
 
-    packet.dataQuality
-      .valid
-      ? `Feed fresh; latest completed M5 candle age ${packet.dataQuality.ageMinutes} minutes.`
-      : packet.dataQuality
-          .issues
-          .join(
-            " "
-          )
+    "Market data is stale."
   );
 
-  addCheck(
-    "ENSEMBLE_DIRECTION",
-
+  require(
     technical.direction !==
       "WAIT",
 
-    technical.direction !==
-      "WAIT"
-      ? `${technical.direction} candidate selected.`
-      : "Ensemble has not selected BUY or SELL."
+    "No ensemble-qualified XAU/USD scalp."
   );
 
-  addCheck(
-    "ENSEMBLE_SCORE",
-
+  require(
     technical.score >=
       MIN_ENSEMBLE_SCORE,
 
-    `Score ${technical.score}/100; minimum ${MIN_ENSEMBLE_SCORE}.`
+    `Technical score below ${MIN_ENSEMBLE_SCORE}.`
   );
 
-  addCheck(
-    "DIRECTIONAL_MARGIN",
-
+  require(
     technical.margin >=
       MIN_ENSEMBLE_MARGIN,
 
-    `Directional margin ${technical.margin}; minimum ${MIN_ENSEMBLE_MARGIN}.`
+    `Directional margin below ${MIN_ENSEMBLE_MARGIN}.`
   );
 
-  addCheck(
-    "ENSEMBLE_QUALITY",
-
+  require(
     technical.quality >=
       MIN_ENSEMBLE_QUALITY,
 
-    `Quality ${technical.quality}/100; minimum ${MIN_ENSEMBLE_QUALITY}.`
+    `Quality below ${MIN_ENSEMBLE_QUALITY}.`
   );
 
-  addCheck(
-    "MODULE_AGREEMENT",
-
+  require(
     technical.agreementPct >=
       MIN_MODULE_AGREEMENT,
 
-    `Module agreement ${technical.agreementPct}%; minimum ${MIN_MODULE_AGREEMENT}%.`
+    `Module agreement below ${MIN_MODULE_AGREEMENT}%.`
   );
 
-  addCheck(
-    "RISK_PLAN",
+  require(
+    technical.entryTrigger,
 
-    Boolean(
-      riskPlan.valid
-    ),
-
-    riskPlan.valid
-      ? "Risk plan valid."
-      : riskPlan.reason ||
-        "Risk plan rejected."
+    "No confirmed M1 gold entry trigger."
   );
 
-  const hostileRegime =
-    packet.regimeDetails
-      ?.name ===
-    "HIGH_VOLATILITY_CHOP";
+  require(
+    riskPlan.valid,
 
-  addCheck(
-    "REGIME_SAFETY",
-
-    !hostileRegime,
-
-    hostileRegime
-      ? "High-volatility chop blocks new trades."
-      : `${packet.regimeDetails.name} regime accepted.`
+    riskPlan.reason ||
+      "Invalid risk plan."
   );
 
-  const unresolvedCompression =
-    packet.regimeDetails
-      ?.name ===
-      "COMPRESSION" &&
-    packet.M15.ict
-      .bos ===
-      "NONE";
+  require(
+    account.allowed,
 
-  addCheck(
-    "COMPRESSION_BREAK",
-
-    !unresolvedCompression,
-
-    unresolvedCompression
-      ? "Compression has no M15 BOS."
-      : "No unresolved compression block."
+    account.blockers.join(
+      " "
+    ) ||
+      "Account protection block."
   );
 
-  addCheck(
-    "SESSION_QUALITY",
+  require(
+    news.allowed,
 
-    packet.session !==
-      "TRANSITION" &&
-    packet.session !==
-      "UNKNOWN",
-
-    packet.session ===
-      "TRANSITION"
-      ? "Transition session; liquidity may be thin."
-      : packet.session ===
-          "UNKNOWN"
-        ? "Session could not be resolved."
-        : `${packet.session} session active.`,
-
-    false
+    news.reason ||
+      "USD news block."
   );
+
+  /*
+     Spread is hard-blocked if known and excessive.
+     Missing sizing data does not invalidate a signal,
+     but executionReady remains false.
+  */
+
+  if (
+    sizing.valid ===
+    false &&
+    sizing.reason?.includes(
+      "spread"
+    )
+  ) {
+    blockers.push(
+      sizing.reason
+    );
+  }
+
+  if (
+    sizing.valid ===
+      false &&
+    sizing.reason?.includes(
+      "minimum lot"
+    )
+  ) {
+    blockers.push(
+      sizing.reason
+    );
+  }
+
+  if (
+    !sizing.executionReady
+  ) {
+    warnings.push(
+      sizing.reason ||
+      "Broker sizing unavailable."
+    );
+  }
+
+  if (
+    !news.connected
+  ) {
+    warnings.push(
+      "High-impact USD news feed not connected."
+    );
+  }
 
   return {
     allowed:
@@ -6851,119 +5365,23 @@ function buildPreTradePermission(
     state:
       blockers.length ===
       0
-        ? "PRE_TRADE_APPROVED"
+        ? "APPROVED"
         : "BLOCKED",
 
-    checks,
-    warnings,
-    blockers
+    blockers:
+      [
+        ...new Set(
+          blockers
+        )
+      ],
+
+    warnings:
+      [
+        ...new Set(
+          warnings
+        )
+      ]
   };
-}
-
-/* =========================================================
-   FINAL SETUP SCORE
-========================================================= */
-
-function gradeFromStrength(
-  action,
-  strength
-) {
-  if (
-    action ===
-    "WAIT"
-  ) {
-    return "WAIT";
-  }
-
-  if (
-    strength >=
-    90
-  ) {
-    return "A+";
-  }
-
-  if (
-    strength >=
-    84
-  ) {
-    return "A";
-  }
-
-  if (
-    strength >=
-    78
-  ) {
-    return "B+";
-  }
-
-  if (
-    strength >=
-    70
-  ) {
-    return "B";
-  }
-
-  return "C";
-}
-
-function timeframeStrength(
-  snapshotData
-) {
-  const adxValue =
-    Number(
-      snapshotData
-        .indicators
-        ?.adx14 ||
-      0
-    );
-
-  const slope =
-    Math.abs(
-      Number(
-        snapshotData
-          .indicators
-          ?.ema20SlopeAtr ||
-        0
-      )
-    );
-
-  const efficiency =
-    Number(
-      snapshotData
-        .indicators
-        ?.candleEfficiency ||
-      0
-    );
-
-  let strength =
-    35 +
-    Math.min(
-      adxValue,
-      40
-    ) *
-      1.15 +
-    Math.min(
-      slope,
-      2.5
-    ) *
-      6 +
-    efficiency *
-      12;
-
-  if (
-    snapshotData.bias ===
-    "NEUTRAL"
-  ) {
-    strength -= 16;
-  }
-
-  return clamp(
-    Math.round(
-      strength
-    ),
-    20,
-    98
-  );
 }
 
 /* =========================================================
@@ -6974,82 +5392,35 @@ function buildFinalAnalysis(
   packet,
   technical,
   riskPlan,
+  account,
+  sizing,
+  news,
   permission
 ) {
-  let action =
-    technical.direction;
-
-  const rejectionReasons =
-    [];
-
-  if (
-    !permission.allowed
-  ) {
-    rejectionReasons.push(
-      ...(
-        permission.blockers ||
-        []
-      )
-    );
-  }
-
-  if (
-    action !==
-      "WAIT" &&
-    !permission.allowed
-  ) {
-    action =
-      "WAIT";
-  }
-
-  if (
-    action !==
-      "WAIT" &&
-    !riskPlan.valid
-  ) {
-    if (
-      riskPlan.reason
-    ) {
-      rejectionReasons.push(
-        riskPlan.reason
-      );
-    }
-
-    action =
-      "WAIT";
-  }
+  const action =
+    permission.allowed
+      ? technical.direction
+      : "WAIT";
 
   let setupStrength =
     Math.round(
       technical.score *
-        0.58 +
-
+        0.55 +
       technical.quality *
-        0.24 +
-
+        0.25 +
       technical.agreementPct *
-        0.18
+        0.20
     );
 
   if (
-    permission.warnings
-      ?.length
+    action ===
+    "WAIT"
   ) {
-    setupStrength -=
+    setupStrength =
       Math.min(
-        5,
-        permission.warnings
-          .length *
-          2
+        setupStrength,
+        64
       );
-  }
-
-  if (
-    packet.dataQuality
-      .stale
-  ) {
-    setupStrength -=
-      20;
   }
 
   setupStrength =
@@ -7059,100 +5430,36 @@ function buildFinalAnalysis(
       96
     );
 
-  /*
-    Never allow WAIT to look like an
-    80%-90% trade recommendation.
-  */
-  if (
-    action ===
-    "WAIT"
-  ) {
-    setupStrength =
-      Math.min(
-        setupStrength,
-        69
-      );
-  }
-
-  if (
-    rejectionReasons.length &&
-    action ===
-      "WAIT"
-  ) {
-    setupStrength =
-      Math.min(
-        setupStrength,
-        64
-      );
-  }
-
-  const directionText =
-    technical.direction ===
-      "WAIT"
-      ? `No trade passed the ${MIN_ENSEMBLE_SCORE} score / ${MIN_ENSEMBLE_MARGIN} margin / ${MIN_ENSEMBLE_QUALITY} quality / ${MIN_MODULE_AGREEMENT}% agreement gates.`
-      : `${technical.direction} candidate scored ${technical.score}/100 with ${technical.quality}/100 quality, ${technical.agreementPct}% module agreement and ${technical.margin}-point directional separation.`;
-
-  const summary =
-    action ===
-      "WAIT"
-      ? `${directionText}${
-          rejectionReasons.length
-            ? ` Blockers: ${[
-                ...new Set(
-                  rejectionReasons
-                )
-              ].join(
-                " "
-              )}`
-            : ""
-        }`
-      : `${technical.direction} passed ensemble, data-quality, regime, liquidity, risk and permission checks.`;
-
-  const liquidityMap =
-    packet.liquidityMap ||
-    {};
-
-  const buySideText =
-    liquidityMap
-      .nearestBuySide
-      ? `${liquidityMap.nearestBuySide.label} ${liquidityMap.nearestBuySide.price}`
-      : "none mapped";
-
-  const sellSideText =
-    liquidityMap
-      .nearestSellSide
-      ? `${liquidityMap.nearestSellSide.label} ${liquidityMap.nearestSellSide.price}`
-      : "none mapped";
-
-  const finalAllowed =
-    action !==
-    "WAIT";
-
   return {
     action,
 
-    /*
-      Compatibility field:
-      this is SETUP STRENGTH,
-      NOT estimated win probability.
-    */
+    setupStrength,
+
     confidence:
       setupStrength,
 
     confidenceType:
       "SETUP_STRENGTH_NOT_WIN_PROBABILITY",
 
-    setupStrength,
+    symbol:
+      SYMBOL,
 
-    setupGrade:
-      gradeFromStrength(
-        action,
-        setupStrength
-      ),
+    strategy:
+      "MKAYFX GOLD SCALPER V6",
 
-    summary,
+    session:
+      packet.session,
+
+    regime:
+      packet.regime,
+
+    currentPrice:
+      packet.currentPrice,
 
     timeframeBias: {
+      M1:
+        packet.M1.bias,
+
       M5:
         packet.M5.bias,
 
@@ -7160,88 +5467,11 @@ function buildFinalAnalysis(
         packet.M15.bias,
 
       H1:
-        packet.H1.bias,
-
-      H4:
-        packet.H4.bias
+        packet.H1.bias
     },
 
-    timeframes: {
-      m5: {
-        bias:
-          packet.M5.bias,
-
-        strength:
-          timeframeStrength(
-            packet.M5
-          )
-      },
-
-      m15: {
-        bias:
-          packet.M15.bias,
-
-        strength:
-          timeframeStrength(
-            packet.M15
-          )
-      },
-
-      h1: {
-        bias:
-          packet.H1.bias,
-
-        strength:
-          timeframeStrength(
-            packet.H1
-          )
-      },
-
-      h4: {
-        bias:
-          packet.H4.bias,
-
-        strength:
-          timeframeStrength(
-            packet.H4
-          )
-      }
-    },
-
-    regime:
-      packet.regime,
-
-    regimeDetails:
-      packet.regimeDetails,
-
-    dataQuality:
-      packet.dataQuality,
-
-    structure:
-      `H4 ${packet.H4.structure}; ` +
-      `H1 ${packet.H1.structure}; ` +
-      `M15 ${packet.M15.structure}; ` +
-      `M5 ${packet.M5.structure}.`,
-
-    momentum:
-      packet.M5.momentum,
-
-    liquiditySummary:
-      `Nearest buy-side: ${buySideText}. ` +
-      `Nearest sell-side: ${sellSideText}. ` +
-      `M5 sweep ${packet.M5.ict.sweep.type}; ` +
-      `M15 zone ${packet.M15.ict.premiumDiscount}.`,
-
-    liquidityMap,
-
-    macroBias:
-      "NOT_CONNECTED",
-
-    newsRisk:
-      "NOT_CONNECTED",
-
-    newsSummary:
-      "No news or macro filter is connected. Engine is deterministic technical mode only.",
+    goldContext:
+      packet.gold,
 
     entry:
       action ===
@@ -7267,83 +5497,50 @@ function buildFinalAnalysis(
         ? null
         : riskPlan.takeProfit2,
 
-    riskReward:
+    riskRewardTP1:
       action ===
         "WAIT"
         ? "—"
-        : riskPlan.riskReward,
+        : riskPlan.riskRewardTP1,
 
-    entryType:
+    riskRewardTP2:
       action ===
         "WAIT"
-        ? riskPlan.entryType ||
-          "WAIT"
-        : riskPlan.entryType,
+        ? "—"
+        : riskPlan.riskRewardTP2,
 
-    invalidation:
+    management:
       action ===
-        "BUY"
-        ? `Bullish setup invalid below ${riskPlan.stopLoss}.`
-        : action ===
-            "SELL"
-          ? `Bearish setup invalid above ${riskPlan.stopLoss}.`
-          : "No active setup.",
+        "WAIT"
+        ? null
+        : riskPlan.management,
 
-    nextTrigger:
-      riskPlan.entryType ===
-        "WAIT_RETEST"
-        ? `Wait for price to retrace toward ${riskPlan.suggestedEntry || "M5 EMA20"}, then rescan.`
-        : action ===
-            "WAIT"
-          ? "Wait for fresh completed candles and a new ensemble-qualified setup."
-          : `Maintain ${action} bias only while M5/M15 structure remains supportive.`,
+    accountProtection:
+      account,
 
-    reasons:
-      [
-        ...technical.reasons
-      ].slice(
-        0,
-        10
-      ),
+    executionSizing:
+      sizing,
 
-    risks:
-      [
-        ...technical.penalties,
+    newsGuard:
+      news,
 
-        ...(
-          permission.warnings ||
-          []
-        ),
+    tradePermission:
+      permission,
 
-        ...rejectionReasons
-      ]
-        .filter(
-          (
-            value,
-            index,
-            array
-          ) =>
-            array.indexOf(
-              value
-            ) ===
-            index
-        )
-        .slice(
-          0,
-          10
-        ),
-
-    technicalScore: {
-      buy:
-        technical.buyScore,
-
-      sell:
-        technical.sellScore,
-
+    technical: {
       selected:
         technical.direction,
 
-      selectedScore:
+      provisional:
+        technical.provisional,
+
+      buyScore:
+        technical.buyScore,
+
+      sellScore:
+        technical.sellScore,
+
+      score:
         technical.score,
 
       margin:
@@ -7356,79 +5553,40 @@ function buildFinalAnalysis(
         technical.agreementPct,
 
       signedSignal:
-        technical.signal
-    },
+        technical.signedSignal,
 
-    ensemble: {
-      direction:
-        technical.direction,
+      entryTrigger:
+        technical.entryTrigger,
 
-      buyScore:
-        technical.buyScore,
-
-      sellScore:
-        technical.sellScore,
-
-      selectedScore:
-        technical.score,
-
-      signedSignal:
-        technical.signal,
-
-      quality:
-        technical.quality,
-
-      agreementPct:
-        technical.agreementPct,
+      stretchAtr:
+        technical.stretchAtr,
 
       modules:
-        technical.modules
+        technical.modules,
+
+      penalties:
+        technical.penalties
     },
 
-    tradePermission: {
-      deterministic:
-        permission,
+    invalidation:
+      action ===
+        "BUY"
+        ? `BUY invalid below ${riskPlan.stopLoss}.`
+        : action ===
+            "SELL"
+          ? `SELL invalid above ${riskPlan.stopLoss}.`
+          : "No active setup.",
 
-      mode:
-        "DETERMINISTIC",
-
-      finalAllowed,
-
-      state:
-        finalAllowed
-          ? "APPROVED"
-          : "BLOCKED",
-
-      blockers:
-        [
-          ...new Set(
-            rejectionReasons
-          )
-        ]
-    },
-
-    riskPlan:
-      riskPlan.valid
-        ? riskPlan
-        : {
-            valid: false,
-
-            reason:
-              riskPlan.reason,
-
-            entryType:
-              riskPlan.entryType ||
-              "NONE",
-
-            suggestedEntry:
-              riskPlan.suggestedEntry ||
-              null
-          }
+    nextTrigger:
+      action ===
+        "WAIT"
+        ? "Wait for a fresh M1 liquidity sweep / structure shift with M5 confirmation."
+        : `Manage as a scalp; maximum intended hold ${MAX_HOLD_MINUTES} minutes.`
   };
 }
 
 /* =========================================================
-   API HANDLER
+   MAIN HANDLER
 ========================================================= */
 
 export default async function handler(
@@ -7464,7 +5622,8 @@ export default async function handler(
       res,
       405,
       {
-        success: false,
+        success:
+          false,
 
         error:
           "Use GET or POST."
@@ -7478,48 +5637,23 @@ export default async function handler(
         req
       );
 
-    const symbol =
-      String(
-        body.symbol ||
-        req.query?.symbol ||
-        "XAU/USD"
-      )
-        .trim()
-        .toUpperCase();
-
-    if (
-      !ALLOWED_SYMBOLS.has(
-        symbol
-      )
-    ) {
-      return send(
-        res,
-        400,
-        {
-          success: false,
-
-          error:
-            `Unsupported symbol: ${symbol}`
-        }
-      );
-    }
+    /*
+      GOLD ONLY.
+    */
 
     const {
       candles:
-        rawM5,
+        rawM1,
       cacheHit
     } =
-      await getM5Cached(
-        symbol
-      );
+      await getGoldM1Cached();
 
-    /*
-      Latest Twelve Data price.
-      May belong to the current
-      still-forming M5 bar.
-    */
     const currentPrice =
-      rawM5.at(-1)?.c;
+      Number(
+        body.ask ||
+        body.bid ||
+        rawM1.at(-1)?.c
+      );
 
     if (
       !Number.isFinite(
@@ -7527,131 +5661,111 @@ export default async function handler(
       )
     ) {
       throw new Error(
-        "Current market price unavailable."
+        "Current gold price unavailable."
       );
     }
 
     /*
-      Technical analysis uses
-      COMPLETED M5 candles only.
+      Analysis uses completed M1 candles.
     */
+
+    const m1 =
+      completedM1(
+        rawM1
+      );
+
     const m5 =
-      getCompletedM5(
-        rawM5
+      resample(
+        m1,
+        5
       );
 
     const m15 =
       resample(
-        m5,
+        m1,
         15
       );
 
     const h1 =
       resample(
-        m5,
+        m1,
         60
       );
 
-    const h4 =
-      resample(
-        m5,
-        240
-      );
-
     if (
+      m1.length <
+        300 ||
       m5.length <
-        180 ||
+        60 ||
       m15.length <
-        50 ||
+        40 ||
       h1.length <
-        24 ||
-      h4.length <
-        6
+        12
     ) {
       throw new Error(
-        "Not enough completed quality candles for M5/M15/H1/H4 analysis."
+        "Not enough completed XAU/USD candles."
       );
     }
 
-    const dataQuality =
-      buildDataQuality(
-        rawM5,
-        m5,
-        m15,
-        h1,
-        h4
+    const latestCompletedMs =
+      parseUTC(
+        m1.at(-1).t
       );
 
     const packet = {
-      symbol,
+      symbol:
+        SYMBOL,
 
       currentPrice:
         priceRound(
-          symbol,
           currentPrice
+        ),
+
+      session:
+        sessionForTimestamp(
+          latestCompletedMs
         ),
 
       currentUTC:
         new Date()
           .toISOString(),
 
-      marketTimestamp:
-        rawM5.at(-1)
-          ?.t ||
-        null,
-
-      lastCompletedM5:
-        m5.at(-1)
-          ?.t ||
-        null,
-
-      session:
-        sessionFromCandles(
-          m5
+      dataQuality:
+        buildDataQuality(
+          m1
         ),
 
-      dataQuality,
+      M1:
+        snapshot(
+          m1
+        ),
 
       M5:
         snapshot(
-          symbol,
           m5
         ),
 
       M15:
         snapshot(
-          symbol,
           m15
         ),
 
       H1:
         snapshot(
-          symbol,
           h1
-        ),
-
-      H4:
-        snapshot(
-          symbol,
-          h4
         )
     };
 
-    packet.liquidityMap =
-      buildLiquidityMap(
-        symbol,
+    packet.gold =
+      buildGoldContext(
         packet,
-        m5
-      );
-
-    packet.regimeDetails =
-      detectRegimeDetails(
-        packet
+        m1
       );
 
     packet.regime =
-      packet.regimeDetails
-        .name;
+      detectGoldRegime(
+        packet
+      );
 
     const technical =
       scoreTechnical(
@@ -7661,101 +5775,75 @@ export default async function handler(
     const riskPlan =
       buildRiskPlan(
         technical.direction,
-        symbol,
         packet
       );
 
-    const permission =
-      buildPreTradePermission(
-        packet,
-        technical,
+    const account =
+      buildAccountProtection(
+        body
+      );
+
+    const sizing =
+      buildExecutionSizing(
+        body,
+        account,
         riskPlan
       );
 
-    packet.preTradePermission =
-      permission;
+    const news =
+      buildNewsGuard(
+        body
+      );
+
+    const permission =
+      buildPermission(
+        packet,
+        technical,
+        riskPlan,
+        account,
+        sizing,
+        news
+      );
 
     const analysis =
       buildFinalAnalysis(
         packet,
         technical,
         riskPlan,
+        account,
+        sizing,
+        news,
         permission
       );
-
-    const referenceIndex =
-      Math.max(
-        0,
-        rawM5.length -
-          13
-      );
-
-    const oldPrice =
-      rawM5[
-        referenceIndex
-      ]?.c;
-
-    const changePct =
-      Number.isFinite(
-        oldPrice
-      ) &&
-      oldPrice !== 0
-        ? (
-            (
-              currentPrice /
-              oldPrice
-            ) -
-            1
-          ) *
-          100
-        : 0;
 
     return send(
       res,
       200,
       {
-        success: true,
+        success:
+          true,
 
-        symbol,
+        model:
+          "MKAYFX GOLD SCALPER V6",
+
+        symbol:
+          SYMBOL,
+
+        gold_only:
+          true,
 
         price:
           priceRound(
-            symbol,
             currentPrice
           ),
-
-        current_price:
-          priceRound(
-            symbol,
-            currentPrice
-          ),
-
-        changePct:
-          round(
-            changePct,
-            4
-          ),
-
-        model:
-          "MKAYFX Extreme Quant V5 Hardened",
-
-        engine:
-          "DETERMINISTIC",
-
-        ai_provider:
-          "Disabled",
-
-        ai_online:
-          false,
-
-        ai_error:
-          null,
 
         analysis,
 
         chart:
-          rawM5
-            .slice(-60)
+          rawM1
+            .slice(
+              -120
+            )
             .map(
               candle => ({
                 t:
@@ -7763,43 +5851,40 @@ export default async function handler(
 
                 o:
                   priceRound(
-                    symbol,
                     candle.o
                   ),
 
                 h:
                   priceRound(
-                    symbol,
                     candle.h
                   ),
 
                 l:
                   priceRound(
-                    symbol,
                     candle.l
                   ),
 
                 c:
                   priceRound(
-                    symbol,
                     candle.c
                   )
               })
             ),
 
-        data_mode:
-          "Twelve Data M5 + completed-candle M15/H1/H4 + Wilder indicators + deterministic ensemble/regime/liquidity/risk engine",
+        timeframe_engine:
+          {
+            entry:
+              "M1",
 
-        data_quality:
-          packet.dataQuality,
+            confirmation:
+              "M5",
 
-        cache_hit:
-          cacheHit,
+            trend:
+              "M15",
 
-        guardrail_note:
-          cacheHit
-            ? "Cached market data used within configured cache window."
-            : "Fresh M5 data loaded; completed higher timeframes generated locally.",
+            higher_timeframe:
+              "H1"
+          },
 
         session:
           packet.session,
@@ -7807,23 +5892,23 @@ export default async function handler(
         regime:
           packet.regime,
 
-        regime_details:
-          packet.regimeDetails,
+        gold_context:
+          packet.gold,
 
-        liquidity_map:
-          packet.liquidityMap,
+        account_protection:
+          account,
 
-        ensemble:
-          analysis.ensemble,
+        execution_sizing:
+          sizing,
+
+        news_guard:
+          news,
 
         trade_permission:
-          analysis.tradePermission,
+          permission,
 
-        news_sources:
-          [],
-
-        ai_usage:
-          null,
+        cache_hit:
+          cacheHit,
 
         timestamp:
           new Date()
@@ -7834,7 +5919,7 @@ export default async function handler(
     error
   ) {
     console.error(
-      "MKAYFX V5 ERROR:",
+      "MKAYFX GOLD V6 ERROR:",
       error
     );
 
@@ -7842,7 +5927,11 @@ export default async function handler(
       res,
       500,
       {
-        success: false,
+        success:
+          false,
+
+        model:
+          "MKAYFX GOLD SCALPER V6",
 
         error:
           error?.message ||
