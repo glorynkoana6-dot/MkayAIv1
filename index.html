@@ -2,18 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"
->
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#070611">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta
-  name="apple-mobile-web-app-status-bar-style"
-  content="black-translucent"
->
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<title>MKAYFX OMEGA</title>
+<title>MKAYFX Scalper V2</title>
 
 <style>
 
@@ -21,16 +15,13 @@
   --bg:#06050d;
   --card:#100d1a;
   --card2:#151124;
-  --line:#2c2440;
-
+  --line:#2d2541;
   --purple:#9b70ff;
   --purple2:#633bf2;
   --cyan:#4ee8ff;
-
   --green:#39e59d;
   --red:#ff6178;
   --gold:#ffd565;
-
   --text:#f8f6ff;
   --muted:#918a9e;
 }
@@ -45,31 +36,17 @@ body{
   min-height:100%;
   background:var(--bg);
   color:var(--text);
-
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Arial,
-    sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
 }
 
 body{
-  padding-bottom:
-    calc(
-      84px +
-      env(safe-area-inset-bottom)
-    );
-
+  padding-bottom:calc(84px + env(safe-area-inset-bottom));
   background:
-
     radial-gradient(
-      circle at 50% -130px,
+      circle at 50% -140px,
       rgba(116,70,255,.25),
       transparent 390px
     ),
-
     #06050d;
 }
 
@@ -80,32 +57,22 @@ select{
 }
 
 button{
-  -webkit-tap-highlight-color:
-    transparent;
+  -webkit-tap-highlight-color:transparent;
 }
 
 .app{
-  width:
-    min(
-      100%,
-      540px
-    );
-
+  width:min(100%,560px);
   margin:auto;
 }
 
 
-/* =========================================================
-   TOP
-========================================================= */
+/* HEADER */
 
 .top{
   display:flex;
   align-items:center;
   justify-content:space-between;
-
-  padding:
-    18px 16px 8px;
+  padding:18px 16px 8px;
 }
 
 .logo{
@@ -121,827 +88,455 @@ button{
   display:flex;
   align-items:center;
   gap:7px;
-
-  padding:
-    7px 10px;
-
-  border:
-    1px solid
-    #342a4d;
-
-  border-radius:
-    999px;
-
-  background:
-    #100c18;
-
-  color:
-    #aaa3b6;
-
-  font-size:
-    9px;
-
-  font-weight:
-    900;
+  padding:7px 10px;
+  border:1px solid #342a4d;
+  border-radius:999px;
+  background:#100c18;
+  color:#aaa3b6;
+  font-size:9px;
+  font-weight:900;
 }
 
 .health i{
   width:7px;
   height:7px;
-
-  border-radius:
-    50%;
-
-  background:
-    var(--green);
-
-  box-shadow:
-    0 0 10px
-    var(--green);
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 10px var(--green);
 }
 
 
-/* =========================================================
-   HERO
-========================================================= */
+/* HERO */
 
 .hero{
-  padding:
-    9px 16px 16px;
+  padding:9px 16px 16px;
 }
 
 .eyebrow{
-  color:
-    var(--purple);
-
-  font-size:
-    10px;
-
-  font-weight:
-    900;
-
-  letter-spacing:
-    1.4px;
+  color:var(--purple);
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:1.4px;
 }
 
 .hero h1{
-  font-size:
-    39px;
-
-  line-height:
-    .96;
-
-  letter-spacing:
-    -2px;
-
-  margin:
-    8px 0 10px;
+  font-size:38px;
+  line-height:.96;
+  letter-spacing:-2px;
+  margin:8px 0 10px;
 }
 
 .hero p{
   margin:0;
-
-  color:
-    var(--muted);
-
-  font-size:
-    13px;
-
-  line-height:
-    1.5;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
 }
 
 
-/* =========================================================
-   MARKET TABS
-========================================================= */
+/* MARKET TABS */
 
 .tabs{
-  margin:
-    0 14px 12px;
-
-  padding:
-    5px;
-
+  margin:0 14px 12px;
+  padding:5px;
   display:grid;
-
-  grid-template-columns:
-    1fr 1fr;
-
-  gap:
-    5px;
-
-  border:
-    1px solid
-    var(--line);
-
-  border-radius:
-    18px;
-
-  background:
-    #0d0a14;
+  grid-template-columns:1fr 1fr;
+  gap:5px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#0d0a14;
 }
 
 .tab{
-  min-height:
-    50px;
-
-  border:
-    0;
-
-  border-radius:
-    14px;
-
-  background:
-    transparent;
-
-  color:
-    #777180;
-
-  font-size:
-    12px;
-
-  font-weight:
-    1000;
+  min-height:50px;
+  border:0;
+  border-radius:14px;
+  background:transparent;
+  color:#777180;
+  font-size:12px;
+  font-weight:1000;
 }
 
 .tab small{
   display:block;
-
-  font-size:
-    8px;
-
-  margin-top:
-    2px;
-
-  color:
-    #665f70;
+  font-size:8px;
+  margin-top:2px;
+  color:#665f70;
 }
 
 .tab.active{
-  background:
+  background:linear-gradient(
+    135deg,
+    var(--purple),
+    var(--purple2)
+  );
 
-    linear-gradient(
-      135deg,
-      var(--purple),
-      var(--purple2)
-    );
-
-  color:
-    white;
-
-  box-shadow:
-    0 8px 24px
-    rgba(104,61,245,.24);
+  color:white;
+  box-shadow:0 8px 24px rgba(104,61,245,.24);
 }
 
 .tab.active small{
-  color:
-    #ddd2ff;
+  color:#ddd2ff;
 }
 
 .tab:disabled{
-  opacity:
-    .4;
+  opacity:.4;
 }
 
 
-/* =========================================================
-   CARD
-========================================================= */
+/* CARD */
 
 .card{
-  margin:
-    0 14px 12px;
-
-  border:
-    1px solid
-    var(--line);
-
-  border-radius:
-    23px;
-
-  overflow:
-    hidden;
+  margin:0 14px 12px;
+  border:1px solid var(--line);
+  border-radius:23px;
+  overflow:hidden;
 
   background:
-
     linear-gradient(
       180deg,
       rgba(20,16,33,.98),
       rgba(8,6,14,.99)
     );
 
-  box-shadow:
-    0 18px 52px
-    rgba(0,0,0,.34);
+  box-shadow:0 18px 52px rgba(0,0,0,.34);
 }
 
 
-/* =========================================================
-   MARKET HEADER
-========================================================= */
+/* MARKET */
 
 .market{
-  padding:
-    15px 16px;
-
+  padding:15px 16px;
   display:flex;
-
-  justify-content:
-    space-between;
-
+  justify-content:space-between;
   align-items:center;
 }
 
 .symbol{
-  font-size:
-    21px;
-
-  font-weight:
-    1000;
+  font-size:21px;
+  font-weight:1000;
 }
 
 .sub{
-  margin-top:
-    3px;
-
-  font-size:
-    10px;
-
-  color:
-    var(--muted);
+  margin-top:3px;
+  font-size:10px;
+  color:var(--muted);
 }
 
 .livePrice{
-  text-align:
-    right;
-
-  font-size:
-    20px;
-
-  font-weight:
-    1000;
+  text-align:right;
+  font-size:20px;
+  font-weight:1000;
 }
 
 .liveSub{
-  text-align:
-    right;
-
-  margin-top:
-    3px;
-
-  font-size:
-    9px;
-
-  color:
-    var(--muted);
+  text-align:right;
+  margin-top:3px;
+  font-size:9px;
+  color:var(--muted);
 }
 
 .divider{
-  height:
-    1px;
-
-  background:
-    var(--line);
+  height:1px;
+  background:var(--line);
 }
 
 
-/* =========================================================
-   SCANNER
-========================================================= */
+/* SCANNER */
 
 .scan{
-  padding:
-    16px;
+  padding:16px;
 }
 
 .scanHead{
   display:flex;
-
-  justify-content:
-    space-between;
-
+  justify-content:space-between;
   align-items:center;
-
-  margin-bottom:
-    11px;
+  margin-bottom:11px;
 }
 
 .scanTitle{
-  font-size:
-    14px;
-
-  font-weight:
-    1000;
+  font-size:14px;
+  font-weight:1000;
 }
 
 .scanPct{
-  font-size:
-    12px;
-
-  font-weight:
-    1000;
-
-  color:
-    var(--cyan);
+  font-size:12px;
+  font-weight:1000;
+  color:var(--cyan);
 }
 
 .bar{
-  height:
-    6px;
-
-  background:
-    #272131;
-
-  border-radius:
-    999px;
-
-  overflow:
-    hidden;
+  height:6px;
+  background:#272131;
+  border-radius:999px;
+  overflow:hidden;
 }
 
 .bar i{
   display:block;
-
-  height:
-    100%;
-
-  width:
-    0;
-
-  border-radius:
-    999px;
+  height:100%;
+  width:0;
+  border-radius:999px;
 
   background:
-
     linear-gradient(
       90deg,
       var(--purple2),
       var(--cyan)
     );
 
-  transition:
-    width .2s;
+  transition:width .2s;
 }
 
 .steps{
   display:grid;
-
-  grid-template-columns:
-    1fr 1fr;
-
-  gap:
-    8px;
-
-  margin-top:
-    13px;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:13px;
 }
 
 .step{
-  min-height:
-    54px;
-
-  padding:
-    9px 11px;
-
-  border:
-    1px solid
-    #2a2338;
-
-  border-radius:
-    15px;
-
+  min-height:54px;
+  padding:9px 11px;
+  border:1px solid #2a2338;
+  border-radius:15px;
   display:flex;
-
   align-items:center;
-
-  gap:
-    9px;
-
-  color:
-    #716b7a;
-
-  font-size:
-    10px;
-
-  font-weight:
-    900;
+  gap:9px;
+  color:#716b7a;
+  font-size:10px;
+  font-weight:900;
 }
 
 .step b{
-  width:
-    24px;
-
-  height:
-    24px;
-
-  min-width:
-    24px;
-
-  border-radius:
-    50%;
-
+  width:24px;
+  height:24px;
+  min-width:24px;
+  border-radius:50%;
   display:grid;
-
   place-items:center;
-
-  background:
-    #24202c;
-
-  color:
-    #77717f;
-
-  font-size:
-    10px;
+  background:#24202c;
+  color:#77717f;
+  font-size:10px;
 }
 
 .step.on{
-  color:
-    #eee9ff;
-
-  border-color:
-    #5f438b;
-
-  background:
-    rgba(114,68,255,.06);
+  color:#eee9ff;
+  border-color:#5f438b;
+  background:rgba(114,68,255,.06);
 }
 
 .step.on b{
   background:
-
     linear-gradient(
       135deg,
       var(--purple),
       var(--cyan)
     );
 
-  color:
-    #09070f;
+  color:#09070f;
 }
 
 
-/* =========================================================
-   CHART
-========================================================= */
+/* CHART */
 
 .chartWrap{
-  height:
-    315px;
-
-  position:
-    relative;
-
-  border-top:
-    1px solid
-    var(--line);
-
-  background:
-    #05040a;
+  height:330px;
+  position:relative;
+  border-top:1px solid var(--line);
+  background:#05040a;
 }
 
 .watermark{
-  position:
-    absolute;
-
-  z-index:
-    2;
-
-  left:
-    18px;
-
-  top:
-    18px;
-
-  font-size:
-    29px;
-
-  font-weight:
-    1000;
-
-  color:
-    #ffffff0b;
-
-  pointer-events:
-    none;
+  position:absolute;
+  z-index:2;
+  left:18px;
+  top:18px;
+  font-size:29px;
+  font-weight:1000;
+  color:#ffffff0b;
+  pointer-events:none;
 }
 
 .tfbar{
-  position:
-    absolute;
-
-  z-index:
-    4;
-
-  right:
-    9px;
-
-  top:
-    10px;
-
+  position:absolute;
+  z-index:4;
+  right:9px;
+  top:10px;
   display:flex;
-
-  gap:
-    4px;
-
-  flex-wrap:
-    wrap;
-
-  justify-content:
-    flex-end;
-
-  max-width:
-    265px;
+  gap:4px;
 }
 
 .tf{
-  padding:
-    7px;
-
-  min-width:
-    38px;
-
-  text-align:
-    center;
-
-  border:
-    1px solid
-    #332a47;
-
-  border-radius:
-    10px;
-
-  background:
-    rgba(9,7,15,.9);
-
-  color:
-    #8c8596;
-
-  font-size:
-    8px;
-
-  font-weight:
-    1000;
+  padding:7px;
+  min-width:58px;
+  text-align:center;
+  border:1px solid #332a47;
+  border-radius:10px;
+  background:rgba(9,7,15,.9);
+  color:#8c8596;
+  font-size:8px;
+  font-weight:1000;
 }
 
 .tf.bull{
-  color:
-    var(--green);
+  color:var(--green);
 }
 
 .tf.bear{
-  color:
-    var(--red);
+  color:var(--red);
 }
 
 canvas{
-  position:
-    absolute;
-
-  inset:
-    0;
-
-  width:
-    100%;
-
-  height:
-    100%;
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
 }
 
 
-/* =========================================================
-   SIGNAL CARD
-========================================================= */
+/* SIGNAL */
 
 .signalCard{
-  display:
-    none;
+  display:none;
 }
 
 .signalCard.show{
-  display:
-    block;
+  display:block;
 }
 
 .signalTop{
-  padding:
-    16px;
-
+  padding:16px;
   display:flex;
-
-  justify-content:
-    space-between;
-
-  align-items:
-    flex-start;
+  justify-content:space-between;
+  align-items:flex-start;
 }
 
 .locked{
-  display:
-    inline-block;
-
-  padding:
-    6px 9px;
-
-  border:
-    1px solid
-    #4b3e67;
-
-  border-radius:
-    999px;
-
-  background:
-    #171222;
-
-  color:
-    #b693ff;
-
-  font-size:
-    8px;
-
-  font-weight:
-    1000;
-
-  margin-bottom:
-    8px;
+  display:inline-block;
+  padding:6px 9px;
+  border:1px solid #4b3e67;
+  border-radius:999px;
+  background:#171222;
+  color:#b693ff;
+  font-size:8px;
+  font-weight:1000;
+  margin-bottom:8px;
 }
 
 .direction{
-  font-size:
-    38px;
-
-  line-height:
-    .95;
-
-  font-weight:
-    1000;
+  font-size:38px;
+  line-height:.95;
+  font-weight:1000;
 }
 
 .direction.buy{
-  color:
-    var(--green);
+  color:var(--green);
 }
 
 .direction.sell{
-  color:
-    var(--red);
+  color:var(--red);
 }
 
 .direction.wait{
-  color:
-    var(--gold);
+  color:var(--gold);
 }
 
 .sigId{
-  margin-top:
-    6px;
-
-  color:
-    var(--muted);
-
-  font-size:
-    8px;
+  margin-top:6px;
+  color:var(--muted);
+  font-size:8px;
 }
 
 .scoreBox{
-  text-align:
-    right;
+  text-align:right;
 }
 
 .score{
-  font-size:
-    27px;
+  font-size:27px;
+  font-weight:1000;
+}
 
-  font-weight:
-    1000;
+.entryQuality{
+  margin-top:3px;
+  color:var(--cyan);
+  font-size:10px;
+  font-weight:1000;
 }
 
 .quality{
-  margin-top:
-    3px;
-
-  color:
-    var(--purple);
-
-  font-size:
-    9px;
-
-  font-weight:
-    1000;
+  margin-top:3px;
+  color:var(--purple);
+  font-size:9px;
+  font-weight:1000;
 }
 
 
-/* =========================================================
-   LEVELS
-========================================================= */
+/* LEVELS */
 
 .levels{
   display:grid;
-
-  grid-template-columns:
-    repeat(
-      3,
-      1fr
-    );
-
-  border-top:
-    1px solid
-    var(--line);
-
-  border-bottom:
-    1px solid
-    var(--line);
+  grid-template-columns:repeat(5,1fr);
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
 }
 
 .level{
-  padding:
-    13px 9px;
-
-  border-right:
-    1px solid
-    var(--line);
+  padding:12px 7px;
+  border-right:1px solid var(--line);
+  min-width:0;
 }
 
 .level:last-child{
-  border-right:
-    0;
+  border-right:0;
 }
 
 .level label{
   display:block;
-
-  color:
-    var(--muted);
-
-  font-size:
-    8px;
-
-  font-weight:
-    900;
+  color:var(--muted);
+  font-size:7px;
+  font-weight:900;
 }
 
 .level strong{
   display:block;
-
-  margin-top:
-    5px;
-
-  font-size:
-    13px;
+  margin-top:5px;
+  font-size:11px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 .sl{
-  color:
-    var(--red);
+  color:var(--red);
 }
 
 .tp{
-  color:
-    var(--green);
+  color:var(--green);
 }
 
 
-/* =========================================================
-   R PROGRESS
-========================================================= */
+/* R PROGRESS */
 
 .rPanel{
-  padding:
-    14px 16px;
-
-  border-bottom:
-    1px solid
-    var(--line);
+  padding:14px 16px;
+  border-bottom:1px solid var(--line);
 }
 
 .rTop{
   display:flex;
-
-  justify-content:
-    space-between;
-
-  color:
-    var(--muted);
-
-  font-size:
-    8px;
-
-  font-weight:
-    900;
-
-  margin-bottom:
-    7px;
+  justify-content:space-between;
+  color:var(--muted);
+  font-size:8px;
+  font-weight:900;
+  margin-bottom:7px;
 }
 
 .rTrack{
-  height:
-    8px;
-
-  border-radius:
-    999px;
-
+  height:8px;
+  border-radius:999px;
   background:
-
     linear-gradient(
       90deg,
       var(--red),
@@ -949,845 +544,546 @@ canvas{
       var(--green)
     );
 
-  position:
-    relative;
+  position:relative;
 }
 
 .rPin{
-  position:
-    absolute;
-
-  left:
-    50%;
-
-  top:
-    50%;
-
-  width:
-    14px;
-
-  height:
-    14px;
-
-  border-radius:
-    50%;
-
-  border:
-    2px solid
-    #fff;
-
-  background:
-    #08070d;
-
-  transform:
-    translate(
-      -50%,
-      -50%
-    );
-
-  transition:
-    left .25s;
+  position:absolute;
+  left:33.33%;
+  top:50%;
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  border:2px solid #fff;
+  background:#08070d;
+  transform:translate(-50%,-50%);
+  transition:left .25s;
 }
 
 
-/* =========================================================
-   ANALYSIS GRID
-========================================================= */
+/* ANALYSIS GRID */
 
 .grid{
   display:grid;
-
-  grid-template-columns:
-    1fr 1fr;
-
-  gap:
-    8px;
-
-  padding:
-    13px 15px;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  padding:13px 15px;
 }
 
 .box{
-  padding:
-    10px;
-
-  border:
-    1px solid
-    #2a233b;
-
-  border-radius:
-    13px;
-
-  background:
-    #0b0912;
+  padding:10px;
+  border:1px solid #2a233b;
+  border-radius:13px;
+  background:#0b0912;
 }
 
 .box label{
   display:block;
-
-  color:
-    #746d80;
-
-  font-size:
-    8px;
-
-  font-weight:
-    900;
+  color:#746d80;
+  font-size:8px;
+  font-weight:900;
 }
 
 .box strong{
   display:block;
-
-  margin-top:
-    5px;
-
-  color:
-    #ddd6eb;
-
-  font-size:
-    10px;
+  margin-top:5px;
+  color:#ddd6eb;
+  font-size:10px;
+  line-height:1.3;
 }
 
 
-/* =========================================================
-   INFO
-========================================================= */
+/* MARKET CONTEXT */
+
+.context{
+  padding:0 15px 13px;
+}
+
+.contextGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:7px;
+}
+
+.contextBox{
+  padding:9px;
+  border:1px solid #29223a;
+  border-radius:12px;
+  background:#090711;
+}
+
+.contextBox label{
+  display:block;
+  color:#6f6879;
+  font-size:7px;
+  font-weight:900;
+}
+
+.contextBox strong{
+  display:block;
+  margin-top:4px;
+  font-size:9px;
+  color:#d7d0e4;
+}
+
+.tagWrap{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+  margin-top:10px;
+}
+
+.tag{
+  padding:5px 7px;
+  border:1px solid #3a2d56;
+  border-radius:999px;
+  color:#aa8cff;
+  background:#120d1d;
+  font-size:7px;
+  font-weight:900;
+}
+
+
+/* INFO */
 
 .info{
-  padding:
-    2px 16px 15px;
+  padding:2px 16px 15px;
 }
 
 .infoRow{
   display:flex;
-
-  justify-content:
-    space-between;
-
-  gap:
-    10px;
-
-  padding:
-    5px 0;
-
-  font-size:
-    10px;
+  justify-content:space-between;
+  gap:10px;
+  padding:5px 0;
+  font-size:10px;
 }
 
 .infoRow span{
-  color:
-    var(--muted);
+  color:var(--muted);
 }
 
 .reasonsTitle{
-  margin:
-    12px 0 4px;
-
-  font-size:
-    9px;
-
-  font-weight:
-    1000;
-
-  color:
-    #d9d2ea;
-
-  letter-spacing:
-    .5px;
+  margin:12px 0 4px;
+  font-size:9px;
+  font-weight:1000;
+  color:#d9d2ea;
+  letter-spacing:.5px;
 }
 
 .reasons{
-  list-style:
-    none;
-
-  padding:
-    0;
-
-  margin:
-    0;
+  list-style:none;
+  padding:0;
+  margin:0;
 }
 
 .reasons li{
-  padding:
-    8px 0;
-
-  border-top:
-    1px solid
-    #211b2e;
-
-  color:
-    #9b94a7;
-
-  font-size:
-    10px;
-
-  line-height:
-    1.45;
+  padding:8px 0;
+  border-top:1px solid #211b2e;
+  color:#9b94a7;
+  font-size:10px;
+  line-height:1.45;
 }
 
 .reasons li:before{
-  content:
-    "◆";
+  content:"◆";
+  color:var(--purple);
+  font-size:6px;
+  margin-right:7px;
+}
 
-  color:
-    var(--purple);
+.blocked{
+  margin-top:10px;
+  padding:10px;
+  border:1px solid #5a2e39;
+  border-radius:12px;
+  background:#1a0d12;
+  color:#ff8797;
+  font-size:9px;
+  line-height:1.45;
+  display:none;
+}
 
-  font-size:
-    6px;
-
-  margin-right:
-    7px;
+.blocked.show{
+  display:block;
 }
 
 
-/* =========================================================
-   SETTINGS
-========================================================= */
+/* SETTINGS */
 
 .settings{
-  margin:
-    0 14px 11px;
-
+  margin:0 14px 11px;
   display:grid;
-
-  grid-template-columns:
-    1fr 1fr;
-
-  gap:
-    8px;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
 }
 
 .field{
-  background:
-    #0c0913;
-
-  border:
-    1px solid
-    #2d263d;
-
-  border-radius:
-    14px;
-
-  padding:
-    9px 11px;
+  background:#0c0913;
+  border:1px solid #2d263d;
+  border-radius:14px;
+  padding:9px 11px;
 }
 
 .field label{
   display:block;
-
-  color:
-    #726b7e;
-
-  font-size:
-    8px;
-
-  font-weight:
-    900;
-
-  margin-bottom:
-    4px;
+  color:#726b7e;
+  font-size:8px;
+  font-weight:900;
+  margin-bottom:4px;
 }
 
 .field input,
 .field select{
-  width:
-    100%;
-
-  border:
-    0;
-
-  outline:
-    none;
-
-  background:
-    transparent;
-
-  color:
-    white;
-
-  font-size:
-    12px;
+  width:100%;
+  border:0;
+  outline:none;
+  background:transparent;
+  color:white;
+  font-size:12px;
 }
 
 .toggles{
-  margin:
-    0 14px 11px;
-
+  margin:0 14px 11px;
   display:grid;
-
-  grid-template-columns:
-    1fr 1fr;
-
-  gap:
-    8px;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
 }
 
 .toggle{
-  border:
-    1px solid
-    #2d263d;
-
-  border-radius:
-    14px;
-
-  background:
-    #0c0913;
-
-  padding:
-    10px;
-
+  border:1px solid #2d263d;
+  border-radius:14px;
+  background:#0c0913;
+  padding:10px;
   display:flex;
-
   align-items:center;
-
-  gap:
-    8px;
-
-  color:
-    #a19aaa;
-
-  font-size:
-    9px;
-
-  font-weight:
-    900;
+  gap:8px;
+  color:#a19aaa;
+  font-size:9px;
+  font-weight:900;
 }
 
 .toggle input{
-  accent-color:
-    #8359ff;
+  accent-color:#8359ff;
 }
 
 
-/* =========================================================
-   BUTTONS
-========================================================= */
+/* NEWS */
+
+.newsPanel{
+  margin:0 14px 11px;
+  padding:12px;
+  border:1px solid #2d263d;
+  border-radius:15px;
+  background:#0c0913;
+}
+
+.newsTitle{
+  font-size:10px;
+  font-weight:1000;
+  margin-bottom:9px;
+}
+
+.newsGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.newsPanel input{
+  width:100%;
+  border:1px solid #2d263d;
+  border-radius:11px;
+  background:#08060d;
+  color:white;
+  padding:9px;
+  font-size:10px;
+}
+
+.newsStatus{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:9px;
+}
+
+
+/* CONTROLS */
 
 .controls{
-  margin:
-    0 14px 9px;
-
+  margin:0 14px 9px;
   display:grid;
-
-  grid-template-columns:
-    1fr 58px;
-
-  gap:
-    8px;
+  grid-template-columns:1fr 58px;
+  gap:8px;
 }
 
 .scanBtn{
-  min-height:
-    60px;
-
-  border:
-    0;
-
-  border-radius:
-    17px;
-
+  min-height:60px;
+  border:0;
+  border-radius:17px;
   background:
-
     linear-gradient(
       135deg,
       var(--purple),
       var(--purple2)
     );
 
-  color:
-    #fff;
-
-  font-size:
-    14px;
-
-  font-weight:
-    1000;
-
-  box-shadow:
-    0 10px 28px
-    rgba(104,61,245,.28);
+  color:#fff;
+  font-size:14px;
+  font-weight:1000;
+  box-shadow:0 10px 28px rgba(104,61,245,.28);
 }
 
 .scanBtn:disabled{
-  opacity:
-    .48;
+  opacity:.48;
 }
 
 .resetBtn{
-  border:
-    1px solid
-    #302942;
-
-  border-radius:
-    17px;
-
-  background:
-    #0d0a14;
-
-  color:
-    #9d96aa;
-
-  font-size:
-    23px;
+  border:1px solid #302942;
+  border-radius:17px;
+  background:#0d0a14;
+  color:#9d96aa;
+  font-size:23px;
 }
 
 .status{
-  min-height:
-    38px;
-
-  padding:
-    0 19px 16px;
-
-  color:
-    var(--muted);
-
-  font-size:
-    10px;
-
-  line-height:
-    1.45;
+  min-height:38px;
+  padding:0 19px 16px;
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.45;
 }
 
 .status.err{
-  color:
-    var(--red);
-}
-
-.miniBtn{
-  border:
-    1px solid
-    #302842;
-
-  border-radius:
-    10px;
-
-  background:
-    #0c0913;
-
-  color:
-    #91899e;
-
-  padding:
-    7px 10px;
-
-  font-size:
-    8px;
+  color:var(--red);
 }
 
 
-/* =========================================================
-   STATS
-========================================================= */
+/* PERFORMANCE */
 
 .stats{
   display:grid;
-
-  grid-template-columns:
-    repeat(
-      4,
-      1fr
-    );
-
-  gap:
-    6px;
-
-  padding:
-    14px;
+  grid-template-columns:repeat(5,1fr);
+  gap:6px;
+  padding:14px;
 }
 
 .stat{
-  border:
-    1px solid
-    #2a233b;
-
-  border-radius:
-    12px;
-
-  background:
-    #0b0912;
-
-  padding:
-    10px 6px;
-
-  text-align:
-    center;
+  border:1px solid #2a233b;
+  border-radius:12px;
+  background:#0b0912;
+  padding:10px 5px;
+  text-align:center;
 }
 
 .stat b{
   display:block;
-
-  font-size:
-    14px;
+  font-size:13px;
 }
 
 .stat small{
   display:block;
-
-  color:
-    #726b7e;
-
-  font-size:
-    7px;
-
-  margin-top:
-    3px;
+  color:#726b7e;
+  font-size:6px;
+  margin-top:3px;
 }
-
-
-/* =========================================================
-   HISTORY
-========================================================= */
 
 .historyHead{
   display:flex;
-
-  justify-content:
-    space-between;
-
+  justify-content:space-between;
   align-items:center;
-
-  padding:
-    0 14px 10px;
+  padding:0 14px 10px;
 }
 
 .historyHead strong{
-  font-size:
-    12px;
+  font-size:12px;
 }
 
 .historyActions{
   display:flex;
-
-  gap:
-    6px;
+  gap:6px;
 }
 
-.historyActions button{
-  border:
-    1px solid
-    #302842;
-
-  border-radius:
-    10px;
-
-  background:
-    #0c0913;
-
-  color:
-    #91899e;
-
-  padding:
-    6px 8px;
-
-  font-size:
-    8px;
+.historyActions button,
+.miniBtn{
+  border:1px solid #302842;
+  border-radius:10px;
+  background:#0c0913;
+  color:#91899e;
+  padding:6px 8px;
+  font-size:8px;
 }
 
 .history{
-  padding:
-    0 14px 14px;
+  padding:0 14px 14px;
 }
 
 .histEmpty{
-  color:
-    #686170;
-
-  font-size:
-    10px;
+  color:#686170;
+  font-size:10px;
 }
 
 .histItem{
-  padding:
-    10px 0;
-
-  border-top:
-    1px solid
-    #211b2e;
-
+  padding:10px 0;
+  border-top:1px solid #211b2e;
   display:flex;
-
-  justify-content:
-    space-between;
+  justify-content:space-between;
+  gap:10px;
 }
 
 .histItem:first-child{
-  border-top:
-    0;
+  border-top:0;
 }
 
 .histItem strong{
-  font-size:
-    10px;
+  font-size:10px;
 }
 
 .histItem small{
   display:block;
-
-  margin-top:
-    3px;
-
-  color:
-    #746d80;
-
-  font-size:
-    8px;
+  margin-top:3px;
+  color:#746d80;
+  font-size:8px;
+  line-height:1.35;
 }
 
 .result{
-  font-size:
-    10px;
-
-  font-weight:
-    1000;
+  font-size:10px;
+  font-weight:1000;
 }
 
 .result.tp{
-  color:
-    var(--green);
+  color:var(--green);
 }
 
 .result.sl{
-  color:
-    var(--red);
+  color:var(--red);
 }
 
-.result.wait{
-  color:
-    var(--gold);
+.result.be{
+  color:var(--gold);
 }
 
 
-/* =========================================================
-   NAV
-========================================================= */
+/* NAV */
 
 .nav{
-  position:
-    fixed;
-
-  z-index:
-    100;
-
-  bottom:
-    0;
-
-  left:
-    50%;
-
-  transform:
-    translateX(-50%);
-
-  width:
-    min(
-      100%,
-      540px
-    );
-
-  min-height:
-    calc(
-      72px +
-      env(safe-area-inset-bottom)
-    );
-
-  padding-bottom:
-    env(safe-area-inset-bottom);
-
+  position:fixed;
+  z-index:100;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(100%,560px);
+  min-height:calc(72px + env(safe-area-inset-bottom));
+  padding-bottom:env(safe-area-inset-bottom);
   display:grid;
-
-  grid-template-columns:
-    repeat(
-      3,
-      1fr
-    );
-
-  background:
-    rgba(6,5,12,.97);
-
-  border-top:
-    1px solid
-    #271f38;
-
-  backdrop-filter:
-    blur(18px);
+  grid-template-columns:repeat(3,1fr);
+  background:rgba(6,5,12,.97);
+  border-top:1px solid #271f38;
+  backdrop-filter:blur(18px);
 }
 
 .nav button{
-  border:
-    0;
-
-  background:
-    transparent;
-
-  color:
-    #696171;
-
+  border:0;
+  background:transparent;
+  color:#696171;
   display:flex;
-
-  flex-direction:
-    column;
-
-  align-items:
-    center;
-
-  justify-content:
-    center;
-
-  gap:
-    4px;
-
-  font-size:
-    9px;
-
-  font-weight:
-    900;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  font-size:9px;
+  font-weight:900;
 }
 
 .nav b{
-  font-size:
-    18px;
+  font-size:18px;
 }
 
 .nav button.active{
-  color:
-    #a985ff;
+  color:#a985ff;
 }
 
 
-/* =========================================================
-   TOAST
-========================================================= */
+/* TOAST */
 
 .toast{
-  position:
-    fixed;
-
-  z-index:
-    200;
-
-  left:
-    50%;
-
-  bottom:
-    calc(
-      86px +
-      env(safe-area-inset-bottom)
-    );
-
-  transform:
-    translate(
-      -50%,
-      14px
-    );
-
-  max-width:
-    calc(
-      100% -
-      28px
-    );
-
-  padding:
-    10px 13px;
-
-  border:
-    1px solid
-    #3a2f50;
-
-  border-radius:
-    12px;
-
-  background:
-    #161120;
-
-  color:
-    #fff;
-
-  font-size:
-    10px;
-
-  opacity:
-    0;
-
-  pointer-events:
-    none;
-
-  transition:
-    .2s;
+  position:fixed;
+  z-index:200;
+  left:50%;
+  bottom:calc(86px + env(safe-area-inset-bottom));
+  transform:translate(-50%,14px);
+  max-width:calc(100% - 28px);
+  padding:10px 13px;
+  border:1px solid #3a2f50;
+  border-radius:12px;
+  background:#161120;
+  color:#fff;
+  font-size:10px;
+  opacity:0;
+  pointer-events:none;
+  transition:.2s;
 }
 
 .toast.show{
-  opacity:
-    1;
-
-  transform:
-    translate(
-      -50%,
-      0
-    );
+  opacity:1;
+  transform:translate(-50%,0);
 }
 
-
-/* =========================================================
-   LOADER
-========================================================= */
-
 .loader{
-  display:
-    inline-block;
-
-  width:
-    14px;
-
-  height:
-    14px;
-
-  margin-right:
-    7px;
-
-  vertical-align:
-    -2px;
-
-  border:
-    2px solid
-    rgba(255,255,255,.25);
-
-  border-top-color:
-    #fff;
-
-  border-radius:
-    50%;
-
-  animation:
-    spin .7s linear infinite;
+  display:inline-block;
+  width:14px;
+  height:14px;
+  margin-right:7px;
+  vertical-align:-2px;
+  border:2px solid rgba(255,255,255,.25);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:spin .7s linear infinite;
 }
 
 @keyframes spin{
   to{
-    transform:
-      rotate(360deg);
+    transform:rotate(360deg);
+  }
+}
+
+@media(max-width:410px){
+
+  .levels{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+  .levels .level:nth-child(4),
+  .levels .level:nth-child(5){
+    border-top:1px solid var(--line);
+  }
+
+  .contextGrid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .stats{
+    grid-template-columns:repeat(3,1fr);
   }
 }
 
 </style>
 </head>
 
+
 <body>
 
 <div class="app">
 
+
   <div class="top">
 
     <div class="logo">
-      MKAY<span>FX</span> OMEGA
+      MKAY<span>FX</span> SCALPER V2
     </div>
 
     <div class="health">
-
       <i></i>
-
-      <span id="healthText">
-        CHECKING
-      </span>
-
+      <span id="healthText">CHECKING</span>
     </div>
 
   </div>
@@ -1796,24 +1092,22 @@ canvas{
   <section class="hero">
 
     <div class="eyebrow">
-      MULTI-MARKET QUANT SCANNER
+      M15 → M5 → M1 EXECUTION ENGINE
     </div>
 
     <h1>
-      OMEGA<br>
+      Scalp<br>
       Scanner
     </h1>
 
     <p>
-      XAU/USD and BTC/USD with M1→H4 confluence,
-      structure, liquidity, OB/FVG, regime, risk engine,
-      history and live monitoring.
+      Directional bias on M15, structure/liquidity on M5,
+      exact trigger on M1 — with session, spread, news,
+      risk guards, expiry and paper-trade analytics.
     </p>
 
   </section>
 
-
-  <!-- MARKET TABS -->
 
   <div class="tabs">
 
@@ -1822,10 +1116,7 @@ canvas{
       id="goldTab"
     >
       XAU/USD
-
-      <small>
-        GOLD
-      </small>
+      <small>GOLD SCALP</small>
     </button>
 
     <button
@@ -1833,16 +1124,11 @@ canvas{
       id="btcTab"
     >
       BTC/USD
-
-      <small>
-        BITCOIN
-      </small>
+      <small>BITCOIN SCALP</small>
     </button>
 
   </div>
 
-
-  <!-- MAIN SCANNER -->
 
   <div class="card">
 
@@ -1913,76 +1199,50 @@ canvas{
 
 
       <div class="bar">
-
         <i id="scanBar"></i>
-
       </div>
 
 
       <div class="steps">
 
-        <div
-          class="step"
-          id="step1"
-        >
+        <div class="step" id="step1">
           <b>1</b>
-          Live candles
+          M15 bias
         </div>
 
-        <div
-          class="step"
-          id="step2"
-        >
+        <div class="step" id="step2">
           <b>2</b>
-          MTF trend
+          M5 structure
         </div>
 
-        <div
-          class="step"
-          id="step3"
-        >
+        <div class="step" id="step3">
           <b>3</b>
-          BOS / structure
+          Liquidity map
         </div>
 
-        <div
-          class="step"
-          id="step4"
-        >
+        <div class="step" id="step4">
           <b>4</b>
-          Liquidity
-        </div>
-
-        <div
-          class="step"
-          id="step5"
-        >
-          <b>5</b>
           OB + FVG
         </div>
 
-        <div
-          class="step"
-          id="step6"
-        >
+        <div class="step" id="step5">
+          <b>5</b>
+          M1 trigger
+        </div>
+
+        <div class="step" id="step6">
           <b>6</b>
-          Momentum
+          Session / spread
         </div>
 
-        <div
-          class="step"
-          id="step7"
-        >
+        <div class="step" id="step7">
           <b>7</b>
-          Regime
+          News / risk guard
         </div>
 
-        <div
-          class="step"
-          id="step8"
-        >
+        <div class="step" id="step8">
           <b>8</b>
-          Risk plan
+          SL / TP plan
         </div>
 
       </div>
@@ -1999,46 +1259,21 @@ canvas{
         XAUUSD
       </div>
 
-
       <div class="tfbar">
 
-        <span
-          class="tf"
-          id="M1"
-        >
-          M1
+        <span class="tf" id="M1">
+          M1 ENTRY
         </span>
 
-        <span
-          class="tf"
-          id="M5"
-        >
-          M5
+        <span class="tf" id="M5">
+          M5 SETUP
         </span>
 
-        <span
-          class="tf"
-          id="M15"
-        >
-          M15
-        </span>
-
-        <span
-          class="tf"
-          id="H1"
-        >
-          H1
-        </span>
-
-        <span
-          class="tf"
-          id="H4"
-        >
-          H4
+        <span class="tf" id="M15">
+          M15 BIAS
         </span>
 
       </div>
-
 
       <canvas id="chart"></canvas>
 
@@ -2058,7 +1293,10 @@ canvas{
 
       <div>
 
-        <div class="locked">
+        <div
+          class="locked"
+          id="lockBadge"
+        >
           ● SIGNAL LOCKED
         </div>
 
@@ -2089,6 +1327,13 @@ canvas{
         </div>
 
         <div
+          class="entryQuality"
+          id="entryQuality"
+        >
+          ENTRY —%
+        </div>
+
+        <div
           class="quality"
           id="quality"
         >
@@ -2099,8 +1344,6 @@ canvas{
 
     </div>
 
-
-    <!-- LEVELS -->
 
     <div class="levels">
 
@@ -2115,7 +1358,6 @@ canvas{
         </strong>
 
       </div>
-
 
       <div class="level">
 
@@ -2132,16 +1374,45 @@ canvas{
 
       </div>
 
-
       <div class="level">
 
         <label>
-          TAKE PROFIT
+          TP1 · 1R
         </label>
 
         <strong
           class="tp"
-          id="takeProfit"
+          id="tp1"
+        >
+          —
+        </strong>
+
+      </div>
+
+      <div class="level">
+
+        <label>
+          TP2
+        </label>
+
+        <strong
+          class="tp"
+          id="tp2"
+        >
+          —
+        </strong>
+
+      </div>
+
+      <div class="level">
+
+        <label>
+          TP3
+        </label>
+
+        <strong
+          class="tp"
+          id="tp3"
         >
           —
         </strong>
@@ -2150,8 +1421,6 @@ canvas{
 
     </div>
 
-
-    <!-- R PROGRESS -->
 
     <div class="rPanel">
 
@@ -2165,12 +1434,11 @@ canvas{
           0.00R
         </span>
 
-        <span>
-          TP
+        <span id="targetRLabel">
+          TP2
         </span>
 
       </div>
-
 
       <div class="rTrack">
 
@@ -2184,200 +1452,184 @@ canvas{
     </div>
 
 
-    <!-- ANALYSIS DETAILS -->
-
     <div class="grid">
 
       <div class="box">
-
-        <label>
-          STRUCTURE
-        </label>
-
-        <strong id="structure">
-          —
-        </strong>
-
+        <label>STRUCTURE</label>
+        <strong id="structure">—</strong>
       </div>
 
-
       <div class="box">
-
-        <label>
-          LIQUIDITY
-        </label>
-
-        <strong id="liquidity">
-          —
-        </strong>
-
+        <label>LIQUIDITY</label>
+        <strong id="liquidity">—</strong>
       </div>
 
-
       <div class="box">
-
-        <label>
-          ORDER BLOCK
-        </label>
-
-        <strong id="orderBlock">
-          —
-        </strong>
-
+        <label>ORDER BLOCK</label>
+        <strong id="orderBlock">—</strong>
       </div>
 
-
       <div class="box">
-
-        <label>
-          FVG
-        </label>
-
-        <strong id="fvg">
-          —
-        </strong>
-
+        <label>FVG</label>
+        <strong id="fvg">—</strong>
       </div>
 
-
       <div class="box">
-
-        <label>
-          PREMIUM / DISCOUNT
-        </label>
-
-        <strong id="premiumDiscount">
-          —
-        </strong>
-
+        <label>EQH / EQL</label>
+        <strong id="equalHL">—</strong>
       </div>
 
-
       <div class="box">
-
-        <label>
-          CANDLE PATTERN
-        </label>
-
-        <strong id="candlePattern">
-          —
-        </strong>
-
+        <label>PREMIUM / DISCOUNT</label>
+        <strong id="premiumDiscount">—</strong>
       </div>
 
-
       <div class="box">
-
-        <label>
-          REGIME
-        </label>
-
-        <strong id="regime">
-          —
-        </strong>
-
+        <label>OTE</label>
+        <strong id="ote">—</strong>
       </div>
 
+      <div class="box">
+        <label>M1 TRIGGER</label>
+        <strong id="candlePattern">—</strong>
+      </div>
 
       <div class="box">
+        <label>FAKE BREAK</label>
+        <strong id="fakeBreak">—</strong>
+      </div>
 
-        <label>
-          VOLATILITY
-        </label>
+      <div class="box">
+        <label>VOLATILITY</label>
+        <strong id="volatility">—</strong>
+      </div>
 
-        <strong id="volatility">
-          —
-        </strong>
+      <div class="box">
+        <label>VOLUME</label>
+        <strong id="volume">—</strong>
+      </div>
 
+      <div class="box">
+        <label>REGIME</label>
+        <strong id="regime">—</strong>
       </div>
 
     </div>
 
 
-    <!-- TRADE INFORMATION -->
+    <div class="context">
+
+      <div class="contextGrid">
+
+        <div class="contextBox">
+          <label>PDH</label>
+          <strong id="pdh">—</strong>
+        </div>
+
+        <div class="contextBox">
+          <label>PDL</label>
+          <strong id="pdl">—</strong>
+        </div>
+
+        <div class="contextBox">
+          <label>ASIA HIGH</label>
+          <strong id="asiaHigh">—</strong>
+        </div>
+
+        <div class="contextBox">
+          <label>ASIA LOW</label>
+          <strong id="asiaLow">—</strong>
+        </div>
+
+        <div class="contextBox">
+          <label>SESSION</label>
+          <strong id="session">—</strong>
+        </div>
+
+        <div class="contextBox">
+          <label>KILLZONE</label>
+          <strong id="killzone">—</strong>
+        </div>
+
+        <div class="contextBox">
+          <label>SPREAD</label>
+          <strong id="spread">—</strong>
+        </div>
+
+        <div class="contextBox">
+          <label>EXPIRES</label>
+          <strong id="expires">—</strong>
+        </div>
+
+        <div class="contextBox">
+          <label>ENTRY PLAN</label>
+          <strong id="entryPlan">
+            MARKET
+          </strong>
+        </div>
+
+      </div>
+
+
+      <div
+        class="tagWrap"
+        id="tags"
+      ></div>
+
+    </div>
+
 
     <div class="info">
 
       <div class="infoRow">
-
-        <span>
-          Session
-        </span>
-
-        <b id="session">
-          —
-        </b>
-
+        <span>Directional bias</span>
+        <b id="directionalBias">—</b>
       </div>
-
 
       <div class="infoRow">
-
-        <span>
-          Directional bias
-        </span>
-
-        <b id="directionalBias">
-          —
-        </b>
-
+        <span>Risk / Reward</span>
+        <b id="rrDisplay">—</b>
       </div>
-
 
       <div class="infoRow">
-
-        <span>
-          Risk / Reward
-        </span>
-
-        <b id="rrDisplay">
-          —
-        </b>
-
+        <span>Breakeven trigger</span>
+        <b id="breakeven">—</b>
       </div>
-
 
       <div class="infoRow">
-
-        <span>
-          Breakeven trigger
-        </span>
-
-        <b id="breakeven">
-          —
-        </b>
-
+        <span>Trail trigger</span>
+        <b id="trailTrigger">—</b>
       </div>
-
 
       <div class="infoRow">
-
-        <span>
-          Trail trigger
-        </span>
-
-        <b id="trailTrigger">
-          —
-        </b>
-
+        <span>Effective stop</span>
+        <b id="effectiveStop">—</b>
       </div>
-
 
       <div class="infoRow">
-
-        <span>
-          Max risk
-        </span>
-
-        <b id="riskBudget">
-          —
-        </b>
-
+        <span>Max risk</span>
+        <b id="riskBudget">—</b>
       </div>
+
+      <div class="infoRow">
+        <span>TP1 status</span>
+        <b id="tp1Status">PENDING</b>
+      </div>
+
+      <div class="infoRow">
+        <span>Trade time</span>
+        <b id="tradeTime">00:00</b>
+      </div>
+
+
+      <div
+        class="blocked"
+        id="blocked"
+      ></div>
 
 
       <div class="reasonsTitle">
-        WHY OMEGA CHOSE THIS
+        WHY THE SCALPER CHOSE THIS
       </div>
 
 
@@ -2404,84 +1656,155 @@ canvas{
   <div class="settings">
 
     <div class="field">
-
-      <label>
-        EQUITY (ZAR)
-      </label>
-
+      <label>EQUITY (ZAR)</label>
       <input
         id="equity"
         type="number"
         value="200"
       >
-
     </div>
 
-
     <div class="field">
-
-      <label>
-        RISK %
-      </label>
-
+      <label>RISK %</label>
       <input
         id="riskPct"
         type="number"
         value="0.5"
         step="0.1"
       >
-
     </div>
-
 
     <div class="field">
 
       <label>
-        RISK : REWARD
+        TP2 R:R
       </label>
 
       <select id="rr">
 
-        <option value="1.5">
-          1 : 1.5
+        <option value="1.25">
+          1 : 1.25
         </option>
 
         <option
-          value="2"
+          value="1.5"
           selected
         >
+          1 : 1.5
+        </option>
+
+        <option value="1.75">
+          1 : 1.75
+        </option>
+
+        <option value="2">
           1 : 2
-        </option>
-
-        <option value="2.5">
-          1 : 2.5
-        </option>
-
-        <option value="3">
-          1 : 3
         </option>
 
       </select>
 
     </div>
 
+    <div class="field">
+      <label>MIN CONFIDENCE</label>
+      <input
+        id="minConfidence"
+        type="number"
+        value="66"
+        min="50"
+        max="95"
+      >
+    </div>
+
+    <div class="field">
+      <label>MIN ENTRY QUALITY</label>
+      <input
+        id="minEntryQuality"
+        type="number"
+        value="62"
+        min="30"
+        max="95"
+      >
+    </div>
+
+    <div class="field">
+      <label>SETUP EXPIRY MIN</label>
+      <input
+        id="expiryMinutes"
+        type="number"
+        value="6"
+        min="2"
+        max="30"
+      >
+    </div>
+
+    <div class="field">
+      <label>MONITOR SEC</label>
+      <input
+        id="monitorSeconds"
+        type="number"
+        value="30"
+        min="30"
+      >
+    </div>
+
+    <div class="field">
+      <label>MAX DAILY LOSS (R)</label>
+      <input
+        id="maxDailyLossR"
+        type="number"
+        value="3"
+        min="1"
+        step="0.5"
+      >
+    </div>
+
+    <div class="field">
+      <label>MAX TRADES / DAY</label>
+      <input
+        id="maxTradesPerDay"
+        type="number"
+        value="8"
+        min="1"
+      >
+    </div>
+
+    <div class="field">
+      <label>SL COOLDOWN MIN</label>
+      <input
+        id="cooldownMinutes"
+        type="number"
+        value="5"
+        min="0"
+      >
+    </div>
 
     <div class="field">
 
       <label>
-        MIN CONFIDENCE
+        ENTRY MODE
       </label>
 
-      <input
-        id="minConfidence"
-        type="number"
-        value="62"
-        min="50"
-        max="90"
-      >
+      <select id="entryMode">
+
+        <option
+          value="market"
+          selected
+        >
+          Market
+        </option>
+
+        <option value="retracement">
+          Retracement
+        </option>
+
+        <option value="aggressive">
+          Aggressive
+        </option>
+
+      </select>
 
     </div>
-
 
     <div class="field">
 
@@ -2495,7 +1818,7 @@ canvas{
           value="selective"
           selected
         >
-          Selective (WAIT allowed)
+          Selective / WAIT
         </option>
 
         <option value="forced">
@@ -2506,26 +1829,10 @@ canvas{
 
     </div>
 
-
-    <div class="field">
-
-      <label>
-        MONITOR SEC
-      </label>
-
-      <input
-        id="monitorSeconds"
-        type="number"
-        value="60"
-        min="30"
-      >
-
-    </div>
-
   </div>
 
 
-  <!-- TOGGLES -->
+  <!-- OPTIONS -->
 
   <div class="toggles">
 
@@ -2553,6 +1860,81 @@ canvas{
 
     </label>
 
+
+    <label class="toggle">
+
+      <input
+        id="useTrailing"
+        type="checkbox"
+        checked
+      >
+
+      AUTO BE + TRAIL
+
+    </label>
+
+
+    <label class="toggle">
+
+      <input
+        id="newsFilter"
+        type="checkbox"
+        checked
+      >
+
+      NEWS PROTECTION
+
+    </label>
+
+  </div>
+
+
+  <!-- NEWS -->
+
+  <div class="newsPanel">
+
+    <div class="newsTitle">
+      High-impact news protection
+    </div>
+
+    <div class="newsGrid">
+
+      <input
+        id="newsLabel"
+        placeholder="e.g. NFP / CPI / FOMC"
+      >
+
+      <input
+        id="newsTime"
+        type="datetime-local"
+      >
+
+      <input
+        id="newsBefore"
+        type="number"
+        value="15"
+        min="0"
+        placeholder="Min before"
+      >
+
+      <input
+        id="newsAfter"
+        type="number"
+        value="10"
+        min="0"
+        placeholder="Min after"
+      >
+
+    </div>
+
+
+    <div
+      class="newsStatus"
+      id="newsStatus"
+    >
+      No news event entered. Protection is idle.
+    </div>
+
   </div>
 
 
@@ -2566,7 +1948,6 @@ canvas{
     >
       SCAN XAU/USD
     </button>
-
 
     <button
       class="resetBtn"
@@ -2582,65 +1963,39 @@ canvas{
     class="status"
     id="status"
   >
-    Initializing OMEGA…
+    Initializing scalper…
   </div>
 
 
-  <!-- HISTORY / STATS -->
+  <!-- HISTORY -->
 
   <div class="card">
 
     <div class="stats">
 
       <div class="stat">
-
-        <b id="statTrades">
-          0
-        </b>
-
-        <small>
-          TRADES
-        </small>
-
+        <b id="statTrades">0</b>
+        <small>TRADES</small>
       </div>
 
-
       <div class="stat">
-
-        <b id="statWins">
-          0%
-        </b>
-
-        <small>
-          WIN RATE
-        </small>
-
+        <b id="statWins">0%</b>
+        <small>WIN RATE</small>
       </div>
 
-
       <div class="stat">
-
-        <b id="statR">
-          0.00R
-        </b>
-
-        <small>
-          TOTAL R
-        </small>
-
+        <b id="statR">0.00R</b>
+        <small>TOTAL R</small>
       </div>
 
+      <div class="stat">
+        <b id="statPF">0.00</b>
+        <small>PROFIT FACTOR</small>
+      </div>
 
       <div class="stat">
-
-        <b id="statActive">
-          NO
-        </b>
-
-        <small>
-          ACTIVE
-        </small>
-
+        <b id="statDD">0.00R</b>
+        <small>MAX DD</small>
       </div>
 
     </div>
@@ -2649,9 +2004,8 @@ canvas{
     <div class="historyHead">
 
       <strong>
-        Signal History
+        Paper Trade History
       </strong>
-
 
       <div class="historyActions">
 
@@ -2678,34 +2032,21 @@ canvas{
 </div>
 
 
-<!-- NAV -->
-
 <nav class="nav">
 
   <button class="active">
-
     <b>⌁</b>
-
     Scanner
-
   </button>
 
-
   <button>
-
     <b>◫</b>
-
     History
-
   </button>
 
-
   <button>
-
     <b>⚙</b>
-
     Settings
-
   </button>
 
 </nav>
@@ -2720,32 +2061,29 @@ canvas{
 <script>
 
 /* =========================================================
-   MKAYFX OMEGA FRONT END
+   STATE
 ========================================================= */
 
 const ACTIVE_KEY =
-  "mkayfx_omega_active_v1";
+  "mkayfx_scalper_v2_active";
 
 const HISTORY_KEY =
-  "mkayfx_omega_history_v1";
+  "mkayfx_scalper_v2_history";
+
+const COOLDOWN_KEY =
+  "mkayfx_scalper_v2_cooldown";
 
 
 const MARKET = {
 
-  "XAU/USD": {
-    name:
-      "Gold",
-
-    watermark:
-      "XAUUSD"
+  "XAU/USD":{
+    name:"Gold",
+    watermark:"XAUUSD"
   },
 
-  "BTC/USD": {
-    name:
-      "Bitcoin",
-
-    watermark:
-      "BTCUSD"
+  "BTC/USD":{
+    name:"Bitcoin",
+    watermark:"BTCUSD"
   }
 
 };
@@ -2763,92 +2101,77 @@ let scanning =
 let timer =
   null;
 
+let tradeClock =
+  null;
 
-/* =========================================================
-   DOM
-========================================================= */
 
 const $ =
   id =>
-    document.getElementById(
-      id
-    );
+    document.getElementById(id);
 
 
 /* =========================================================
    ERRORS
 ========================================================= */
 
-function err(value) {
+function err(v){
 
-  if (!value) {
+  if(!v){
     return "Unknown error.";
   }
 
-
-  if (
-    typeof value ===
+  if(
+    typeof v ===
     "string"
-  ) {
-    return value;
+  ){
+    return v;
   }
 
-
-  if (
-    value instanceof Error
-  ) {
+  if(
+    v instanceof Error
+  ){
     return (
-      value.message ||
+      v.message ||
       "Unknown error."
     );
   }
 
-
-  if (
-    typeof value ===
+  if(
+    typeof v ===
     "object"
-  ) {
+  ){
 
-    if (
-      typeof value.message ===
+    if(
+      typeof v.message ===
       "string"
-    ) {
-      return value.message;
+    ){
+      return v.message;
     }
 
-
-    if (
-      typeof value.error ===
+    if(
+      typeof v.error ===
       "string"
-    ) {
-      return value.error;
+    ){
+      return v.error;
     }
 
-
-    try {
-
-      return JSON.stringify(
-        value
-      );
-
-    } catch {}
+    try{
+      return JSON.stringify(v);
+    }catch{}
   }
 
-
-  return String(
-    value
-  );
+  return String(v);
 }
 
 
 /* =========================================================
-   API REQUEST
+   API
 ========================================================= */
 
 async function requestJSON(
   url,
   options = {}
-) {
+){
 
   const response =
     await fetch(
@@ -2864,14 +2187,12 @@ async function requestJSON(
   let data;
 
 
-  try {
+  try{
 
     data =
-      JSON.parse(
-        raw
-      );
+      JSON.parse(raw);
 
-  } catch {
+  }catch{
 
     throw new Error(
       "Backend returned invalid JSON."
@@ -2879,10 +2200,10 @@ async function requestJSON(
   }
 
 
-  if (
+  if(
     !response.ok ||
     !data.success
-  ) {
+  ){
 
     throw new Error(
       err(
@@ -2899,28 +2220,22 @@ async function requestJSON(
 
 
 /* =========================================================
-   FORMAT
+   HELPERS
 ========================================================= */
 
-function fmt(value) {
+function fmt(v){
 
-  const number =
-    Number(
-      value
-    );
+  const x =
+    Number(v);
 
 
-  return Number.isFinite(
-    number
-  )
-    ? number.toLocaleString(
+  return Number.isFinite(x)
+
+    ? x.toLocaleString(
         "en-US",
         {
-          minimumFractionDigits:
-            2,
-
-          maximumFractionDigits:
-            2
+          minimumFractionDigits:2,
+          maximumFractionDigits:2
         }
       )
 
@@ -2928,20 +2243,14 @@ function fmt(value) {
 }
 
 
-/* =========================================================
-   STATUS
-========================================================= */
-
 function status(
   message,
   isError = false
-) {
+){
 
   $("status")
     .textContent =
-      err(
-        message
-      );
+      err(message);
 
 
   $("status")
@@ -2952,55 +2261,45 @@ function status(
 }
 
 
-/* =========================================================
-   TOAST
-========================================================= */
+function toast(message){
 
-function toast(message) {
-
-  const element =
+  const t =
     $("toast");
 
 
-  element.textContent =
-    err(
-      message
-    );
+  t.textContent =
+    err(message);
 
 
-  element.classList.add(
+  t.classList.add(
     "show"
   );
 
 
   setTimeout(
     () =>
-      element
-        .classList
-        .remove(
-          "show"
-        ),
+      t.classList.remove(
+        "show"
+      ),
     2200
   );
 }
 
 
 /* =========================================================
-   ACTIVE TRADE STORAGE
+   STORAGE
 ========================================================= */
 
-function saveActive() {
+function saveActive(){
 
-  if (active) {
+  if(active){
 
     localStorage.setItem(
       ACTIVE_KEY,
-      JSON.stringify(
-        active
-      )
+      JSON.stringify(active)
     );
 
-  } else {
+  }else{
 
     localStorage.removeItem(
       ACTIVE_KEY
@@ -3009,56 +2308,50 @@ function saveActive() {
 }
 
 
-function loadActive() {
+function loadActive(){
 
-  try {
+  try{
 
     return JSON.parse(
       localStorage.getItem(
         ACTIVE_KEY
-      )
-      ||
+      ) ||
       "null"
     );
 
-  } catch {
+  }catch{
 
     return null;
   }
 }
 
 
-/* =========================================================
-   HISTORY STORAGE
-========================================================= */
+function history(){
 
-function history() {
-
-  try {
+  try{
 
     return JSON.parse(
       localStorage.getItem(
         HISTORY_KEY
-      )
-      ||
+      ) ||
       "[]"
     );
 
-  } catch {
+  }catch{
 
     return [];
   }
 }
 
 
-function saveHistory(items) {
+function saveHistory(h){
 
   localStorage.setItem(
     HISTORY_KEY,
     JSON.stringify(
-      items.slice(
+      h.slice(
         0,
-        50
+        100
       )
     )
   );
@@ -3066,26 +2359,144 @@ function saveHistory(items) {
 
 
 /* =========================================================
-   ADD COMPLETED TRADE
+   DAILY STATS / COOLDOWN
+========================================================= */
+
+function todayKey(){
+
+  const d =
+    new Date();
+
+
+  return (
+    `${d.getFullYear()}-`
+    +
+    `${String(d.getMonth()+1).padStart(2,"0")}-`
+    +
+    `${String(d.getDate()).padStart(2,"0")}`
+  );
+}
+
+
+function itemLocalDay(iso){
+
+  const d =
+    new Date(iso);
+
+
+  return (
+    `${d.getFullYear()}-`
+    +
+    `${String(d.getMonth()+1).padStart(2,"0")}-`
+    +
+    `${String(d.getDate()).padStart(2,"0")}`
+  );
+}
+
+
+function dailyStats(){
+
+  const items =
+    history().filter(
+      x =>
+        itemLocalDay(x.time) ===
+        todayKey()
+        &&
+        [
+          "TP",
+          "SL",
+          "BE",
+          "TRAIL"
+        ].includes(x.result)
+    );
+
+
+  return {
+
+    trades:
+      items.length,
+
+    R:
+      items.reduce(
+        (sum,x) =>
+          sum +
+          Number(
+            x.R ||
+            0
+          ),
+        0
+      )
+
+  };
+}
+
+
+function cooldownUntil(){
+
+  return Number(
+    localStorage.getItem(
+      COOLDOWN_KEY
+    )
+    ||
+    0
+  );
+}
+
+
+function setCooldown(minutes){
+
+  const until =
+    Date.now()
+    +
+    Math.max(
+      0,
+      Number(minutes) ||
+      0
+    )
+    *
+    60000;
+
+
+  localStorage.setItem(
+    COOLDOWN_KEY,
+    String(until)
+  );
+
+
+  return until;
+}
+
+
+function cooldownRemaining(){
+
+  return Math.max(
+    0,
+    cooldownUntil() -
+    Date.now()
+  );
+}
+
+
+/* =========================================================
+   HISTORY
 ========================================================= */
 
 function addHistory(
   trade,
   result,
   exitPrice
-) {
+){
 
-  const items =
+  const h =
     history();
 
 
   const risk =
     Math.abs(
-      Number(
-        trade.entry
-      )
+      Number(trade.entry)
       -
       Number(
+        trade.originalStopLoss ||
         trade.stopLoss
       )
     );
@@ -3095,39 +2506,31 @@ function addHistory(
     0;
 
 
-  if (risk) {
+  if(risk){
 
     R =
       trade.directionalBias ===
       "BUY"
 
         ? (
-            Number(
-              exitPrice
-            )
+            Number(exitPrice)
             -
-            Number(
-              trade.entry
-            )
+            Number(trade.entry)
           )
           /
           risk
 
         : (
-            Number(
-              trade.entry
-            )
+            Number(trade.entry)
             -
-            Number(
-              exitPrice
-            )
+            Number(exitPrice)
           )
           /
           risk;
   }
 
 
-  items.unshift({
+  h.unshift({
 
     time:
       new Date()
@@ -3142,6 +2545,9 @@ function addHistory(
     confidence:
       trade.confidence,
 
+    entryQuality:
+      trade.entryQuality,
+
     quality:
       trade.quality,
 
@@ -3149,10 +2555,17 @@ function addHistory(
       trade.entry,
 
     sl:
+      trade.originalStopLoss ||
       trade.stopLoss,
 
-    tp:
-      trade.takeProfit,
+    tp1:
+      trade.takeProfit1,
+
+    tp2:
+      trade.takeProfit2,
+
+    tp3:
+      trade.takeProfit3,
 
     result,
 
@@ -3160,30 +2573,71 @@ function addHistory(
 
     R:
       Number(
-        R.toFixed(
-          2
-        )
-      )
+        R.toFixed(2)
+      ),
+
+    tags:
+      (
+        trade.tags ||
+        []
+      ).join("|")
 
   });
 
 
-  saveHistory(
-    items
-  );
-
+  saveHistory(h);
 
   renderHistory();
 }
 
 
-/* =========================================================
-   HISTORY UI
-========================================================= */
+function maxDrawdownR(items){
 
-function renderHistory() {
+  let equity =
+    0;
 
-  const items =
+  let peak =
+    0;
+
+  let maxDD =
+    0;
+
+
+  for(
+    const x
+    of [...items].reverse()
+  ){
+
+    equity +=
+      Number(
+        x.R ||
+        0
+      );
+
+
+    peak =
+      Math.max(
+        peak,
+        equity
+      );
+
+
+    maxDD =
+      Math.max(
+        maxDD,
+        peak -
+        equity
+      );
+  }
+
+
+  return maxDD;
+}
+
+
+function renderHistory(){
+
+  const h =
     history();
 
 
@@ -3196,36 +2650,68 @@ function renderHistory() {
 
 
   const completed =
-    items.filter(
-      item =>
-        item.result ===
-        "TP"
-        ||
-        item.result ===
-        "SL"
+    h.filter(
+      x =>
+        [
+          "TP",
+          "SL",
+          "BE",
+          "TRAIL"
+        ].includes(
+          x.result
+        )
     );
 
 
   const wins =
     completed.filter(
-      item =>
-        item.result ===
-        "TP"
+      x =>
+        Number(x.R) >
+        0
     ).length;
 
 
   const totalR =
-    items.reduce(
-      (
-        sum,
-        item
-      ) =>
+    completed.reduce(
+      (sum,x) =>
         sum +
         Number(
-          item.R ||
+          x.R ||
           0
         ),
       0
+    );
+
+
+  const grossWin =
+    completed
+      .filter(
+        x =>
+          Number(x.R) >
+          0
+      )
+      .reduce(
+        (sum,x) =>
+          sum +
+          Number(x.R),
+        0
+      );
+
+
+  const grossLoss =
+    Math.abs(
+      completed
+        .filter(
+          x =>
+            Number(x.R) <
+            0
+        )
+        .reduce(
+          (sum,x) =>
+            sum +
+            Number(x.R),
+          0
+        )
     );
 
 
@@ -3251,127 +2737,147 @@ function renderHistory() {
 
   $("statR")
     .textContent =
-      totalR.toFixed(
-        2
-      )
+      totalR.toFixed(2)
       +
       "R";
 
 
-  $("statActive")
+  $("statPF")
     .textContent =
-      active
-        ? "YES"
-        : "NO";
+      grossLoss
+
+        ? (
+            grossWin /
+            grossLoss
+          )
+          .toFixed(2)
+
+        : grossWin >
+          0
+
+        ? "∞"
+
+        : "0.00";
 
 
-  if (
-    !items.length
-  ) {
+  $("statDD")
+    .textContent =
+      maxDrawdownR(
+        completed
+      )
+      .toFixed(2)
+      +
+      "R";
+
+
+  if(!h.length){
 
     wrap.innerHTML =
-      '<div class="histEmpty">No completed trades yet.</div>';
+      '<div class="histEmpty">No completed paper trades yet.</div>';
 
     return;
   }
 
 
-  items
-    .slice(
-      0,
-      10
-    )
-    .forEach(
-      item => {
+  h.slice(
+    0,
+    15
+  )
+  .forEach(
+    x => {
 
-        const row =
-          document.createElement(
-            "div"
-          );
-
-
-        row.className =
-          "histItem";
-
-
-        const left =
-          document.createElement(
-            "div"
-          );
-
-
-        const title =
-          document.createElement(
-            "strong"
-          );
-
-
-        title.textContent =
-          `${item.symbol} ${item.signal}`;
-
-
-        const sub =
-          document.createElement(
-            "small"
-          );
-
-
-        sub.textContent =
-          `${item.confidence || 0}% · ${item.quality || "—"} · Entry ${fmt(item.entry)}`;
-
-
-        left.append(
-          title,
-          sub
+      const row =
+        document.createElement(
+          "div"
         );
 
 
-        const result =
-          document.createElement(
-            "div"
-          );
+      row.className =
+        "histItem";
 
 
-        result.className =
-          "result "
-          +
-          (
-            item.result === "TP"
-              ? "tp"
-
-              : item.result === "SL"
-              ? "sl"
-
-              : "wait"
-          );
-
-
-        result.textContent =
-          item.result ||
-          "WAIT";
-
-
-        row.append(
-          left,
-          result
+      const left =
+        document.createElement(
+          "div"
         );
 
 
-        wrap.appendChild(
-          row
+      const title =
+        document.createElement(
+          "strong"
         );
-      }
-    );
+
+
+      title.textContent =
+        `${x.symbol} ${x.signal}`;
+
+
+      const sub =
+        document.createElement(
+          "small"
+        );
+
+
+      sub.textContent =
+        `${x.confidence || 0}% / entry ${x.entryQuality || 0}% · ${x.quality || "—"} · ${Number(x.R || 0).toFixed(2)}R`;
+
+
+      left.append(
+        title,
+        sub
+      );
+
+
+      const r =
+        document.createElement(
+          "div"
+        );
+
+
+      r.className =
+        "result "
+        +
+        (
+          x.result ===
+          "TP"
+
+            ? "tp"
+
+            : x.result ===
+              "SL"
+
+            ? "sl"
+
+            : "be"
+        );
+
+
+      r.textContent =
+        x.result;
+
+
+      row.append(
+        left,
+        r
+      );
+
+
+      wrap.appendChild(
+        row
+      );
+
+    }
+  );
 }
 
 
 /* =========================================================
-   MARKET UI
+   MARKET
 ========================================================= */
 
-function updateMarketUI() {
+function updateMarketUI(){
 
-  const market =
+  const m =
     MARKET[
       selected
     ];
@@ -3384,12 +2890,12 @@ function updateMarketUI() {
 
   $("marketName")
     .textContent =
-      market.name;
+      m.name;
 
 
   $("watermark")
     .textContent =
-      market.watermark;
+      m.watermark;
 
 
   $("goldTab")
@@ -3410,7 +2916,7 @@ function updateMarketUI() {
     );
 
 
-  if (!active) {
+  if(!active){
 
     $("scanBtn")
       .textContent =
@@ -3421,26 +2927,19 @@ function updateMarketUI() {
 }
 
 
-/* =========================================================
-   CHOOSE MARKET
-========================================================= */
+async function chooseMarket(symbol){
 
-async function chooseMarket(
-  symbol
-) {
+  if(active){
 
-  if (active) {
-
-    if (
+    if(
       active.symbol !==
       symbol
-    ) {
+    ){
 
       toast(
-        "Clear the locked signal before switching markets."
+        "Clear the locked trade before switching markets."
       );
     }
-
 
     return;
   }
@@ -3452,15 +2951,11 @@ async function chooseMarket(
 
   updateMarketUI();
 
-
   resetSteps();
-
 
   resetTF();
 
-
   resizeChart();
-
 
   await previewPrice();
 }
@@ -3470,34 +2965,28 @@ async function chooseMarket(
    LIVE PRICE PREVIEW
 ========================================================= */
 
-async function previewPrice() {
+async function previewPrice(){
 
   $("liveSub")
     .textContent =
       "Loading live price";
 
 
-  try {
+  try{
 
-    const data =
+    const d =
       await requestJSON(
-
-        `/api/bot?mode=price&symbol=${encodeURIComponent(
-          selected
-        )}&t=${Date.now()}`,
-
+        `/api/bot?mode=price&symbol=${encodeURIComponent(selected)}&t=${Date.now()}`,
         {
-          cache:
-            "no-store"
+          cache:"no-store"
         }
-
       );
 
 
     $("livePrice")
       .textContent =
         fmt(
-          data.price
+          d.price
         );
 
 
@@ -3517,7 +3006,7 @@ async function previewPrice() {
     );
 
 
-  } catch (error) {
+  }catch(e){
 
     $("livePrice")
       .textContent =
@@ -3530,7 +3019,7 @@ async function previewPrice() {
 
 
     status(
-      error,
+      e,
       true
     );
   }
@@ -3538,16 +3027,16 @@ async function previewPrice() {
 
 
 /* =========================================================
-   SCAN STEPS
+   SCANNER ANIMATION
 ========================================================= */
 
-function resetSteps() {
+function resetSteps(){
 
-  for (
+  for(
     let i = 1;
     i <= 8;
     i++
-  ) {
+  ){
 
     $("step" + i)
       .classList
@@ -3573,13 +3062,13 @@ function resetSteps() {
 }
 
 
-function finishSteps() {
+function finishSteps(){
 
-  for (
+  for(
     let i = 1;
     i <= 8;
     i++
-  ) {
+  ){
 
     $("step" + i)
       .classList
@@ -3616,40 +3105,40 @@ const sleep =
     );
 
 
-async function animate() {
+async function animate(){
 
   resetSteps();
 
 
   const names = [
 
-    "Reading live candles",
+    "Reading M15 bias",
 
-    "Scoring M1→H4 trend",
+    "Mapping M5 structure",
 
-    "Mapping BOS / CHoCH",
-
-    "Sweeping liquidity map",
+    "Finding liquidity",
 
     "Detecting OB + FVG",
 
-    "Checking momentum",
+    "Checking M1 trigger",
 
-    "Classifying regime",
+    "Checking session / spread",
 
-    "Building risk plan"
+    "Applying news / risk guard",
+
+    "Building scalp plan"
 
   ];
 
 
-  for (
+  for(
     let i = 1;
     i <= 8;
     i++
-  ) {
+  ){
 
     await sleep(
-      150
+      140
     );
 
 
@@ -3660,7 +3149,7 @@ async function animate() {
       );
 
 
-    const percent =
+    const p =
       Math.round(
         i /
         8 *
@@ -3670,13 +3159,13 @@ async function animate() {
 
     $("scanBar")
       .style.width =
-        percent +
+        p +
         "%";
 
 
     $("scanPct")
       .textContent =
-        percent +
+        p +
         "%";
 
 
@@ -3696,63 +3185,61 @@ async function animate() {
 function tf(
   id,
   value
-) {
+){
 
-  const element =
+  const e =
     $(id);
 
 
-  element.className =
+  e.className =
     "tf";
 
 
-  if (
+  if(
     value ===
     "BULLISH"
-  ) {
+  ){
 
-    element.classList.add(
+    e.classList.add(
       "bull"
     );
 
 
-    element.textContent =
+    e.textContent =
       id +
       " ↑";
 
 
-  } else if (
+  }else if(
     value ===
     "BEARISH"
-  ) {
+  ){
 
-    element.classList.add(
+    e.classList.add(
       "bear"
     );
 
 
-    element.textContent =
+    e.textContent =
       id +
       " ↓";
 
 
-  } else {
+  }else{
 
-    element.textContent =
+    e.textContent =
       id +
       " •";
   }
 }
 
 
-function resetTF() {
+function resetTF(){
 
   [
     "M1",
     "M5",
-    "M15",
-    "H1",
-    "H4"
+    "M15"
   ]
   .forEach(
     id =>
@@ -3765,47 +3252,46 @@ function resetTF() {
 
 
 /* =========================================================
-   CHART SIZE
+   CHART
 ========================================================= */
 
-function resizeChart() {
+function resizeChart(){
 
-  const canvas =
+  const c =
     $("chart");
 
 
-  const rect =
-    canvas
-      .parentElement
+  const r =
+    c.parentElement
       .getBoundingClientRect();
 
 
-  const ratio =
+  const d =
     devicePixelRatio ||
     1;
 
 
-  canvas.width =
+  c.width =
     Math.round(
-      rect.width *
-      ratio
+      r.width *
+      d
     );
 
 
-  canvas.height =
+  c.height =
     Math.round(
-      rect.height *
-      ratio
+      r.height *
+      d
     );
 
 
-  canvas.style.width =
-    rect.width +
+  c.style.width =
+    r.width +
     "px";
 
 
-  canvas.style.height =
-    rect.height +
+  c.style.height =
+    r.height +
     "px";
 
 
@@ -3819,132 +3305,128 @@ addEventListener(
 );
 
 
-/* =========================================================
-   CHART DRAWING
-========================================================= */
+function drawChart(){
 
-function drawChart() {
-
-  const canvas =
+  const c =
     $("chart");
 
 
-  const context =
-    canvas.getContext(
+  const ctx =
+    c.getContext(
       "2d"
     );
 
 
-  const ratio =
+  const d =
     devicePixelRatio ||
     1;
 
 
-  const width =
-    canvas.width /
-    ratio;
+  const w =
+    c.width /
+    d;
 
 
-  const height =
-    canvas.height /
-    ratio;
+  const h =
+    c.height /
+    d;
 
 
-  context.setTransform(
-    ratio,
+  ctx.setTransform(
+    d,
     0,
     0,
-    ratio,
+    d,
     0,
     0
   );
 
 
-  context.clearRect(
+  ctx.clearRect(
     0,
     0,
-    width,
-    height
+    w,
+    h
   );
 
 
-  context.strokeStyle =
+  ctx.strokeStyle =
     "#171321";
 
 
-  context.lineWidth =
+  ctx.lineWidth =
     1;
 
 
-  for (
+  for(
     let i = 1;
     i < 6;
     i++
-  ) {
+  ){
 
     const x =
-      width *
+      w *
       i /
       6;
 
 
-    context.beginPath();
+    ctx.beginPath();
 
-    context.moveTo(
+    ctx.moveTo(
       x,
       0
     );
 
-    context.lineTo(
+    ctx.lineTo(
       x,
-      height
+      h
     );
 
-    context.stroke();
+    ctx.stroke();
 
 
-    const y =
-      height *
+    const yy =
+      h *
       i /
       6;
 
 
-    context.beginPath();
+    ctx.beginPath();
 
-    context.moveTo(
+    ctx.moveTo(
       0,
-      y
+      yy
     );
 
-    context.lineTo(
-      width,
-      y
+    ctx.lineTo(
+      w,
+      yy
     );
 
-    context.stroke();
+    ctx.stroke();
   }
 
 
-  if (
+  if(
     !active ||
     !Array.isArray(
       active.chart
     ) ||
     !active.chart.length
-  ) {
+  ){
 
-    context.fillStyle =
+    ctx.fillStyle =
       "#514b5d";
 
 
-    context.font =
+    ctx.font =
       "12px -apple-system";
 
 
-    context.fillText(
-      "Start a scan to load chart",
+    ctx.fillText(
+      "Run a scalp scan to load chart",
       18,
-      height /
+      h /
       2
     );
 
@@ -3953,12 +3435,12 @@ function drawChart() {
   }
 
 
-  const candles =
+  const cs =
     active.chart;
 
 
-  const values =
-    candles.flatMap(
+  const vals =
+    cs.flatMap(
       candle => [
 
         Number(
@@ -3973,80 +3455,83 @@ function drawChart() {
     );
 
 
-  values.push(
+  [
+    active.entry,
 
-    Number(
-      active.entry
-    ),
+    active.originalStopLoss ||
+    active.stopLoss,
 
-    Number(
-      active.stopLoss
-    ),
+    active.takeProfit1,
 
-    Number(
-      active.takeProfit
-    )
+    active.takeProfit2,
 
+    active.takeProfit3
+
+  ]
+  .forEach(
+    value =>
+      vals.push(
+        Number(value)
+      )
   );
 
 
-  let minimum =
+  let mn =
     Math.min(
-      ...values
+      ...vals
     );
 
 
-  let maximum =
+  let mx =
     Math.max(
-      ...values
+      ...vals
     );
 
 
-  const padding =
+  const pad =
     (
-      maximum -
-      minimum ||
+      mx -
+      mn ||
       1
     )
     *
     .1;
 
 
-  minimum -=
-    padding;
+  mn -=
+    pad;
 
 
-  maximum +=
-    padding;
+  mx +=
+    pad;
 
 
-  const priceY =
+  const y =
     price =>
-
       14
       +
       (
-        maximum -
+        mx -
         price
       )
       /
       (
-        maximum -
-        minimum
+        mx -
+        mn
       )
       *
       (
-        height -
+        h -
         28
       );
 
 
   const step =
-    width /
-    candles.length;
+    w /
+    cs.length;
 
 
-  const candleWidth =
+  const bw =
     Math.max(
       2,
       step *
@@ -4054,13 +3539,13 @@ function drawChart() {
     );
 
 
-  candles.forEach(
+  cs.forEach(
     (
       candle,
       index
     ) => {
 
-      const x =
+      const xx =
         index *
         step
         +
@@ -4101,74 +3586,56 @@ function drawChart() {
           : "#ff6178";
 
 
-      context.strokeStyle =
+      ctx.strokeStyle =
         color;
 
 
-      context.beginPath();
+      ctx.beginPath();
 
 
-      context.moveTo(
-        x,
-        priceY(
-          high
-        )
+      ctx.moveTo(
+        xx,
+        y(high)
       );
 
 
-      context.lineTo(
-        x,
-        priceY(
-          low
-        )
+      ctx.lineTo(
+        xx,
+        y(low)
       );
 
 
-      context.stroke();
+      ctx.stroke();
 
 
-      context.fillStyle =
+      ctx.fillStyle =
         color;
 
 
       const top =
         Math.min(
-          priceY(
-            open
-          ),
-          priceY(
-            close
-          )
+          y(open),
+          y(close)
         );
 
 
-      const bodyHeight =
+      const bh =
         Math.max(
           1,
           Math.abs(
-            priceY(
-              open
-            )
-            -
-            priceY(
-              close
-            )
+            y(open) -
+            y(close)
           )
         );
 
 
-      context.fillRect(
-
-        x -
-        candleWidth /
+      ctx.fillRect(
+        xx -
+        bw /
         2,
-
         top,
-
-        candleWidth,
-
-        bodyHeight
-
+        bw,
+        bh
       );
 
     }
@@ -4178,9 +3645,21 @@ function drawChart() {
   const levels = [
 
     [
-      active.takeProfit,
+      active.takeProfit3,
+      "#1edb91",
+      "TP3"
+    ],
+
+    [
+      active.takeProfit2,
       "#39e59d",
-      "TP"
+      "TP2"
+    ],
+
+    [
+      active.takeProfit1,
+      "#69f0b9",
+      "TP1"
     ],
 
     [
@@ -4190,6 +3669,7 @@ function drawChart() {
     ],
 
     [
+      active.effectiveStop ??
       active.stopLoss,
       "#ff6178",
       "SL"
@@ -4207,19 +3687,17 @@ function drawChart() {
       ]
     ) => {
 
-      const y =
-        priceY(
-          Number(
-            price
-          )
+      const yy =
+        y(
+          Number(price)
         );
 
 
-      context.strokeStyle =
+      ctx.strokeStyle =
         color;
 
 
-      context.setLineDash(
+      ctx.setLineDash(
         [
           5,
           5
@@ -4227,46 +3705,42 @@ function drawChart() {
       );
 
 
-      context.beginPath();
+      ctx.beginPath();
 
 
-      context.moveTo(
+      ctx.moveTo(
         0,
-        y
+        yy
       );
 
 
-      context.lineTo(
-        width,
-        y
+      ctx.lineTo(
+        w,
+        yy
       );
 
 
-      context.stroke();
+      ctx.stroke();
 
 
-      context.setLineDash(
+      ctx.setLineDash(
         []
       );
 
 
-      context.fillStyle =
+      ctx.fillStyle =
         color;
 
 
-      context.font =
+      ctx.font =
         "bold 9px -apple-system";
 
 
-      context.fillText(
-
+      ctx.fillText(
         `${label} ${fmt(price)}`,
-
         8,
-
-        y -
+        yy -
         5
-
       );
 
     }
@@ -4275,19 +3749,159 @@ function drawChart() {
 
 
 /* =========================================================
-   RENDER SIGNAL
+   SIGNAL RENDERING
 ========================================================= */
 
-function renderSignal(
-  trade
-) {
+function renderTags(tags){
 
-  active =
-    trade;
+  const wrap =
+    $("tags");
 
 
-  selected =
-    trade.symbol;
+  wrap.innerHTML =
+    "";
+
+
+  (
+    tags ||
+    []
+  )
+  .forEach(
+    tag => {
+
+      const e =
+        document.createElement(
+          "span"
+        );
+
+
+      e.className =
+        "tag";
+
+
+      e.textContent =
+        tag;
+
+
+      wrap.appendChild(
+        e
+      );
+
+    }
+  );
+}
+
+
+function showBlocked(reasons){
+
+  const box =
+    $("blocked");
+
+
+  if(
+    reasons &&
+    reasons.length
+  ){
+
+    box.classList.add(
+      "show"
+    );
+
+
+    box.innerHTML =
+      "<b>NO-TRADE FILTER:</b><br>"
+      +
+      reasons
+        .map(
+          reason =>
+            "• "
+            +
+            reason
+        )
+        .join("<br>");
+
+
+  }else{
+
+    box.classList.remove(
+      "show"
+    );
+
+
+    box.innerHTML =
+      "";
+  }
+}
+
+
+function chosenEntry(t){
+
+  const mode =
+    $("entryMode")
+      .value;
+
+
+  return Number(
+    t.entryPlans?.[mode]
+    ??
+    t.entry
+  );
+}
+
+
+function renderSignal(t){
+
+  const isWait =
+    t.signal ===
+    "WAIT";
+
+
+  if(!isWait){
+
+    active = {
+
+      ...t,
+
+      entry:
+        chosenEntry(t),
+
+      originalEntry:
+        t.entry,
+
+      originalStopLoss:
+        t.stopLoss,
+
+      effectiveStop:
+        t.stopLoss,
+
+      tp1Hit:
+        false,
+
+      breakevenArmed:
+        false,
+
+      trailArmed:
+        false,
+
+      openedAt:
+        Date.now()
+
+    };
+
+
+    selected =
+      t.symbol;
+
+
+  }else{
+
+    active =
+      null;
+
+
+    selected =
+      t.symbol;
+  }
 
 
   updateMarketUI();
@@ -4300,9 +3914,18 @@ function renderSignal(
     );
 
 
+  $("lockBadge")
+    .textContent =
+      isWait
+
+        ? "● NO TRADE · WAIT"
+
+        : "● SCALP SIGNAL LOCKED";
+
+
   $("direction")
     .textContent =
-      trade.signal;
+      t.signal;
 
 
   $("direction")
@@ -4310,12 +3933,12 @@ function renderSignal(
       "direction "
       +
       (
-        trade.signal ===
+        t.signal ===
         "BUY"
 
           ? "buy"
 
-          : trade.signal ===
+          : t.signal ===
             "SELL"
 
           ? "sell"
@@ -4326,7 +3949,16 @@ function renderSignal(
 
   $("confidence")
     .textContent =
-      trade.confidence +
+      t.confidence +
+      "%";
+
+
+  $("entryQuality")
+    .textContent =
+      "ENTRY "
+      +
+      t.entryQuality
+      +
       "%";
 
 
@@ -4334,44 +3966,62 @@ function renderSignal(
     .textContent =
       "QUALITY "
       +
-      trade.quality
+      t.quality
       +
       (
-        trade.tradeable
+        t.tradeable
+
           ? " · TRADEABLE"
-          : " · LOW CONFLUENCE"
+
+          : " · FILTERED"
       );
 
 
   $("signalId")
     .textContent =
-      trade.signalId;
+      t.signalId;
 
 
   $("entry")
     .textContent =
       fmt(
-        trade.entry
+        isWait
+          ? t.entry
+          : active.entry
       );
 
 
   $("stopLoss")
     .textContent =
       fmt(
-        trade.stopLoss
+        t.stopLoss
       );
 
 
-  $("takeProfit")
+  $("tp1")
     .textContent =
       fmt(
-        trade.takeProfit
+        t.takeProfit1
+      );
+
+
+  $("tp2")
+    .textContent =
+      fmt(
+        t.takeProfit2
+      );
+
+
+  $("tp3")
+    .textContent =
+      fmt(
+        t.takeProfit3
       );
 
 
   $("structure")
     .textContent =
-      trade.features
+      t.features
         ?.structure
         ?.label
       ||
@@ -4380,7 +4030,7 @@ function renderSignal(
 
   $("liquidity")
     .textContent =
-      trade.features
+      t.features
         ?.liquidity
         ?.label
       ||
@@ -4389,7 +4039,7 @@ function renderSignal(
 
   $("orderBlock")
     .textContent =
-      trade.features
+      t.features
         ?.orderBlock
         ?.label
       ||
@@ -4398,8 +4048,17 @@ function renderSignal(
 
   $("fvg")
     .textContent =
-      trade.features
+      t.features
         ?.fvg
+        ?.label
+      ||
+      "—";
+
+
+  $("equalHL")
+    .textContent =
+      t.features
+        ?.equalHighLow
         ?.label
       ||
       "—";
@@ -4407,8 +4066,17 @@ function renderSignal(
 
   $("premiumDiscount")
     .textContent =
-      trade.features
+      t.features
         ?.premiumDiscount
+        ?.label
+      ||
+      "—";
+
+
+  $("ote")
+    .textContent =
+      t.features
+        ?.ote
         ?.label
       ||
       "—";
@@ -4416,8 +4084,34 @@ function renderSignal(
 
   $("candlePattern")
     .textContent =
-      trade.features
+      t.features
         ?.candlePattern
+        ?.label
+      ||
+      "—";
+
+
+  $("fakeBreak")
+    .textContent =
+      t.features
+        ?.fakeBreakout
+        ?.label
+      ||
+      "—";
+
+
+  $("volatility")
+    .textContent =
+      t.volatility
+        ?.label
+      ||
+      "—";
+
+
+  $("volume")
+    .textContent =
+      t.features
+        ?.volume
         ?.label
       ||
       "—";
@@ -4425,40 +4119,98 @@ function renderSignal(
 
   $("regime")
     .textContent =
-      trade.regime ||
+      t.regime ||
       "—";
 
 
-  $("volatility")
+  $("pdh")
     .textContent =
-      (
-        trade.volatility
-          ?.label
-        ||
-        "—"
-      )
-      +
-      " · "
-      +
-      Math.round(
-        trade.volatility
-          ?.percentile
-        ||
-        0
-      )
-      +
-      "%";
+      fmt(
+        t.levels?.pdh
+      );
+
+
+  $("pdl")
+    .textContent =
+      fmt(
+        t.levels?.pdl
+      );
+
+
+  $("asiaHigh")
+    .textContent =
+      fmt(
+        t.levels?.asiaHigh
+      );
+
+
+  $("asiaLow")
+    .textContent =
+      fmt(
+        t.levels?.asiaLow
+      );
 
 
   $("session")
     .textContent =
-      trade.session ||
+      t.session ||
       "—";
+
+
+  $("killzone")
+    .textContent =
+      t.killzone ||
+      "—";
+
+
+  $("spread")
+    .textContent =
+      t.spread?.absolute != null
+
+        ? fmt(
+            t.spread.absolute
+          )
+          +
+          (
+            t.spread.source ===
+            "provider"
+
+              ? " live"
+
+              : ""
+          )
+
+        : "N/A";
+
+
+  $("expires")
+    .textContent =
+      t.expiresAt
+
+        ? new Date(
+            t.expiresAt
+          )
+          .toLocaleTimeString(
+            [],
+            {
+              hour:"2-digit",
+              minute:"2-digit"
+            }
+          )
+
+        : "—";
+
+
+  $("entryPlan")
+    .textContent =
+      $("entryMode")
+        .value
+        .toUpperCase();
 
 
   $("directionalBias")
     .textContent =
-      trade.directionalBias ||
+      t.directionalBias ||
       "—";
 
 
@@ -4467,8 +4219,8 @@ function renderSignal(
       "1 : "
       +
       Number(
-        trade.rr ||
-        2
+        t.rr ||
+        1.5
       )
       .toFixed(
         2
@@ -4478,14 +4230,21 @@ function renderSignal(
   $("breakeven")
     .textContent =
       fmt(
-        trade.breakeven
+        t.breakeven
       );
 
 
   $("trailTrigger")
     .textContent =
       fmt(
-        trade.trailTrigger
+        t.trailTrigger
+      );
+
+
+  $("effectiveStop")
+    .textContent =
+      fmt(
+        t.stopLoss
       );
 
 
@@ -4494,7 +4253,7 @@ function renderSignal(
       "R "
       +
       Number(
-        trade.account
+        t.account
           ?.maxRiskZAR
         ||
         0
@@ -4504,19 +4263,36 @@ function renderSignal(
       );
 
 
+  $("tp1Status")
+    .textContent =
+      "PENDING";
+
+
+  $("targetRLabel")
+    .textContent =
+      "TP2 "
+      +
+      Number(
+        t.rr ||
+        1.5
+      )
+      .toFixed(
+        2
+      )
+      +
+      "R";
+
+
   [
     "M1",
     "M5",
-    "M15",
-    "H1",
-    "H4"
+    "M15"
   ]
   .forEach(
     id =>
       tf(
         id,
-        trade.timeframeBias
-          ?.[id]
+        t.timeframeBias?.[id]
       )
   );
 
@@ -4530,42 +4306,94 @@ function renderSignal(
 
 
   (
-    trade.reasons ||
+    t.reasons ||
     []
   )
   .forEach(
     reason => {
 
-      const item =
+      const li =
         document.createElement(
           "li"
         );
 
 
-      item.textContent =
+      li.textContent =
         reason;
 
 
       reasons.appendChild(
-        item
+        li
       );
 
     }
   );
 
 
+  renderTags(
+    t.tags
+  );
+
+
+  showBlocked(
+    t.blockedReasons
+  );
+
+
   finishSteps();
+
+
+  if(isWait){
+
+    $("goldTab")
+      .disabled =
+        false;
+
+
+    $("btcTab")
+      .disabled =
+        false;
+
+
+    $("scanBtn")
+      .disabled =
+        false;
+
+
+    $("scanBtn")
+      .textContent =
+        "SCAN AGAIN";
+
+
+    $("livePrice")
+      .textContent =
+        fmt(
+          t.currentPrice
+        );
+
+
+    $("liveSub")
+      .textContent =
+        "WAIT · no trade locked";
+
+
+    drawChart();
+
+    renderHistory();
+
+    return;
+  }
 
 
   $("goldTab")
     .disabled =
-      trade.symbol !==
+      t.symbol !==
       "XAU/USD";
 
 
   $("btcTab")
     .disabled =
-      trade.symbol !==
+      t.symbol !==
       "BTC/USD";
 
 
@@ -4576,39 +4404,135 @@ function renderSignal(
 
   $("scanBtn")
     .textContent =
-      "SIGNAL LOCKED";
+      "TRADE LOCKED";
 
 
   updateR(
     Number(
-      trade.currentPrice ||
-      trade.entry
+      t.currentPrice ||
+      t.entry
     )
   );
 
 
   saveActive();
 
-
   renderHistory();
-
 
   resizeChart();
 
-
   startMonitor();
+
+  startTradeClock();
 }
 
 
 /* =========================================================
-   CURRENT R
+   TRADE CLOCK
 ========================================================= */
 
-function updateR(
-  price
-) {
+function startTradeClock(){
 
-  if (!active) {
+  if(tradeClock){
+
+    clearInterval(
+      tradeClock
+    );
+  }
+
+
+  function tick(){
+
+    if(!active){
+
+      $("tradeTime")
+        .textContent =
+          "00:00";
+
+      return;
+    }
+
+
+    const seconds =
+      Math.max(
+        0,
+        Math.floor(
+          (
+            Date.now()
+            -
+            (
+              active.openedAt ||
+              Date.now()
+            )
+          )
+          /
+          1000
+        )
+      );
+
+
+    $("tradeTime")
+      .textContent =
+        String(
+          Math.floor(
+            seconds /
+            60
+          )
+        )
+        .padStart(
+          2,
+          "0"
+        )
+        +
+        ":"
+        +
+        String(
+          seconds %
+          60
+        )
+        .padStart(
+          2,
+          "0"
+        );
+  }
+
+
+  tick();
+
+
+  tradeClock =
+    setInterval(
+      tick,
+      1000
+    );
+}
+
+
+/* =========================================================
+   LIVE R / TRAILING
+========================================================= */
+
+function currentRisk(){
+
+  if(!active){
+    return 0;
+  }
+
+
+  return Math.abs(
+    Number(active.entry)
+    -
+    Number(
+      active.originalStopLoss ||
+      active.stopLoss
+    )
+  );
+}
+
+
+function updateR(price){
+
+  if(!active){
     return;
   }
 
@@ -4625,24 +4549,16 @@ function updateR(
 
 
   const risk =
-    Math.abs(
-      Number(
-        active.entry
-      )
-      -
-      Number(
-        active.stopLoss
-      )
-    );
+    currentRisk();
 
 
-  let currentR =
+  let R =
     0;
 
 
-  if (risk) {
+  if(risk){
 
-    currentR =
+    R =
       active.directionalBias ===
       "BUY"
 
@@ -4664,7 +4580,7 @@ function updateR(
 
   $("rText")
     .textContent =
-      currentR.toFixed(
+      R.toFixed(
         2
       )
       +
@@ -4672,16 +4588,19 @@ function updateR(
 
 
   const maxR =
-    Number(
-      active.rr ||
-      2
+    Math.max(
+      Number(
+        active.rr ||
+        1.5
+      ),
+      2.25
     );
 
 
-  const percent =
+  const pct =
     (
       (
-        currentR +
+        R +
         1
       )
       /
@@ -4700,89 +4619,269 @@ function updateR(
         0,
         Math.min(
           100,
-          percent
+          pct
         )
       )
       +
       "%";
 
 
-  saveActive();
+  if(
+    $("useTrailing")
+      .checked
+  ){
 
+    if(
+      !active.breakevenArmed
+      &&
+      (
+        (
+          active.directionalBias ===
+          "BUY"
+          &&
+          price >=
+          active.breakeven
+        )
+        ||
+        (
+          active.directionalBias ===
+          "SELL"
+          &&
+          price <=
+          active.breakeven
+        )
+      )
+    ){
+
+      active.breakevenArmed =
+        true;
+
+
+      active.effectiveStop =
+        active.entry;
+
+
+      toast(
+        "Breakeven armed"
+      );
+    }
+
+
+    if(
+      !active.trailArmed
+      &&
+      (
+        (
+          active.directionalBias ===
+          "BUY"
+          &&
+          price >=
+          active.trailTrigger
+        )
+        ||
+        (
+          active.directionalBias ===
+          "SELL"
+          &&
+          price <=
+          active.trailTrigger
+        )
+      )
+    ){
+
+      active.trailArmed =
+        true;
+
+
+      toast(
+        "Trailing stop armed"
+      );
+    }
+
+
+    if(
+      active.trailArmed &&
+      risk
+    ){
+
+      if(
+        active.directionalBias ===
+        "BUY"
+      ){
+
+        active.effectiveStop =
+          Math.max(
+            Number(
+              active.effectiveStop
+            ),
+            price -
+            risk *
+            .7
+          );
+
+
+      }else{
+
+        active.effectiveStop =
+          Math.min(
+            Number(
+              active.effectiveStop
+            ),
+            price +
+            risk *
+            .7
+          );
+      }
+    }
+  }
+
+
+  if(
+    !active.tp1Hit
+    &&
+    (
+      (
+        active.directionalBias ===
+        "BUY"
+        &&
+        price >=
+        active.takeProfit1
+      )
+      ||
+      (
+        active.directionalBias ===
+        "SELL"
+        &&
+        price <=
+        active.takeProfit1
+      )
+    )
+  ){
+
+    active.tp1Hit =
+      true;
+
+
+    $("tp1Status")
+      .textContent =
+        "HIT";
+
+
+    toast(
+      "TP1 reached · partial profit zone"
+    );
+  }
+
+
+  $("effectiveStop")
+    .textContent =
+      fmt(
+        active.effectiveStop
+      );
+
+
+  saveActive();
 
   drawChart();
 }
 
 
 /* =========================================================
-   EXIT CHECK
+   EXIT CONDITIONS
 ========================================================= */
 
-function exitHit(
-  price
-) {
+function exitHit(price){
 
-  if (
-    !active ||
-    active.signal ===
-    "WAIT"
-  ) {
-
+  if(!active){
     return null;
   }
 
 
   const stop =
     Number(
+      active.effectiveStop ??
       active.stopLoss
     );
 
 
-  const target =
-    Number(
-      active.takeProfit
-    );
-
-
-  if (
+  if(
     active.directionalBias ===
     "BUY"
-  ) {
+  ){
 
-    if (
+    if(
       price <=
       stop
-    ) {
+    ){
 
-      return "SL";
+      if(
+        active.breakevenArmed
+        &&
+        Math.abs(
+          stop -
+          active.entry
+        )
+        <=
+        currentRisk() *
+        .1
+      ){
+
+        return "BE";
+      }
+
+
+      return active.trailArmed
+        ? "TRAIL"
+        : "SL";
     }
 
 
-    if (
+    if(
       price >=
-      target
-    ) {
+      Number(
+        active.takeProfit2
+      )
+    ){
 
       return "TP";
     }
 
 
-  } else {
+  }else{
 
-
-    if (
+    if(
       price >=
       stop
-    ) {
+    ){
 
-      return "SL";
+      if(
+        active.breakevenArmed
+        &&
+        Math.abs(
+          stop -
+          active.entry
+        )
+        <=
+        currentRisk() *
+        .1
+      ){
+
+        return "BE";
+      }
+
+
+      return active.trailArmed
+        ? "TRAIL"
+        : "SL";
     }
 
 
-    if (
+    if(
       price <=
-      target
-    ) {
+      Number(
+        active.takeProfit2
+      )
+    ){
 
       return "TP";
     }
@@ -4793,45 +4892,65 @@ function exitHit(
 }
 
 
+function expired(){
+
+  return (
+    active?.expiresAt
+    &&
+    Date.now() >
+    Date.parse(
+      active.expiresAt
+    )
+    &&
+    Math.abs(
+      Number(
+        active.currentPrice
+      )
+      -
+      Number(
+        active.entry
+      )
+    )
+    <
+    currentRisk() *
+    .35
+  );
+}
+
+
 /* =========================================================
    LIVE MONITOR
 ========================================================= */
 
-async function monitor() {
+async function monitor(){
 
-  if (!active) {
+  if(!active){
     return;
   }
 
 
-  try {
+  try{
 
-    const data =
+    const d =
       await requestJSON(
-
-        `/api/bot?mode=price&symbol=${encodeURIComponent(
-          active.symbol
-        )}&t=${Date.now()}`,
-
+        `/api/bot?mode=price&symbol=${encodeURIComponent(active.symbol)}&t=${Date.now()}`,
         {
-          cache:
-            "no-store"
+          cache:"no-store"
         }
-
       );
 
 
     const price =
       Number(
-        data.price
+        d.price
       );
 
 
-    if (
+    if(
       !Number.isFinite(
         price
       )
-    ) {
+    ){
 
       throw new Error(
         "Invalid live price."
@@ -4844,22 +4963,58 @@ async function monitor() {
     );
 
 
-    const hit =
-      exitHit(
-        price
-      );
+    if(
+      expired()
+    ){
 
-
-    if (hit) {
-
-      const oldTrade =
+      const old =
         {
           ...active
         };
 
 
       addHistory(
-        oldTrade,
+        old,
+        "BE",
+        price
+      );
+
+
+      toast(
+        "Setup expired · closed near entry"
+      );
+
+
+      clearTrade(
+        false
+      );
+
+
+      status(
+        "Setup expired. Ready for a fresh scalp."
+      );
+
+
+      return;
+    }
+
+
+    const hit =
+      exitHit(
+        price
+      );
+
+
+    if(hit){
+
+      const old =
+        {
+          ...active
+        };
+
+
+      addHistory(
+        old,
         hit,
         price
       );
@@ -4869,9 +5024,19 @@ async function monitor() {
         hit ===
         "TP"
 
-          ? "Take Profit reached"
+          ? "TP2 reached"
 
-          : "Stop Loss reached"
+          : hit ===
+            "SL"
+
+          ? "Stop loss reached"
+
+          : hit ===
+            "BE"
+
+          ? "Breakeven exit"
+
+          : "Trailing stop exit"
       );
 
 
@@ -4881,7 +5046,19 @@ async function monitor() {
 
 
       const market =
-        oldTrade.symbol;
+        old.symbol;
+
+
+      if(
+        hit ===
+        "SL"
+      ){
+
+        setCooldown(
+          $("cooldownMinutes")
+            .value
+        );
+      }
 
 
       clearTrade(
@@ -4896,7 +5073,12 @@ async function monitor() {
       updateMarketUI();
 
 
-      if (auto) {
+      if(
+        auto
+        &&
+        cooldownRemaining() ===
+        0
+      ){
 
         setTimeout(
           () =>
@@ -4904,36 +5086,44 @@ async function monitor() {
           900
         );
 
-      } else {
+
+      }else if(
+        hit ===
+        "SL"
+        &&
+        cooldownRemaining() >
+        0
+      ){
 
         status(
-          `${market} ${hit} reached. Ready for another scan.`
+          `Cooldown active for ${Math.ceil(cooldownRemaining()/60000)} min after SL.`
+        );
+
+
+      }else{
+
+        status(
+          `${market} ${hit} completed. Ready for another scan.`
         );
       }
     }
 
 
-  } catch (error) {
+  }catch(e){
 
     status(
       "Monitor: "
       +
-      err(
-        error
-      ),
+      err(e),
       true
     );
   }
 }
 
 
-/* =========================================================
-   START MONITOR
-========================================================= */
+function startMonitor(){
 
-function startMonitor() {
-
-  if (timer) {
+  if(timer){
 
     clearInterval(
       timer
@@ -4941,7 +5131,7 @@ function startMonitor() {
   }
 
 
-  if (!active) {
+  if(!active){
     return;
   }
 
@@ -4951,9 +5141,7 @@ function startMonitor() {
 
   timer =
     setInterval(
-
       monitor,
-
       Math.max(
         30,
         Number(
@@ -4961,25 +5149,226 @@ function startMonitor() {
             .value
         )
         ||
-        60
+        30
       )
       *
       1000
-
     );
 }
 
 
 /* =========================================================
-   SCAN MARKET
+   NEWS FILTER
 ========================================================= */
 
-async function scanMarket() {
+function newsState(){
 
-  if (
+  if(
+    !$("newsFilter")
+      .checked
+  ){
+
+    return {
+      locked:false,
+      label:"News filter disabled"
+    };
+  }
+
+
+  const raw =
+    $("newsTime")
+      .value;
+
+
+  if(!raw){
+
+    return {
+      locked:false,
+      label:"No news event entered"
+    };
+  }
+
+
+  const event =
+    Date.parse(raw);
+
+
+  if(
+    !Number.isFinite(
+      event
+    )
+  ){
+
+    return {
+      locked:false,
+      label:"Invalid news time"
+    };
+  }
+
+
+  const before =
+    Math.max(
+      0,
+      Number(
+        $("newsBefore")
+          .value
+      )
+      ||
+      0
+    )
+    *
+    60000;
+
+
+  const after =
+    Math.max(
+      0,
+      Number(
+        $("newsAfter")
+          .value
+      )
+      ||
+      0
+    )
+    *
+    60000;
+
+
+  const now =
+    Date.now();
+
+
+  const locked =
+    now >=
+    event -
+    before
+    &&
+    now <=
+    event +
+    after;
+
+
+  const label =
+    $("newsLabel")
+      .value
+      .trim()
+    ||
+    "High-impact event";
+
+
+  return {
+    locked,
+    label,
+    event,
+    before,
+    after
+  };
+}
+
+
+function updateNewsStatus(){
+
+  const s =
+    newsState();
+
+
+  if(
+    !$("newsFilter")
+      .checked
+  ){
+
+    $("newsStatus")
+      .textContent =
+        "News protection disabled.";
+
+    return;
+  }
+
+
+  if(
+    !$("newsTime")
+      .value
+  ){
+
+    $("newsStatus")
+      .textContent =
+        "No news event entered. Protection is idle.";
+
+    return;
+  }
+
+
+  const diff =
+    Math.round(
+      (
+        s.event -
+        Date.now()
+      )
+      /
+      60000
+    );
+
+
+  $("newsStatus")
+    .textContent =
+      s.locked
+
+        ? `BLOCKED: ${s.label} is inside the protection window.`
+
+        : `${s.label}: ${diff >= 0 ? diff + " min away" : Math.abs(diff) + " min ago"}.`;
+}
+
+
+[
+  "newsFilter",
+  "newsTime",
+  "newsBefore",
+  "newsAfter",
+  "newsLabel"
+]
+.forEach(
+  id =>
+    $(id)
+      .addEventListener(
+        "input",
+        updateNewsStatus
+      )
+);
+
+
+/* =========================================================
+   SCAN
+========================================================= */
+
+async function scanMarket(){
+
+  if(
     scanning ||
     active
-  ) {
+  ){
+    return;
+  }
+
+
+  const cd =
+    cooldownRemaining();
+
+
+  if(
+    cd >
+    0
+  ){
+
+    status(
+      `Cooldown active. ${Math.ceil(cd/60000)} min remaining.`,
+      true
+    );
+
+
+    toast(
+      "Cooldown active"
+    );
+
 
     return;
   }
@@ -5000,15 +5389,19 @@ async function scanMarket() {
 
 
   status(
-    "Running OMEGA analysis on "
-    +
-    selected
-    +
-    "…"
+    "Running M15 → M5 → M1 scalp analysis…"
   );
 
 
-  try {
+  try{
+
+    const daily =
+      dailyStats();
+
+
+    const news =
+      newsState();
+
 
     const animation =
       animate();
@@ -5019,13 +5412,11 @@ async function scanMarket() {
         "/api/bot",
         {
 
-          method:
-            "POST",
+          method:"POST",
 
-          cache:
-            "no-store",
+          cache:"no-store",
 
-          headers: {
+          headers:{
 
             "Content-Type":
               "application/json",
@@ -5063,7 +5454,7 @@ async function scanMarket() {
                     .value
                 )
                 ||
-                2,
+                1.5,
 
               minConfidence:
                 Number(
@@ -5071,7 +5462,23 @@ async function scanMarket() {
                     .value
                 )
                 ||
+                66,
+
+              minEntryQuality:
+                Number(
+                  $("minEntryQuality")
+                    .value
+                )
+                ||
                 62,
+
+              expiryMinutes:
+                Number(
+                  $("expiryMinutes")
+                    .value
+                )
+                ||
+                6,
 
               allowWait:
                 $("mode")
@@ -5080,7 +5487,37 @@ async function scanMarket() {
 
               sendTelegram:
                 $("sendTelegram")
-                  .checked
+                  .checked,
+
+              newsLock:
+                news.locked,
+
+              newsLabel:
+                news.locked
+                  ? news.label
+                  : "",
+
+              dailyR:
+                daily.R,
+
+              tradesToday:
+                daily.trades,
+
+              maxDailyLossR:
+                Number(
+                  $("maxDailyLossR")
+                    .value
+                )
+                ||
+                3,
+
+              maxTradesPerDay:
+                Number(
+                  $("maxTradesPerDay")
+                    .value
+                )
+                ||
+                8
 
             })
 
@@ -5089,7 +5526,7 @@ async function scanMarket() {
 
 
     const [
-      _,
+      ,
       data
     ] =
       await Promise.all(
@@ -5106,7 +5543,14 @@ async function scanMarket() {
 
 
     status(
-      `${data.symbol} ${data.signal} locked · ${data.confidence}% · quality ${data.quality}`
+
+      data.signal ===
+      "WAIT"
+
+        ? `WAIT · ${data.confidence}% direction / ${data.entryQuality}% entry quality.`
+
+        : `${data.symbol} ${data.signal} locked · ${data.confidence}% / entry ${data.entryQuality}%`
+
     );
 
 
@@ -5115,7 +5559,7 @@ async function scanMarket() {
     );
 
 
-  } catch (error) {
+  }catch(e){
 
     resetSteps();
 
@@ -5126,25 +5570,23 @@ async function scanMarket() {
 
 
     status(
-      error,
+      e,
       true
     );
 
 
     toast(
-      err(
-        error
-      )
+      err(e)
     );
 
 
-  } finally {
+  }finally{
 
     scanning =
       false;
 
 
-    if (active) {
+    if(active){
 
       $("scanBtn")
         .disabled =
@@ -5153,21 +5595,28 @@ async function scanMarket() {
 
       $("scanBtn")
         .textContent =
-          "SIGNAL LOCKED";
+          "TRADE LOCKED";
 
 
-    } else {
+    }else{
 
       $("scanBtn")
         .disabled =
           false;
 
 
-      $("scanBtn")
-        .textContent =
-          "SCAN "
-          +
-          selected;
+      if(
+        $("scanBtn")
+          .textContent !==
+        "SCAN AGAIN"
+      ){
+
+        $("scanBtn")
+          .textContent =
+            "SCAN "
+            +
+            selected;
+      }
     }
   }
 }
@@ -5178,8 +5627,8 @@ async function scanMarket() {
 ========================================================= */
 
 function clearTrade(
-  showMessage = true
-) {
+  show = true
+){
 
   active =
     null;
@@ -5188,7 +5637,7 @@ function clearTrade(
   saveActive();
 
 
-  if (timer) {
+  if(timer){
 
     clearInterval(
       timer
@@ -5196,6 +5645,18 @@ function clearTrade(
 
 
     timer =
+      null;
+  }
+
+
+  if(tradeClock){
+
+    clearInterval(
+      tradeClock
+    );
+
+
+    tradeClock =
       null;
   }
 
@@ -5224,23 +5685,19 @@ function clearTrade(
 
   resetSteps();
 
-
   resetTF();
-
 
   updateMarketUI();
 
-
   renderHistory();
-
 
   resizeChart();
 
 
-  if (showMessage) {
+  if(show){
 
     status(
-      "Signal cleared. Ready for a new scan."
+      "Trade cleared. Ready for a new scalp scan."
     );
 
 
@@ -5255,33 +5712,32 @@ function clearTrade(
 
 
 /* =========================================================
-   SYSTEM HEALTH
+   HEALTH
 ========================================================= */
 
-async function health() {
+async function health(){
 
-  try {
+  try{
 
-    const data =
+    const d =
       await requestJSON(
         "/api/bot?mode=health",
         {
-          cache:
-            "no-store"
+          cache:"no-store"
         }
       );
 
 
     $("healthText")
       .textContent =
-        data.telegramConfigured
+        d.telegramConfigured
 
           ? "SYSTEM + TELEGRAM"
 
           : "SYSTEM ONLINE";
 
 
-  } catch {
+  }catch{
 
     $("healthText")
       .textContent =
@@ -5294,12 +5750,16 @@ async function health() {
    COPY SIGNAL
 ========================================================= */
 
-function copySignal() {
+function copySignal(){
 
-  if (!active) {
+  const t =
+    active;
+
+
+  if(!t){
 
     toast(
-      "No active signal"
+      "No locked trade"
     );
 
     return;
@@ -5307,14 +5767,15 @@ function copySignal() {
 
 
   const text =
-
-    `MKAYFX OMEGA
-${active.symbol} ${active.signal}
-Entry ${fmt(active.entry)}
-SL ${fmt(active.stopLoss)}
-TP ${fmt(active.takeProfit)}
-Confidence ${active.confidence}%
-Quality ${active.quality}`;
+`MKAYFX SCALPER V2
+${t.symbol} ${t.signal}
+Entry ${fmt(t.entry)}
+SL ${fmt(t.effectiveStop ?? t.stopLoss)}
+TP1 ${fmt(t.takeProfit1)}
+TP2 ${fmt(t.takeProfit2)}
+TP3 ${fmt(t.takeProfit3)}
+Confidence ${t.confidence}%
+Entry quality ${t.entryQuality}%`;
 
 
   navigator.clipboard
@@ -5337,18 +5798,16 @@ Quality ${active.quality}`;
 
 
 /* =========================================================
-   EXPORT HISTORY
+   CSV EXPORT
 ========================================================= */
 
-function exportCSV() {
+function exportCSV(){
 
-  const items =
+  const h =
     history();
 
 
-  if (
-    !items.length
-  ) {
+  if(!h.length){
 
     toast(
       "No history to export"
@@ -5358,45 +5817,43 @@ function exportCSV() {
   }
 
 
-  const header =
-
-    "time,symbol,signal,confidence,quality,entry,sl,tp,result,exitPrice,R\n";
+  const head =
+    "time,symbol,signal,confidence,entryQuality,quality,entry,sl,tp1,tp2,tp3,result,exitPrice,R,tags\n";
 
 
   const rows =
-    items.map(
-      item =>
+    h.map(
+      x =>
         [
-          item.time,
-          item.symbol,
-          item.signal,
-          item.confidence,
-          item.quality,
-          item.entry,
-          item.sl,
-          item.tp,
-          item.result,
-          item.exitPrice,
-          item.R
+          x.time,
+          x.symbol,
+          x.signal,
+          x.confidence,
+          x.entryQuality,
+          x.quality,
+          x.entry,
+          x.sl,
+          x.tp1,
+          x.tp2,
+          x.tp3,
+          x.result,
+          x.exitPrice,
+          x.R,
+          `"${x.tags || ""}"`
         ]
-        .join(
-          ","
-        )
+        .join(",")
     )
-    .join(
-      "\n"
-    );
+    .join("\n");
 
 
   const blob =
     new Blob(
       [
-        header +
+        head +
         rows
       ],
       {
-        type:
-          "text/csv"
+        type:"text/csv"
       }
     );
 
@@ -5407,21 +5864,21 @@ function exportCSV() {
     );
 
 
-  const link =
+  const a =
     document.createElement(
       "a"
     );
 
 
-  link.href =
+  a.href =
     url;
 
 
-  link.download =
-    "mkayfx_omega_history.csv";
+  a.download =
+    "mkayfx_scalper_v2_history.csv";
 
 
-  link.click();
+  a.click();
 
 
   setTimeout(
@@ -5435,7 +5892,7 @@ function exportCSV() {
 
 
 /* =========================================================
-   EVENTS
+   BUTTONS
 ========================================================= */
 
 $("goldTab")
@@ -5499,60 +5956,92 @@ $("clearHistoryBtn")
    INITIALIZE
 ========================================================= */
 
-(async function init(){
+(
+  async function init(){
 
-  resetSteps();
+    resetSteps();
 
+    resetTF();
 
-  resetTF();
+    renderHistory();
 
+    resizeChart();
 
-  renderHistory();
+    updateNewsStatus();
 
-
-  resizeChart();
-
-
-  await health();
-
-
-  const saved =
-    loadActive();
+    await health();
 
 
-  if (
-    saved &&
-    saved.symbol &&
-    saved.signal
-  ) {
-
-    selected =
-      saved.symbol;
+    const saved =
+      loadActive();
 
 
-    renderSignal(
-      saved
-    );
+    if(
+      saved &&
+      saved.symbol &&
+      saved.signal &&
+      saved.signal !==
+      "WAIT"
+    ){
+
+      selected =
+        saved.symbol;
 
 
-    status(
-      "Restored locked "
-      +
-      saved.symbol
-      +
-      " signal."
-    );
+      active =
+        saved;
 
 
-  } else {
+      if(
+        !active.originalStopLoss
+      ){
 
-    updateMarketUI();
+        active.originalStopLoss =
+          active.stopLoss;
+      }
 
 
-    await previewPrice();
+      if(
+        !active.effectiveStop
+      ){
+
+        active.effectiveStop =
+          active.stopLoss;
+      }
+
+
+      if(
+        !active.openedAt
+      ){
+
+        active.openedAt =
+          Date.now();
+      }
+
+
+      renderSignal(
+        active
+      );
+
+
+      status(
+        "Restored locked "
+        +
+        active.symbol
+        +
+        " scalp."
+      );
+
+
+    }else{
+
+      updateMarketUI();
+
+      await previewPrice();
+    }
+
   }
-
-})();
+)();
 
 </script>
 
