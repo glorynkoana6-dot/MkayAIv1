@@ -1,40 +1,63 @@
-const API_KEY = process.env.TWELVE_DATA_API_KEY;
+/* =========================================================
+   MKAYFX DUAL MARKET SCANNER V1
+   XAU/USD + BTC/USD
+   FILE: api/analysis.js
 
-const BASE = "https://api.twelvedata.com";
-const SYMBOL = "XAU/USD";
+   ENV:
+   TWELVE_DATA_API_KEY
+========================================================= */
+
+const API_KEY = process.env.TWELVE_DATA_API_KEY;
+const BASE_URL = "https://api.twelvedata.com";
+
+const MARKETS = {
+
+  "XAU/USD": {
+    name: "Gold · Spot",
+    decimals: 2,
+    atrStop: 1.10,
+    minimumStopPercent: 0.0010
+  },
+
+  "BTC/USD": {
+    name: "Bitcoin · USD",
+    decimals: 2,
+    atrStop: 1.25,
+    minimumStopPercent: 0.0018
+  }
+
+};
 
 
 /* =========================================================
-   BASIC HELPERS
+   HELPERS
 ========================================================= */
 
-function n(value, fallback = null) {
+function number(value, fallback = null) {
 
-  const x = Number(value);
+  const n = Number(value);
 
-  return Number.isFinite(x)
-    ? x
+  return Number.isFinite(n)
+    ? n
     : fallback;
 }
 
 
 function round(value, digits = 2) {
 
-  const x = Number(value);
+  const n = Number(value);
 
-  return Number.isFinite(x)
-    ? Number(
-        x.toFixed(digits)
-      )
-    : null;
+  if (!Number.isFinite(n)) {
+    return null;
+  }
+
+  return Number(
+    n.toFixed(digits)
+  );
 }
 
 
-function clamp(
-  value,
-  min,
-  max
-) {
+function clamp(value, min, max) {
 
   return Math.max(
     min,
@@ -59,11 +82,8 @@ function average(values) {
 
   return (
     valid.reduce(
-      (
-        total,
-        value
-      ) =>
-        total + value,
+      (sum, value) =>
+        sum + value,
       0
     )
     /
@@ -72,88 +92,65 @@ function average(values) {
 }
 
 
-/* =========================================================
-   MARKET DATA FETCH
-========================================================= */
-
-async function getJSON(url) {
-
-  const response =
-    await fetch(
-      url,
-      {
-        method:
-          "GET",
-
-        headers: {
-          Accept:
-            "application/json"
-        },
-
-        cache:
-          "no-store"
-      }
-    );
-
-
-  const text =
-    await response.text();
-
-
-  let json;
-
-
-  try {
-
-    json =
-      JSON.parse(
-        text
-      );
-
-  } catch {
-
-    throw new Error(
-      "Market data provider returned invalid JSON."
-    );
-  }
-
+function parseBody(req) {
 
   if (
-    !response.ok ||
-    json?.status === "error" ||
-    json?.code
+    req.body &&
+    typeof req.body === "object"
+  ) {
+    return req.body;
+  }
+
+  if (
+    typeof req.body === "string"
   ) {
 
+    try {
+
+      return JSON.parse(
+        req.body
+      );
+
+    } catch {
+
+      return {};
+    }
+  }
+
+  return {};
+}
+
+
+function getSymbol(req, body = {}) {
+
+  const requested =
+    body.symbol ||
+    req.query?.symbol ||
+    "XAU/USD";
+
+  if (!MARKETS[requested]) {
+
     throw new Error(
-      json?.message ||
-      `Market-data request failed (${response.status}).`
+      "Unsupported symbol. Use XAU/USD or BTC/USD."
     );
   }
 
-
-  return json;
+  return requested;
 }
 
 
 /* =========================================================
-   BUILD TWELVE DATA URL
-
-   No URLSearchParams used here.
+   TWELVE DATA URL
 ========================================================= */
 
-function twelveDataURL(
-  path,
-  params
-) {
+function buildURL(path, params) {
 
   const query =
     Object.entries(params)
       .map(
         ([key, value]) =>
 
-          encodeURIComponent(
-            key
-          )
+          encodeURIComponent(key)
           +
           "="
           +
@@ -163,9 +160,8 @@ function twelveDataURL(
       )
       .join("&");
 
-
   return (
-    BASE +
+    BASE_URL +
     path +
     "?" +
     query
@@ -174,10 +170,93 @@ function twelveDataURL(
 
 
 /* =========================================================
-   CANDLE DATA
+   FETCH
+========================================================= */
+
+async function fetchJSON(url) {
+
+  const controller =
+    new AbortController();
+
+  const timeout =
+    setTimeout(
+      () =>
+        controller.abort(),
+      18000
+    );
+
+  try {
+
+    const response =
+      await fetch(
+        url,
+        {
+          method: "GET",
+
+          headers: {
+            Accept:
+              "application/json"
+          },
+
+          cache:
+            "no-store",
+
+          signal:
+            controller.signal
+        }
+      );
+
+
+    const text =
+      await response.text();
+
+
+    let data;
+
+    try {
+
+      data =
+        JSON.parse(
+          text
+        );
+
+    } catch {
+
+      throw new Error(
+        "Market provider returned invalid data."
+      );
+    }
+
+
+    if (
+      !response.ok ||
+      data?.status === "error"
+    ) {
+
+      throw new Error(
+        data?.message ||
+        `Market request failed (${response.status}).`
+      );
+    }
+
+
+    return data;
+
+  } finally {
+
+    clearTimeout(
+      timeout
+    );
+  }
+}
+
+
+/* =========================================================
+   CANDLES
 ========================================================= */
 
 async function getCandles(
+  symbol,
   interval,
   outputsize
 ) {
@@ -191,12 +270,11 @@ async function getCandles(
 
 
   const url =
-    twelveDataURL(
+    buildURL(
       "/time_series",
       {
 
-        symbol:
-          SYMBOL,
+        symbol,
 
         interval,
 
@@ -215,7 +293,7 @@ async function getCandles(
 
 
   const data =
-    await getJSON(
+    await fetchJSON(
       url
     );
 
@@ -227,7 +305,7 @@ async function getCandles(
   ) {
 
     throw new Error(
-      `${interval} candles are unavailable.`
+      `${symbol} ${interval} candles unavailable.`
     );
   }
 
@@ -235,32 +313,32 @@ async function getCandles(
   const candles =
     data.values
       .map(
-        item => ({
+        candle => ({
 
           time:
             String(
-              item.datetime ||
+              candle.datetime ||
               ""
             ),
 
           open:
             Number(
-              item.open
+              candle.open
             ),
 
           high:
             Number(
-              item.high
+              candle.high
             ),
 
           low:
             Number(
-              item.low
+              candle.low
             ),
 
           close:
             Number(
-              item.close
+              candle.close
             )
         })
       )
@@ -288,11 +366,11 @@ async function getCandles(
 
   if (
     candles.length <
-    50
+    30
   ) {
 
     throw new Error(
-      `Not enough ${interval} candles returned.`
+      `Not enough ${interval} candles for ${symbol}.`
     );
   }
 
@@ -305,7 +383,7 @@ async function getCandles(
    LIVE PRICE
 ========================================================= */
 
-async function getLivePrice() {
+async function getLivePrice(symbol) {
 
   if (!API_KEY) {
 
@@ -316,12 +394,11 @@ async function getLivePrice() {
 
 
   const url =
-    twelveDataURL(
+    buildURL(
       "/price",
       {
 
-        symbol:
-          SYMBOL,
+        symbol,
 
         apikey:
           API_KEY
@@ -330,7 +407,7 @@ async function getLivePrice() {
 
 
   const data =
-    await getJSON(
+    await fetchJSON(
       url
     );
 
@@ -348,7 +425,7 @@ async function getLivePrice() {
   ) {
 
     throw new Error(
-      "Live XAU/USD price unavailable."
+      `Live ${symbol} price unavailable.`
     );
   }
 
@@ -358,14 +435,15 @@ async function getLivePrice() {
 
 
 /* =========================================================
-   TIME
+   DATE PARSER
 ========================================================= */
 
 function parseTime(value) {
 
   let text =
     String(
-      value
+      value ||
+      ""
     )
     .trim()
     .replace(
@@ -375,7 +453,8 @@ function parseTime(value) {
 
 
   if (
-    !text.endsWith("Z") &&
+    !text.endsWith("Z")
+    &&
     !/[+-]\d\d:\d\d$/.test(
       text
     )
@@ -385,22 +464,22 @@ function parseTime(value) {
   }
 
 
-  const time =
+  const timestamp =
     Date.parse(
       text
     );
 
 
   return Number.isFinite(
-    time
+    timestamp
   )
-    ? time
+    ? timestamp
     : NaN;
 }
 
 
 /* =========================================================
-   RESAMPLE M1 -> M5 / M15
+   RESAMPLE M1
 ========================================================= */
 
 function resample(
@@ -414,7 +493,7 @@ function resample(
     1000;
 
 
-  const buckets =
+  const map =
     new Map();
 
 
@@ -434,7 +513,6 @@ function resample(
         time
       )
     ) {
-
       continue;
     }
 
@@ -455,12 +533,12 @@ function resample(
 
 
     if (
-      !buckets.has(
+      !map.has(
         key
       )
     ) {
 
-      buckets.set(
+      map.set(
         key,
         {
 
@@ -487,7 +565,7 @@ function resample(
     } else {
 
       const existing =
-        buckets.get(
+        map.get(
           key
         );
 
@@ -513,13 +591,10 @@ function resample(
 
 
   return [
-    ...buckets.values()
+    ...map.values()
   ]
   .sort(
-    (
-      a,
-      b
-    ) =>
+    (a, b) =>
       parseTime(
         a.time
       )
@@ -540,10 +615,7 @@ function ema(
   period
 ) {
 
-  if (
-    !values.length
-  ) {
-
+  if (!values.length) {
     return 0;
   }
 
@@ -587,10 +659,7 @@ function emaSeries(
   period
 ) {
 
-  if (
-    !values.length
-  ) {
-
+  if (!values.length) {
     return [];
   }
 
@@ -674,7 +743,8 @@ function rsi(
 
 
     if (
-      change >= 0
+      change >
+      0
     ) {
 
       gains +=
@@ -682,8 +752,10 @@ function rsi(
 
     } else {
 
-      losses -=
-        change;
+      losses +=
+        Math.abs(
+          change
+        );
     }
   }
 
@@ -800,14 +872,14 @@ function macdHistogram(
   }
 
 
-  const ema12 =
+  const fast =
     emaSeries(
       values,
       12
     );
 
 
-  const ema26 =
+  const slow =
     emaSeries(
       values,
       26
@@ -821,8 +893,8 @@ function macdHistogram(
         index
       ) =>
 
-        ema12[index] -
-        ema26[index]
+        fast[index] -
+        slow[index]
     );
 
 
@@ -861,21 +933,21 @@ function analyzeTimeframe(
 
   const ema20 =
     ema(
-      closes.slice(-80),
+      closes.slice(-100),
       20
     );
 
 
   const ema50 =
     ema(
-      closes.slice(-120),
+      closes.slice(-150),
       50
     );
 
 
   const ema100 =
     ema(
-      closes.slice(-180),
+      closes.slice(-220),
       100
     );
 
@@ -901,8 +973,8 @@ function analyzeTimeframe(
     ||
     Math.max(
       latest.close *
-      0.0008,
-      0.5
+      0.001,
+      1
     );
 
 
@@ -942,28 +1014,43 @@ function analyzeTimeframe(
   let score = 0;
 
 
-  score +=
+  if (
     latest.close >
     ema20
+  ) {
 
-      ? 1
-      : -1;
+    score += 1;
+
+  } else {
+
+    score -= 1;
+  }
 
 
-  score +=
+  if (
     ema20 >
     ema50
+  ) {
 
-      ? 1
-      : -1;
+    score += 1;
+
+  } else {
+
+    score -= 1;
+  }
 
 
-  score +=
+  if (
     ema50 >
     ema100
+  ) {
 
-      ? 1
-      : -1;
+    score += 1;
+
+  } else {
+
+    score -= 1;
+  }
 
 
   if (
@@ -1018,6 +1105,8 @@ function analyzeTimeframe(
 
   return {
 
+    score,
+
     bias:
 
       score >= 2
@@ -1028,8 +1117,6 @@ function analyzeTimeframe(
 
         : "NEUTRAL",
 
-    score,
-
     rsi:
       currentRSI,
 
@@ -1039,12 +1126,12 @@ function analyzeTimeframe(
     atr:
       currentATR,
 
-    close:
-      latest.close,
-
     ema20,
 
-    ema50
+    ema50,
+
+    close:
+      latest.close
   };
 }
 
@@ -1053,7 +1140,7 @@ function analyzeTimeframe(
    LIQUIDITY
 ========================================================= */
 
-function analyzeLiquidity(
+function liquidityAnalysis(
   candles
 ) {
 
@@ -1064,11 +1151,10 @@ function analyzeLiquidity(
 
     return {
 
-      score:
-        0,
+      score: 0,
 
       text:
-        "No clear liquidity sweep yet."
+        "No confirmed liquidity sweep."
     };
   }
 
@@ -1084,7 +1170,7 @@ function analyzeLiquidity(
     );
 
 
-  const high =
+  const recentHigh =
     Math.max(
       ...previous.map(
         candle =>
@@ -1093,7 +1179,7 @@ function analyzeLiquidity(
     );
 
 
-  const low =
+  const recentLow =
     Math.min(
       ...previous.map(
         candle =>
@@ -1104,46 +1190,43 @@ function analyzeLiquidity(
 
   if (
     latest.low <
-    low
+    recentLow
     &&
     latest.close >
-    low
+    recentLow
   ) {
 
     return {
 
-      score:
-        2,
+      score: 2,
 
       text:
-        "Sell-side liquidity sweep with recovery."
+        "Sell-side liquidity was swept and price recovered."
     };
   }
 
 
   if (
     latest.high >
-    high
+    recentHigh
     &&
     latest.close <
-    high
+    recentHigh
   ) {
 
     return {
 
-      score:
-        -2,
+      score: -2,
 
       text:
-        "Buy-side liquidity sweep with rejection."
+        "Buy-side liquidity was swept and price rejected."
     };
   }
 
 
   return {
 
-    score:
-      0,
+    score: 0,
 
     text:
       "Price remains inside the recent liquidity range."
@@ -1152,10 +1235,10 @@ function analyzeLiquidity(
 
 
 /* =========================================================
-   MOMENTUM TRIGGER
+   ENTRY TRIGGER
 ========================================================= */
 
-function analyzeTrigger(
+function momentumTrigger(
   candles
 ) {
 
@@ -1166,11 +1249,10 @@ function analyzeTrigger(
 
     return {
 
-      score:
-        0,
+      score: 0,
 
       text:
-        "No clear displacement trigger."
+        "No strong displacement trigger."
     };
   }
 
@@ -1187,7 +1269,7 @@ function analyzeTrigger(
     Math.max(
       latest.high -
       latest.low,
-      0.0001
+      0.000001
     );
 
 
@@ -1202,7 +1284,7 @@ function analyzeTrigger(
 
   if (
     body >
-    0.6
+    0.60
     &&
     latest.close >
     latest.open
@@ -1213,8 +1295,7 @@ function analyzeTrigger(
 
     return {
 
-      score:
-        1.5,
+      score: 1.5,
 
       text:
         "Bullish displacement candle confirmed."
@@ -1224,7 +1305,7 @@ function analyzeTrigger(
 
   if (
     body >
-    0.6
+    0.60
     &&
     latest.close <
     latest.open
@@ -1235,8 +1316,7 @@ function analyzeTrigger(
 
     return {
 
-      score:
-        -1.5,
+      score: -1.5,
 
       text:
         "Bearish displacement candle confirmed."
@@ -1246,11 +1326,10 @@ function analyzeTrigger(
 
   return {
 
-    score:
-      0,
+    score: 0,
 
     text:
-      "No strong displacement candle on the latest bar."
+      "No strong displacement on the latest candle."
   };
 }
 
@@ -1259,7 +1338,16 @@ function analyzeTrigger(
    SESSION
 ========================================================= */
 
-function marketSession() {
+function getSession(symbol) {
+
+  if (
+    symbol ===
+    "BTC/USD"
+  ) {
+
+    return "24/7 CRYPTO";
+  }
+
 
   const hour =
     (
@@ -1317,12 +1405,17 @@ function marketSession() {
 ========================================================= */
 
 function buildSignal(
+  symbol,
   m1,
   m5,
   m15,
   h1,
   price
 ) {
+
+  const market =
+    MARKETS[symbol];
+
 
   const T = {
 
@@ -1349,13 +1442,13 @@ function buildSignal(
 
 
   const liquidity =
-    analyzeLiquidity(
+    liquidityAnalysis(
       m5
     );
 
 
   const trigger =
-    analyzeTrigger(
+    momentumTrigger(
       m1
     );
 
@@ -1363,27 +1456,27 @@ function buildSignal(
   const weightedScore =
 
       T.M1.score *
-      0.7
+      0.75
 
     +
 
       T.M5.score *
-      1.25
+      1.30
 
     +
 
       T.M15.score *
-      1.65
+      1.70
 
     +
 
       T.H1.score *
-      2.1
+      2.20
 
     +
 
       liquidity.score *
-      1.15
+      1.20
 
     +
 
@@ -1398,7 +1491,7 @@ function buildSignal(
       : "SELL";
 
 
-  const sign =
+  const direction =
     signal === "BUY"
 
       ? 1
@@ -1428,25 +1521,18 @@ function buildSignal(
 
 
   let confidence =
-    Math.round(
-
-      clamp(
-
-        52
-        +
-        agreement *
-        6
-        +
-        Math.abs(
-          weightedScore
-        )
-        *
-        1.3,
-
-        55,
-
-        92
+    52
+    +
+    agreement *
+    6
+    +
+    Math.min(
+      20,
+      Math.abs(
+        weightedScore
       )
+      *
+      1.3
     );
 
 
@@ -1466,26 +1552,42 @@ function buildSignal(
     )
   ) {
 
-    confidence =
-      clamp(
-        confidence +
-        3,
-
-        55,
-
-        94
-      );
+    confidence += 3;
   }
 
 
-  const currentATR =
-    T.M5.atr
+  if (
+    (
+      signal === "BUY"
+      &&
+      trigger.score >
+      0
+    )
     ||
-    Math.max(
-      price *
-      0.001,
-      1
+    (
+      signal === "SELL"
+      &&
+      trigger.score <
+      0
+    )
+  ) {
+
+    confidence += 3;
+  }
+
+
+  confidence =
+    Math.round(
+      clamp(
+        confidence,
+        55,
+        94
+      )
     );
+
+
+  const volatility =
+    T.M5.atr;
 
 
   const recent =
@@ -1514,11 +1616,12 @@ function buildSignal(
 
   let stopDistance =
     Math.max(
-      currentATR *
-      1.05,
+
+      volatility *
+      market.atrStop,
 
       price *
-      0.001
+      market.minimumStopPercent
     );
 
 
@@ -1529,16 +1632,18 @@ function buildSignal(
     price
   ) {
 
+    const structureDistance =
+      price -
+      recentLow
+      +
+      volatility *
+      0.10;
+
+
     stopDistance =
       Math.max(
-
         stopDistance,
-
-        price -
-        recentLow
-        +
-        currentATR *
-        0.1
+        structureDistance
       );
   }
 
@@ -1550,27 +1655,27 @@ function buildSignal(
     price
   ) {
 
+    const structureDistance =
+      recentHigh -
+      price
+      +
+      volatility *
+      0.10;
+
+
     stopDistance =
       Math.max(
-
         stopDistance,
-
-        recentHigh -
-        price
-        +
-        currentATR *
-        0.1
+        structureDistance
       );
   }
 
 
   stopDistance =
     Math.min(
-
       stopDistance,
-
-      currentATR *
-      2.4
+      volatility *
+      2.6
     );
 
 
@@ -1580,22 +1685,46 @@ function buildSignal(
 
   const stopLoss =
     entry -
-    sign *
+    direction *
     stopDistance;
 
 
   const takeProfit =
     entry +
-    sign *
+    direction *
     stopDistance *
     2;
 
 
   const takeProfit2 =
     entry +
-    sign *
+    direction *
     stopDistance *
     3;
+
+
+  const reasons = [
+
+    `${signal} selected from weighted M1, M5, M15 and H1 alignment.`,
+
+    `H1 is ${T.H1.bias}, M15 is ${T.M15.bias}, and M5 is ${T.M5.bias}.`,
+
+    `M5 RSI is ${round(
+      T.M5.rsi,
+      1
+    )} with MACD momentum ${round(
+      T.M5.macd,
+      3
+    )}.`,
+
+    liquidity.text,
+
+    trigger.text,
+
+    "Stop loss is based on current volatility and recent structure.",
+
+    "Primary take profit uses a 1:2 risk-to-reward target."
+  ];
 
 
   return {
@@ -1612,34 +1741,67 @@ function buildSignal(
 
     takeProfit2,
 
-    T,
+    timeframeBias: {
 
-    reasons: [
+      M1:
+        T.M1.bias,
 
-      `${signal} selected from weighted M1/M5/M15/H1 alignment.`,
+      M5:
+        T.M5.bias,
 
-      `H1 ${T.H1.bias}; M15 ${T.M15.bias}; M5 ${T.M5.bias}.`,
+      M15:
+        T.M15.bias,
 
-      `M5 RSI ${round(
-        T.M5.rsi,
-        1
-      )} and MACD ${round(
-        T.M5.macd,
-        3
-      )}.`,
+      H1:
+        T.H1.bias
+    },
 
-      liquidity.text,
+    indicators: {
 
-      trigger.text,
+      m1Rsi:
+        round(
+          T.M1.rsi,
+          1
+        ),
 
-      "Stop loss uses M5 volatility and recent structure; TP is 2R."
-    ]
+      m5Rsi:
+        round(
+          T.M5.rsi,
+          1
+        ),
+
+      m15Rsi:
+        round(
+          T.M15.rsi,
+          1
+        ),
+
+      h1Rsi:
+        round(
+          T.H1.rsi,
+          1
+        ),
+
+      m5Atr:
+        round(
+          T.M5.atr,
+          market.decimals
+        ),
+
+      m5Macd:
+        round(
+          T.M5.macd,
+          4
+        )
+    },
+
+    reasons
   };
 }
 
 
 /* =========================================================
-   VERCEL API
+   API HANDLER
 ========================================================= */
 
 export default async function handler(
@@ -1653,12 +1815,6 @@ export default async function handler(
   );
 
 
-  res.setHeader(
-    "Content-Type",
-    "application/json; charset=utf-8"
-  );
-
-
   try {
 
     if (!API_KEY) {
@@ -1667,6 +1823,23 @@ export default async function handler(
         "TWELVE_DATA_API_KEY is missing in Vercel."
       );
     }
+
+
+    const body =
+      parseBody(
+        req
+      );
+
+
+    const symbol =
+      getSymbol(
+        req,
+        body
+      );
+
+
+    const market =
+      MARKETS[symbol];
 
 
     /* =====================================================
@@ -1684,7 +1857,9 @@ export default async function handler(
     ) {
 
       const price =
-        await getLivePrice();
+        await getLivePrice(
+          symbol
+        );
 
 
       return res
@@ -1694,13 +1869,12 @@ export default async function handler(
           success:
             true,
 
-          symbol:
-            SYMBOL,
+          symbol,
 
           price:
             round(
               price,
-              2
+              market.decimals
             ),
 
           timestamp:
@@ -1711,7 +1885,7 @@ export default async function handler(
 
 
     /* =====================================================
-       METHOD
+       ANALYSIS
     ===================================================== */
 
     if (
@@ -1733,47 +1907,11 @@ export default async function handler(
     }
 
 
-    /* =====================================================
-       REQUEST BODY
-    ===================================================== */
-
-    let requestBody = {};
-
-
-    if (
-      req.body
-      &&
-      typeof req.body ===
-      "object"
-    ) {
-
-      requestBody =
-        req.body;
-
-    } else if (
-      typeof req.body ===
-      "string"
-    ) {
-
-      try {
-
-        requestBody =
-          JSON.parse(
-            req.body
-          );
-
-      } catch {
-
-        requestBody = {};
-      }
-    }
-
-
     const equity =
       clamp(
 
-        n(
-          requestBody.equityZAR,
+        number(
+          body.equityZAR,
           200
         ),
 
@@ -1786,8 +1924,8 @@ export default async function handler(
     const riskPercent =
       clamp(
 
-        n(
-          requestBody.riskPercent,
+        number(
+          body.riskPercent,
           0.5
         ),
 
@@ -1797,11 +1935,13 @@ export default async function handler(
       );
 
 
-    /* =====================================================
-       ONLY TWO TWELVE DATA REQUESTS
+    /*
+       TWO DATA REQUESTS:
+       1. M1
+       2. H1
 
-       M5 + M15 are built locally from M1.
-    ===================================================== */
+       M5 + M15 are built locally.
+    */
 
     const [
       m1,
@@ -1810,14 +1950,17 @@ export default async function handler(
       await Promise.all([
 
         getCandles(
+          symbol,
           "1min",
-          500
+          600
         ),
 
         getCandles(
+          symbol,
           "1h",
           220
         )
+
       ]);
 
 
@@ -1844,14 +1987,14 @@ export default async function handler(
     ) {
 
       throw new Error(
-        "Not enough intraday candles to build M5/M15 analysis."
+        "Not enough candles to build multi-timeframe analysis."
       );
     }
 
 
     /*
-      Use latest M1 close as entry.
-      This avoids another API request.
+       Latest completed M1 close becomes
+       the initial scanner entry price.
     */
 
     const price =
@@ -1861,22 +2004,14 @@ export default async function handler(
 
     const analysis =
       buildSignal(
-
+        symbol,
         m1,
-
         m5,
-
         m15,
-
         h1,
-
         price
       );
 
-
-    /* =====================================================
-       RESPONSE
-    ===================================================== */
 
     return res
       .status(200)
@@ -1886,13 +2021,15 @@ export default async function handler(
           true,
 
         model:
-          "MKAYFX CHART SCANNER V3",
+          "MKAYFX DUAL SCANNER V1",
 
-        symbol:
-          SYMBOL,
+        symbol,
+
+        marketName:
+          market.name,
 
         signalId:
-          `MK-${Date.now()}-${analysis.signal}`,
+          `MK-${Date.now()}-${symbol.replace("/", "")}-${analysis.signal}`,
 
         signal:
           analysis.signal,
@@ -1907,7 +2044,9 @@ export default async function handler(
           "H1",
 
         session:
-          marketSession(),
+          getSession(
+            symbol
+          ),
 
         createdAt:
           new Date()
@@ -1919,31 +2058,31 @@ export default async function handler(
         entry:
           round(
             analysis.entry,
-            2
+            market.decimals
           ),
 
         stopLoss:
           round(
             analysis.stopLoss,
-            2
+            market.decimals
           ),
 
         takeProfit:
           round(
             analysis.takeProfit,
-            2
+            market.decimals
           ),
 
         takeProfit2:
           round(
             analysis.takeProfit2,
-            2
+            market.decimals
           ),
 
         currentPrice:
           round(
             price,
-            2
+            market.decimals
           ),
 
         riskReward:
@@ -1952,41 +2091,11 @@ export default async function handler(
         riskReward2:
           3,
 
-        timeframeBias: {
+        timeframeBias:
+          analysis.timeframeBias,
 
-          M1:
-            analysis.T.M1.bias,
-
-          M5:
-            analysis.T.M5.bias,
-
-          M15:
-            analysis.T.M15.bias,
-
-          H1:
-            analysis.T.H1.bias
-        },
-
-        indicators: {
-
-          m5Rsi:
-            round(
-              analysis.T.M5.rsi,
-              1
-            ),
-
-          m5Atr:
-            round(
-              analysis.T.M5.atr,
-              2
-            ),
-
-          m5Macd:
-            round(
-              analysis.T.M5.macd,
-              3
-            )
-        },
+        indicators:
+          analysis.indicators,
 
         reasons:
           analysis.reasons,
@@ -2029,25 +2138,25 @@ export default async function handler(
               open:
                 round(
                   candle.open,
-                  2
+                  market.decimals
                 ),
 
               high:
                 round(
                   candle.high,
-                  2
+                  market.decimals
                 ),
 
               low:
                 round(
                   candle.low,
-                  2
+                  market.decimals
                 ),
 
               close:
                 round(
                   candle.close,
-                  2
+                  market.decimals
                 )
             })
           ),
@@ -2058,10 +2167,10 @@ export default async function handler(
             "TRADE_ACTIVE",
 
           rule:
-            "Keep this signal locked until TP or SL.",
+            "Keep signal locked until TP or SL.",
 
           nextAnalysis:
-            "Create a new signal immediately after exit."
+            "Automatically scan again after TP or SL."
         }
       });
 
@@ -2069,7 +2178,7 @@ export default async function handler(
   } catch (error) {
 
     console.error(
-      "MKAYFX API ERROR:",
+      "MKAYFX ERROR:",
       error
     );
 
