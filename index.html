@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
@@ -11,10 +10,7 @@
   content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"
 >
 
-<meta
-  name="theme-color"
-  content="#040608"
->
+<meta name="theme-color" content="#040608">
 
 <meta
   name="apple-mobile-web-app-capable"
@@ -26,26 +22,47 @@
   content="black-translucent"
 >
 
-<title>MKAYFX GOLD</title>
+<title>MKAYFX GOLD EDGE</title>
 
 
 <style>
 
 :root{
+
   --bg:#040608;
-  --card:#0b1017;
+  --panel:#0a0f16;
+  --panel2:#0d141d;
+  --soft:#111923;
+
   --border:rgba(255,255,255,.075);
+  --border2:rgba(255,255,255,.12);
+
   --text:#f5f7fa;
-  --muted:#768294;
+  --muted:#7e8b9d;
+
   --green:#35e6a1;
   --red:#ff6077;
   --gold:#f5ca61;
   --blue:#7891ff;
+  --purple:#b38aff;
+
+  --safe-bottom:max(
+    16px,
+    env(safe-area-inset-bottom)
+  );
+
 }
+
 
 *{
   box-sizing:border-box;
 }
+
+
+html{
+  background:var(--bg);
+}
+
 
 body{
 
@@ -64,34 +81,272 @@ body{
   background:
 
     radial-gradient(
-      circle at 15% 0%,
-      rgba(91,111,255,.19),
-      transparent 27%
+      circle at 20% -5%,
+      rgba(95,108,255,.20),
+      transparent 28%
+    ),
+
+    radial-gradient(
+      circle at 100% 25%,
+      rgba(53,230,161,.05),
+      transparent 25%
     ),
 
     #040608;
 
   padding:
+
     max(
       12px,
       env(safe-area-inset-top)
     )
-    9px
-    max(
-      90px,
+
+    10px
+
+    calc(
+      92px +
       env(safe-area-inset-bottom)
     );
 
 }
 
+
+button,
+input,
+select,
+textarea{
+
+  font-family:inherit;
+
+}
+
+
+button{
+
+  -webkit-tap-highlight-color:
+    transparent;
+
+}
+
+
 .app{
 
-  max-width:800px;
+  width:100%;
+
+  max-width:850px;
+
   margin:auto;
 
 }
 
+
+/* =========================================================
+   HEADER
+========================================================= */
+
 header{
+
+  display:flex;
+
+  justify-content:
+    space-between;
+
+  align-items:center;
+
+  gap:10px;
+
+  margin-bottom:11px;
+
+}
+
+
+.brand{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:10px;
+
+}
+
+
+.logo{
+
+  width:46px;
+  height:46px;
+
+  display:grid;
+
+  place-items:center;
+
+  border-radius:15px;
+
+  color:#171204;
+
+  font-size:15px;
+
+  font-weight:1000;
+
+  background:
+
+    linear-gradient(
+      145deg,
+      #fff1ab,
+      #f5ca61,
+      #8a6117
+    );
+
+  box-shadow:
+    0 0 35px
+    rgba(245,202,97,.12);
+
+}
+
+
+h1{
+
+  margin:0;
+
+  font-size:14px;
+
+  letter-spacing:.3px;
+
+}
+
+
+.subtitle{
+
+  margin-top:3px;
+
+  color:var(--muted);
+
+  font-size:7px;
+
+  letter-spacing:.6px;
+
+}
+
+
+.status{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:6px;
+
+  padding:
+    8px 10px;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:999px;
+
+  background:
+    rgba(255,255,255,.025);
+
+  font-size:7px;
+
+  font-weight:1000;
+
+}
+
+
+.status-dot{
+
+  width:6px;
+  height:6px;
+
+  border-radius:50%;
+
+  background:currentColor;
+
+  box-shadow:
+    0 0 10px
+    currentColor;
+
+}
+
+
+.status.active{
+  color:var(--green);
+}
+
+
+.status.wait{
+  color:var(--gold);
+}
+
+
+.status.analyzing{
+  color:var(--gold);
+}
+
+
+.status.error{
+  color:var(--red);
+}
+
+
+/* =========================================================
+   COMMON
+========================================================= */
+
+.card{
+
+  position:relative;
+
+  margin-bottom:10px;
+
+  padding:14px;
+
+  overflow:hidden;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:18px;
+
+  background:
+    linear-gradient(
+      160deg,
+      rgba(13,20,29,.98),
+      rgba(8,12,18,.98)
+    );
+
+}
+
+
+.card-glow:before{
+
+  content:"";
+
+  position:absolute;
+
+  inset:-100px auto auto -100px;
+
+  width:190px;
+  height:190px;
+
+  pointer-events:none;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(120,145,255,.09),
+      transparent 70%
+    );
+
+}
+
+
+.section-title{
 
   display:flex;
 
@@ -102,317 +357,7 @@ header{
 
   gap:10px;
 
-  margin-bottom:10px;
-
-}
-
-.brand{
-
-  display:flex;
-  align-items:center;
-  gap:9px;
-
-}
-
-.logo{
-
-  width:44px;
-  height:44px;
-
-  display:grid;
-  place-items:center;
-
-  border-radius:14px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #fff0a8,
-      #f5ca61,
-      #9d711d
-    );
-
-  color:#171204;
-
-  font-weight:1000;
-
-}
-
-h1{
-
-  margin:0;
-
-  font-size:14px;
-
-}
-
-.subtitle{
-
-  margin-top:3px;
-
-  color:var(--muted);
-
-  font-size:7px;
-
-}
-
-.status{
-
-  padding:
-    8px 10px;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:
-    999px;
-
-  font-size:7px;
-  font-weight:900;
-
-}
-
-.status.active{
-  color:var(--green);
-}
-
-.status.analyzing{
-  color:var(--gold);
-}
-
-.status.error{
-  color:var(--red);
-}
-
-
-.card{
-
-  margin-bottom:9px;
-
-  padding:14px;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:17px;
-
-  background:
-    rgba(11,16,23,.97);
-
-}
-
-.hero{
-
-  text-align:center;
-
-}
-
-.hero small{
-
-  display:block;
-
-  color:var(--muted);
-
-  font-size:6px;
-
-  letter-spacing:1px;
-
-}
-
-.signal{
-
-  margin-top:4px;
-
-  font-size:38px;
-
-  font-weight:1000;
-
-}
-
-.signal.BUY{
-  color:var(--green);
-}
-
-.signal.SELL{
-  color:var(--red);
-}
-
-.signal.WAIT{
-  color:var(--gold);
-}
-
-.lock{
-
-  display:inline-block;
-
-  margin-top:7px;
-
-  padding:
-    6px 9px;
-
-  border-radius:
-    999px;
-
-  color:var(--blue);
-
-  background:
-    rgba(120,145,255,.07);
-
-  border:
-    1px solid
-    rgba(120,145,255,.15);
-
-  font-size:7px;
-
-  font-weight:900;
-
-}
-
-
-.price{
-
-  margin-top:15px;
-
-  color:white;
-
-  font-size:32px;
-
-  font-weight:1000;
-
-}
-
-
-.state{
-
-  margin-top:5px;
-
-  color:var(--muted);
-
-  font-size:8px;
-
-}
-
-
-.levels{
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(2,1fr);
-
-  gap:7px;
-
-  margin-top:14px;
-
-}
-
-
-.level{
-
-  padding:11px 5px;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:10px;
-
-  background:
-    rgba(255,255,255,.015);
-
-  text-align:center;
-
-}
-
-.level small{
-
-  display:block;
-
-  margin-bottom:5px;
-
-  color:var(--muted);
-
-  font-size:5px;
-
-}
-
-.level strong{
-
-  font-size:15px;
-
-}
-
-.level.entry strong{
-  color:var(--blue);
-}
-
-.level.sl strong{
-  color:var(--red);
-}
-
-.level.tp strong{
-  color:var(--green);
-}
-
-
-.progress-wrap{
-
-  margin-top:15px;
-
-}
-
-.progress-info{
-
-  display:flex;
-
-  justify-content:
-    space-between;
-
-  margin-bottom:6px;
-
-  color:var(--muted);
-
-  font-size:6px;
-
-}
-
-.progress{
-
-  height:7px;
-
-  overflow:hidden;
-
-  border-radius:999px;
-
-  background:
-    rgba(255,255,255,.05);
-
-}
-
-.progress span{
-
-  display:block;
-
-  width:50%;
-  height:100%;
-
-  border-radius:999px;
-
-  background:
-    linear-gradient(
-      90deg,
-      var(--blue),
-      var(--green)
-    );
-
-}
-
-
-.title{
-
-  margin-bottom:10px;
+  margin-bottom:11px;
 
   color:var(--muted);
 
@@ -427,61 +372,338 @@ h1{
 }
 
 
-.grid{
+.section-title strong{
 
-  display:grid;
-
-  grid-template-columns:
-    repeat(2,1fr);
-
-  gap:9px;
-
-}
-
-
-.kv{
-
-  display:grid;
-
-  grid-template-columns:
-    1fr auto;
-
-  gap:8px;
-
-  padding:7px 0;
-
-  border-bottom:
-    1px solid
-    rgba(255,255,255,.045);
+  color:var(--text);
 
   font-size:7px;
 
 }
 
-.kv:last-child{
-  border-bottom:0;
+
+.hidden{
+  display:none!important;
 }
 
-.kv span{
+
+.error-box{
+
+  display:none;
+
+  margin-bottom:10px;
+
+  padding:11px;
+
+  color:#ffb5c0;
+
+  background:
+    rgba(255,96,119,.07);
+
+  border:
+    1px solid
+    rgba(255,96,119,.15);
+
+  border-radius:12px;
+
+  font-size:8px;
+
+  line-height:1.45;
+
+}
+
+
+/* =========================================================
+   VIEWS
+========================================================= */
+
+.view{
+  display:none;
+}
+
+
+.view.active{
+  display:block;
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero{
+
+  padding-top:18px;
+
+  text-align:center;
+
+}
+
+
+.hero-label{
+
   color:var(--muted);
+
+  font-size:6px;
+
+  font-weight:900;
+
+  letter-spacing:1.2px;
+
 }
 
 
-.tfs{
+.signal{
+
+  margin-top:5px;
+
+  font-size:
+    clamp(
+      42px,
+      12vw,
+      64px
+    );
+
+  font-weight:1000;
+
+  line-height:1;
+
+  letter-spacing:-2px;
+
+}
+
+
+.signal.BUY{
+  color:var(--green);
+}
+
+
+.signal.SELL{
+  color:var(--red);
+}
+
+
+.signal.WAIT{
+  color:var(--gold);
+}
+
+
+.candidate{
+
+  min-height:16px;
+
+  margin-top:5px;
+
+  color:var(--muted);
+
+  font-size:7px;
+
+}
+
+
+.lock{
+
+  display:inline-flex;
+
+  align-items:center;
+
+  gap:5px;
+
+  margin-top:8px;
+
+  padding:
+    6px 10px;
+
+  border-radius:999px;
+
+  color:var(--blue);
+
+  background:
+    rgba(120,145,255,.075);
+
+  border:
+    1px solid
+    rgba(120,145,255,.16);
+
+  font-size:7px;
+
+  font-weight:1000;
+
+}
+
+
+.lock.waiting{
+
+  color:var(--gold);
+
+  background:
+    rgba(245,202,97,.06);
+
+  border-color:
+    rgba(245,202,97,.15);
+
+}
+
+
+.price{
+
+  margin-top:16px;
+
+  font-size:34px;
+
+  font-weight:1000;
+
+  letter-spacing:-1px;
+
+}
+
+
+.price-label{
+
+  margin-top:2px;
+
+  color:var(--muted);
+
+  font-size:6px;
+
+}
+
+
+.state{
+
+  max-width:520px;
+
+  margin:
+    7px auto 0;
+
+  color:var(--muted);
+
+  font-size:8px;
+
+  line-height:1.5;
+
+}
+
+
+/* =========================================================
+   EDGE GAUGE
+========================================================= */
+
+.edge-wrap{
+
+  display:flex;
+
+  justify-content:center;
+
+  margin-top:15px;
+
+}
+
+
+.edge-ring{
+
+  --score:0;
+
+  width:105px;
+  height:105px;
+
+  display:grid;
+
+  place-items:center;
+
+  position:relative;
+
+  border-radius:50%;
+
+  background:
+
+    conic-gradient(
+      var(--blue)
+      calc(
+        var(--score) *
+        1%
+      ),
+
+      rgba(255,255,255,.06)
+      0
+    );
+
+}
+
+
+.edge-ring:after{
+
+  content:"";
+
+  position:absolute;
+
+  inset:8px;
+
+  border-radius:50%;
+
+  background:#0a0f16;
+
+  border:
+    1px solid
+    rgba(255,255,255,.05);
+
+}
+
+
+.edge-inner{
+
+  position:relative;
+
+  z-index:2;
+
+}
+
+
+.edge-number{
+
+  font-size:25px;
+
+  font-weight:1000;
+
+}
+
+
+.edge-caption{
+
+  margin-top:2px;
+
+  color:var(--muted);
+
+  font-size:5px;
+
+  letter-spacing:.7px;
+
+}
+
+
+/* =========================================================
+   LEVELS
+========================================================= */
+
+.levels{
 
   display:grid;
 
   grid-template-columns:
     repeat(4,1fr);
 
-  gap:5px;
+  gap:6px;
+
+  margin-top:15px;
 
 }
 
 
-.tf{
+.level{
 
-  padding:9px 4px;
+  min-width:0;
+
+  padding:
+    10px 4px;
 
   text-align:center;
 
@@ -489,11 +711,15 @@ h1{
     1px solid
     var(--border);
 
-  border-radius:9px;
+  border-radius:10px;
+
+  background:
+    rgba(255,255,255,.018);
 
 }
 
-.tf small{
+
+.level small{
 
   display:block;
 
@@ -505,39 +731,669 @@ h1{
 
 }
 
-.tf strong{
-  font-size:6px;
+
+.level strong{
+
+  display:block;
+
+  overflow:hidden;
+
+  text-overflow:ellipsis;
+
+  font-size:12px;
+
 }
 
-.BULLISH{
-  color:var(--green);
+
+.level.entry strong{
+  color:var(--blue);
 }
 
-.BEARISH{
+
+.level.sl strong{
   color:var(--red);
 }
 
-.NEUTRAL{
+
+.level.tp strong{
+  color:var(--green);
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+.progress-wrap{
+
+  margin-top:15px;
+
+}
+
+
+.progress-info{
+
+  display:flex;
+
+  justify-content:
+    space-between;
+
+  gap:10px;
+
+  margin-bottom:7px;
+
+  color:var(--muted);
+
+  font-size:6px;
+
+}
+
+
+.progress{
+
+  height:8px;
+
+  overflow:hidden;
+
+  border-radius:999px;
+
+  background:
+    rgba(255,255,255,.055);
+
+}
+
+
+.progress span{
+
+  display:block;
+
+  width:50%;
+  height:100%;
+
+  border-radius:999px;
+
+  background:
+
+    linear-gradient(
+      90deg,
+      var(--blue),
+      var(--green)
+    );
+
+  transition:
+    width .35s ease;
+
+}
+
+
+/* =========================================================
+   GRID / KV
+========================================================= */
+
+.grid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(2,minmax(0,1fr));
+
+  gap:10px;
+
+}
+
+
+.kv{
+
+  display:grid;
+
+  grid-template-columns:
+    minmax(0,1fr)
+    auto;
+
+  gap:10px;
+
+  align-items:center;
+
+  padding:
+    8px 0;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.045);
+
+  font-size:8px;
+
+}
+
+
+.kv:last-child{
+  border-bottom:0;
+}
+
+
+.kv span{
+  color:var(--muted);
+}
+
+
+.kv strong{
+
+  max-width:190px;
+
+  overflow:hidden;
+
+  text-overflow:ellipsis;
+
+  text-align:right;
+
+}
+
+
+/* =========================================================
+   TIMEFRAMES
+========================================================= */
+
+.tfs{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(4,1fr);
+
+  gap:6px;
+
+}
+
+
+.tf{
+
+  padding:
+    10px 3px;
+
+  text-align:center;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:10px;
+
+  background:
+    rgba(255,255,255,.015);
+
+}
+
+
+.tf small{
+
+  display:block;
+
+  margin-bottom:6px;
+
+  color:var(--muted);
+
+  font-size:5px;
+
+}
+
+
+.tf strong{
+  font-size:7px;
+}
+
+
+.BULLISH,
+.BUY{
+  color:var(--green);
+}
+
+
+.BEARISH,
+.SELL{
+  color:var(--red);
+}
+
+
+.NEUTRAL,
+.MIXED,
+.WAIT{
   color:var(--gold);
 }
 
 
-.reason{
+/* =========================================================
+   INTELLIGENCE CHIPS
+========================================================= */
 
-  margin-bottom:5px;
+.chips{
 
-  padding:7px;
+  display:flex;
 
-  border-radius:7px;
+  flex-wrap:wrap;
+
+  gap:6px;
+
+}
+
+
+.chip{
+
+  padding:
+    7px 9px;
+
+  border-radius:999px;
+
+  border:
+    1px solid
+    var(--border);
 
   background:
     rgba(255,255,255,.02);
 
-  color:#c6cfda;
+  color:#c7d0dc;
+
+  font-size:6px;
+
+  font-weight:800;
+
+}
+
+
+/* =========================================================
+   REASONS
+========================================================= */
+
+.reason{
+
+  display:flex;
+
+  gap:8px;
+
+  margin-bottom:6px;
+
+  padding:9px;
+
+  border-radius:9px;
+
+  background:
+    rgba(255,255,255,.025);
+
+  color:#c9d2dc;
 
   font-size:7px;
 
-  line-height:1.45;
+  line-height:1.5;
+
+}
+
+
+.reason-icon{
+
+  color:var(--blue);
+
+}
+
+
+/* =========================================================
+   MODEL SCORE BARS
+========================================================= */
+
+.model-row{
+
+  margin-bottom:13px;
+
+}
+
+
+.model-top{
+
+  display:flex;
+
+  justify-content:
+    space-between;
+
+  gap:10px;
+
+  margin-bottom:6px;
+
+  font-size:7px;
+
+}
+
+
+.model-top span{
+  color:var(--muted);
+}
+
+
+.model-track{
+
+  position:relative;
+
+  height:7px;
+
+  overflow:hidden;
+
+  border-radius:999px;
+
+  background:
+    rgba(255,255,255,.05);
+
+}
+
+
+.model-center{
+
+  position:absolute;
+
+  left:50%;
+
+  top:0;
+
+  width:1px;
+
+  height:100%;
+
+  background:
+    rgba(255,255,255,.15);
+
+}
+
+
+.model-fill{
+
+  position:absolute;
+
+  top:0;
+
+  height:100%;
+
+  transition:
+    all .35s ease;
+
+}
+
+
+.model-fill.bull{
+
+  left:50%;
+
+  background:
+    var(--green);
+
+}
+
+
+.model-fill.bear{
+
+  right:50%;
+
+  background:
+    var(--red);
+
+}
+
+
+/* =========================================================
+   GATES
+========================================================= */
+
+.gates{
+
+  display:grid;
+
+  gap:7px;
+
+}
+
+
+.gate{
+
+  display:grid;
+
+  grid-template-columns:
+    20px
+    1fr
+    auto;
+
+  gap:8px;
+
+  align-items:center;
+
+  padding:9px;
+
+  border-radius:10px;
+
+  background:
+    rgba(255,255,255,.02);
+
+  border:
+    1px solid
+    rgba(255,255,255,.04);
+
+  font-size:7px;
+
+}
+
+
+.gate-icon{
+
+  width:20px;
+  height:20px;
+
+  display:grid;
+
+  place-items:center;
+
+  border-radius:50%;
+
+  font-size:8px;
+
+  font-weight:1000;
+
+}
+
+
+.gate.pass .gate-icon{
+
+  color:var(--green);
+
+  background:
+    rgba(53,230,161,.08);
+
+}
+
+
+.gate.fail .gate-icon{
+
+  color:var(--red);
+
+  background:
+    rgba(255,96,119,.08);
+
+}
+
+
+.gate .threshold{
+
+  color:var(--muted);
+
+}
+
+
+/* =========================================================
+   HISTORICAL STATS
+========================================================= */
+
+.stat-grid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(2,1fr);
+
+  gap:7px;
+
+}
+
+
+.stat{
+
+  padding:11px;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:11px;
+
+  background:
+    rgba(255,255,255,.018);
+
+}
+
+
+.stat small{
+
+  display:block;
+
+  color:var(--muted);
+
+  font-size:5px;
+
+}
+
+
+.stat strong{
+
+  display:block;
+
+  margin-top:5px;
+
+  font-size:15px;
+
+}
+
+
+/* =========================================================
+   CHART
+========================================================= */
+
+.chart-wrap{
+
+  position:relative;
+
+  width:100%;
+
+  min-height:360px;
+
+  border-radius:12px;
+
+  overflow:hidden;
+
+  background:#060a0f;
+
+  border:
+    1px solid
+    rgba(255,255,255,.05);
+
+}
+
+
+canvas{
+
+  display:block;
+
+  width:100%;
+  height:360px;
+
+  touch-action:pan-y;
+
+}
+
+
+.chart-info{
+
+  display:flex;
+
+  flex-wrap:wrap;
+
+  gap:6px;
+
+  margin-top:9px;
+
+}
+
+
+.legend-item{
+
+  padding:
+    6px 8px;
+
+  border-radius:999px;
+
+  background:
+    rgba(255,255,255,.025);
+
+  color:var(--muted);
+
+  font-size:6px;
+
+}
+
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+.journal-stats{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(4,1fr);
+
+  gap:6px;
+
+  margin-bottom:12px;
+
+}
+
+
+.journal-stat{
+
+  padding:
+    9px 3px;
+
+  text-align:center;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:10px;
+
+}
+
+
+.journal-stat small{
+
+  display:block;
+
+  color:var(--muted);
+
+  font-size:5px;
+
+}
+
+
+.journal-stat strong{
+
+  display:block;
+
+  margin-top:4px;
+
+  font-size:11px;
 
 }
 
@@ -547,11 +1403,17 @@ h1{
   display:grid;
 
   grid-template-columns:
-    50px 55px 1fr;
+    46px
+    52px
+    1fr
+    auto;
 
   gap:7px;
 
-  padding:7px 0;
+  align-items:center;
+
+  padding:
+    9px 0;
 
   border-bottom:
     1px solid
@@ -566,19 +1428,24 @@ h1{
   color:var(--green);
 }
 
+
 .result.SL{
   color:var(--red);
 }
 
 
-.controls{
+/* =========================================================
+   FORMS
+========================================================= */
+
+.controls-grid{
 
   display:grid;
 
   grid-template-columns:
-    1fr 1fr;
+    repeat(2,1fr);
 
-  gap:7px;
+  gap:9px;
 
 }
 
@@ -587,7 +1454,7 @@ label{
 
   display:block;
 
-  margin-bottom:4px;
+  margin-bottom:5px;
 
   color:var(--muted);
 
@@ -597,15 +1464,19 @@ label{
 
 
 input,
-select{
+select,
+textarea{
 
   width:100%;
 
-  height:38px;
+  min-height:42px;
 
-  padding:0 9px;
+  padding:
+    0 10px;
 
   color:white;
+
+  font-size:14px;
 
   outline:none;
 
@@ -613,28 +1484,43 @@ select{
     1px solid
     var(--border);
 
-  border-radius:9px;
+  border-radius:10px;
 
   background:#070b10;
 
 }
 
 
+textarea{
+
+  min-height:80px;
+
+  padding:10px;
+
+  resize:vertical;
+
+}
+
+
 button{
+
+  min-height:44px;
 
   width:100%;
 
   margin-top:8px;
 
-  padding:11px;
+  padding:
+    11px 12px;
 
   border:0;
 
-  border-radius:10px;
+  border-radius:11px;
 
   color:white;
 
   background:
+
     linear-gradient(
       135deg,
       #718cff,
@@ -645,13 +1531,24 @@ button{
 
   font-size:8px;
 
+  cursor:pointer;
+
+}
+
+
+button:disabled{
+
+  opacity:.45;
+
+  cursor:not-allowed;
+
 }
 
 
 button.secondary{
 
   background:
-    rgba(255,255,255,.03);
+    rgba(255,255,255,.035);
 
   border:
     1px solid
@@ -660,36 +1557,71 @@ button.secondary{
 }
 
 
-.error{
+button.danger{
 
-  display:none;
-
-  margin-bottom:9px;
-
-  padding:9px;
-
-  color:#ffadb9;
+  color:#ffacb8;
 
   background:
     rgba(255,96,119,.06);
 
   border:
     1px solid
-    rgba(255,96,119,.12);
-
-  border-radius:9px;
-
-  font-size:7px;
+    rgba(255,96,119,.14);
 
 }
 
 
-.meta{
+.button-row{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(2,1fr);
+
+  gap:7px;
+
+}
+
+
+.toggle-row{
 
   display:flex;
 
   justify-content:
     space-between;
+
+  align-items:center;
+
+  gap:12px;
+
+  padding:9px 0;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.045);
+
+}
+
+
+.toggle-row:last-child{
+  border-bottom:0;
+}
+
+
+.toggle-text strong{
+
+  display:block;
+
+  font-size:8px;
+
+}
+
+
+.toggle-text small{
+
+  display:block;
+
+  margin-top:3px;
 
   color:var(--muted);
 
@@ -698,13 +1630,233 @@ button.secondary{
 }
 
 
+.switch{
+
+  width:46px;
+  height:26px;
+
+  position:relative;
+
+  flex:0 0 auto;
+
+}
+
+
+.switch input{
+  display:none;
+}
+
+
+.slider{
+
+  position:absolute;
+
+  inset:0;
+
+  border-radius:999px;
+
+  background:
+    rgba(255,255,255,.08);
+
+  border:
+    1px solid
+    var(--border);
+
+  transition:.2s;
+
+}
+
+
+.slider:before{
+
+  content:"";
+
+  position:absolute;
+
+  left:3px;
+  top:3px;
+
+  width:18px;
+  height:18px;
+
+  border-radius:50%;
+
+  background:#aeb7c3;
+
+  transition:.2s;
+
+}
+
+
+.switch input:checked + .slider{
+
+  background:
+    rgba(120,145,255,.20);
+
+  border-color:
+    rgba(120,145,255,.35);
+
+}
+
+
+.switch input:checked + .slider:before{
+
+  transform:
+    translateX(20px);
+
+  background:
+    var(--blue);
+
+}
+
+
+/* =========================================================
+   BOTTOM NAV
+========================================================= */
+
+.bottom-nav{
+
+  position:fixed;
+
+  z-index:100;
+
+  left:10px;
+  right:10px;
+
+  bottom:
+    max(
+      8px,
+      env(safe-area-inset-bottom)
+    );
+
+  max-width:830px;
+
+  margin:auto;
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(5,1fr);
+
+  gap:4px;
+
+  padding:6px;
+
+  border:
+    1px solid
+    var(--border2);
+
+  border-radius:17px;
+
+  background:
+    rgba(7,11,16,.94);
+
+  backdrop-filter:
+    blur(22px);
+
+  -webkit-backdrop-filter:
+    blur(22px);
+
+}
+
+
+.nav-btn{
+
+  min-height:45px;
+
+  margin:0;
+
+  padding:5px;
+
+  display:flex;
+
+  flex-direction:column;
+
+  align-items:center;
+
+  justify-content:center;
+
+  gap:3px;
+
+  border-radius:11px;
+
+  color:var(--muted);
+
+  background:transparent;
+
+  font-size:5px;
+
+  font-weight:900;
+
+}
+
+
+.nav-btn span:first-child{
+
+  font-size:14px;
+
+}
+
+
+.nav-btn.active{
+
+  color:white;
+
+  background:
+    rgba(120,145,255,.12);
+
+  border:
+    1px solid
+    rgba(120,145,255,.14);
+
+}
+
+
+/* =========================================================
+   META
+========================================================= */
+
+.meta{
+
+  display:flex;
+
+  justify-content:
+    space-between;
+
+  gap:10px;
+
+  padding:
+    4px 3px;
+
+  color:var(--muted);
+
+  font-size:6px;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
 @media(max-width:600px){
 
   .grid{
     grid-template-columns:1fr;
   }
 
+  .levels{
+    grid-template-columns:
+      repeat(2,1fr);
+  }
+
+  .journal-stats{
+    grid-template-columns:
+      repeat(2,1fr);
+  }
+
 }
+
 
 </style>
 
@@ -712,6 +1864,7 @@ button.secondary{
 
 
 <body>
+
 
 <main class="app">
 
@@ -731,7 +1884,7 @@ button.secondary{
       </h1>
 
       <div class="subtitle">
-        LOCKED SIGNAL ENGINE V9
+        QUANT EDGE TERMINAL V10
       </div>
 
     </div>
@@ -741,9 +1894,14 @@ button.secondary{
 
   <div
     id="status"
-    class="status analyzing">
+    class="status analyzing"
+  >
 
-    STARTING
+    <span class="status-dot"></span>
+
+    <span id="statusText">
+      STARTING
+    </span>
 
   </div>
 
@@ -752,47 +1910,96 @@ button.secondary{
 
 <div
   id="error"
-  class="error">
+  class="error-box"
+>
 </div>
 
 
-<section class="card hero">
+<!-- ======================================================
+     OVERVIEW VIEW
+====================================================== -->
 
-  <small>
-    LOCKED XAU/USD SIGNAL
-  </small>
+<div
+  id="view-overview"
+  class="view active"
+>
+
+
+<section class="card hero card-glow">
+
+  <div class="hero-label">
+    XAU/USD EDGE DECISION
+  </div>
+
 
   <div
     id="signal"
-    class="signal WAIT">
-
+    class="signal WAIT"
+  >
     ...
-
   </div>
+
+
+  <div
+    id="candidate"
+    class="candidate"
+  >
+  </div>
+
 
   <div
     id="lock"
-    class="lock">
-
+    class="lock waiting"
+  >
     ANALYZING
-
   </div>
 
 
   <div
     id="price"
-    class="price">
-
+    class="price"
+  >
     —
+  </div>
 
+
+  <div class="price-label">
+    XAU/USD
   </div>
 
 
   <div
     id="state"
-    class="state">
+    class="state"
+  >
+    Reading the gold market...
+  </div>
 
-    Analysing gold immediately...
+
+  <div class="edge-wrap">
+
+    <div
+      id="edgeRing"
+      class="edge-ring"
+      style="--score:0"
+    >
+
+      <div class="edge-inner">
+
+        <div
+          id="edgeNumber"
+          class="edge-number"
+        >
+          —
+        </div>
+
+        <div class="edge-caption">
+          EDGE SCORE
+        </div>
+
+      </div>
+
+    </div>
 
   </div>
 
@@ -828,7 +2035,7 @@ button.secondary{
     <div class="level tp">
 
       <small>
-        TAKE PROFIT
+        TP1
       </small>
 
       <strong id="tp">
@@ -871,11 +2078,13 @@ button.secondary{
 
     </div>
 
+
     <div class="progress">
 
       <span
         id="progressBar"
-        style="width:50%">
+        style="width:50%"
+      >
       </span>
 
     </div>
@@ -890,26 +2099,97 @@ button.secondary{
 
 <section class="card">
 
-  <div class="title">
-    Signal Information
+  <div class="section-title">
+
+    <span>
+      Market Snapshot
+    </span>
+
   </div>
+
 
   <div class="kv">
 
     <span>
-      Setup strength
+      Market regime
     </span>
 
-    <strong id="strength">
+    <strong id="overviewRegime">
       —
     </strong>
 
   </div>
 
+
   <div class="kv">
 
     <span>
-      Risk/Reward
+      Regime confidence
+    </span>
+
+    <strong id="overviewRegimeConfidence">
+      —
+    </strong>
+
+  </div>
+
+
+  <div class="kv">
+
+    <span>
+      Model agreement
+    </span>
+
+    <strong id="overviewAgreement">
+      —
+    </strong>
+
+  </div>
+
+
+  <div class="kv">
+
+    <span>
+      Historical expectancy
+    </span>
+
+    <strong id="overviewExpectancy">
+      —
+    </strong>
+
+  </div>
+
+
+  <div class="kv">
+
+    <span>
+      Historical matches
+    </span>
+
+    <strong id="overviewMatches">
+      —
+    </strong>
+
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+
+    <span>
+      Trade Information
+    </span>
+
+  </div>
+
+
+  <div class="kv">
+
+    <span>
+      Risk / Reward
     </span>
 
     <strong id="rr">
@@ -917,6 +2197,7 @@ button.secondary{
     </strong>
 
   </div>
+
 
   <div class="kv">
 
@@ -930,6 +2211,7 @@ button.secondary{
 
   </div>
 
+
   <div class="kv">
 
     <span>
@@ -941,6 +2223,7 @@ button.secondary{
     </strong>
 
   </div>
+
 
   <div class="kv">
 
@@ -959,50 +2242,35 @@ button.secondary{
 
 <section class="card">
 
-  <div class="title">
-    Timeframe Direction
+  <div class="section-title">
+
+    <span>
+      Timeframe Direction
+    </span>
+
   </div>
+
 
   <div class="tfs">
 
     <div class="tf">
-
       <small>M1</small>
-
-      <strong id="m1">
-        —
-      </strong>
-
+      <strong id="m1">—</strong>
     </div>
 
     <div class="tf">
-
       <small>M5</small>
-
-      <strong id="m5">
-        —
-      </strong>
-
+      <strong id="m5">—</strong>
     </div>
 
     <div class="tf">
-
       <small>M15</small>
-
-      <strong id="m15">
-        —
-      </strong>
-
+      <strong id="m15">—</strong>
     </div>
 
     <div class="tf">
-
       <small>H1</small>
-
-      <strong id="h1">
-        —
-      </strong>
-
+      <strong id="h1">—</strong>
     </div>
 
   </div>
@@ -1012,9 +2280,14 @@ button.secondary{
 
 <section class="card">
 
-  <div class="title">
-    Account Risk
+  <div class="section-title">
+
+    <span>
+      Account Risk
+    </span>
+
   </div>
+
 
   <div class="kv">
 
@@ -1028,6 +2301,7 @@ button.secondary{
 
   </div>
 
+
   <div class="kv">
 
     <span>
@@ -1040,13 +2314,27 @@ button.secondary{
 
   </div>
 
+
   <div class="kv">
 
     <span>
-      Max risk
+      Maximum risk
     </span>
 
     <strong id="maxRisk">
+      —
+    </strong>
+
+  </div>
+
+
+  <div class="kv">
+
+    <span>
+      Approx TP1 gain
+    </span>
+
+    <strong id="projectedGain">
       —
     </strong>
 
@@ -1057,9 +2345,34 @@ button.secondary{
 
 <section class="card">
 
-  <div class="title">
-    Why This Signal?
+  <div class="section-title">
+
+    <span>
+      Market Intelligence
+    </span>
+
   </div>
+
+
+  <div
+    id="intelligenceChips"
+    class="chips"
+  >
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+
+    <span>
+      Why?
+    </span>
+
+  </div>
+
 
   <div id="reasons">
   </div>
@@ -1067,13 +2380,90 @@ button.secondary{
 </section>
 
 
+</div>
+
+
+</div>
+
+
+<!-- ======================================================
+     EDGE VIEW
+====================================================== -->
+
+<div
+  id="view-edge"
+  class="view"
+>
+
+
 <section class="card">
 
-  <div class="title">
-    Completed Trades
+  <div class="section-title">
+
+    <span>
+      Edge Intelligence
+    </span>
+
+    <strong id="edgeDecisionLabel">
+      —
+    </strong>
+
   </div>
 
-  <div id="history">
+
+  <div class="stat-grid">
+
+    <div class="stat">
+
+      <small>
+        EDGE SCORE
+      </small>
+
+      <strong id="edgeScoreDetail">
+        —
+      </strong>
+
+    </div>
+
+
+    <div class="stat">
+
+      <small>
+        TECHNICAL
+      </small>
+
+      <strong id="technicalStrength">
+        —
+      </strong>
+
+    </div>
+
+
+    <div class="stat">
+
+      <small>
+        AGREEMENT
+      </small>
+
+      <strong id="modelAgreement">
+        —
+      </strong>
+
+    </div>
+
+
+    <div class="stat">
+
+      <small>
+        HISTORICAL SCORE
+      </small>
+
+      <strong id="historicalScore">
+        —
+      </strong>
+
+    </div>
+
   </div>
 
 </section>
@@ -1081,11 +2471,469 @@ button.secondary{
 
 <section class="card">
 
-  <div class="title">
-    Controls
+  <div class="section-title">
+    <span>
+      Model Ensemble
+    </span>
   </div>
 
-  <div class="controls">
+  <div id="models">
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+    <span>
+      Qualification Gates
+    </span>
+  </div>
+
+  <div
+    id="gates"
+    class="gates"
+  >
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+    <span>
+      Market Regime
+    </span>
+  </div>
+
+
+  <div class="kv">
+    <span>Type</span>
+    <strong id="regimeType">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Confidence</span>
+    <strong id="regimeConfidence">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>ATR percentile</span>
+    <strong id="atrPercentile">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Efficiency ratio</span>
+    <strong id="efficiencyRatio">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>EMA spread / ATR</span>
+    <strong id="emaSpread">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Recent return / ATR</span>
+    <strong id="recentReturn">—</strong>
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+    <span>
+      Historical Similarity
+    </span>
+  </div>
+
+
+  <div class="stat-grid">
+
+    <div class="stat">
+
+      <small>
+        MATCHES
+      </small>
+
+      <strong id="histMatches">
+        —
+      </strong>
+
+    </div>
+
+
+    <div class="stat">
+
+      <small>
+        TARGET HIT
+      </small>
+
+      <strong id="histWinRate">
+        —
+      </strong>
+
+    </div>
+
+
+    <div class="stat">
+
+      <small>
+        EXPECTANCY
+      </small>
+
+      <strong id="histExpectancy">
+        —
+      </strong>
+
+    </div>
+
+
+    <div class="stat">
+
+      <small>
+        SIMILARITY
+      </small>
+
+      <strong id="histSimilarity">
+        —
+      </strong>
+
+    </div>
+
+
+    <div class="stat">
+
+      <small>
+        MEDIAN MFE
+      </small>
+
+      <strong id="histMFE">
+        —
+      </strong>
+
+    </div>
+
+
+    <div class="stat">
+
+      <small>
+        MEDIAN MAE
+      </small>
+
+      <strong id="histMAE">
+        —
+      </strong>
+
+    </div>
+
+  </div>
+
+
+  <div
+    id="historicalNote"
+    class="reason"
+    style="margin-top:10px"
+  >
+    Historical statistics will appear after analysis.
+  </div>
+
+</section>
+
+
+</div>
+
+
+<!-- ======================================================
+     CHART VIEW
+====================================================== -->
+
+<div
+  id="view-chart"
+  class="view"
+>
+
+
+<section class="card">
+
+  <div class="section-title">
+
+    <span>
+      M1 Price Action
+    </span>
+
+    <strong id="chartCandleCount">
+      —
+    </strong>
+
+  </div>
+
+
+  <div class="chart-wrap">
+
+    <canvas id="chart">
+    </canvas>
+
+  </div>
+
+
+  <div class="chart-info">
+
+    <span class="legend-item">
+      🟢 Bull candle
+    </span>
+
+    <span class="legend-item">
+      🔴 Bear candle
+    </span>
+
+    <span class="legend-item">
+      🔵 Entry
+    </span>
+
+    <span class="legend-item">
+      🟢 TP
+    </span>
+
+    <span class="legend-item">
+      🔴 SL
+    </span>
+
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+    <span>
+      Structure
+    </span>
+  </div>
+
+
+  <div class="kv">
+    <span>M1 structure</span>
+    <strong id="structM1">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>M1 BOS</span>
+    <strong id="structM1Bos">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>M1 CHOCH</span>
+    <strong id="structM1Choch">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>M5 structure</span>
+    <strong id="structM5">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>M5 BOS</span>
+    <strong id="structM5Bos">—</strong>
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+    <span>
+      Liquidity
+    </span>
+  </div>
+
+
+  <div class="kv">
+    <span>Asian high</span>
+    <strong id="asiaHigh">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Asian low</span>
+    <strong id="asiaLow">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Previous-day high</span>
+    <strong id="pdh">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Previous-day low</span>
+    <strong id="pdl">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Bull liquidity score</span>
+    <strong id="bullLiquidity">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Bear liquidity score</span>
+    <strong id="bearLiquidity">—</strong>
+  </div>
+
+</section>
+
+
+</div>
+
+
+<!-- ======================================================
+     JOURNAL VIEW
+====================================================== -->
+
+<div
+  id="view-journal"
+  class="view"
+>
+
+
+<section class="card">
+
+  <div class="section-title">
+
+    <span>
+      Performance
+    </span>
+
+  </div>
+
+
+  <div class="journal-stats">
+
+    <div class="journal-stat">
+
+      <small>
+        TRADES
+      </small>
+
+      <strong id="statTrades">
+        0
+      </strong>
+
+    </div>
+
+
+    <div class="journal-stat">
+
+      <small>
+        WIN RATE
+      </small>
+
+      <strong id="statWinRate">
+        —
+      </strong>
+
+    </div>
+
+
+    <div class="journal-stat">
+
+      <small>
+        TOTAL R
+      </small>
+
+      <strong id="statR">
+        0.00R
+      </strong>
+
+    </div>
+
+
+    <div class="journal-stat">
+
+      <small>
+        STREAK
+      </small>
+
+      <strong id="statStreak">
+        —
+      </strong>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+
+    <span>
+      Completed Trades
+    </span>
+
+    <strong id="historyCount">
+      0
+    </strong>
+
+  </div>
+
+
+  <div id="history">
+  </div>
+
+
+  <div class="button-row">
+
+    <button
+      id="exportHistory"
+      class="secondary"
+    >
+      EXPORT CSV
+    </button>
+
+
+    <button
+      id="clearHistory"
+      class="danger"
+    >
+      CLEAR HISTORY
+    </button>
+
+  </div>
+
+</section>
+
+
+</div>
+
+
+<!-- ======================================================
+     CONTROLS VIEW
+====================================================== -->
+
+<div
+  id="view-controls"
+  class="view"
+>
+
+
+<section class="card">
+
+  <div class="section-title">
+
+    <span>
+      Trading Settings
+    </span>
+
+  </div>
+
+
+  <div class="controls-grid">
 
     <div>
 
@@ -1096,6 +2944,8 @@ button.secondary{
       <input
         id="equity"
         type="number"
+        inputmode="decimal"
+        min="1"
         value="200"
       >
 
@@ -1105,27 +2955,58 @@ button.secondary{
     <div>
 
       <label>
-        Price check
+        Active trade price check
       </label>
 
       <select id="interval">
 
-        <option
-          value="15"
-          selected>
-          Every 15 sec
+        <option value="15">
+          15 sec
         </option>
 
         <option value="20">
-          Every 20 sec
+          20 sec
         </option>
 
         <option value="30">
-          Every 30 sec
+          30 sec
         </option>
 
         <option value="60">
-          Every 60 sec
+          60 sec
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div>
+
+      <label>
+        WAIT auto-rescan
+      </label>
+
+      <select id="scanInterval">
+
+        <option value="60">
+          Every 1 min
+        </option>
+
+        <option value="120">
+          Every 2 min
+        </option>
+
+        <option value="300">
+          Every 5 min
+        </option>
+
+        <option value="600">
+          Every 10 min
+        </option>
+
+        <option value="900">
+          Every 15 min
         </option>
 
       </select>
@@ -1134,22 +3015,170 @@ button.secondary{
 
   </div>
 
+</section>
 
-  <button
-    id="newSignal">
 
-    FORCE NEW ANALYSIS
+<section class="card">
 
+  <div class="section-title">
+
+    <span>
+      Automation
+    </span>
+
+  </div>
+
+
+  <div class="toggle-row">
+
+    <div class="toggle-text">
+
+      <strong>
+        Auto-rescan while WAIT
+      </strong>
+
+      <small>
+        Reanalyse only when there is no active trade.
+      </small>
+
+    </div>
+
+
+    <label class="switch">
+
+      <input
+        id="autoScan"
+        type="checkbox"
+        checked
+      >
+
+      <span class="slider">
+      </span>
+
+    </label>
+
+  </div>
+
+
+  <div class="toggle-row">
+
+    <div class="toggle-text">
+
+      <strong>
+        Sound alerts
+      </strong>
+
+      <small>
+        Play a short alert when a trade qualifies or closes.
+      </small>
+
+    </div>
+
+
+    <label class="switch">
+
+      <input
+        id="soundEnabled"
+        type="checkbox"
+        checked
+      >
+
+      <span class="slider">
+      </span>
+
+    </label>
+
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+
+    <span>
+      Actions
+    </span>
+
+  </div>
+
+
+  <button id="newSignal">
+    RUN FRESH EDGE ANALYSIS
   </button>
+
+
+  <div class="button-row">
+
+    <button
+      id="shareSignal"
+      class="secondary"
+    >
+      SHARE
+    </button>
+
+
+    <button
+      id="copySignal"
+      class="secondary"
+    >
+      COPY
+    </button>
+
+  </div>
 
 
   <button
     id="clearTrade"
-    class="secondary">
-
-    CLEAR LOCKED TRADE
-
+    class="danger"
+  >
+    CLEAR ACTIVE TRADE
   </button>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+
+    <span>
+      Engine Information
+    </span>
+
+  </div>
+
+
+  <div class="kv">
+    <span>Model</span>
+    <strong id="engineModel">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>M1 candles</span>
+    <strong id="qualityM1">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>M5 candles</span>
+    <strong id="qualityM5">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>M15 candles</span>
+    <strong id="qualityM15">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>H1 candles</span>
+    <strong id="qualityH1">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Data age</span>
+    <strong id="dataAge">—</strong>
+  </div>
 
 </section>
 
@@ -1173,10 +3202,63 @@ button.secondary{
 </main>
 
 
+<!-- ======================================================
+     BOTTOM NAVIGATION
+====================================================== -->
+
+<nav class="bottom-nav">
+
+  <button
+    class="nav-btn active"
+    data-view="overview"
+  >
+    <span>◉</span>
+    <span>OVERVIEW</span>
+  </button>
+
+
+  <button
+    class="nav-btn"
+    data-view="edge"
+  >
+    <span>◆</span>
+    <span>EDGE</span>
+  </button>
+
+
+  <button
+    class="nav-btn"
+    data-view="chart"
+  >
+    <span>⌁</span>
+    <span>CHART</span>
+  </button>
+
+
+  <button
+    class="nav-btn"
+    data-view="journal"
+  >
+    <span>☰</span>
+    <span>JOURNAL</span>
+  </button>
+
+
+  <button
+    class="nav-btn"
+    data-view="controls"
+  >
+    <span>⚙</span>
+    <span>CONTROL</span>
+  </button>
+
+</nav>
+
+
 <script>
 
 /* =========================================================
-   MKAYFX LOCKED SIGNAL FRONTEND
+   MKAYFX GOLD QUANT EDGE TERMINAL V10
 ========================================================= */
 
 const $ =
@@ -1186,23 +3268,52 @@ const $ =
     );
 
 
+/*
+   Supports either filename:
+
+   api/analyze.js
+   api/analysis.js
+*/
+
+const ANALYSIS_ENDPOINTS = [
+  "/api/analyze",
+  "/api/analysis"
+];
+
+
+const PRICE_ENDPOINT =
+  "/api/price";
+
+
 const ACTIVE_KEY =
-  "mkayfx_active_trade_v9";
+  "mkayfx_active_trade_v10";
 
 
 const HISTORY_KEY =
-  "mkayfx_history_v9";
+  "mkayfx_history_v10";
+
+
+const ANALYSIS_KEY =
+  "mkayfx_last_analysis_v10";
+
+
+const SETTINGS_KEY =
+  "mkayfx_settings_v10";
 
 
 let activeTrade =
   null;
 
 
-let checkingPrice =
-  false;
+let lastAnalysis =
+  null;
 
 
 let analyzing =
+  false;
+
+
+let checkingPrice =
   false;
 
 
@@ -1214,12 +3325,20 @@ let countdownTimer =
   null;
 
 
+let scanTimer =
+  null;
+
+
 let secondsRemaining =
-  15;
+  0;
+
+
+let currentTimerType =
+  null;
 
 
 /* =========================================================
-   HELPERS
+   BASIC HELPERS
 ========================================================= */
 
 function finite(
@@ -1236,10 +3355,14 @@ function finite(
 
 
   const n =
-    Number(value);
+    Number(
+      value
+    );
 
 
-  return Number.isFinite(n)
+  return Number.isFinite(
+    n
+  )
     ? n
     : null;
 
@@ -1247,33 +3370,103 @@ function finite(
 
 
 function fmt(
-  value
+  value,
+  digits = 2
 ){
 
   const n =
-    finite(value);
+    finite(
+      value
+    );
 
 
   return n === null
     ? "—"
-    : n.toFixed(2);
+    : n.toFixed(
+        digits
+      );
+
+}
+
+
+function pct(
+  value,
+  digits = 1
+){
+
+  const n =
+    finite(
+      value
+    );
+
+
+  return n === null
+    ? "—"
+    : `${n.toFixed(
+        digits
+      )}%`;
+
+}
+
+
+function escapeHTML(
+  value
+){
+
+  return String(
+    value ??
+    ""
+  )
+  .replace(
+    /[&<>'"]/g,
+    char =>
+      ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        "'":"&#39;",
+        '"':"&quot;"
+      })[
+        char
+      ]
+  );
+
+}
+
+
+function setText(
+  id,
+  value
+){
+
+  const el =
+    $(id);
+
+
+  if(
+    el
+  ){
+    el.textContent =
+      value;
+  }
 
 }
 
 
 function setStatus(
   text,
-  className
+  className = ""
 ){
 
-  $("status")
-    .textContent =
-      text;
+  setText(
+    "statusText",
+    text
+  );
 
 
   $("status")
     .className =
-      `status ${className || ""}`;
+      `status ${className}`;
 
 }
 
@@ -1303,25 +3496,57 @@ function hideError(){
 }
 
 
-function readActive(){
+/* =========================================================
+   STORAGE
+========================================================= */
+
+function readJSON(
+  key,
+  fallback
+){
 
   try{
 
-    const value =
-      JSON.parse(
-        localStorage.getItem(
-          ACTIVE_KEY
-        ) ||
-        "null"
-      );
-
-
-    return value;
+    return JSON.parse(
+      localStorage.getItem(
+        key
+      )
+    ) ??
+    fallback;
 
   }
   catch{
 
-    return null;
+    return fallback;
+
+  }
+
+}
+
+
+function writeJSON(
+  key,
+  value
+){
+
+  try{
+
+    localStorage.setItem(
+      key,
+      JSON.stringify(
+        value
+      )
+    );
+
+  }
+  catch(
+    error
+  ){
+
+    console.error(
+      "Storage error:",
+      error
+    );
 
   }
 
@@ -1340,11 +3565,9 @@ function saveActive(
     trade
   ){
 
-    localStorage.setItem(
+    writeJSON(
       ACTIVE_KEY,
-      JSON.stringify(
-        trade
-      )
+      trade
     );
 
   }
@@ -1359,23 +3582,28 @@ function saveActive(
 }
 
 
-function history(){
+function saveAnalysis(
+  data
+){
 
-  try{
+  lastAnalysis =
+    data;
 
-    return JSON.parse(
-      localStorage.getItem(
-        HISTORY_KEY
-      ) ||
-      "[]"
-    );
 
-  }
-  catch{
+  writeJSON(
+    ANALYSIS_KEY,
+    data
+  );
 
-    return [];
+}
 
-  }
+
+function tradeHistory(){
+
+  return readJSON(
+    HISTORY_KEY,
+    []
+  );
 
 }
 
@@ -1385,7 +3613,7 @@ function saveHistory(
 ){
 
   const list =
-    history();
+    tradeHistory();
 
 
   list.unshift(
@@ -1393,13 +3621,11 @@ function saveHistory(
   );
 
 
-  localStorage.setItem(
+  writeJSON(
     HISTORY_KEY,
-    JSON.stringify(
-      list.slice(
-        0,
-        30
-      )
+    list.slice(
+      0,
+      200
     )
   );
 
@@ -1409,8 +3635,1256 @@ function saveHistory(
 }
 
 
+function saveSettings(){
+
+  writeJSON(
+    SETTINGS_KEY,
+    {
+      equity:
+        $("equity").value,
+
+      interval:
+        $("interval").value,
+
+      scanInterval:
+        $("scanInterval").value,
+
+      autoScan:
+        $("autoScan").checked,
+
+      soundEnabled:
+        $("soundEnabled").checked
+    }
+  );
+
+}
+
+
+function loadSettings(){
+
+  const settings =
+    readJSON(
+      SETTINGS_KEY,
+      {}
+    );
+
+
+  if(
+    settings.equity
+  ){
+    $("equity").value =
+      settings.equity;
+  }
+
+
+  if(
+    settings.interval
+  ){
+    $("interval").value =
+      settings.interval;
+  }
+
+
+  if(
+    settings.scanInterval
+  ){
+    $("scanInterval").value =
+      settings.scanInterval;
+  }
+
+
+  if(
+    typeof settings.autoScan ===
+    "boolean"
+  ){
+
+    $("autoScan").checked =
+      settings.autoScan;
+
+  }
+
+
+  if(
+    typeof settings.soundEnabled ===
+    "boolean"
+  ){
+
+    $("soundEnabled").checked =
+      settings.soundEnabled;
+
+  }
+
+}
+
+
 /* =========================================================
-   RENDER
+   NAVIGATION
+========================================================= */
+
+function switchView(
+  view
+){
+
+  document
+    .querySelectorAll(
+      ".view"
+    )
+    .forEach(
+      el =>
+        el.classList.remove(
+          "active"
+        )
+    );
+
+
+  document
+    .querySelectorAll(
+      ".nav-btn"
+    )
+    .forEach(
+      el =>
+        el.classList.remove(
+          "active"
+        )
+    );
+
+
+  $(
+    `view-${view}`
+  )
+    ?.classList.add(
+      "active"
+    );
+
+
+  document
+    .querySelector(
+      `.nav-btn[data-view="${view}"]`
+    )
+    ?.classList.add(
+      "active"
+    );
+
+
+  if(
+    view ===
+    "chart"
+  ){
+
+    requestAnimationFrame(
+      drawChart
+    );
+
+  }
+
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+
+document
+  .querySelectorAll(
+    ".nav-btn"
+  )
+  .forEach(
+    button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          switchView(
+            button.dataset.view
+          );
+
+        }
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   SOUND
+========================================================= */
+
+function alertSound(
+  type = "signal"
+){
+
+  if(
+    !$("soundEnabled")
+      .checked
+  ){
+    return;
+  }
+
+
+  try{
+
+    const Context =
+      window.AudioContext ||
+      window.webkitAudioContext;
+
+
+    if(
+      !Context
+    ){
+      return;
+    }
+
+
+    const context =
+      new Context();
+
+
+    const oscillator =
+      context.createOscillator();
+
+
+    const gain =
+      context.createGain();
+
+
+    oscillator.connect(
+      gain
+    );
+
+
+    gain.connect(
+      context.destination
+    );
+
+
+    oscillator.frequency.value =
+      type === "win"
+        ? 880
+        : type === "loss"
+          ? 260
+          : 620;
+
+
+    gain.gain.value =
+      .06;
+
+
+    oscillator.start();
+
+
+    oscillator.stop(
+      context.currentTime +
+      .16
+    );
+
+  }
+  catch{
+
+  }
+
+}
+
+
+/* =========================================================
+   FETCH ANALYSIS WITH ROUTE FALLBACK
+========================================================= */
+
+async function requestAnalysis(
+  equity
+){
+
+  let lastError =
+    null;
+
+
+  for(
+    const endpoint of
+    ANALYSIS_ENDPOINTS
+  ){
+
+    try{
+
+      const response =
+        await fetch(
+          endpoint,
+          {
+            method:
+              "POST",
+
+            headers:{
+              "Content-Type":
+                "application/json"
+            },
+
+            cache:
+              "no-store",
+
+            body:
+              JSON.stringify({
+                equity
+              })
+          }
+        );
+
+
+      /*
+         Try second endpoint only when
+         route doesn't exist.
+      */
+
+      if(
+        response.status ===
+        404
+      ){
+        continue;
+      }
+
+
+      const data =
+        await response
+          .json();
+
+
+      if(
+        !response.ok ||
+        data.success ===
+        false
+      ){
+
+        throw new Error(
+          data.error ||
+          "Analysis failed."
+        );
+
+      }
+
+
+      return data;
+
+    }
+    catch(
+      error
+    ){
+
+      lastError =
+        error;
+
+    }
+
+  }
+
+
+  throw (
+    lastError ||
+    new Error(
+      "Analysis API unavailable."
+    )
+  );
+
+}
+
+
+/* =========================================================
+   MAIN ANALYSIS
+========================================================= */
+
+async function createNewSignal(){
+
+  if(
+    analyzing
+  ){
+    return;
+  }
+
+
+  analyzing =
+    true;
+
+
+  stopAllTimers();
+
+
+  hideError();
+
+
+  setStatus(
+    "ANALYZING",
+    "analyzing"
+  );
+
+
+  setText(
+    "signal",
+    "..."
+  );
+
+
+  $("signal")
+    .className =
+      "signal WAIT";
+
+
+  setText(
+    "candidate",
+    ""
+  );
+
+
+  setText(
+    "lock",
+    "ANALYZING GOLD"
+  );
+
+
+  $("lock")
+    .className =
+      "lock waiting";
+
+
+  setText(
+    "state",
+    "Building M1 / M5 / M15 / H1 market state, regime, liquidity and historical edge..."
+  );
+
+
+  try{
+
+    const equity =
+      Math.max(
+        1,
+        Number(
+          $("equity")
+            .value ||
+          200
+        )
+      );
+
+
+    const data =
+      await requestAnalysis(
+        equity
+      );
+
+
+    saveAnalysis(
+      data
+    );
+
+
+    renderAnalysis(
+      data
+    );
+
+
+    /*
+       QUALIFIED TRADE
+    */
+
+    if(
+      data.tradeQualified ===
+        true &&
+      [
+        "BUY",
+        "SELL"
+      ].includes(
+        data.signal
+      )
+    ){
+
+      const trade = {
+
+        ...data,
+
+        currentPrice:
+          data.entry,
+
+        status:
+          "ACTIVE"
+      };
+
+
+      saveActive(
+        trade
+      );
+
+
+      renderTrade();
+
+
+      setStatus(
+        "TRADE ACTIVE",
+        "active"
+      );
+
+
+      alertSound(
+        "signal"
+      );
+
+
+      startTradeMonitor();
+
+
+      await checkPrice();
+
+
+      return;
+
+    }
+
+
+    /*
+       WAIT / NO EDGE
+    */
+
+    saveActive(
+      null
+    );
+
+
+    renderWaiting(
+      data
+    );
+
+
+    setStatus(
+      "WAITING",
+      "wait"
+    );
+
+
+    if(
+      $("autoScan")
+        .checked
+    ){
+
+      startScanMonitor();
+
+    }
+
+  }
+  catch(
+    error
+  ){
+
+    console.error(
+      error
+    );
+
+
+    showError(
+      error.message
+    );
+
+
+    setStatus(
+      "ERROR",
+      "error"
+    );
+
+
+    setText(
+      "state",
+      "Market analysis failed."
+    );
+
+  }
+  finally{
+
+    analyzing =
+      false;
+
+  }
+
+}
+
+
+/* =========================================================
+   WAIT RENDER
+========================================================= */
+
+function renderWaiting(
+  data
+){
+
+  const candidate =
+    data.candidateDirection ||
+    data.edgeDecision
+      ?.candidateDirection ||
+    "—";
+
+
+  setText(
+    "signal",
+    "WAIT"
+  );
+
+
+  $("signal")
+    .className =
+      "signal WAIT";
+
+
+  setText(
+    "candidate",
+    candidate !== "—"
+      ? `Directional lean: ${candidate}`
+      : ""
+  );
+
+
+  setText(
+    "lock",
+    "NO TRADE LOCKED"
+  );
+
+
+  $("lock")
+    .className =
+      "lock waiting";
+
+
+  setText(
+    "price",
+    fmt(
+      data.entry
+    )
+  );
+
+
+  setText(
+    "entry",
+    "WAIT"
+  );
+
+
+  setText(
+    "sl",
+    "—"
+  );
+
+
+  setText(
+    "tp",
+    "—"
+  );
+
+
+  setText(
+    "tp2",
+    "—"
+  );
+
+
+  setText(
+    "rr",
+    "—"
+  );
+
+
+  setText(
+    "progressLabel",
+    "NO ACTIVE TRADE"
+  );
+
+
+  $("progressBar")
+    .style.width =
+      "50%";
+
+
+  const failed =
+    data.edgeDecision
+      ?.failedGates ||
+    [];
+
+
+  setText(
+    "state",
+
+    failed.length
+      ? `Directional setup detected, but the trade failed ${failed.length} edge gate${failed.length === 1 ? "" : "s"}.`
+      : "No qualified trading edge detected."
+  );
+
+}
+
+
+/* =========================================================
+   FULL ANALYSIS RENDER
+========================================================= */
+
+function renderAnalysis(
+  data
+){
+
+  if(
+    !data
+  ){
+    return;
+  }
+
+
+  const edge =
+    data.edgeDecision ||
+    {};
+
+
+  const regime =
+    data.marketRegime ||
+    {};
+
+
+  const historical =
+    data.historicalEdge ||
+    {};
+
+
+  const technical =
+    data.technical ||
+    {};
+
+
+  /*
+     GENERAL
+  */
+
+  const edgeScore =
+    finite(
+      data.edgeScore ??
+      edge.edgeScore
+    ) ??
+    0;
+
+
+  $("edgeRing")
+    .style.setProperty(
+      "--score",
+      clampNumber(
+        edgeScore,
+        0,
+        100
+      )
+    );
+
+
+  setText(
+    "edgeNumber",
+    fmt(
+      edgeScore,
+      0
+    )
+  );
+
+
+  setText(
+    "edgeScoreDetail",
+    `${fmt(
+      edgeScore,
+      1
+    )}/100`
+  );
+
+
+  setText(
+    "session",
+    data.session ||
+    "—"
+  );
+
+
+  setText(
+    "signalId",
+    data.signalId
+      ?.slice(-15) ||
+    "—"
+  );
+
+
+  setText(
+    "created",
+    data.createdAt
+      ? new Date(
+          data.createdAt
+        )
+        .toLocaleTimeString(
+          [],
+          {
+            hour:"2-digit",
+            minute:"2-digit",
+            second:"2-digit"
+          }
+        )
+      : "—"
+  );
+
+
+  /*
+     OVERVIEW
+  */
+
+  setText(
+    "overviewRegime",
+    regime.type ||
+    "—"
+  );
+
+
+  setText(
+    "overviewRegimeConfidence",
+    pct(
+      regime.confidence
+    )
+  );
+
+
+  setText(
+    "overviewAgreement",
+    finite(
+      edge.modelAgreement
+    ) !== null
+      ? pct(
+          edge.modelAgreement *
+          100
+        )
+      : "—"
+  );
+
+
+  setText(
+    "overviewExpectancy",
+    finite(
+      historical.expectancyR
+    ) !== null
+      ? `${historical.expectancyR >= 0 ? "+" : ""}${fmt(
+          historical.expectancyR,
+          3
+        )}R`
+      : "—"
+  );
+
+
+  setText(
+    "overviewMatches",
+    historical.matches ??
+    "—"
+  );
+
+
+  /*
+     EDGE
+  */
+
+  setText(
+    "edgeDecisionLabel",
+    data.tradeQualified
+      ? "QUALIFIED"
+      : "NO TRADE"
+  );
+
+
+  setText(
+    "technicalStrength",
+    finite(
+      edge.technicalStrength
+    ) !== null
+      ? `${fmt(
+          edge.technicalStrength,
+          1
+        )}/100`
+      : "—"
+  );
+
+
+  setText(
+    "modelAgreement",
+    finite(
+      edge.modelAgreement
+    ) !== null
+      ? pct(
+          edge.modelAgreement *
+          100
+        )
+      : "—"
+  );
+
+
+  setText(
+    "historicalScore",
+    finite(
+      edge.historicalScore
+    ) !== null
+      ? `${fmt(
+          edge.historicalScore,
+          1
+        )}/100`
+      : "—"
+  );
+
+
+  renderModels(
+    technical
+      .componentScores ||
+    {}
+  );
+
+
+  renderGates(
+    edge
+  );
+
+
+  /*
+     REGIME
+  */
+
+  setText(
+    "regimeType",
+    regime.type ||
+    "—"
+  );
+
+
+  setText(
+    "regimeConfidence",
+    pct(
+      regime.confidence
+    )
+  );
+
+
+  setText(
+    "atrPercentile",
+    pct(
+      regime.atrPercentile
+    )
+  );
+
+
+  setText(
+    "efficiencyRatio",
+    fmt(
+      regime.efficiencyRatio,
+      3
+    )
+  );
+
+
+  setText(
+    "emaSpread",
+    fmt(
+      regime.emaSpreadAtr,
+      3
+    )
+  );
+
+
+  setText(
+    "recentReturn",
+    finite(
+      regime.recentReturnAtr
+    ) !== null
+      ? `${fmt(
+          regime.recentReturnAtr,
+          3
+        )} ATR`
+      : "—"
+  );
+
+
+  /*
+     HISTORICAL
+  */
+
+  setText(
+    "histMatches",
+    historical.matches ??
+    "—"
+  );
+
+
+  setText(
+    "histWinRate",
+    pct(
+      historical.targetHitRate
+    )
+  );
+
+
+  setText(
+    "histExpectancy",
+    finite(
+      historical.expectancyR
+    ) !== null
+      ? `${historical.expectancyR >= 0 ? "+" : ""}${fmt(
+          historical.expectancyR,
+          3
+        )}R`
+      : "—"
+  );
+
+
+  setText(
+    "histSimilarity",
+    pct(
+      historical.averageSimilarity
+    )
+  );
+
+
+  setText(
+    "histMFE",
+    finite(
+      historical.medianMfeR
+    ) !== null
+      ? `${fmt(
+          historical.medianMfeR,
+          2
+        )}R`
+      : "—"
+  );
+
+
+  setText(
+    "histMAE",
+    finite(
+      historical.medianMaeR
+    ) !== null
+      ? `${fmt(
+          historical.medianMaeR,
+          2
+        )}R`
+      : "—"
+  );
+
+
+  setText(
+    "historicalNote",
+    historical.note ||
+    historical.reason ||
+    "Historical similarity compares the current state against previous M5 market states."
+  );
+
+
+  /*
+     TIMEFRAMES
+  */
+
+  renderTimeframes(
+    data.timeframeBias
+  );
+
+
+  /*
+     ACCOUNT
+  */
+
+  renderAccount(
+    data
+  );
+
+
+  /*
+     REASONS
+  */
+
+  renderReasons(
+    technical.reasons ||
+    []
+  );
+
+
+  /*
+     INTELLIGENCE
+  */
+
+  renderIntelligence(
+    data
+  );
+
+
+  /*
+     STRUCTURE
+  */
+
+  const structure =
+    data.structure ||
+    {};
+
+
+  setText(
+    "structM1",
+    structure.M1 ||
+    "—"
+  );
+
+
+  setText(
+    "structM1Bos",
+    structure.M1_BOS ||
+    "—"
+  );
+
+
+  setText(
+    "structM1Choch",
+    structure.M1_CHOCH ||
+    "—"
+  );
+
+
+  setText(
+    "structM5",
+    structure.M5 ||
+    "—"
+  );
+
+
+  setText(
+    "structM5Bos",
+    structure.M5_BOS ||
+    "—"
+  );
+
+
+  /*
+     LIQUIDITY
+  */
+
+  const gold =
+    data.goldContext ||
+    {};
+
+
+  setText(
+    "asiaHigh",
+    fmt(
+      gold.asianRange
+        ?.high
+    )
+  );
+
+
+  setText(
+    "asiaLow",
+    fmt(
+      gold.asianRange
+        ?.low
+    )
+  );
+
+
+  setText(
+    "pdh",
+    fmt(
+      gold.previousDay
+        ?.high
+    )
+  );
+
+
+  setText(
+    "pdl",
+    fmt(
+      gold.previousDay
+        ?.low
+    )
+  );
+
+
+  setText(
+    "bullLiquidity",
+    gold.bullishLiquidityScore ??
+    "—"
+  );
+
+
+  setText(
+    "bearLiquidity",
+    gold.bearishLiquidityScore ??
+    "—"
+  );
+
+
+  /*
+     ENGINE QUALITY
+  */
+
+  setText(
+    "engineModel",
+    data.model ||
+    "—"
+  );
+
+
+  const quality =
+    data.dataQuality ||
+    {};
+
+
+  setText(
+    "qualityM1",
+    quality.completedM1 ??
+    "—"
+  );
+
+
+  setText(
+    "qualityM5",
+    quality.completedM5 ??
+    "—"
+  );
+
+
+  setText(
+    "qualityM15",
+    quality.completedM15 ??
+    "—"
+  );
+
+
+  setText(
+    "qualityH1",
+    quality.completedH1 ??
+    "—"
+  );
+
+
+  setText(
+    "dataAge",
+    finite(
+      quality.staleMilliseconds
+    ) !== null
+      ? `${Math.round(
+          quality.staleMilliseconds /
+          1000
+        )} sec`
+      : "—"
+  );
+
+
+  /*
+     CHART
+  */
+
+  setText(
+    "chartCandleCount",
+    `${data.chart?.length || 0} CANDLES`
+  );
+
+
+  requestAnimationFrame(
+    drawChart
+  );
+
+}
+
+
+/* =========================================================
+   ACTIVE TRADE RENDER
 ========================================================= */
 
 function renderTrade(){
@@ -1418,24 +4892,7 @@ function renderTrade(){
   if(
     !activeTrade
   ){
-
-    $("signal")
-      .textContent =
-        "...";
-
-
-    $("signal")
-      .className =
-        "signal WAIT";
-
-
-    $("lock")
-      .textContent =
-        "NO ACTIVE SIGNAL";
-
-
     return;
-
   }
 
 
@@ -1443,9 +4900,15 @@ function renderTrade(){
     activeTrade;
 
 
-  $("signal")
-    .textContent =
-      trade.signal;
+  renderAnalysis(
+    trade
+  );
+
+
+  setText(
+    "signal",
+    trade.signal
+  );
 
 
   $("signal")
@@ -1453,87 +4916,108 @@ function renderTrade(){
       `signal ${trade.signal}`;
 
 
+  setText(
+    "candidate",
+    "EDGE QUALIFIED"
+  );
+
+
+  setText(
+    "lock",
+    "🔒 SIGNAL LOCKED"
+  );
+
+
   $("lock")
-    .textContent =
-      "🔒 SIGNAL LOCKED";
+    .className =
+      "lock";
 
 
-  $("entry")
-    .textContent =
+  setText(
+    "entry",
+    fmt(
+      trade.entry
+    )
+  );
+
+
+  setText(
+    "sl",
+    fmt(
+      trade.stopLoss
+    )
+  );
+
+
+  setText(
+    "tp",
+    fmt(
+      trade.takeProfit
+    )
+  );
+
+
+  setText(
+    "tp2",
+    fmt(
+      trade.takeProfit2
+    )
+  );
+
+
+  setText(
+    "rr",
+    trade.riskReward ||
+    "—"
+  );
+
+
+  if(
+    finite(
+      trade.currentPrice
+    ) !== null
+  ){
+
+    setText(
+      "price",
+      fmt(
+        trade.currentPrice
+      )
+    );
+
+
+    updateProgress(
+      trade.currentPrice
+    );
+
+  }
+  else{
+
+    setText(
+      "price",
       fmt(
         trade.entry
-      );
-
-
-  $("sl")
-    .textContent =
-      fmt(
-        trade.stopLoss
-      );
-
-
-  $("tp")
-    .textContent =
-      fmt(
-        trade.takeProfit
-      );
-
-
-  $("tp2")
-    .textContent =
-      fmt(
-        trade.takeProfit2
-      );
-
-
-  $("rr")
-    .textContent =
-      trade.riskReward ||
-      "—";
-
-
-  $("strength")
-    .textContent =
-      `${trade.setupStrength}/100`;
-
-
-  $("session")
-    .textContent =
-      trade.session ||
-      "—";
-
-
-  $("signalId")
-    .textContent =
-      trade.signalId
-        ?.slice(-12) ||
-      "—";
-
-
-  $("created")
-    .textContent =
-      new Date(
-        trade.createdAt
       )
-      .toLocaleTimeString(
-        [],
-        {
-          hour:
-            "2-digit",
+    );
 
-          minute:
-            "2-digit",
-
-          second:
-            "2-digit"
-        }
-      );
+  }
 
 
-  const biases =
-    trade.timeframeBias ||
-    {};
+  setText(
+    "state",
+    "Qualified edge locked. Strategy analysis is paused until TP1 or SL is reached."
+  );
 
+}
+
+
+/* =========================================================
+   TIMEFRAMES
+========================================================= */
+
+function renderTimeframes(
+  biases = {}
+){
 
   for(
     const [
@@ -1552,9 +5036,10 @@ function renderTrade(){
       "NEUTRAL";
 
 
-    $(id)
-      .textContent =
-        value;
+    setText(
+      id,
+      value
+    );
 
 
     $(id)
@@ -1563,119 +5048,572 @@ function renderTrade(){
 
   }
 
-
-  const account =
-    trade.account ||
-    {};
+}
 
 
-  $("equityDisplay")
-    .textContent =
-      account.equityZAR != null
-        ? `R${Number(
-            account.equityZAR
-          ).toFixed(2)}`
-        : "—";
+/* =========================================================
+   ACCOUNT
+========================================================= */
+
+function parseRR(
+  value
+){
+
+  if(
+    typeof value !==
+    "string"
+  ){
+    return null;
+  }
 
 
-  $("riskPercent")
-    .textContent =
-      account.riskPercent != null
-        ? `${account.riskPercent}%`
-        : "—";
-
-
-  $("maxRisk")
-    .textContent =
-      account.maxRiskZAR != null
-        ? `R${Number(
-            account.maxRiskZAR
-          ).toFixed(2)}`
-        : "—";
-
-
-  const reasons =
-    trade.technical
-      ?.reasons ||
-    [];
-
-
-  $("reasons")
-    .innerHTML =
-      reasons
-        .slice(
-          0,
-          8
-        )
-        .map(
-          reason => `
-            <div class="reason">
-              ${escapeHTML(reason)}
-            </div>
-          `
-        )
-        .join("");
+  const parts =
+    value.split(
+      ":"
+    );
 
 
   if(
-    activeTrade.currentPrice != null
+    parts.length !==
+    2
   ){
-
-    $("price")
-      .textContent =
-        fmt(
-          activeTrade.currentPrice
-        );
-
-
-    updateProgress(
-      activeTrade.currentPrice
-    );
-
-  }
-  else{
-
-    $("price")
-      .textContent =
-        fmt(
-          trade.entry
-        );
-
+    return null;
   }
 
 
-  $("state")
-    .textContent =
-      "Trade is active. Strategy analysis is locked until TP or SL.";
+  return finite(
+    parts[1]
+  );
 
 }
 
 
-function escapeHTML(
-  value
+function renderAccount(
+  data
 ){
 
-  return String(
-    value ??
-    ""
-  )
-  .replace(
-    /[&<>'"]/g,
-    char =>
-      ({
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        "'":"&#39;",
-        '"':"&quot;"
-      })[char]
+  const account =
+    data.account ||
+    {};
+
+
+  setText(
+    "equityDisplay",
+    finite(
+      account.equityZAR
+    ) !== null
+      ? `R${fmt(
+          account.equityZAR
+        )}`
+      : "—"
+  );
+
+
+  setText(
+    "riskPercent",
+    finite(
+      account.riskPercent
+    ) !== null
+      ? `${account.riskPercent}%`
+      : "—"
+  );
+
+
+  setText(
+    "maxRisk",
+    finite(
+      account.maxRiskZAR
+    ) !== null
+      ? `R${fmt(
+          account.maxRiskZAR
+        )}`
+      : "—"
+  );
+
+
+  const rr =
+    parseRR(
+      data.riskReward
+    );
+
+
+  const risk =
+    finite(
+      account.maxRiskZAR
+    );
+
+
+  setText(
+    "projectedGain",
+    rr !== null &&
+    risk !== null
+      ? `R${fmt(
+          risk *
+          rr
+        )}`
+      : "—"
   );
 
 }
 
 
 /* =========================================================
-   PROGRESS
+   MODELS
+========================================================= */
+
+function renderModels(
+  scores
+){
+
+  const models = [
+    [
+      "Trend",
+      scores.trend
+    ],
+    [
+      "Structure",
+      scores.structure
+    ],
+    [
+      "Liquidity",
+      scores.liquidity
+    ],
+    [
+      "Momentum",
+      scores.momentum
+    ],
+    [
+      "Displacement",
+      scores.displacement
+    ]
+  ];
+
+
+  $("models")
+    .innerHTML =
+      models
+        .map(
+          (
+            [
+              name,
+              raw
+            ]
+          ) => {
+
+            const value =
+              finite(
+                raw
+              ) ??
+              0;
+
+
+            const width =
+              Math.min(
+                50,
+                Math.abs(
+                  value
+                ) /
+                  2
+              );
+
+
+            const bullish =
+              value >= 0;
+
+
+            return `
+              <div class="model-row">
+
+                <div class="model-top">
+
+                  <span>
+                    ${name}
+                  </span>
+
+                  <strong class="${
+                    bullish
+                      ? "BUY"
+                      : "SELL"
+                  }">
+
+                    ${
+                      value > 0
+                        ? "+"
+                        : ""
+                    }${fmt(
+                      value,
+                      1
+                    )}
+
+                  </strong>
+
+                </div>
+
+                <div class="model-track">
+
+                  <div class="model-center">
+                  </div>
+
+                  <div
+                    class="model-fill ${
+                      bullish
+                        ? "bull"
+                        : "bear"
+                    }"
+                    style="width:${width}%"
+                  >
+                  </div>
+
+                </div>
+
+              </div>
+            `;
+
+          }
+        )
+        .join("");
+
+}
+
+
+/* =========================================================
+   GATES
+========================================================= */
+
+function prettyGate(
+  key
+){
+
+  const map = {
+
+    technicalStrength:
+      "Technical strength",
+
+    modelAgreement:
+      "Model agreement",
+
+    historicalSample:
+      "Historical sample",
+
+    historicalExpectancy:
+      "Positive expectancy",
+
+    regimeNotQuietChop:
+      "Market regime",
+
+    edgeScore:
+      "Overall edge score"
+
+  };
+
+
+  return map[key] ||
+    key;
+
+}
+
+
+function gateThreshold(
+  key,
+  edge
+){
+
+  const t =
+    edge.thresholds ||
+    {};
+
+
+  if(
+    key ===
+    "technicalStrength"
+  ){
+    return `≥ ${t.minTechnicalScore ?? "—"}`;
+  }
+
+
+  if(
+    key ===
+    "modelAgreement"
+  ){
+
+    return t.minModelAgreement != null
+      ? `≥ ${Math.round(
+          t.minModelAgreement *
+          100
+        )}%`
+      : "";
+
+  }
+
+
+  if(
+    key ===
+    "historicalSample"
+  ){
+    return `≥ ${t.minHistoricalMatches ?? "—"}`;
+  }
+
+
+  if(
+    key ===
+    "historicalExpectancy"
+  ){
+    return `≥ ${t.minExpectancyR ?? "—"}R`;
+  }
+
+
+  if(
+    key ===
+    "regimeNotQuietChop"
+  ){
+    return "Not quiet chop";
+  }
+
+
+  if(
+    key ===
+    "edgeScore"
+  ){
+    return `≥ ${t.minEdgeScore ?? "—"}`;
+  }
+
+
+  return "";
+
+}
+
+
+function renderGates(
+  edge
+){
+
+  const gates =
+    edge.gates ||
+    {};
+
+
+  const html =
+    Object.entries(
+      gates
+    )
+    .map(
+      (
+        [
+          key,
+          pass
+        ]
+      ) => `
+        <div class="gate ${
+          pass
+            ? "pass"
+            : "fail"
+        }">
+
+          <div class="gate-icon">
+            ${
+              pass
+                ? "✓"
+                : "×"
+            }
+          </div>
+
+          <div>
+            ${prettyGate(
+              key
+            )}
+          </div>
+
+          <div class="threshold">
+            ${gateThreshold(
+              key,
+              edge
+            )}
+          </div>
+
+        </div>
+      `
+    )
+    .join("");
+
+
+  $("gates")
+    .innerHTML =
+      html ||
+      `
+        <div class="reason">
+          Gate information unavailable.
+        </div>
+      `;
+
+}
+
+
+/* =========================================================
+   REASONS
+========================================================= */
+
+function renderReasons(
+  reasons
+){
+
+  $("reasons")
+    .innerHTML =
+      reasons.length
+        ? reasons
+            .slice(
+              0,
+              12
+            )
+            .map(
+              reason => `
+                <div class="reason">
+
+                  <span class="reason-icon">
+                    ◆
+                  </span>
+
+                  <span>
+                    ${escapeHTML(
+                      reason
+                    )}
+                  </span>
+
+                </div>
+              `
+            )
+            .join("")
+        : `
+            <div class="reason">
+              No explanation returned.
+            </div>
+          `;
+
+}
+
+
+/* =========================================================
+   INTELLIGENCE CHIPS
+========================================================= */
+
+function renderIntelligence(
+  data
+){
+
+  const regime =
+    data.marketRegime ||
+    {};
+
+
+  const historical =
+    data.historicalEdge ||
+    {};
+
+
+  const edge =
+    data.edgeDecision ||
+    {};
+
+
+  const chips = [];
+
+
+  if(
+    regime.type
+  ){
+
+    chips.push(
+      `REGIME · ${regime.type}`
+    );
+
+  }
+
+
+  if(
+    data.session
+  ){
+
+    chips.push(
+      `SESSION · ${data.session}`
+    );
+
+  }
+
+
+  if(
+    historical.matches != null
+  ){
+
+    chips.push(
+      `MATCHES · ${historical.matches}`
+    );
+
+  }
+
+
+  if(
+    historical.expectancyR != null
+  ){
+
+    chips.push(
+      `EXP · ${
+        historical.expectancyR >= 0
+          ? "+"
+          : ""
+      }${fmt(
+        historical.expectancyR,
+        2
+      )}R`
+    );
+
+  }
+
+
+  if(
+    edge.modelAgreement != null
+  ){
+
+    chips.push(
+      `AGREE · ${Math.round(
+        edge.modelAgreement *
+        100
+      )}%`
+    );
+
+  }
+
+
+  if(
+    regime.atrPercentile != null
+  ){
+
+    chips.push(
+      `VOL · ${Math.round(
+        regime.atrPercentile
+      )}P`
+    );
+
+  }
+
+
+  $("intelligenceChips")
+    .innerHTML =
+      chips
+        .map(
+          value => `
+            <span class="chip">
+              ${escapeHTML(
+                value
+              )}
+            </span>
+          `
+        )
+        .join("");
+
+}
+
+
+/* =========================================================
+   PRICE PROGRESS
 ========================================================= */
 
 function updateProgress(
@@ -1690,15 +5628,30 @@ function updateProgress(
 
 
   const entry =
-    activeTrade.entry;
+    finite(
+      activeTrade.entry
+    );
 
 
   const sl =
-    activeTrade.stopLoss;
+    finite(
+      activeTrade.stopLoss
+    );
 
 
   const tp =
-    activeTrade.takeProfit;
+    finite(
+      activeTrade.takeProfit
+    );
+
+
+  if(
+    entry === null ||
+    sl === null ||
+    tp === null
+  ){
+    return;
+  }
 
 
   const range =
@@ -1746,12 +5699,10 @@ function updateProgress(
 
 
   percentage =
-    Math.max(
+    clampNumber(
+      percentage,
       0,
-      Math.min(
-        100,
-        percentage
-      )
+      100
     );
 
 
@@ -1767,7 +5718,14 @@ function updateProgress(
     );
 
 
-  let currentR =
+  if(
+    risk <= 0
+  ){
+    return;
+  }
+
+
+  const currentR =
     activeTrade.signal ===
       "BUY"
       ? (
@@ -1782,228 +5740,25 @@ function updateProgress(
         risk;
 
 
-  $("progressLabel")
-    .textContent =
-      `${currentR >= 0 ? "+" : ""}${currentR.toFixed(2)}R`;
-
-}
-
-
-/* =========================================================
-   ANALYZE NEW SIGNAL
-========================================================= */
-
-async function createNewSignal(){
-
-  if(
-    analyzing
-  ){
-    return;
-  }
-
-
-  analyzing =
-    true;
-
-
-  stopMonitor();
-
-
-  hideError();
-
-
-  setStatus(
-    "ANALYZING",
-    "analyzing"
+  setText(
+    "progressLabel",
+    `${
+      currentR >= 0
+        ? "+"
+        : ""
+    }${currentR.toFixed(
+      2
+    )}R`
   );
 
 
-  $("signal")
-    .textContent =
-      "...";
-
-
-  $("signal")
-    .className =
-      "signal WAIT";
-
-
-  $("lock")
-    .textContent =
-      "ANALYZING GOLD";
-
-
-  $("state")
-    .textContent =
-      "Reading M1, M5, M15, H1, liquidity, structure and momentum...";
-
-
-  try{
-
-    const equity =
-      Number(
-        $("equity")
-          .value ||
-        200
-      );
-
-
-    const response =
-      await fetch(
-        "/api/analyze",
-        {
-          method:
-            "POST",
-
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
-
-          cache:
-            "no-store",
-
-          body:
-            JSON.stringify({
-              equity
-            })
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if(
-      !response.ok ||
-      data.success ===
-      false
-    ){
-
-      throw new Error(
-        data.error ||
-        "Could not create signal."
-      );
-
-    }
-
-
-    const trade = {
-
-      signalId:
-        data.signalId,
-
-      signal:
-        data.signal,
-
-      setupStrength:
-        data.setupStrength,
-
-      session:
-        data.session,
-
-      entry:
-        data.entry,
-
-      stopLoss:
-        data.stopLoss,
-
-      takeProfit:
-        data.takeProfit,
-
-      takeProfit2:
-        data.takeProfit2,
-
-      riskReward:
-        data.riskReward,
-
-      riskReward2:
-        data.riskReward2,
-
-      createdAt:
-        data.createdAt,
-
-      timeframeBias:
-        data.timeframeBias,
-
-      technical:
-        data.technical,
-
-      goldContext:
-        data.goldContext,
-
-      account:
-        data.account,
-
-      currentPrice:
-        data.entry,
-
-      status:
-        "ACTIVE"
-
-    };
-
-
-    saveActive(
-      trade
-    );
-
-
-    renderTrade();
-
-
-    setStatus(
-      "TRADE ACTIVE",
-      "active"
-    );
-
-
-    /*
-       Immediately begin price monitoring.
-
-       No more strategy analysis happens until
-       TP or SL closes this signal.
-    */
-
-    startMonitor();
-
-
-    await checkPrice();
-
-  }
-  catch(
-    error
-  ){
-
-    showError(
-      error.message
-    );
-
-
-    setStatus(
-      "ERROR",
-      "error"
-    );
-
-
-    $("state")
-      .textContent =
-        "Signal creation failed.";
-
-  }
-  finally{
-
-    analyzing =
-      false;
-
-  }
+  drawChart();
 
 }
 
 
 /* =========================================================
-   PRICE CHECK
+   LIVE PRICE
 ========================================================= */
 
 async function checkPrice(){
@@ -2025,10 +5780,13 @@ async function checkPrice(){
 
     const response =
       await fetch(
-        "/api/price",
+        PRICE_ENDPOINT,
         {
-          method:"GET",
-          cache:"no-store"
+          method:
+            "GET",
+
+          cache:
+            "no-store"
         }
       );
 
@@ -2069,7 +5827,9 @@ async function checkPrice(){
 
 
     activeTrade.lastPriceCheck =
-      data.timestamp;
+      data.timestamp ||
+      new Date()
+        .toISOString();
 
 
     saveActive(
@@ -2077,19 +5837,19 @@ async function checkPrice(){
     );
 
 
-    $("price")
-      .textContent =
-        fmt(
-          price
-        );
+    setText(
+      "price",
+      fmt(
+        price
+      )
+    );
 
 
-    $("lastCheck")
-      .textContent =
-        `Price checked ${
-          new Date()
-            .toLocaleTimeString()
-        }`;
+    setText(
+      "lastCheck",
+      `Price ${new Date()
+        .toLocaleTimeString()}`
+    );
 
 
     updateProgress(
@@ -2098,15 +5858,8 @@ async function checkPrice(){
 
 
     /*
-       BUY:
-       TP if price >= take profit
-       SL if price <= stop
-
-       SELL:
-       TP if price <= take profit
-       SL if price >= stop
+       BUY TRADE
     */
-
 
     if(
       activeTrade.signal ===
@@ -2144,6 +5897,10 @@ async function checkPrice(){
 
     }
 
+
+    /*
+       SELL TRADE
+    */
 
     if(
       activeTrade.signal ===
@@ -2187,6 +5944,7 @@ async function checkPrice(){
   ){
 
     console.error(
+      "Price:",
       error
     );
 
@@ -2202,7 +5960,7 @@ async function checkPrice(){
 
 
 /* =========================================================
-   CLOSE + IMMEDIATELY REANALYZE
+   CLOSE TRADE
 ========================================================= */
 
 async function closeTrade(
@@ -2217,18 +5975,31 @@ async function closeTrade(
   }
 
 
-  const closed =
-    {
-      ...activeTrade,
+  const rr =
+    parseRR(
+      activeTrade.riskReward
+    ) ??
+    1.2;
 
-      result,
 
-      hitPrice,
+  const closed = {
 
-      closedAt:
-        new Date()
-          .toISOString()
-    };
+    ...activeTrade,
+
+    result,
+
+    resultR:
+      result ===
+      "TP"
+        ? rr
+        : -1,
+
+    hitPrice,
+
+    closedAt:
+      new Date()
+        .toISOString()
+  };
 
 
   saveHistory(
@@ -2236,7 +6007,7 @@ async function closeTrade(
   );
 
 
-  stopMonitor();
+  stopAllTimers();
 
 
   saveActive(
@@ -2244,22 +6015,33 @@ async function closeTrade(
   );
 
 
-  $("lock")
-    .textContent =
+  alertSound(
+    result === "TP"
+      ? "win"
+      : "loss"
+  );
+
+
+  setText(
+    "lock",
+    result ===
+      "TP"
+      ? "✅ TAKE PROFIT HIT"
+      : "❌ STOP LOSS HIT"
+  );
+
+
+  setText(
+    "state",
+    `${
       result ===
-        "TP"
-        ? "✅ TAKE PROFIT HIT"
-        : "❌ STOP LOSS HIT";
-
-
-  $("state")
-    .textContent =
-      `${
-        result ===
-        "TP"
-          ? "Take profit"
-          : "Stop loss"
-      } hit at ${fmt(hitPrice)}. Analysing next signal immediately...`;
+      "TP"
+        ? "Take profit"
+        : "Stop loss"
+    } hit at ${fmt(
+      hitPrice
+    )}. Running fresh edge analysis...`
+  );
 
 
   setStatus(
@@ -2275,35 +6057,44 @@ async function closeTrade(
   );
 
 
-  /*
-     THIS IS THE IMPORTANT PART.
-
-     The previous trade is now finished.
-
-     Full analysis starts IMMEDIATELY.
-  */
-
   await createNewSignal();
 
 }
 
 
 /* =========================================================
-   MONITOR
+   TIMERS
 ========================================================= */
 
-function monitorSeconds(){
+function priceInterval(){
 
-  return Number(
-    $("interval")
-      .value ||
-    15
+  return Math.max(
+    15,
+    Number(
+      $("interval")
+        .value ||
+      15
+    )
   );
 
 }
 
 
-function stopMonitor(){
+function scanInterval(){
+
+  return Math.max(
+    60,
+    Number(
+      $("scanInterval")
+        .value ||
+      300
+    )
+  );
+
+}
+
+
+function stopAllTimers(){
 
   if(
     monitorTimer
@@ -2312,7 +6103,6 @@ function stopMonitor(){
     clearInterval(
       monitorTimer
     );
-
 
     monitorTimer =
       null;
@@ -2328,30 +6118,46 @@ function stopMonitor(){
       countdownTimer
     );
 
-
     countdownTimer =
       null;
 
   }
 
+
+  if(
+    scanTimer
+  ){
+
+    clearInterval(
+      scanTimer
+    );
+
+    scanTimer =
+      null;
+
+  }
+
+
+  currentTimerType =
+    null;
+
 }
 
 
-function startMonitor(){
-
-  stopMonitor();
-
+function startCountdown(
+  seconds,
+  type
+){
 
   secondsRemaining =
-    monitorSeconds();
+    seconds;
 
 
-  monitorTimer =
-    setInterval(
-      checkPrice,
-      monitorSeconds() *
-      1000
-    );
+  currentTimerType =
+    type;
+
+
+  updateCountdownText();
 
 
   countdownTimer =
@@ -2362,19 +6168,16 @@ function startMonitor(){
 
 
         if(
-          secondsRemaining <=
-          0
+          secondsRemaining <= 0
         ){
 
           secondsRemaining =
-            monitorSeconds();
+            seconds;
 
         }
 
 
-        $("nextCheck")
-          .textContent =
-            `Next price check ${secondsRemaining}s`;
+        updateCountdownText();
 
       },
       1000
@@ -2383,14 +6186,775 @@ function startMonitor(){
 }
 
 
+function updateCountdownText(){
+
+  if(
+    currentTimerType ===
+    "price"
+  ){
+
+    setText(
+      "nextCheck",
+      `Next price ${secondsRemaining}s`
+    );
+
+  }
+
+
+  if(
+    currentTimerType ===
+    "scan"
+  ){
+
+    const mins =
+      Math.floor(
+        secondsRemaining /
+        60
+      );
+
+
+    const secs =
+      secondsRemaining %
+      60;
+
+
+    setText(
+      "nextCheck",
+      `Next scan ${mins}:${String(
+        secs
+      ).padStart(
+        2,
+        "0"
+      )}`
+    );
+
+  }
+
+}
+
+
+function startTradeMonitor(){
+
+  stopAllTimers();
+
+
+  const seconds =
+    priceInterval();
+
+
+  monitorTimer =
+    setInterval(
+      checkPrice,
+      seconds *
+      1000
+    );
+
+
+  startCountdown(
+    seconds,
+    "price"
+  );
+
+}
+
+
+function startScanMonitor(){
+
+  stopAllTimers();
+
+
+  if(
+    activeTrade ||
+    !$("autoScan")
+      .checked
+  ){
+    return;
+  }
+
+
+  const seconds =
+    scanInterval();
+
+
+  scanTimer =
+    setInterval(
+      async () => {
+
+        if(
+          !activeTrade &&
+          !analyzing
+        ){
+
+          await createNewSignal();
+
+        }
+
+      },
+      seconds *
+      1000
+    );
+
+
+  startCountdown(
+    seconds,
+    "scan"
+  );
+
+}
+
+
 /* =========================================================
-   HISTORY
+   CHART
+========================================================= */
+
+function clampNumber(
+  value,
+  min,
+  max
+){
+
+  return Math.max(
+    min,
+    Math.min(
+      max,
+      value
+    )
+  );
+
+}
+
+
+function drawChart(){
+
+  const canvas =
+    $("chart");
+
+
+  if(
+    !canvas
+  ){
+    return;
+  }
+
+
+  const data =
+    (
+      activeTrade?.chart ||
+      lastAnalysis?.chart ||
+      []
+    )
+      .slice(
+        -80
+      );
+
+
+  const rect =
+    canvas.getBoundingClientRect();
+
+
+  if(
+    rect.width <= 0
+  ){
+    return;
+  }
+
+
+  const dpr =
+    Math.min(
+      window.devicePixelRatio ||
+      1,
+      2
+    );
+
+
+  const width =
+    rect.width;
+
+
+  const height =
+    360;
+
+
+  canvas.width =
+    Math.floor(
+      width *
+      dpr
+    );
+
+
+  canvas.height =
+    Math.floor(
+      height *
+      dpr
+    );
+
+
+  const ctx =
+    canvas.getContext(
+      "2d"
+    );
+
+
+  ctx.setTransform(
+    dpr,
+    0,
+    0,
+    dpr,
+    0,
+    0
+  );
+
+
+  ctx.clearRect(
+    0,
+    0,
+    width,
+    height
+  );
+
+
+  ctx.fillStyle =
+    "#060a0f";
+
+
+  ctx.fillRect(
+    0,
+    0,
+    width,
+    height
+  );
+
+
+  if(
+    data.length <
+    2
+  ){
+
+    ctx.fillStyle =
+      "#7e8b9d";
+
+
+    ctx.font =
+      "12px -apple-system";
+
+
+    ctx.textAlign =
+      "center";
+
+
+    ctx.fillText(
+      "Chart appears after analysis",
+      width /
+      2,
+      height /
+      2
+    );
+
+
+    return;
+
+  }
+
+
+  const levels = [
+
+    activeTrade?.entry,
+    activeTrade?.stopLoss,
+    activeTrade?.takeProfit,
+    activeTrade?.takeProfit2,
+
+    activeTrade?.currentPrice
+
+  ]
+    .filter(
+      Number.isFinite
+    );
+
+
+  const lows =
+    data.map(
+      c =>
+        c.l
+    );
+
+
+  const highs =
+    data.map(
+      c =>
+        c.h
+    );
+
+
+  let min =
+    Math.min(
+      ...lows,
+      ...levels
+    );
+
+
+  let max =
+    Math.max(
+      ...highs,
+      ...levels
+    );
+
+
+  const range =
+    Math.max(
+      max -
+      min,
+      .01
+    );
+
+
+  min -=
+    range *
+    .08;
+
+
+  max +=
+    range *
+    .08;
+
+
+  const left =
+    8;
+
+
+  const right =
+    54;
+
+
+  const top =
+    12;
+
+
+  const bottom =
+    18;
+
+
+  const chartWidth =
+    width -
+    left -
+    right;
+
+
+  const chartHeight =
+    height -
+    top -
+    bottom;
+
+
+  const y =
+    price =>
+      top +
+      (
+        max -
+        price
+      ) /
+      (
+        max -
+        min
+      ) *
+      chartHeight;
+
+
+  /*
+     GRID
+  */
+
+  ctx.strokeStyle =
+    "rgba(255,255,255,.045)";
+
+
+  ctx.lineWidth =
+    1;
+
+
+  for(
+    let i = 0;
+    i <= 5;
+    i++
+  ){
+
+    const yy =
+      top +
+      chartHeight *
+      i /
+      5;
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      left,
+      yy
+    );
+
+    ctx.lineTo(
+      left +
+      chartWidth,
+      yy
+    );
+
+    ctx.stroke();
+
+
+    const price =
+      max -
+      (
+        max -
+        min
+      ) *
+      i /
+      5;
+
+
+    ctx.fillStyle =
+      "#758193";
+
+
+    ctx.font =
+      "9px -apple-system";
+
+
+    ctx.textAlign =
+      "left";
+
+
+    ctx.fillText(
+      price.toFixed(
+        2
+      ),
+      left +
+      chartWidth +
+      5,
+      yy +
+      3
+    );
+
+  }
+
+
+  /*
+     CANDLES
+  */
+
+  const step =
+    chartWidth /
+    data.length;
+
+
+  const candleWidth =
+    Math.max(
+      2,
+      step *
+      .58
+    );
+
+
+  data.forEach(
+    (
+      candle,
+      index
+    ) => {
+
+      const x =
+        left +
+        index *
+        step +
+        step /
+        2;
+
+
+      const bullish =
+        candle.c >=
+        candle.o;
+
+
+      const color =
+        bullish
+          ? "#35e6a1"
+          : "#ff6077";
+
+
+      ctx.strokeStyle =
+        color;
+
+
+      ctx.fillStyle =
+        color;
+
+
+      ctx.lineWidth =
+        1;
+
+
+      ctx.beginPath();
+
+      ctx.moveTo(
+        x,
+        y(
+          candle.h
+        )
+      );
+
+      ctx.lineTo(
+        x,
+        y(
+          candle.l
+        )
+      );
+
+      ctx.stroke();
+
+
+      const openY =
+        y(
+          candle.o
+        );
+
+
+      const closeY =
+        y(
+          candle.c
+        );
+
+
+      const bodyTop =
+        Math.min(
+          openY,
+          closeY
+        );
+
+
+      const bodyHeight =
+        Math.max(
+          1,
+          Math.abs(
+            closeY -
+            openY
+          )
+        );
+
+
+      ctx.fillRect(
+        x -
+        candleWidth /
+        2,
+        bodyTop,
+        candleWidth,
+        bodyHeight
+      );
+
+    }
+  );
+
+
+  /*
+     TRADE LEVELS
+  */
+
+  if(
+    activeTrade
+  ){
+
+    drawPriceLine(
+      ctx,
+      left,
+      left +
+      chartWidth,
+      y(
+        activeTrade.entry
+      ),
+      "#7891ff",
+      "ENTRY",
+      activeTrade.entry
+    );
+
+
+    drawPriceLine(
+      ctx,
+      left,
+      left +
+      chartWidth,
+      y(
+        activeTrade.stopLoss
+      ),
+      "#ff6077",
+      "SL",
+      activeTrade.stopLoss
+    );
+
+
+    drawPriceLine(
+      ctx,
+      left,
+      left +
+      chartWidth,
+      y(
+        activeTrade.takeProfit
+      ),
+      "#35e6a1",
+      "TP1",
+      activeTrade.takeProfit
+    );
+
+
+    if(
+      Number.isFinite(
+        activeTrade.takeProfit2
+      )
+    ){
+
+      drawPriceLine(
+        ctx,
+        left,
+        left +
+        chartWidth,
+        y(
+          activeTrade.takeProfit2
+        ),
+        "#35e6a1",
+        "TP2",
+        activeTrade.takeProfit2
+      );
+
+    }
+
+
+    if(
+      Number.isFinite(
+        activeTrade.currentPrice
+      )
+    ){
+
+      drawPriceLine(
+        ctx,
+        left,
+        left +
+        chartWidth,
+        y(
+          activeTrade.currentPrice
+        ),
+        "#ffffff",
+        "LIVE",
+        activeTrade.currentPrice
+      );
+
+    }
+
+  }
+
+}
+
+
+function drawPriceLine(
+  ctx,
+  x1,
+  x2,
+  y,
+  color,
+  label,
+  price
+){
+
+  if(
+    !Number.isFinite(
+      y
+    )
+  ){
+    return;
+  }
+
+
+  ctx.save();
+
+
+  ctx.strokeStyle =
+    color;
+
+
+  ctx.globalAlpha =
+    .65;
+
+
+  ctx.setLineDash(
+    [
+      5,
+      5
+    ]
+  );
+
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    x1,
+    y
+  );
+
+  ctx.lineTo(
+    x2,
+    y
+  );
+
+  ctx.stroke();
+
+
+  ctx.setLineDash(
+    []
+  );
+
+
+  ctx.globalAlpha =
+    1;
+
+
+  ctx.fillStyle =
+    color;
+
+
+  ctx.font =
+    "8px -apple-system";
+
+
+  ctx.textAlign =
+    "right";
+
+
+  ctx.fillText(
+    `${label} ${Number(
+      price
+    ).toFixed(
+      2
+    )}`,
+    x2 -
+    2,
+    y -
+    3
+  );
+
+
+  ctx.restore();
+
+}
+
+
+/* =========================================================
+   JOURNAL
 ========================================================= */
 
 function renderHistory(){
 
   const list =
-    history();
+    tradeHistory();
+
+
+  setText(
+    "historyCount",
+    list.length
+  );
 
 
   $("history")
@@ -2399,7 +6963,7 @@ function renderHistory(){
         ? list
             .slice(
               0,
-              8
+              50
             )
             .map(
               trade => {
@@ -2417,6 +6981,12 @@ function renderHistory(){
                   );
 
 
+                const r =
+                  finite(
+                    trade.resultR
+                  );
+
+
                 return `
                   <div class="history-row">
 
@@ -2424,14 +6994,40 @@ function renderHistory(){
                       ${time}
                     </span>
 
-                    <strong class="${trade.signal}">
-                      ${trade.signal}
+                    <strong class="${escapeHTML(
+                      trade.signal
+                    )}">
+                      ${escapeHTML(
+                        trade.signal
+                      )}
                     </strong>
 
-                    <span class="result ${trade.result}">
-                      ${trade.result}
-                      · ${fmt(trade.hitPrice)}
+                    <span class="result ${escapeHTML(
+                      trade.result
+                    )}">
+                      ${escapeHTML(
+                        trade.result
+                      )}
+                      · ${fmt(
+                        trade.hitPrice
+                      )}
                     </span>
+
+                    <strong class="${
+                      r >= 0
+                        ? "BUY"
+                        : "SELL"
+                    }">
+
+                      ${
+                        r !== null
+                          ? `${r >= 0 ? "+" : ""}${r.toFixed(
+                              2
+                            )}R`
+                          : "—"
+                      }
+
+                    </strong>
 
                   </div>
                 `;
@@ -2445,11 +7041,483 @@ function renderHistory(){
             </div>
           `;
 
+
+  renderJournalStats(
+    list
+  );
+
+}
+
+
+function renderJournalStats(
+  list
+){
+
+  const trades =
+    list.length;
+
+
+  const wins =
+    list.filter(
+      trade =>
+        trade.result ===
+        "TP"
+    ).length;
+
+
+  const totalR =
+    list.reduce(
+      (
+        sum,
+        trade
+      ) =>
+        sum +
+        (
+          finite(
+            trade.resultR
+          ) ??
+          (
+            trade.result ===
+            "TP"
+              ? parseRR(
+                  trade.riskReward
+                ) ??
+                1.2
+              : -1
+          )
+        ),
+      0
+    );
+
+
+  let streak = 0;
+
+
+  let streakType =
+    null;
+
+
+  if(
+    list.length
+  ){
+
+    streakType =
+      list[0].result;
+
+
+    for(
+      const trade of
+      list
+    ){
+
+      if(
+        trade.result ===
+        streakType
+      ){
+        streak++;
+      }
+      else{
+        break;
+      }
+
+    }
+
+  }
+
+
+  setText(
+    "statTrades",
+    trades
+  );
+
+
+  setText(
+    "statWinRate",
+    trades
+      ? `${(
+          wins /
+          trades *
+          100
+        ).toFixed(
+          1
+        )}%`
+      : "—"
+  );
+
+
+  setText(
+    "statR",
+    `${totalR >= 0 ? "+" : ""}${totalR.toFixed(
+      2
+    )}R`
+  );
+
+
+  setText(
+    "statStreak",
+    streakType
+      ? `${
+          streakType
+        } ×${streak}`
+      : "—"
+  );
+
 }
 
 
 /* =========================================================
-   BUTTONS
+   EXPORT JOURNAL
+========================================================= */
+
+function exportCSV(){
+
+  const list =
+    tradeHistory();
+
+
+  if(
+    !list.length
+  ){
+
+    alert(
+      "No completed trades to export."
+    );
+
+    return;
+
+  }
+
+
+  const rows = [
+
+    [
+      "Signal ID",
+      "Direction",
+      "Result",
+      "Entry",
+      "Stop Loss",
+      "TP",
+      "Hit Price",
+      "Result R",
+      "Edge Score",
+      "Session",
+      "Created",
+      "Closed"
+    ]
+
+  ];
+
+
+  for(
+    const trade of
+    list
+  ){
+
+    rows.push([
+      trade.signalId ||
+      "",
+
+      trade.signal ||
+      "",
+
+      trade.result ||
+      "",
+
+      trade.entry ??
+      "",
+
+      trade.stopLoss ??
+      "",
+
+      trade.takeProfit ??
+      "",
+
+      trade.hitPrice ??
+      "",
+
+      trade.resultR ??
+      "",
+
+      trade.edgeScore ??
+      "",
+
+      trade.session ||
+      "",
+
+      trade.createdAt ||
+      "",
+
+      trade.closedAt ||
+      ""
+    ]);
+
+  }
+
+
+  const csv =
+    rows
+      .map(
+        row =>
+          row
+            .map(
+              value =>
+                `"${String(
+                  value
+                )
+                .replace(
+                  /"/g,
+                  '""'
+                )}"`
+            )
+            .join(",")
+      )
+      .join("\n");
+
+
+  const blob =
+    new Blob(
+      [
+        csv
+      ],
+      {
+        type:
+          "text/csv"
+      }
+    );
+
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+
+  const link =
+    document.createElement(
+      "a"
+    );
+
+
+  link.href =
+    url;
+
+
+  link.download =
+    `mkayfx-journal-${
+      new Date()
+        .toISOString()
+        .slice(
+          0,
+          10
+        )
+    }.csv`;
+
+
+  document.body
+    .appendChild(
+      link
+    );
+
+
+  link.click();
+
+
+  link.remove();
+
+
+  URL.revokeObjectURL(
+    url
+  );
+
+}
+
+
+/* =========================================================
+   COPY / SHARE
+========================================================= */
+
+function signalText(){
+
+  const data =
+    activeTrade ||
+    lastAnalysis;
+
+
+  if(
+    !data
+  ){
+
+    return "MKAYFX GOLD — No analysis available.";
+
+  }
+
+
+  const edge =
+    finite(
+      data.edgeScore
+    );
+
+
+  const historical =
+    data.historicalEdge ||
+    {};
+
+
+  const lines = [
+
+    "MKAYFX GOLD V10",
+
+    `Decision: ${data.signal || "WAIT"}`,
+
+    data.candidateDirection
+      ? `Candidate: ${data.candidateDirection}`
+      : null,
+
+    edge !== null
+      ? `Edge Score: ${edge.toFixed(1)}/100`
+      : null,
+
+    activeTrade
+      ? `Entry: ${fmt(
+          data.entry
+        )}`
+      : null,
+
+    activeTrade
+      ? `SL: ${fmt(
+          data.stopLoss
+        )}`
+      : null,
+
+    activeTrade
+      ? `TP1: ${fmt(
+          data.takeProfit
+        )}`
+      : null,
+
+    `Regime: ${
+      data.marketRegime
+        ?.type ||
+      "—"
+    }`,
+
+    historical.matches != null
+      ? `Historical matches: ${historical.matches}`
+      : null,
+
+    historical.expectancyR != null
+      ? `Historical expectancy: ${
+          historical.expectancyR >= 0
+            ? "+"
+            : ""
+        }${historical.expectancyR}R`
+      : null
+
+  ]
+    .filter(
+      Boolean
+    );
+
+
+  return lines.join(
+    "\n"
+  );
+
+}
+
+
+async function copySignal(){
+
+  const text =
+    signalText();
+
+
+  try{
+
+    await navigator.clipboard
+      .writeText(
+        text
+      );
+
+
+    alert(
+      "Signal copied."
+    );
+
+  }
+  catch{
+
+    const area =
+      document.createElement(
+        "textarea"
+      );
+
+
+    area.value =
+      text;
+
+
+    document.body
+      .appendChild(
+        area
+      );
+
+
+    area.select();
+
+
+    document.execCommand(
+      "copy"
+    );
+
+
+    area.remove();
+
+
+    alert(
+      "Signal copied."
+    );
+
+  }
+
+}
+
+
+async function shareSignal(){
+
+  const text =
+    signalText();
+
+
+  if(
+    navigator.share
+  ){
+
+    try{
+
+      await navigator.share({
+        title:
+          "MKAYFX GOLD",
+        text
+      });
+
+    }
+    catch{
+
+    }
+
+    return;
+
+  }
+
+
+  await copySignal();
+
+}
+
+
+/* =========================================================
+   CONTROLS
 ========================================================= */
 
 $("newSignal")
@@ -2457,25 +7525,28 @@ $("newSignal")
     "click",
     async () => {
 
-      const confirmed =
-        confirm(
-          "End the current locked signal and create a new analysis?"
+      if(
+        activeTrade
+      ){
+
+        const confirmed =
+          confirm(
+            "A trade is currently locked. End it without recording a TP/SL result and run fresh analysis?"
+          );
+
+
+        if(
+          !confirmed
+        ){
+          return;
+        }
+
+
+        saveActive(
+          null
         );
 
-
-      if(
-        !confirmed
-      ){
-        return;
       }
-
-
-      stopMonitor();
-
-
-      saveActive(
-        null
-      );
 
 
       await createNewSignal();
@@ -2489,7 +7560,33 @@ $("clearTrade")
     "click",
     () => {
 
-      stopMonitor();
+      if(
+        !activeTrade
+      ){
+
+        alert(
+          "There is no active trade."
+        );
+
+        return;
+
+      }
+
+
+      const confirmed =
+        confirm(
+          "Clear the current active trade?"
+        );
+
+
+      if(
+        !confirmed
+      ){
+        return;
+      }
+
+
+      stopAllTimers();
 
 
       saveActive(
@@ -2497,20 +7594,83 @@ $("clearTrade")
       );
 
 
-      renderTrade();
+      if(
+        lastAnalysis
+      ){
+
+        renderWaiting(
+          lastAnalysis
+        );
+
+      }
 
 
       setStatus(
         "NO TRADE",
-        ""
+        "wait"
       );
 
 
-      $("state")
-        .textContent =
-          "Locked trade cleared.";
+      if(
+        $("autoScan")
+          .checked
+      ){
+
+        startScanMonitor();
+
+      }
 
     }
+  );
+
+
+$("clearHistory")
+  .addEventListener(
+    "click",
+    () => {
+
+      const confirmed =
+        confirm(
+          "Delete the local MKAYFX trade journal?"
+        );
+
+
+      if(
+        !confirmed
+      ){
+        return;
+      }
+
+
+      localStorage.removeItem(
+        HISTORY_KEY
+      );
+
+
+      renderHistory();
+
+    }
+  );
+
+
+$("exportHistory")
+  .addEventListener(
+    "click",
+    exportCSV
+  );
+
+
+$("copySignal")
+  .addEventListener(
+    "click",
+    copySignal
+  );
+
+
+$("shareSignal")
+  .addEventListener(
+    "click",
+    shareSignal
   );
 
 
@@ -2519,11 +7679,119 @@ $("interval")
     "change",
     () => {
 
+      saveSettings();
+
+
       if(
         activeTrade
       ){
-        startMonitor();
+
+        startTradeMonitor();
+
       }
+
+    }
+  );
+
+
+$("scanInterval")
+  .addEventListener(
+    "change",
+    () => {
+
+      saveSettings();
+
+
+      if(
+        !activeTrade &&
+        $("autoScan")
+          .checked
+      ){
+
+        startScanMonitor();
+
+      }
+
+    }
+  );
+
+
+$("autoScan")
+  .addEventListener(
+    "change",
+    () => {
+
+      saveSettings();
+
+
+      if(
+        activeTrade
+      ){
+        return;
+      }
+
+
+      if(
+        $("autoScan")
+          .checked
+      ){
+
+        startScanMonitor();
+
+      }
+      else{
+
+        stopAllTimers();
+
+
+        setText(
+          "nextCheck",
+          "Auto scan off"
+        );
+
+      }
+
+    }
+  );
+
+
+$("soundEnabled")
+  .addEventListener(
+    "change",
+    saveSettings
+  );
+
+
+$("equity")
+  .addEventListener(
+    "change",
+    saveSettings
+  );
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+let resizeTimer =
+  null;
+
+
+window
+  .addEventListener(
+    "resize",
+    () => {
+
+      clearTimeout(
+        resizeTimer
+      );
+
+
+      resizeTimer =
+        setTimeout(
+          drawChart,
+          120
+        );
 
     }
   );
@@ -2535,24 +7803,44 @@ $("interval")
 
 async function start(){
 
+  loadSettings();
+
+
   renderHistory();
 
 
   activeTrade =
-    readActive();
+    readJSON(
+      ACTIVE_KEY,
+      null
+    );
 
+
+  lastAnalysis =
+    readJSON(
+      ANALYSIS_KEY,
+      null
+    );
+
+
+  if(
+    lastAnalysis
+  ){
+
+    renderAnalysis(
+      lastAnalysis
+    );
+
+  }
+
+
+  /*
+     EXISTING LOCKED TRADE
+  */
 
   if(
     activeTrade
   ){
-
-    /*
-       Existing locked trade found.
-
-       DO NOT ANALYZE AGAIN.
-
-       Resume monitoring the same trade.
-    */
 
     renderTrade();
 
@@ -2563,27 +7851,35 @@ async function start(){
     );
 
 
-    startMonitor();
+    startTradeMonitor();
 
-
-    /*
-       Check immediately when app reopens.
-    */
 
     await checkPrice();
 
-  }
-  else{
 
-    /*
-       No active trade.
-
-       Analyse gold immediately.
-    */
-
-    await createNewSignal();
+    return;
 
   }
+
+
+  /*
+     PREVIOUS WAIT STATE
+     is shown immediately,
+     but fresh analysis is still run.
+  */
+
+  if(
+    lastAnalysis
+  ){
+
+    renderWaiting(
+      lastAnalysis
+    );
+
+  }
+
+
+  await createNewSignal();
 
 }
 
@@ -2591,6 +7887,7 @@ async function start(){
 start();
 
 </script>
+
 
 </body>
 
