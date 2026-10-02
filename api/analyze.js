@@ -1,127 +1,171 @@
 /* =========================================================
-   MKAYFX GOLD LOCKED SIGNAL ENGINE V9
+   MKAYFX GOLD EDGE ENGINE V10
    XAU/USD ONLY
 
-   IMPORTANT BEHAVIOUR
-   -------------------
-   This endpoint is called ONLY when a NEW signal is needed.
+   CORE BEHAVIOUR
+   --------------
+   - Reads live XAU/USD + completed M1/H1 candles
+   - Builds strict completed M5/M15 candles
+   - Analyses trend / structure / liquidity / momentum
+   - Detects the current market regime
+   - Compares the current M5 state to historical M5 states
+   - Estimates historical expectancy / MFE / MAE
+   - Produces BUY / SELL only when an edge gate is passed
+   - Otherwise returns WAIT
+   - Qualified BUY/SELL signals can still be locked by frontend
 
-   It immediately:
-   1. Reads XAU/USD
-   2. Analyses M1 / M5 / M15 / H1
-   3. Chooses BUY or SELL
-   4. Creates ENTRY
-   5. Creates STOP LOSS
-   6. Creates TAKE PROFIT
-   7. Returns the signal
-
-   The frontend then LOCKS that signal.
-
-   While the trade is active:
-   THIS ENDPOINT IS NOT CALLED AGAIN.
-
+   IMPORTANT
+   ---------
+   Historical statistics are empirical estimates from the candles
+   fetched in this request. They are NOT guaranteed win probabilities.
 ========================================================= */
 
-const API_KEY =
-  process.env.TWELVE_DATA_API_KEY;
-
-const BASE_URL =
-  "https://api.twelvedata.com";
-
-const SYMBOL =
-  "XAU/USD";
-
+const API_KEY = process.env.TWELVE_DATA_API_KEY;
+const BASE_URL = "https://api.twelvedata.com";
+const SYMBOL = "XAU/USD";
 
 /* =========================================================
    SETTINGS
 ========================================================= */
 
-const M1_OUTPUT =
-  envNumber(
-    "M1_OUTPUT",
-    5000,
-    500,
-    5000
-  );
+const M1_OUTPUT = envNumber("M1_OUTPUT", 5000, 500, 5000);
+const H1_OUTPUT = envNumber("H1_OUTPUT", 300, 100, 1000);
+const STALE_MS = envNumber("STALE_MS", 10 * 60_000, 60_000);
 
-const H1_OUTPUT =
-  envNumber(
-    "H1_OUTPUT",
-    300,
-    100,
-    1000
-  );
+const DEFAULT_EQUITY_ZAR = envNumber(
+  "DEFAULT_EQUITY_ZAR",
+  200,
+  1
+);
 
-const STALE_MS =
-  envNumber(
-    "STALE_MS",
-    10 * 60_000,
-    60_000
-  );
+const RISK_PERCENT = envNumber(
+  "RISK_PER_TRADE_PCT",
+  0.25,
+  0.01,
+  0.50
+);
 
-const DEFAULT_EQUITY_ZAR =
-  envNumber(
-    "DEFAULT_EQUITY_ZAR",
-    200,
-    1
-  );
+const PRIMARY_TP_R = envNumber(
+  "PRIMARY_TP_R",
+  1.20,
+  0.70,
+  4
+);
 
-const RISK_PERCENT =
-  envNumber(
-    "RISK_PER_TRADE_PCT",
-    0.25,
-    0.01,
-    0.50
-  );
+const SECONDARY_TP_R = envNumber(
+  "SECONDARY_TP_R",
+  1.60,
+  1,
+  5
+);
 
-const PRIMARY_TP_R =
-  envNumber(
-    "PRIMARY_TP_R",
-    1.20,
-    0.70,
-    4
-  );
+const MIN_STOP_ATR = envNumber(
+  "MIN_STOP_ATR",
+  0.65,
+  0.20,
+  2
+);
 
-const SECONDARY_TP_R =
-  envNumber(
-    "SECONDARY_TP_R",
-    1.60,
-    1,
-    5
-  );
+const DEFAULT_STOP_ATR = envNumber(
+  "DEFAULT_STOP_ATR",
+  1.00,
+  0.40,
+  3
+);
 
-const MIN_STOP_ATR =
-  envNumber(
-    "MIN_STOP_ATR",
-    0.65,
-    0.20,
-    2
-  );
+const MAX_STOP_ATR = envNumber(
+  "MAX_STOP_ATR",
+  1.70,
+  0.50,
+  5
+);
 
-const DEFAULT_STOP_ATR =
-  envNumber(
-    "DEFAULT_STOP_ATR",
-    1.00,
-    0.40,
-    3
-  );
+const MAX_SWING_AGE = envNumber(
+  "MAX_SWING_AGE",
+  18,
+  3,
+  100
+);
 
-const MAX_STOP_ATR =
-  envNumber(
-    "MAX_STOP_ATR",
-    1.70,
-    0.50,
-    5
-  );
+/* Edge gate */
 
-const MAX_SWING_AGE =
+const MIN_EDGE_SCORE = envNumber(
+  "MIN_EDGE_SCORE",
+  68,
+  45,
+  95
+);
+
+const MIN_TECHNICAL_SCORE = envNumber(
+  "MIN_TECHNICAL_SCORE",
+  20,
+  0,
+  100
+);
+
+const MIN_MODEL_AGREEMENT = envNumber(
+  "MIN_MODEL_AGREEMENT",
+  0.60,
+  0.50,
+  1
+);
+
+const MIN_EXPECTANCY_R = envNumber(
+  "MIN_EXPECTANCY_R",
+  0.05,
+  -1,
+  3
+);
+
+const MIN_HISTORICAL_MATCHES = envNumber(
+  "MIN_HISTORICAL_MATCHES",
+  18,
+  5,
+  200
+);
+
+const HISTORICAL_TOP_K = Math.round(
   envNumber(
-    "MAX_SWING_AGE",
-    18,
+    "HISTORICAL_TOP_K",
+    80,
+    10,
+    250
+  )
+);
+
+const HISTORICAL_MIN_SIMILARITY = envNumber(
+  "HISTORICAL_MIN_SIMILARITY",
+  55,
+  20,
+  95
+);
+
+const HISTORICAL_FORWARD_BARS = Math.round(
+  envNumber(
+    "HISTORICAL_FORWARD_BARS",
+    12,
     3,
-    100
-  );
+    48
+  )
+);
 
+const HISTORICAL_CONTEXT_BARS = Math.round(
+  envNumber(
+    "HISTORICAL_CONTEXT_BARS",
+    60,
+    40,
+    120
+  )
+);
+
+const HISTORICAL_STRIDE = Math.round(
+  envNumber(
+    "HISTORICAL_STRIDE",
+    1,
+    1,
+    10
+  )
+);
 
 /* =========================================================
    UTILITY
@@ -134,8 +178,7 @@ function envNumber(
   max = Infinity
 ) {
 
-  const raw =
-    process.env[name];
+  const raw = process.env[name];
 
   if (
     raw === undefined ||
@@ -145,12 +188,9 @@ function envNumber(
     return fallback;
   }
 
-  const n =
-    Number(raw);
+  const n = Number(raw);
 
-  if (
-    !Number.isFinite(n)
-  ) {
+  if (!Number.isFinite(n)) {
     return fallback;
   }
 
@@ -161,13 +201,10 @@ function envNumber(
       n
     )
   );
-
 }
 
 
-function finite(
-  value
-) {
+function finite(value) {
 
   if (
     value === null ||
@@ -177,13 +214,11 @@ function finite(
     return null;
   }
 
-  const n =
-    Number(value);
+  const n = Number(value);
 
   return Number.isFinite(n)
     ? n
     : null;
-
 }
 
 
@@ -192,19 +227,15 @@ function round(
   digits = 2
 ) {
 
-  const n =
-    finite(value);
+  const n = finite(value);
 
-  if (
-    n === null
-  ) {
+  if (n === null) {
     return null;
   }
 
   return Number(
     n.toFixed(digits)
   );
-
 }
 
 
@@ -221,22 +252,17 @@ function clamp(
       value
     )
   );
-
 }
 
 
-function mean(
-  values
-) {
+function mean(values) {
 
   const clean =
     values.filter(
       Number.isFinite
     );
 
-  if (
-    !clean.length
-  ) {
+  if (!clean.length) {
     return null;
   }
 
@@ -248,13 +274,68 @@ function mean(
     ) /
     clean.length
   );
-
 }
 
 
-function parseUTC(
+function median(values) {
+
+  const clean =
+    values
+      .filter(Number.isFinite)
+      .sort(
+        (a, b) =>
+          a - b
+      );
+
+  if (!clean.length) {
+    return null;
+  }
+
+  const mid =
+    Math.floor(
+      clean.length / 2
+    );
+
+  return clean.length % 2
+    ? clean[mid]
+    : (
+        clean[mid - 1] +
+        clean[mid]
+      ) / 2;
+}
+
+
+function percentileRank(
+  values,
   value
 ) {
+
+  const clean =
+    values.filter(
+      Number.isFinite
+    );
+
+  if (
+    !clean.length ||
+    !Number.isFinite(value)
+  ) {
+    return null;
+  }
+
+  const belowOrEqual =
+    clean.filter(
+      v =>
+        v <= value
+    ).length;
+
+  return (
+    belowOrEqual /
+    clean.length
+  ) * 100;
+}
+
+
+function parseUTC(value) {
 
   if (!value) {
     return NaN;
@@ -275,13 +356,10 @@ function parseUTC(
       ? clean
       : `${clean}Z`
   ).getTime();
-
 }
 
 
-function bodyOf(
-  req
-) {
+function bodyOf(req) {
 
   if (!req.body) {
     return {};
@@ -302,7 +380,6 @@ function bodyOf(
   catch {
     return {};
   }
-
 }
 
 
@@ -315,7 +392,24 @@ function send(
   return res
     .status(status)
     .json(payload);
+}
 
+
+function signToDirection(sign) {
+
+  return sign >= 0
+    ? "BUY"
+    : "SELL";
+}
+
+
+function directionSign(direction) {
+
+  return direction === "BUY"
+    ? 1
+    : direction === "SELL"
+      ? -1
+      : 0;
 }
 
 
@@ -323,23 +417,52 @@ function send(
    TIMEZONE
 ========================================================= */
 
+const ZONE_FORMATTERS =
+  new Map();
+
+
+function getZoneFormatter(
+  timeZone
+) {
+
+  if (
+    !ZONE_FORMATTERS.has(
+      timeZone
+    )
+  ) {
+
+    ZONE_FORMATTERS.set(
+      timeZone,
+      new Intl.DateTimeFormat(
+        "en-GB",
+        {
+          timeZone,
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hourCycle: "h23"
+        }
+      )
+    );
+
+  }
+
+  return ZONE_FORMATTERS.get(
+    timeZone
+  );
+}
+
+
 function zoneParts(
   ms,
   timeZone
 ) {
 
   const formatter =
-    new Intl.DateTimeFormat(
-      "en-GB",
-      {
-        timeZone,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        hourCycle: "h23"
-      }
+    getZoneFormatter(
+      timeZone
     );
 
   const map = {};
@@ -380,13 +503,10 @@ function zoneParts(
     dateKey:
       `${map.year}-${map.month}-${map.day}`
   };
-
 }
 
 
-function sessionFor(
-  ms
-) {
+function sessionFor(ms) {
 
   const london =
     zoneParts(
@@ -431,7 +551,6 @@ function sessionFor(
   }
 
   return "TRANSITION";
-
 }
 
 
@@ -490,12 +609,9 @@ async function fetchJSON(
   }
   finally {
 
-    clearTimeout(
-      timer
-    );
+    clearTimeout(timer);
 
   }
-
 }
 
 
@@ -592,11 +708,16 @@ async function fetchSeries(
         )
     )
     .reverse();
-
 }
 
 
 async function fetchPrice() {
+
+  if (!API_KEY) {
+    throw new Error(
+      "TWELVE_DATA_API_KEY is missing."
+    );
+  }
 
   const query =
     new URLSearchParams({
@@ -630,7 +751,6 @@ async function fetchPrice() {
   }
 
   return price;
-
 }
 
 
@@ -665,12 +785,11 @@ function completed(
 
     }
   );
-
 }
 
 
 /* =========================================================
-   RESAMPLING
+   STRICT RESAMPLING
 ========================================================= */
 
 function resample(
@@ -739,12 +858,14 @@ function resample(
       const candle of
       raw
     ) {
+
       unique.set(
         parseUTC(
           candle.t
         ),
         candle
       );
+
     }
 
     const group =
@@ -756,12 +877,15 @@ function resample(
           parseUTC(b.t)
       );
 
+    /*
+       Strict:
+       M5 needs exactly 5 M1 candles.
+       M15 needs exactly 15 M1 candles.
+    */
+
     if (
-      group.length <
-      Math.ceil(
-        minutes *
-        0.90
-      )
+      group.length !==
+      minutes
     ) {
       continue;
     }
@@ -814,7 +938,6 @@ function resample(
       parseUTC(a.t) -
       parseUTC(b.t)
   );
-
 }
 
 
@@ -881,7 +1004,6 @@ function emaSeries(
   }
 
   return output;
-
 }
 
 
@@ -899,7 +1021,6 @@ function ema(
   return series.length
     ? series.at(-1)
     : null;
-
 }
 
 
@@ -1016,7 +1137,6 @@ function rsi(
         rs
       )
   );
-
 }
 
 
@@ -1064,7 +1184,6 @@ function trueRanges(
   }
 
   return output;
-
 }
 
 
@@ -1120,7 +1239,6 @@ function wilder(
   }
 
   return output;
-
 }
 
 
@@ -1140,7 +1258,57 @@ function atr(
   return values.length
     ? values.at(-1)
     : null;
+}
 
+
+function atrHistory(
+  candles,
+  period = 14,
+  lookback = 120
+) {
+
+  const start =
+    Math.max(
+      period + 1,
+      candles.length -
+        lookback
+    );
+
+  const values = [];
+
+  for (
+    let i = start;
+    i <
+      candles.length;
+    i++
+  ) {
+
+    const slice =
+      candles.slice(
+        Math.max(
+          0,
+          i -
+            period -
+            10
+        ),
+        i + 1
+      );
+
+    const a =
+      atr(
+        slice,
+        period
+      );
+
+    if (
+      Number.isFinite(a)
+    ) {
+      values.push(a);
+    }
+
+  }
+
+  return values;
 }
 
 
@@ -1170,7 +1338,6 @@ function macdHistogram(
     let i = 0;
     i <
       closes.length;
-
     i++
   ) {
 
@@ -1208,7 +1375,6 @@ function macdHistogram(
     ? null
     : line -
       signal;
-
 }
 
 
@@ -1280,7 +1446,55 @@ function trendBias(
   }
 
   return "NEUTRAL";
+}
 
+
+function efficiencyRatio(
+  closes,
+  period = 20
+) {
+
+  if (
+    closes.length <=
+    period
+  ) {
+    return 0;
+  }
+
+  const start =
+    closes.length -
+    1 -
+    period;
+
+  const net =
+    Math.abs(
+      closes.at(-1) -
+      closes[start]
+    );
+
+  let travel = 0;
+
+  for (
+    let i =
+      start + 1;
+
+    i <
+      closes.length;
+
+    i++
+  ) {
+
+    travel +=
+      Math.abs(
+        closes[i] -
+        closes[i - 1]
+      );
+
+  }
+
+  return travel > 0
+    ? net / travel
+    : 0;
 }
 
 
@@ -1350,7 +1564,6 @@ function momentum(
   }
 
   return "MIXED";
-
 }
 
 
@@ -1451,7 +1664,6 @@ function findSwings(
     highs,
     lows
   };
-
 }
 
 
@@ -1491,12 +1703,11 @@ function structureLabel(
   }
 
   return "MIXED";
-
 }
 
 
 /* =========================================================
-   FRESH BOS / CHOCH
+   BOS / CHOCH
 ========================================================= */
 
 function detectStructure(
@@ -1582,12 +1793,11 @@ function detectStructure(
     bos,
     choch
   };
-
 }
 
 
 /* =========================================================
-   GENERIC LIQUIDITY SWEEP
+   LIQUIDITY SWEEP
 ========================================================= */
 
 function genericSweep(
@@ -1600,7 +1810,6 @@ function genericSweep(
     lookback +
       2
   ) {
-
     return {
       type:
         "NONE",
@@ -1608,7 +1817,6 @@ function genericSweep(
       level:
         null
     };
-
   }
 
   const last =
@@ -1675,7 +1883,6 @@ function genericSweep(
     level:
       null
   };
-
 }
 
 
@@ -1701,7 +1908,6 @@ function displacement(
     !Number.isFinite(a) ||
     a <= 0
   ) {
-
     return {
       direction:
         "NONE",
@@ -1709,7 +1915,6 @@ function displacement(
       quality:
         0
     };
-
   }
 
   const range =
@@ -1753,10 +1958,8 @@ function displacement(
     closePosition >=
       0.68
   ) {
-
     direction =
       "BULLISH";
-
   }
 
   if (
@@ -1769,10 +1972,8 @@ function displacement(
     closePosition <=
       0.32
   ) {
-
     direction =
       "BEARISH";
-
   }
 
   return {
@@ -1793,7 +1994,6 @@ function displacement(
         100
       )
   };
-
 }
 
 
@@ -1929,38 +2129,33 @@ function snapshot(
 
       lastSwingHigh:
         round(
-          swingData
-            .highs
+          swingData.highs
             .at(-1)
             ?.price,
           2
         ),
 
       lastSwingHighAge:
-        swingData
-          .highs
+        swingData.highs
           .at(-1)
           ?.age ??
         null,
 
       lastSwingLow:
         round(
-          swingData
-            .lows
+          swingData.lows
             .at(-1)
             ?.price,
           2
         ),
 
       lastSwingLowAge:
-        swingData
-          .lows
+        swingData.lows
           .at(-1)
           ?.age ??
         null
     }
   };
-
 }
 
 
@@ -2017,9 +2212,7 @@ function buildDayLevels(
       ...groups.keys()
     ].sort();
 
-  function create(
-    key
-  ) {
+  function create(key) {
 
     if (!key) {
       return null;
@@ -2055,7 +2248,6 @@ function buildDayLevels(
       close:
         group.at(-1).c
     };
-
   }
 
   return {
@@ -2069,7 +2261,6 @@ function buildDayLevels(
         keys.at(-2)
       )
   };
-
 }
 
 
@@ -2142,7 +2333,6 @@ function asianRange(
     complete:
       london.hour >= 8
   };
-
 }
 
 
@@ -2170,7 +2360,7 @@ function recentSweep(
     Math.max(
       0,
       candles.length -
-      lookback
+        lookback
     );
 
   for (
@@ -2193,14 +2383,12 @@ function recentSweep(
       candle.c >
         price
     ) {
-
       return {
         age:
           candles.length -
           1 -
           i
       };
-
     }
 
     if (
@@ -2211,25 +2399,22 @@ function recentSweep(
       candle.c <
         price
     ) {
-
       return {
         age:
           candles.length -
           1 -
           i
       };
-
     }
 
   }
 
   return null;
-
 }
 
 
 /* =========================================================
-   GOLD LIQUIDITY
+   GOLD CONTEXT
 ========================================================= */
 
 function goldContext(
@@ -2455,7 +2640,275 @@ function goldContext(
 
     signals
   };
+}
 
+
+/* =========================================================
+   MARKET REGIME
+========================================================= */
+
+function detectRegime(m5) {
+
+  const closes =
+    m5.map(
+      x => x.c
+    );
+
+  const currentAtr =
+    atr(
+      m5,
+      14
+    );
+
+  const history =
+    atrHistory(
+      m5,
+      14,
+      120
+    );
+
+  const atrPercentile =
+    percentileRank(
+      history,
+      currentAtr
+    ) ??
+    50;
+
+  const e20 =
+    ema(
+      closes,
+      20
+    );
+
+  const e50 =
+    ema(
+      closes,
+      50
+    );
+
+  const price =
+    closes.at(-1);
+
+  const efficiency =
+    efficiencyRatio(
+      closes,
+      20
+    );
+
+  const spreadAtr =
+    Number.isFinite(currentAtr) &&
+    currentAtr > 0 &&
+    Number.isFinite(e20) &&
+    Number.isFinite(e50)
+      ? Math.abs(
+          e20 -
+          e50
+        ) /
+        currentAtr
+      : 0;
+
+  const priceVsE20 =
+    Number.isFinite(currentAtr) &&
+    currentAtr > 0 &&
+    Number.isFinite(e20)
+      ? (
+          price -
+          e20
+        ) /
+        currentAtr
+      : 0;
+
+  const trendSign =
+    Number.isFinite(e20) &&
+    Number.isFinite(e50)
+      ? Math.sign(
+          e20 -
+          e50
+        )
+      : 0;
+
+  const recentReturn =
+    closes.length > 6 &&
+    currentAtr > 0
+      ? (
+          closes.at(-1) -
+          closes.at(-7)
+        ) /
+        currentAtr
+      : 0;
+
+  let type =
+    "MIXED";
+
+  if (
+    atrPercentile >= 75 &&
+    efficiency >= 0.52 &&
+    Math.abs(
+      recentReturn
+    ) >= 0.70
+  ) {
+
+    type =
+      recentReturn >= 0
+        ? "BULLISH_EXPANSION"
+        : "BEARISH_EXPANSION";
+
+  }
+  else if (
+    efficiency >= 0.42 &&
+    spreadAtr >= 0.45
+  ) {
+
+    type =
+      trendSign >= 0
+        ? "BULLISH_TREND"
+        : "BEARISH_TREND";
+
+  }
+  else if (
+    atrPercentile <= 30 &&
+    efficiency <= 0.25
+  ) {
+
+    type =
+      "QUIET_CHOP";
+
+  }
+  else if (
+    efficiency <= 0.32
+  ) {
+
+    type =
+      "RANGE";
+
+  }
+
+  let confidence =
+    50;
+
+  if (
+    type.includes(
+      "EXPANSION"
+    )
+  ) {
+
+    confidence =
+      clamp(
+        55 +
+        (
+          atrPercentile -
+          70
+        ) *
+          0.8 +
+        (
+          efficiency -
+          0.45
+        ) *
+          70,
+        50,
+        95
+      );
+
+  }
+  else if (
+    type.includes(
+      "TREND"
+    )
+  ) {
+
+    confidence =
+      clamp(
+        55 +
+        spreadAtr *
+          22 +
+        efficiency *
+          25,
+        50,
+        92
+      );
+
+  }
+  else if (
+    type ===
+    "RANGE"
+  ) {
+
+    confidence =
+      clamp(
+        55 +
+        (
+          0.35 -
+          efficiency
+        ) *
+          100,
+        50,
+        88
+      );
+
+  }
+  else if (
+    type ===
+    "QUIET_CHOP"
+  ) {
+
+    confidence =
+      clamp(
+        60 +
+        (
+          30 -
+          atrPercentile
+        ) *
+          0.6 +
+        (
+          0.30 -
+          efficiency
+        ) *
+          60,
+        55,
+        92
+      );
+
+  }
+
+  return {
+    type,
+
+    confidence:
+      round(
+        confidence,
+        1
+      ),
+
+    atrPercentile:
+      round(
+        atrPercentile,
+        1
+      ),
+
+    efficiencyRatio:
+      round(
+        efficiency,
+        3
+      ),
+
+    emaSpreadAtr:
+      round(
+        spreadAtr,
+        3
+      ),
+
+    priceVsEma20Atr:
+      round(
+        priceVsE20,
+        3
+      ),
+
+    recentReturnAtr:
+      round(
+        recentReturn,
+        3
+      )
+  };
 }
 
 
@@ -2463,9 +2916,7 @@ function goldContext(
    SIGNAL SCORING
 ========================================================= */
 
-function biasSign(
-  value
-) {
+function biasSign(value) {
 
   if (
     [
@@ -2490,68 +2941,77 @@ function biasSign(
   }
 
   return 0;
-
 }
 
 
-function scoreMarket(
-  packet
-) {
+function scoreMarket(packet) {
 
   const trendScore =
-    biasSign(
-      packet.H1.bias
-    ) *
-      25 +
+    clamp(
+      biasSign(
+        packet.H1.bias
+      ) *
+        25 +
 
-    biasSign(
-      packet.M15.bias
-    ) *
-      35 +
+      biasSign(
+        packet.M15.bias
+      ) *
+        35 +
 
-    biasSign(
-      packet.M5.bias
-    ) *
-      25 +
+      biasSign(
+        packet.M5.bias
+      ) *
+        25 +
 
-    biasSign(
-      packet.M1.bias
-    ) *
-      15;
+      biasSign(
+        packet.M1.bias
+      ) *
+        15,
+      -100,
+      100
+    );
 
 
   const structureScore =
-    biasSign(
-      packet.M15.structure
-    ) *
-      18 +
+    clamp(
+      biasSign(
+        packet.M15.structure
+      ) *
+        18 +
 
-    biasSign(
-      packet.M5.structure
-    ) *
-      24 +
+      biasSign(
+        packet.M5.structure
+      ) *
+        24 +
 
-    biasSign(
-      packet.M5.ict.bos
-    ) *
-      24 +
+      biasSign(
+        packet.M5.ict.bos
+      ) *
+        24 +
 
-    biasSign(
-      packet.M1.ict.bos
-    ) *
-      20 +
+      biasSign(
+        packet.M1.ict.bos
+      ) *
+        20 +
 
-    biasSign(
-      packet.M1.ict.choch
-    ) *
-      14;
+      biasSign(
+        packet.M1.ict.choch
+      ) *
+        14,
+      -100,
+      100
+    );
 
 
   const liquidityScore =
-    packet.gold
-      .bullishLiquidityScore -
-    packet.gold
-      .bearishLiquidityScore;
+    clamp(
+      packet.gold
+        .bullishLiquidityScore -
+      packet.gold
+        .bearishLiquidityScore,
+      -100,
+      100
+    );
 
 
   const macd1 =
@@ -2590,26 +3050,24 @@ function scoreMarket(
     biasSign(
       packet.M5.momentum
     ) *
-      35;
+      35 +
 
+    (
+      macd1 > 0
+        ? 15
+        : macd1 < 0
+          ? -15
+          : 0
+    ) +
 
-  momentumScore +=
-    macd1 > 0
-      ? 15
-      : macd1 < 0
-        ? -15
-        : 0;
+    (
+      macd5 > 0
+        ? 12
+        : macd5 < 0
+          ? -12
+          : 0
+    ) +
 
-
-  momentumScore +=
-    macd5 > 0
-      ? 12
-      : macd5 < 0
-        ? -12
-        : 0;
-
-
-  momentumScore +=
     clamp(
       (
         rsi1 -
@@ -2618,6 +3076,14 @@ function scoreMarket(
         0.6,
       -10,
       10
+    );
+
+
+  momentumScore =
+    clamp(
+      momentumScore,
+      -100,
+      100
     );
 
 
@@ -2669,124 +3135,140 @@ function scoreMarket(
   }
 
 
-  const weighted =
-    trendScore *
-      0.28 +
-
-    structureScore *
-      0.24 +
-
-    liquidityScore *
-      0.22 +
-
-    momentumScore *
-      0.18 +
-
-    displacementScore *
-      0.08;
-
-
-  /*
-     User requested an IMMEDIATE directional signal.
-
-     If the score is exactly balanced, fall back through:
-     M15 -> M5 -> H1 -> latest M1 candle.
-  */
-
-  let signal;
-
-
-  if (
-    weighted > 0
-  ) {
-    signal =
-      "BUY";
-  }
-  else if (
-    weighted < 0
-  ) {
-    signal =
-      "SELL";
-  }
-  else if (
-    packet.M15.bias ===
-    "BULLISH"
-  ) {
-    signal =
-      "BUY";
-  }
-  else if (
-    packet.M15.bias ===
-    "BEARISH"
-  ) {
-    signal =
-      "SELL";
-  }
-  else if (
-    packet.M5.bias ===
-    "BULLISH"
-  ) {
-    signal =
-      "BUY";
-  }
-  else if (
-    packet.M5.bias ===
-    "BEARISH"
-  ) {
-    signal =
-      "SELL";
-  }
-  else {
-    signal =
-      packet.lastM1.c >=
-      packet.lastM1.o
-        ? "BUY"
-        : "SELL";
-  }
-
-
-  const strength =
+  displacementScore =
     clamp(
-      Math.round(
-        52 +
-        Math.min(
-          42,
-          Math.abs(
-            weighted
-          ) *
-            0.45
-        )
-      ),
-      52,
-      94
+      displacementScore,
+      -100,
+      100
     );
 
 
-  const reasons = [];
+  const weighted =
+    clamp(
+      trendScore *
+        0.28 +
+
+      structureScore *
+        0.24 +
+
+      liquidityScore *
+        0.22 +
+
+      momentumScore *
+        0.18 +
+
+      displacementScore *
+        0.08,
+      -100,
+      100
+    );
 
 
-  reasons.push(
-    `H1 ${packet.H1.bias}, M15 ${packet.M15.bias}, M5 ${packet.M5.bias}.`
-  );
+  const candidateDirection =
+    signToDirection(
+      weighted
+    );
 
 
-  reasons.push(
-    `M1 structure ${packet.M1.structure}, ${packet.M1.ict.bos}, ${packet.M1.ict.choch}.`
-  );
+  const technicalStrength =
+    Math.abs(
+      weighted
+    );
+
+
+  const modelScores = {
+    trend:
+      trendScore,
+
+    structure:
+      structureScore,
+
+    liquidity:
+      liquidityScore,
+
+    momentum:
+      momentumScore,
+
+    displacement:
+      displacementScore
+  };
+
+
+  const targetSign =
+    directionSign(
+      candidateDirection
+    );
+
+
+  const magnitudes =
+    Object.values(
+      modelScores
+    ).map(
+      Math.abs
+    );
+
+
+  const totalMagnitude =
+    magnitudes.reduce(
+      (
+        a,
+        b
+      ) =>
+        a + b,
+      0
+    );
+
+
+  const alignedMagnitude =
+    Object.values(
+      modelScores
+    )
+      .filter(
+        score =>
+          Math.sign(
+            score
+          ) ===
+          targetSign
+      )
+      .reduce(
+        (
+          sum,
+          score
+        ) =>
+          sum +
+          Math.abs(
+            score
+          ),
+        0
+      );
+
+
+  const modelAgreement =
+    totalMagnitude > 0
+      ? alignedMagnitude /
+        totalMagnitude
+      : 0.5;
+
+
+  const reasons = [
+    `H1 ${packet.H1.bias}, M15 ${packet.M15.bias}, M5 ${packet.M5.bias}.`,
+
+    `M1 structure ${packet.M1.structure}, ${packet.M1.ict.bos}, ${packet.M1.ict.choch}.`,
+
+    `M1 momentum ${packet.M1.momentum}, M5 momentum ${packet.M5.momentum}.`
+  ];
 
 
   if (
-    packet.gold.signals.length
+    packet.gold
+      .signals.length
   ) {
+
     reasons.push(
       ...packet.gold.signals
     );
+
   }
-
-
-  reasons.push(
-    `M1 momentum ${packet.M1.momentum}, M5 momentum ${packet.M5.momentum}.`
-  );
 
 
   if (
@@ -2804,14 +3286,24 @@ function scoreMarket(
 
 
   return {
-    signal,
+    candidateDirection,
 
-    strength,
+    technicalStrength:
+      round(
+        technicalStrength,
+        1
+      ),
 
     signedScore:
       round(
         weighted,
         1
+      ),
+
+    modelAgreement:
+      round(
+        modelAgreement,
+        3
       ),
 
     componentScores: {
@@ -2848,7 +3340,1218 @@ function scoreMarket(
 
     reasons
   };
+}
 
+
+/* =========================================================
+   HISTORICAL FEATURE VECTOR
+========================================================= */
+
+function featureVector(
+  candles,
+  endIndex =
+    candles.length - 1
+) {
+
+  const start =
+    Math.max(
+      0,
+      endIndex -
+        HISTORICAL_CONTEXT_BARS +
+        1
+    );
+
+
+  const slice =
+    candles.slice(
+      start,
+      endIndex + 1
+    );
+
+
+  if (
+    slice.length <
+    40
+  ) {
+    return null;
+  }
+
+
+  const closes =
+    slice.map(
+      x => x.c
+    );
+
+
+  const a =
+    atr(
+      slice,
+      14
+    );
+
+
+  if (
+    !Number.isFinite(a) ||
+    a <= 0
+  ) {
+    return null;
+  }
+
+
+  const e20 =
+    ema(
+      closes,
+      20
+    );
+
+
+  const e50 =
+    ema(
+      closes,
+      50
+    );
+
+
+  const r =
+    rsi(
+      closes,
+      14
+    );
+
+
+  const macd =
+    macdHistogram(
+      closes
+    );
+
+
+  const eff =
+    efficiencyRatio(
+      closes,
+      12
+    );
+
+
+  const sweep =
+    genericSweep(
+      slice,
+      20
+    );
+
+
+  const disp =
+    displacement(
+      slice
+    );
+
+
+  const swings =
+    findSwings(
+      slice.slice(-40)
+    );
+
+
+  const structure =
+    structureLabel(
+      swings
+    );
+
+
+  const momentum6 =
+    closes.length > 6
+      ? (
+          closes.at(-1) -
+          closes.at(-7)
+        ) /
+        a
+      : 0;
+
+
+  const avgRange =
+    mean(
+      slice
+        .slice(-10)
+        .map(
+          candle =>
+            candle.h -
+            candle.l
+        )
+    ) ||
+    a;
+
+
+  const rangeToAtr =
+    avgRange /
+    a;
+
+
+  const sweepValue =
+    sweep.type ===
+    "BULLISH_SELLSIDE_SWEEP"
+      ? 1
+      : sweep.type ===
+        "BEARISH_BUYSIDE_SWEEP"
+        ? -1
+        : 0;
+
+
+  const dispValue =
+    disp.direction ===
+    "BULLISH"
+      ? disp.quality /
+        100
+      : disp.direction ===
+        "BEARISH"
+        ? -disp.quality /
+          100
+        : 0;
+
+
+  return {
+    vector: [
+      clamp(
+        (
+          closes.at(-1) -
+          e20
+        ) /
+          a,
+        -4,
+        4
+      ),
+
+      clamp(
+        (
+          e20 -
+          e50
+        ) /
+          a,
+        -4,
+        4
+      ),
+
+      clamp(
+        (
+          (
+            r ??
+            50
+          ) -
+          50
+        ) /
+          20,
+        -2.5,
+        2.5
+      ),
+
+      clamp(
+        (
+          macd ??
+          0
+        ) /
+          a,
+        -2,
+        2
+      ),
+
+      clamp(
+        momentum6,
+        -4,
+        4
+      ),
+
+      clamp(
+        (
+          eff -
+          0.5
+        ) *
+          2,
+        -1,
+        1
+      ),
+
+      clamp(
+        rangeToAtr -
+          1,
+        -2,
+        2
+      ),
+
+      sweepValue,
+
+      dispValue,
+
+      biasSign(
+        structure
+      )
+    ],
+
+    atr:
+      a,
+
+    session:
+      sessionFor(
+        parseUTC(
+          slice.at(-1).t
+        )
+      ),
+
+    timestamp:
+      slice.at(-1).t
+  };
+}
+
+
+const FEATURE_WEIGHTS = [
+  1.2,
+  1.2,
+  0.7,
+  0.7,
+  1.0,
+  0.8,
+  0.5,
+  0.9,
+  0.8,
+  0.8
+];
+
+
+function similarityScore(
+  a,
+  b,
+  sessionA,
+  sessionB
+) {
+
+  if (
+    !a ||
+    !b ||
+    a.length !==
+      b.length
+  ) {
+    return 0;
+  }
+
+
+  let sum = 0;
+  let weightTotal = 0;
+
+
+  for (
+    let i = 0;
+    i <
+      a.length;
+
+    i++
+  ) {
+
+    const w =
+      FEATURE_WEIGHTS[i] ??
+      1;
+
+
+    const diff =
+      a[i] -
+      b[i];
+
+
+    sum +=
+      w *
+      diff *
+      diff;
+
+
+    weightTotal +=
+      w;
+
+  }
+
+
+  let distance =
+    Math.sqrt(
+      sum /
+      Math.max(
+        weightTotal,
+        1e-9
+      )
+    );
+
+
+  /*
+     Same-session historical
+     states get a small preference.
+  */
+
+  if (
+    sessionA !==
+    sessionB
+  ) {
+    distance +=
+      0.12;
+  }
+
+
+  return clamp(
+    100 *
+      Math.exp(
+        -0.85 *
+        distance
+      ),
+    0,
+    100
+  );
+}
+
+
+/* =========================================================
+   HISTORICAL OUTCOME SIMULATION
+========================================================= */
+
+function simulateHistoricalOutcome(
+  candles,
+  index,
+  direction,
+  riskAtr,
+  targetR,
+  forwardBars
+) {
+
+  const sign =
+    directionSign(
+      direction
+    );
+
+
+  const feature =
+    featureVector(
+      candles,
+      index
+    );
+
+
+  if (!feature) {
+    return null;
+  }
+
+
+  const entry =
+    candles[index].c;
+
+
+  const riskDistance =
+    feature.atr *
+    riskAtr;
+
+
+  if (
+    !Number.isFinite(
+      riskDistance
+    ) ||
+    riskDistance <= 0
+  ) {
+    return null;
+  }
+
+
+  const stop =
+    entry -
+    sign *
+      riskDistance;
+
+
+  const target =
+    entry +
+    sign *
+      riskDistance *
+      targetR;
+
+
+  const future =
+    candles.slice(
+      index + 1,
+      index +
+        1 +
+        forwardBars
+    );
+
+
+  if (
+    !future.length
+  ) {
+    return null;
+  }
+
+
+  let maxFavR = 0;
+  let maxAdvR = 0;
+
+  let resultR =
+    null;
+
+  let outcome =
+    "UNRESOLVED";
+
+
+  for (
+    const candle of
+    future
+  ) {
+
+    const favorable =
+      sign === 1
+        ? candle.h -
+          entry
+        : entry -
+          candle.l;
+
+
+    const adverse =
+      sign === 1
+        ? entry -
+          candle.l
+        : candle.h -
+          entry;
+
+
+    maxFavR =
+      Math.max(
+        maxFavR,
+        favorable /
+          riskDistance
+      );
+
+
+    maxAdvR =
+      Math.max(
+        maxAdvR,
+        adverse /
+          riskDistance
+      );
+
+
+    const hitStop =
+      sign === 1
+        ? candle.l <=
+          stop
+        : candle.h >=
+          stop;
+
+
+    const hitTarget =
+      sign === 1
+        ? candle.h >=
+          target
+        : candle.l <=
+          target;
+
+
+    /*
+       Conservative:
+       if both target and stop
+       were touched in same M5 bar,
+       count it as a loss because
+       candle data cannot prove order.
+    */
+
+    if (
+      hitStop &&
+      hitTarget
+    ) {
+
+      resultR =
+        -1;
+
+      outcome =
+        "LOSS_AMBIGUOUS_BAR";
+
+      break;
+    }
+
+
+    if (
+      hitStop
+    ) {
+
+      resultR =
+        -1;
+
+      outcome =
+        "LOSS";
+
+      break;
+    }
+
+
+    if (
+      hitTarget
+    ) {
+
+      resultR =
+        targetR;
+
+      outcome =
+        "WIN";
+
+      break;
+    }
+
+  }
+
+
+  if (
+    resultR ===
+    null
+  ) {
+
+    const finalMove =
+      sign *
+      (
+        future.at(-1).c -
+        entry
+      ) /
+      riskDistance;
+
+
+    resultR =
+      clamp(
+        finalMove,
+        -1,
+        targetR
+      );
+
+  }
+
+
+  return {
+    resultR,
+
+    outcome,
+
+    mfeR:
+      maxFavR,
+
+    maeR:
+      maxAdvR
+  };
+}
+
+
+/* =========================================================
+   HISTORICAL SIMILARITY ENGINE
+========================================================= */
+
+function historicalSimilarity(
+  candles,
+  direction
+) {
+
+  const current =
+    featureVector(
+      candles,
+      candles.length - 1
+    );
+
+
+  if (!current) {
+
+    return {
+      available:
+        false,
+
+      matches:
+        0,
+
+      reason:
+        "Current feature vector unavailable."
+    };
+
+  }
+
+
+  const candidates = [];
+
+
+  const earliest =
+    HISTORICAL_CONTEXT_BARS -
+    1;
+
+
+  const latest =
+    candles.length -
+    1 -
+    HISTORICAL_FORWARD_BARS;
+
+
+  for (
+    let i = earliest;
+    i <= latest;
+    i +=
+      HISTORICAL_STRIDE
+  ) {
+
+    const historical =
+      featureVector(
+        candles,
+        i
+      );
+
+
+    if (!historical) {
+      continue;
+    }
+
+
+    const similarity =
+      similarityScore(
+        current.vector,
+        historical.vector,
+        current.session,
+        historical.session
+      );
+
+
+    if (
+      similarity <
+      HISTORICAL_MIN_SIMILARITY
+    ) {
+      continue;
+    }
+
+
+    const outcome =
+      simulateHistoricalOutcome(
+        candles,
+        i,
+        direction,
+        DEFAULT_STOP_ATR,
+        PRIMARY_TP_R,
+        HISTORICAL_FORWARD_BARS
+      );
+
+
+    if (!outcome) {
+      continue;
+    }
+
+
+    candidates.push({
+      similarity,
+
+      timestamp:
+        historical.timestamp,
+
+      ...outcome
+    });
+
+  }
+
+
+  candidates.sort(
+    (a, b) =>
+      b.similarity -
+      a.similarity
+  );
+
+
+  const top =
+    candidates.slice(
+      0,
+      HISTORICAL_TOP_K
+    );
+
+
+  if (
+    !top.length
+  ) {
+
+    return {
+      available:
+        true,
+
+      matches:
+        0,
+
+      direction,
+
+      reason:
+        "No sufficiently similar historical states in the fetched window."
+    };
+
+  }
+
+
+  const wins =
+    top.filter(
+      x =>
+        x.outcome ===
+        "WIN"
+    ).length;
+
+
+  const losses =
+    top.filter(
+      x =>
+        x.outcome ===
+          "LOSS" ||
+        x.outcome ===
+          "LOSS_AMBIGUOUS_BAR"
+    ).length;
+
+
+  const unresolved =
+    top.length -
+    wins -
+    losses;
+
+
+  const expectancyR =
+    mean(
+      top.map(
+        x =>
+          x.resultR
+      )
+    );
+
+
+  const medianMfeR =
+    median(
+      top.map(
+        x =>
+          x.mfeR
+      )
+    );
+
+
+  const medianMaeR =
+    median(
+      top.map(
+        x =>
+          x.maeR
+      )
+    );
+
+
+  const avgSimilarity =
+    mean(
+      top.map(
+        x =>
+          x.similarity
+      )
+    );
+
+
+  return {
+    available:
+      true,
+
+    direction,
+
+    matches:
+      top.length,
+
+    winCount:
+      wins,
+
+    lossCount:
+      losses,
+
+    unresolvedCount:
+      unresolved,
+
+    targetHitRate:
+      round(
+        (
+          wins /
+          top.length
+        ) *
+          100,
+        1
+      ),
+
+    stopHitRate:
+      round(
+        (
+          losses /
+          top.length
+        ) *
+          100,
+        1
+      ),
+
+    unresolvedRate:
+      round(
+        (
+          unresolved /
+          top.length
+        ) *
+          100,
+        1
+      ),
+
+    expectancyR:
+      round(
+        expectancyR,
+        3
+      ),
+
+    medianMfeR:
+      round(
+        medianMfeR,
+        3
+      ),
+
+    medianMaeR:
+      round(
+        medianMaeR,
+        3
+      ),
+
+    averageSimilarity:
+      round(
+        avgSimilarity,
+        1
+      ),
+
+    forwardBars:
+      HISTORICAL_FORWARD_BARS,
+
+    forwardMinutes:
+      HISTORICAL_FORWARD_BARS *
+      5,
+
+    stopModelAtr:
+      DEFAULT_STOP_ATR,
+
+    targetModelR:
+      PRIMARY_TP_R,
+
+    sampleWindowType:
+      "FETCHED_M5_HISTORY_ONLY",
+
+    note:
+      "Empirical similarity statistics, not a guaranteed probability."
+  };
+}
+
+
+/* =========================================================
+   EDGE ENGINE
+========================================================= */
+
+function regimeAlignmentScore(
+  regime,
+  direction
+) {
+
+  const sign =
+    directionSign(
+      direction
+    );
+
+
+  if (
+    regime.type ===
+    "QUIET_CHOP"
+  ) {
+    return 25;
+  }
+
+
+  if (
+    regime.type ===
+    "RANGE"
+  ) {
+    return 55;
+  }
+
+
+  if (
+    regime.type ===
+    "MIXED"
+  ) {
+    return 50;
+  }
+
+
+  if (
+    regime.type ===
+      "BULLISH_EXPANSION" ||
+    regime.type ===
+      "BULLISH_TREND"
+  ) {
+
+    return sign === 1
+      ? 90
+      : 25;
+
+  }
+
+
+  if (
+    regime.type ===
+      "BEARISH_EXPANSION" ||
+    regime.type ===
+      "BEARISH_TREND"
+  ) {
+
+    return sign === -1
+      ? 90
+      : 25;
+
+  }
+
+
+  return 50;
+}
+
+
+function buildEdgeDecision(
+  technical,
+  regime,
+  historical
+) {
+
+  const direction =
+    technical
+      .candidateDirection;
+
+
+  const technicalStrength =
+    finite(
+      technical
+        .technicalStrength
+    ) ??
+    0;
+
+
+  const agreement =
+    finite(
+      technical
+        .modelAgreement
+    ) ??
+    0;
+
+
+  const regimeAlignment =
+    regimeAlignmentScore(
+      regime,
+      direction
+    );
+
+
+  const matchCount =
+    historical.matches ||
+    0;
+
+
+  const sampleScore =
+    clamp(
+      (
+        matchCount /
+        MIN_HISTORICAL_MATCHES
+      ) *
+        100,
+      0,
+      100
+    );
+
+
+  const similarityScoreValue =
+    finite(
+      historical
+        .averageSimilarity
+    ) ??
+    0;
+
+
+  const expectancy =
+    finite(
+      historical
+        .expectancyR
+    ) ??
+    -1;
+
+
+  const targetHit =
+    finite(
+      historical
+        .targetHitRate
+    ) ??
+    0;
+
+
+  const expectancyScore =
+    clamp(
+      50 +
+      expectancy *
+        55,
+      0,
+      100
+    );
+
+
+  const historicalScore =
+    clamp(
+      targetHit *
+        0.40 +
+
+      similarityScoreValue *
+        0.25 +
+
+      sampleScore *
+        0.20 +
+
+      expectancyScore *
+        0.15,
+      0,
+      100
+    );
+
+
+  const edgeScore =
+    clamp(
+      technicalStrength *
+        0.30 +
+
+      agreement *
+        100 *
+        0.18 +
+
+      historicalScore *
+        0.28 +
+
+      regimeAlignment *
+        0.14 +
+
+      (
+        finite(
+          regime.confidence
+        ) ??
+        50
+      ) *
+        0.10,
+      0,
+      100
+    );
+
+
+  const gates = {
+
+    technicalStrength:
+      technicalStrength >=
+      MIN_TECHNICAL_SCORE,
+
+    modelAgreement:
+      agreement >=
+      MIN_MODEL_AGREEMENT,
+
+    historicalSample:
+      matchCount >=
+      MIN_HISTORICAL_MATCHES,
+
+    historicalExpectancy:
+      expectancy >=
+      MIN_EXPECTANCY_R,
+
+    regimeNotQuietChop:
+      regime.type !==
+      "QUIET_CHOP",
+
+    edgeScore:
+      edgeScore >=
+      MIN_EDGE_SCORE
+  };
+
+
+  const failed =
+    Object.entries(
+      gates
+    )
+      .filter(
+        (
+          [
+            ,
+            pass
+          ]
+        ) =>
+          !pass
+      )
+      .map(
+        (
+          [
+            name
+          ]
+        ) =>
+          name
+      );
+
+
+  const qualified =
+    failed.length ===
+    0;
+
+
+  return {
+    signal:
+      qualified
+        ? direction
+        : "WAIT",
+
+    candidateDirection:
+      direction,
+
+    qualified,
+
+    edgeScore:
+      round(
+        edgeScore,
+        1
+      ),
+
+    technicalStrength:
+      round(
+        technicalStrength,
+        1
+      ),
+
+    modelAgreement:
+      round(
+        agreement,
+        3
+      ),
+
+    regimeAlignment:
+      round(
+        regimeAlignment,
+        1
+      ),
+
+    historicalScore:
+      round(
+        historicalScore,
+        1
+      ),
+
+    gates,
+
+    failedGates:
+      failed,
+
+    thresholds: {
+      minEdgeScore:
+        MIN_EDGE_SCORE,
+
+      minTechnicalScore:
+        MIN_TECHNICAL_SCORE,
+
+      minModelAgreement:
+        MIN_MODEL_AGREEMENT,
+
+      minHistoricalMatches:
+        MIN_HISTORICAL_MATCHES,
+
+      minExpectancyR:
+        MIN_EXPECTANCY_R
+    }
+  };
 }
 
 
@@ -2862,6 +4565,18 @@ function createTradePlan(
   packet
 ) {
 
+  if (
+    ![
+      "BUY",
+      "SELL"
+    ].includes(
+      signal
+    )
+  ) {
+    return null;
+  }
+
+
   const atr1 =
     finite(
       packet.M1
@@ -2874,9 +4589,11 @@ function createTradePlan(
     atr1 === null ||
     atr1 <= 0
   ) {
+
     throw new Error(
       "M1 ATR unavailable."
     );
+
   }
 
 
@@ -3001,11 +4718,6 @@ function createTradePlan(
   }
 
 
-  /*
-     If swing stop is excessively wide,
-     replace it instead of refusing to generate a signal.
-  */
-
   if (
     risk /
       atr1 >
@@ -3102,7 +4814,6 @@ function createTradePlan(
         2
       )}`
   };
-
 }
 
 
@@ -3143,7 +4854,6 @@ function buildAccount(
         2
       )
   };
-
 }
 
 
@@ -3178,9 +4888,11 @@ export default async function handler(
     req.method ===
     "OPTIONS"
   ) {
+
     return res
       .status(204)
       .end();
+
   }
 
 
@@ -3209,13 +4921,10 @@ export default async function handler(
   try {
 
     const body =
-      bodyOf(req);
+      bodyOf(
+        req
+      );
 
-
-    /*
-       Full analysis is intentionally only triggered
-       when the frontend requests a NEW trade.
-    */
 
     const [
       rawM1,
@@ -3269,7 +4978,7 @@ export default async function handler(
       m1.length <
         300 ||
       m5.length <
-        60 ||
+        80 ||
       m15.length <
         40 ||
       h1.length <
@@ -3305,13 +5014,14 @@ export default async function handler(
     ) {
 
       throw new Error(
-        "Gold market data is stale. A fresh signal cannot be created."
+        "Gold market data is stale. A fresh analysis cannot be created."
       );
 
     }
 
 
     const packet = {
+
       lastM1,
 
       session:
@@ -3350,22 +5060,42 @@ export default async function handler(
       );
 
 
+    const regime =
+      detectRegime(
+        m5
+      );
+
+
     const technical =
       scoreMarket(
         packet
       );
 
 
-    /*
-       Signal is generated immediately.
-    */
+    const historical =
+      historicalSimilarity(
+        m5,
+        technical
+          .candidateDirection
+      );
+
+
+    const edge =
+      buildEdgeDecision(
+        technical,
+        regime,
+        historical
+      );
+
 
     const plan =
-      createTradePlan(
-        technical.signal,
-        livePrice,
-        packet
-      );
+      edge.qualified
+        ? createTradePlan(
+            edge.signal,
+            livePrice,
+            packet
+          )
+        : null;
 
 
     const account =
@@ -3375,7 +5105,9 @@ export default async function handler(
 
 
     const signalId =
-      `MK-${Date.now()}-${technical.signal}`;
+      edge.qualified
+        ? `MK-${Date.now()}-${edge.signal}`
+        : null;
 
 
     return send(
@@ -3386,24 +5118,24 @@ export default async function handler(
           true,
 
         model:
-          "MKAYFX GOLD LOCKED SIGNAL V9",
-
-        signalId,
+          "MKAYFX GOLD EDGE ENGINE V10",
 
         symbol:
           SYMBOL,
 
+        signalId,
+
         signal:
-          technical.signal,
+          edge.signal,
 
-        setupStrength:
-          technical.strength,
+        candidateDirection:
+          edge.candidateDirection,
 
-        strengthType:
-          "SETUP_STRENGTH_NOT_WIN_PROBABILITY",
+        tradeQualified:
+          edge.qualified,
 
         locked:
-          true,
+          edge.qualified,
 
         createdAt:
           new Date()
@@ -3412,26 +5144,51 @@ export default async function handler(
         session:
           packet.session,
 
+        edgeScore:
+          edge.edgeScore,
+
+        edgeType:
+          "COMPOSITE_EDGE_SCORE_NOT_WIN_PROBABILITY",
+
         entry:
-          plan.entry,
+          plan?.entry ??
+          round(
+            livePrice,
+            2
+          ),
 
         stopLoss:
-          plan.stopLoss,
+          plan?.stopLoss ??
+          null,
 
         takeProfit:
-          plan.takeProfit,
+          plan?.takeProfit ??
+          null,
 
         takeProfit2:
-          plan.takeProfit2,
+          plan?.takeProfit2 ??
+          null,
 
         riskReward:
-          plan.riskReward,
+          plan?.riskReward ??
+          null,
 
         riskReward2:
-          plan.riskReward2,
+          plan?.riskReward2 ??
+          null,
 
         riskDistance:
-          plan.riskDistance,
+          plan?.riskDistance ??
+          null,
+
+        marketRegime:
+          regime,
+
+        edgeDecision:
+          edge,
+
+        historicalEdge:
+          historical,
 
         timeframeBias: {
           M1:
@@ -3511,15 +5268,50 @@ export default async function handler(
               })
             ),
 
-        lifecycle: {
-          state:
-            "TRADE_ACTIVE",
+        lifecycle:
+          edge.qualified
+            ? {
+                state:
+                  "TRADE_ACTIVE",
 
-          rule:
-            "Signal remains locked until primary TP or SL is reached.",
+                rule:
+                  "Signal remains locked until primary TP or SL is reached.",
 
-          nextAnalysis:
-            "Immediately after TP or SL."
+                nextAnalysis:
+                  "Immediately after TP or SL."
+              }
+            : {
+                state:
+                  "WAITING_FOR_EDGE",
+
+                rule:
+                  "No trade is locked because the edge gate did not pass.",
+
+                nextAnalysis:
+                  "Frontend may request a fresh analysis on the next analysis cycle."
+              },
+
+        dataQuality: {
+          rawM1:
+            rawM1.length,
+
+          completedM1:
+            m1.length,
+
+          completedM5:
+            m5.length,
+
+          completedM15:
+            m15.length,
+
+          completedH1:
+            h1.length,
+
+          staleMilliseconds:
+            Math.max(
+              0,
+              dataAge
+            )
         }
       }
     );
@@ -3530,7 +5322,7 @@ export default async function handler(
   ) {
 
     console.error(
-      "MKAYFX ANALYZE:",
+      "MKAYFX V10 ANALYZE:",
       error
     );
 
