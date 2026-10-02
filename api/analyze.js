@@ -1,449 +1,467 @@
 /* =========================================================
-   MKAYFX CHART SCANNER
-   Vercel serverless function: /api/analysis.js
+   MKAYFX CHART SCANNER V2
+   FILE: api/analysis.js
    XAU/USD ONLY
 
-   ENVIRONMENT VARIABLE REQUIRED:
-   TWELVE_DATA_API_KEY=your_key_here
+   VERCEL ENV VARIABLE:
+   TWELVE_DATA_API_KEY
 ========================================================= */
 
 const API_KEY = process.env.TWELVE_DATA_API_KEY;
-const BASE = "https://api.twelvedata.com";
+
+const BASE_URL = "https://api.twelvedata.com";
 const SYMBOL = "XAU/USD";
 
-function num(v) {
-  const n = Number(v);
-  return Number.isFinite(n) ? n : null;
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function toNumber(value, fallback = null) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : fallback;
 }
 
-function round(v, d = 2) {
-  const n = num(v);
-  return n === null ? null : Number(n.toFixed(d));
-}
+function round(value, digits = 2) {
+  const n = Number(value);
 
-function clamp(v, min, max) {
-  return Math.max(min, Math.min(max, v));
-}
-
-function mean(a) {
-  const x = a.filter(Number.isFinite);
-  return x.length
-    ? x.reduce((s, v) => s + v, 0) / x.length
-    : null;
-}
-
-function body(req) {
-  if (!req.body) return {};
-
-  if (typeof req.body === "object") {
-    return req.body;
+  if (!Number.isFinite(n)) {
+    return null;
   }
 
-  try {
-    return JSON.parse(req.body);
-  } catch {
-    return {};
-  }
+  return Number(n.toFixed(digits));
 }
 
-async function getJSON(url, timeout = 18000) {
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function average(values) {
+  const good = values.filter(Number.isFinite);
+
+  if (!good.length) {
+    return 0;
+  }
+
+  return (
+    good.reduce((sum, value) => sum + value, 0) /
+    good.length
+  );
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+/* =========================================================
+   FETCH JSON
+========================================================= */
+
+async function fetchJSON(url, timeout = 15000) {
   const controller = new AbortController();
 
-  const timer = setTimeout(
-    () => controller.abort(),
-    timeout
-  );
+  const timer = setTimeout(() => {
+    controller.abort();
+  }, timeout);
 
   try {
-    const r = await fetch(url, {
-      signal: controller.signal
+    const response = await fetch(url, {
+      method: "GET",
+      signal: controller.signal,
+      headers: {
+        Accept: "application/json"
+      }
     });
 
-    const j = await r.json().catch(() => ({}));
+    const text = await response.text();
 
-    if (!r.ok || j.status === "error") {
+    let json;
+
+    try {
+      json = JSON.parse(text);
+    } catch {
       throw new Error(
-        j.message || `HTTP ${r.status}`
+        "Twelve Data returned invalid JSON."
       );
     }
 
-    return j;
+    if (!response.ok) {
+      throw new Error(
+        json?.message ||
+        `Twelve Data HTTP ${response.status}`
+      );
+    }
+
+    if (json?.status === "error") {
+      throw new Error(
+        json?.message ||
+        "Twelve Data API error."
+      );
+    }
+
+    return json;
 
   } finally {
     clearTimeout(timer);
   }
 }
 
+
 /* =========================================================
    TWELVE DATA
 ========================================================= */
 
-async function candles(interval, outputsize) {
-
+async function getCandles(interval, outputsize = 220) {
   if (!API_KEY) {
     throw new Error(
-      "TWELVE_DATA_API_KEY is missing in Vercel Environment Variables."
+      "TWELVE_DATA_API_KEY is missing in Vercel."
     );
   }
 
-  const q = new URLSearchParams({
-    symbol: SYMBOL,
-    interval,
-    outputsize: String(outputsize),
-    timezone: "UTC",
-    format: "JSON",
-    apikey: API_KEY
-  });
+  const params = new URLSearchParams();
 
-  const j = await getJSON(
-    `${BASE}/time_series?${q}`
-  );
+  params.set("symbol", SYMBOL);
+  params.set("interval", interval);
+  params.set("outputsize", String(outputsize));
+  params.set("timezone", "UTC");
+  params.set("apikey", API_KEY);
 
-  if (!Array.isArray(j.values)) {
+  const url =
+    `${BASE_URL}/time_series?${params.toString()}`;
+
+  const data = await fetchJSON(url);
+
+  if (!Array.isArray(data.values)) {
     throw new Error(
-      `${interval} data unavailable.`
+      `${interval} candle data unavailable.`
     );
   }
 
-  return j.values
-    .map(x => ({
-      t: x.datetime,
-      o: Number(x.open),
-      h: Number(x.high),
-      l: Number(x.low),
-      c: Number(x.close),
-      v: Number(x.volume || 0)
+  const candles = data.values
+    .map(item => ({
+      time: item.datetime,
+      open: Number(item.open),
+      high: Number(item.high),
+      low: Number(item.low),
+      close: Number(item.close)
     }))
-    .filter(x =>
-      [x.o, x.h, x.l, x.c]
-        .every(Number.isFinite)
+    .filter(candle =>
+      Number.isFinite(candle.open) &&
+      Number.isFinite(candle.high) &&
+      Number.isFinite(candle.low) &&
+      Number.isFinite(candle.close)
     )
     .reverse();
+
+  if (candles.length < 30) {
+    throw new Error(
+      `Not enough ${interval} candles received.`
+    );
+  }
+
+  return candles;
 }
 
-async function liveQuote() {
 
+async function getLivePrice() {
   if (!API_KEY) {
     throw new Error(
-      "TWELVE_DATA_API_KEY is missing."
+      "TWELVE_DATA_API_KEY is missing in Vercel."
     );
   }
 
-  const q = new URLSearchParams({
-    symbol: SYMBOL,
-    apikey: API_KEY
-  });
+  const params = new URLSearchParams();
 
-  const j = await getJSON(
-    `${BASE}/quote?${q}`
-  );
+  params.set("symbol", SYMBOL);
+  params.set("apikey", API_KEY);
 
-  const price = num(
-    j.close ??
-    j.price ??
-    j.previous_close
-  );
+  const url =
+    `${BASE_URL}/price?${params.toString()}`;
 
-  if (price === null) {
+  const data = await fetchJSON(url);
+
+  const price = Number(data.price);
+
+  if (!Number.isFinite(price)) {
     throw new Error(
-      "Live XAU/USD quote unavailable."
+      "Could not read the live XAU/USD price."
     );
   }
 
-  return {
-    price,
-    timestamp:
-      j.datetime ||
-      j.timestamp ||
-      new Date().toISOString()
-  };
+  return price;
 }
+
 
 /* =========================================================
    INDICATORS
 ========================================================= */
 
-function ema(values, p) {
-
-  if (!values.length) return null;
-
-  const k = 2 / (p + 1);
-
-  let e = values[0];
-
-  for (
-    let i = 1;
-    i < values.length;
-    i++
-  ) {
-    e =
-      values[i] * k +
-      e * (1 - k);
+function ema(values, period) {
+  if (!values.length) {
+    return 0;
   }
 
-  return e;
+  const k = 2 / (period + 1);
+
+  let value = values[0];
+
+  for (let i = 1; i < values.length; i++) {
+    value =
+      values[i] * k +
+      value * (1 - k);
+  }
+
+  return value;
 }
 
-function emaSeries(values, p) {
 
-  if (!values.length) return [];
+function emaSeries(values, period) {
+  if (!values.length) {
+    return [];
+  }
 
-  const k = 2 / (p + 1);
+  const output = [values[0]];
 
-  const out = [values[0]];
+  const k = 2 / (period + 1);
 
-  for (
-    let i = 1;
-    i < values.length;
-    i++
-  ) {
-    out.push(
+  for (let i = 1; i < values.length; i++) {
+    output.push(
       values[i] * k +
-      out[i - 1] * (1 - k)
+      output[i - 1] * (1 - k)
     );
   }
 
-  return out;
+  return output;
 }
 
-function rsi(values, p = 14) {
 
-  if (values.length <= p) {
+function calculateRSI(values, period = 14) {
+  if (values.length < period + 1) {
     return 50;
   }
 
   let gains = 0;
   let losses = 0;
 
-  for (
-    let i = values.length - p;
-    i < values.length;
-    i++
-  ) {
+  const start =
+    values.length - period;
 
-    const d =
-      values[i] -
-      values[i - 1];
+  for (let i = start; i < values.length; i++) {
+    const change =
+      values[i] - values[i - 1];
 
-    if (d > 0) {
-      gains += d;
+    if (change > 0) {
+      gains += change;
     } else {
-      losses -= d;
+      losses += Math.abs(change);
     }
   }
 
-  if (losses === 0) {
+  const avgGain = gains / period;
+  const avgLoss = losses / period;
+
+  if (avgLoss === 0) {
     return 100;
   }
 
   const rs =
-    (gains / p) /
-    (losses / p);
+    avgGain / avgLoss;
 
   return (
     100 -
-    (100 / (1 + rs))
+    100 / (1 + rs)
   );
 }
 
-function atr(cs, p = 14) {
 
-  if (cs.length < 2) {
-    return null;
+function calculateATR(candles, period = 14) {
+  if (candles.length < period + 1) {
+    return 0;
   }
 
-  const tr = [];
+  const trueRanges = [];
 
-  for (
-    let i = 1;
-    i < cs.length;
-    i++
-  ) {
+  for (let i = 1; i < candles.length; i++) {
+    const current = candles[i];
+    const previous = candles[i - 1];
 
-    tr.push(
+    trueRanges.push(
       Math.max(
-        cs[i].h - cs[i].l,
-        Math.abs(
-          cs[i].h -
-          cs[i - 1].c
-        ),
-        Math.abs(
-          cs[i].l -
-          cs[i - 1].c
-        )
+        current.high - current.low,
+        Math.abs(current.high - previous.close),
+        Math.abs(current.low - previous.close)
       )
     );
   }
 
-  return mean(
-    tr.slice(-p)
+  return average(
+    trueRanges.slice(-period)
   );
 }
 
-function macdHist(values) {
 
+function calculateMACD(values) {
   if (values.length < 35) {
-    return 0;
+    return {
+      macd: 0,
+      signal: 0,
+      histogram: 0
+    };
   }
 
-  const e12 =
+  const ema12 =
     emaSeries(values, 12);
 
-  const e26 =
+  const ema26 =
     emaSeries(values, 26);
 
-  const macd =
+  const macdLine =
     values.map(
-      (_, i) =>
-        e12[i] - e26[i]
+      (_, index) =>
+        ema12[index] -
+        ema26[index]
     );
 
-  const sig =
-    emaSeries(macd, 9);
+  const signalLine =
+    emaSeries(macdLine, 9);
 
-  return (
-    macd.at(-1) -
-    sig.at(-1)
-  );
+  const macdValue =
+    macdLine[macdLine.length - 1];
+
+  const signalValue =
+    signalLine[signalLine.length - 1];
+
+  return {
+    macd: macdValue,
+    signal: signalValue,
+    histogram:
+      macdValue - signalValue
+  };
 }
 
-function slope(values, p = 10) {
-
-  if (
-    values.length <
-    p + 1
-  ) {
-    return 0;
-  }
-
-  return (
-    values.at(-1) -
-    values.at(-1 - p)
-  );
-}
-
-function highest(cs, n) {
-  return Math.max(
-    ...cs
-      .slice(-n)
-      .map(x => x.h)
-  );
-}
-
-function lowest(cs, n) {
-  return Math.min(
-    ...cs
-      .slice(-n)
-      .map(x => x.l)
-  );
-}
 
 /* =========================================================
-   TIMEFRAME ANALYSIS
+   STRUCTURE
 ========================================================= */
 
-function tfSnapshot(cs) {
+function highestHigh(candles, count) {
+  return Math.max(
+    ...candles
+      .slice(-count)
+      .map(candle => candle.high)
+  );
+}
 
+function lowestLow(candles, count) {
+  return Math.min(
+    ...candles
+      .slice(-count)
+      .map(candle => candle.low)
+  );
+}
+
+
+function analyzeTimeframe(candles) {
   const closes =
-    cs.map(x => x.c);
+    candles.map(candle => candle.close);
 
   const last =
-    cs.at(-1);
+    candles[candles.length - 1];
 
-  const e20 =
+  const ema20 =
     ema(
-      closes.slice(-80),
+      closes.slice(-100),
       20
     );
 
-  const e50 =
+  const ema50 =
     ema(
-      closes.slice(-120),
+      closes.slice(-150),
       50
     );
 
-  const e200 =
+  const ema200 =
     ema(
-      closes.slice(-260),
+      closes.slice(-220),
       200
     );
 
-  const rr =
-    rsi(closes, 14);
-
-  const mh =
-    macdHist(closes);
-
-  const a =
-    atr(cs, 14) ||
-    Math.max(
-      last.c * 0.001,
-      0.01
+  const rsi =
+    calculateRSI(
+      closes,
+      14
     );
 
-  const s20 =
-    slope(closes, 8);
+  const macd =
+    calculateMACD(closes);
 
-  const prior =
-    cs.slice(-21, -1);
+  const atr =
+    calculateATR(
+      candles,
+      14
+    );
 
-  const prevHigh =
-    prior.length
-      ? Math.max(
-          ...prior.map(x => x.h)
-        )
-      : last.h;
+  const previousCandles =
+    candles.slice(-21, -1);
 
-  const prevLow =
-    prior.length
-      ? Math.min(
-          ...prior.map(x => x.l)
-        )
-      : last.l;
+  const previousHigh =
+    Math.max(
+      ...previousCandles.map(
+        candle => candle.high
+      )
+    );
+
+  const previousLow =
+    Math.min(
+      ...previousCandles.map(
+        candle => candle.low
+      )
+    );
 
   let score = 0;
 
-  if (last.c > e20) {
+  if (last.close > ema20) {
     score += 1;
   } else {
     score -= 1;
   }
 
-  if (e20 > e50) {
+  if (ema20 > ema50) {
     score += 1;
   } else {
     score -= 1;
   }
 
-  if (e50 > e200) {
+  if (ema50 > ema200) {
     score += 1;
   } else {
     score -= 1;
   }
 
-  if (rr > 52) {
+  if (rsi > 52) {
     score += 1;
-  } else if (rr < 48) {
+  }
+
+  if (rsi < 48) {
     score -= 1;
   }
 
-  if (mh > 0) {
+  if (macd.histogram > 0) {
     score += 1;
-  } else {
-    score -= 1;
   }
 
-  if (s20 > 0) {
-    score += 1;
-  } else {
+  if (macd.histogram < 0) {
     score -= 1;
   }
 
   const bosUp =
-    last.c > prevHigh;
+    last.close >
+    previousHigh;
 
   const bosDown =
-    last.c < prevLow;
+    last.close <
+    previousLow;
 
   if (bosUp) {
     score += 1.5;
@@ -453,102 +471,49 @@ function tfSnapshot(cs) {
     score -= 1.5;
   }
 
+  let bias = "NEUTRAL";
+
+  if (score >= 2) {
+    bias = "BULLISH";
+  }
+
+  if (score <= -2) {
+    bias = "BEARISH";
+  }
+
   return {
-
-    bias:
-      score >= 2
-        ? "BULLISH"
-        : score <= -2
-        ? "BEARISH"
-        : "NEUTRAL",
-
+    bias,
     score,
 
-    close: last.c,
+    ema20,
+    ema50,
+    ema200,
 
-    ema20: e20,
-    ema50: e50,
-    ema200: e200,
+    rsi,
 
-    rsi: rr,
-    macd: mh,
-    atr: a,
+    macd:
+      macd.histogram,
+
+    atr,
 
     bosUp,
     bosDown,
 
-    prevHigh,
-    prevLow
+    previousHigh,
+    previousLow,
+
+    currentPrice:
+      last.close
   };
 }
 
-/* =========================================================
-   SESSION
-========================================================= */
-
-function sessionName() {
-
-  const h = Number(
-    new Intl.DateTimeFormat(
-      "en-GB",
-      {
-        timeZone:
-          "Africa/Johannesburg",
-
-        hour: "2-digit",
-
-        hourCycle: "h23"
-      }
-    ).format(new Date())
-  );
-
-  if (
-    h >= 9 &&
-    h < 11
-  ) {
-    return "LONDON OPEN";
-  }
-
-  if (
-    h >= 11 &&
-    h < 14
-  ) {
-    return "LONDON";
-  }
-
-  if (
-    h >= 14 &&
-    h < 18
-  ) {
-    return "NEW YORK / OVERLAP";
-  }
-
-  if (
-    h >= 18 &&
-    h < 23
-  ) {
-    return "NEW YORK";
-  }
-
-  return "ASIA / TRANSITION";
-}
 
 /* =========================================================
    LIQUIDITY
 ========================================================= */
 
-function liquiditySignal(cs) {
-
-  const x =
-    cs.at(-1);
-
-  const prior =
-    cs.slice(-16, -1);
-
-  if (
-    !x ||
-    prior.length < 8
-  ) {
+function analyzeLiquidity(candles) {
+  if (candles.length < 20) {
     return {
       score: 0,
       text:
@@ -556,213 +521,268 @@ function liquiditySignal(cs) {
     };
   }
 
-  const ph =
+  const current =
+    candles[candles.length - 1];
+
+  const previous =
+    candles.slice(-16, -1);
+
+  const high =
     Math.max(
-      ...prior.map(
-        c => c.h
+      ...previous.map(
+        candle => candle.high
       )
     );
 
-  const pl =
+  const low =
     Math.min(
-      ...prior.map(
-        c => c.l
+      ...previous.map(
+        candle => candle.low
       )
     );
 
   if (
-    x.l < pl &&
-    x.c > pl
+    current.low < low &&
+    current.close > low
   ) {
     return {
       score: 2,
       text:
-        "Sell-side liquidity sweep with recovery."
+        "Sell-side liquidity was swept and price recovered."
     };
   }
 
   if (
-    x.h > ph &&
-    x.c < ph
+    current.high > high &&
+    current.close < high
   ) {
     return {
       score: -2,
       text:
-        "Buy-side liquidity sweep with rejection."
+        "Buy-side liquidity was swept and price rejected."
     };
   }
 
   return {
     score: 0,
     text:
-      "Liquidity remains inside the recent range."
+      "Price remains inside the recent liquidity range."
   };
 }
 
+
 /* =========================================================
-   CANDLE TRIGGER
+   CANDLE MOMENTUM
 ========================================================= */
 
-function candleTrigger(cs) {
-
-  const a =
-    cs.at(-1);
-
-  const b =
-    cs.at(-2);
-
-  if (!a || !b) {
+function analyzeTrigger(candles) {
+  if (candles.length < 3) {
     return {
       score: 0,
       text:
-        "No candle trigger."
+        "No strong entry candle detected."
     };
   }
 
-  const bodyA =
+  const current =
+    candles[candles.length - 1];
+
+  const previous =
+    candles[candles.length - 2];
+
+  const candleBody =
     Math.abs(
-      a.c - a.o
+      current.close -
+      current.open
     );
 
-  const range =
+  const candleRange =
     Math.max(
-      a.h - a.l,
-      1e-9
+      current.high -
+      current.low,
+      0.0001
     );
 
-  const strong =
-    bodyA / range > 0.62;
+  const bodyStrength =
+    candleBody /
+    candleRange;
 
   if (
-    strong &&
-    a.c > a.o &&
-    a.c > b.h
+    current.close >
+    current.open &&
+    bodyStrength > 0.6 &&
+    current.close >
+    previous.high
   ) {
     return {
       score: 1.5,
       text:
-        "Bullish displacement candle confirmed."
+        "Bullish displacement and momentum confirmed."
     };
   }
 
   if (
-    strong &&
-    a.c < a.o &&
-    a.c < b.l
+    current.close <
+    current.open &&
+    bodyStrength > 0.6 &&
+    current.close <
+    previous.low
   ) {
     return {
       score: -1.5,
       text:
-        "Bearish displacement candle confirmed."
+        "Bearish displacement and momentum confirmed."
     };
   }
 
   return {
     score: 0,
     text:
-      "No clean displacement trigger on the latest candle."
+      "Momentum is present but no strong displacement trigger formed."
   };
 }
 
+
 /* =========================================================
-   MASTER ANALYSIS
+   SESSION
 ========================================================= */
 
-function analyze(
+function getSession() {
+  const hour =
+    new Date().getUTCHours();
+
+  /*
+    South Africa is UTC+2.
+  */
+
+  const sastHour =
+    (hour + 2) % 24;
+
+  if (
+    sastHour >= 8 &&
+    sastHour < 10
+  ) {
+    return "LONDON OPEN";
+  }
+
+  if (
+    sastHour >= 10 &&
+    sastHour < 14
+  ) {
+    return "LONDON";
+  }
+
+  if (
+    sastHour >= 14 &&
+    sastHour < 18
+  ) {
+    return "LONDON / NEW YORK";
+  }
+
+  if (
+    sastHour >= 18 &&
+    sastHour < 22
+  ) {
+    return "NEW YORK";
+  }
+
+  return "ASIA / TRANSITION";
+}
+
+
+/* =========================================================
+   MASTER SIGNAL ENGINE
+========================================================= */
+
+function buildSignal({
   m1,
   m5,
   m15,
   h1,
-  price
-) {
-
+  livePrice
+}) {
   const T = {
-
-    M1:
-      tfSnapshot(m1),
-
-    M5:
-      tfSnapshot(m5),
-
-    M15:
-      tfSnapshot(m15),
-
-    H1:
-      tfSnapshot(h1)
+    M1: analyzeTimeframe(m1),
+    M5: analyzeTimeframe(m5),
+    M15: analyzeTimeframe(m15),
+    H1: analyzeTimeframe(h1)
   };
 
-  const liq =
-    liquiditySignal(m5);
+  const liquidity =
+    analyzeLiquidity(m5);
 
-  const trig =
-    candleTrigger(m1);
+  const trigger =
+    analyzeTrigger(m1);
 
-  const signed =
+  /*
+    Higher timeframes have larger weights.
+  */
+
+  const weightedScore =
       T.M1.score * 0.8
-    + T.M5.score * 1.3
-    + T.M15.score * 1.7
-    + T.H1.score * 2.2
-    + liq.score * 1.2
-    + trig.score;
+    + T.M5.score * 1.25
+    + T.M15.score * 1.65
+    + T.H1.score * 2.15
+    + liquidity.score * 1.25
+    + trigger.score;
 
   const direction =
-    signed >= 0
+    weightedScore >= 0
       ? "BUY"
       : "SELL";
 
-  const sign =
+  const directionalSign =
     direction === "BUY"
       ? 1
       : -1;
 
-  const agreements =
-    [
-      T.M1,
-      T.M5,
-      T.M15,
-      T.H1
-    ].filter(
-      x =>
-        direction === "BUY"
-          ? x.score > 0
-          : x.score < 0
+  const timeframeScores = [
+    T.M1.score,
+    T.M5.score,
+    T.M15.score,
+    T.H1.score
+  ];
+
+  const agreementCount =
+    timeframeScores.filter(score =>
+      direction === "BUY"
+        ? score > 0
+        : score < 0
     ).length;
 
-  const absStrength =
-    Math.abs(signed);
-
   let confidence =
-      52
-    + agreements * 6
-    + Math.min(
-        18,
-        absStrength * 1.3
-      );
+    52 +
+    agreementCount * 6 +
+    Math.min(
+      18,
+      Math.abs(weightedScore) *
+      1.25
+    );
 
   if (
-    (
-      direction === "BUY" &&
-      liq.score > 0
-    )
-    ||
-    (
-      direction === "SELL" &&
-      liq.score < 0
-    )
+    direction === "BUY" &&
+    liquidity.score > 0
   ) {
     confidence += 4;
   }
 
   if (
-    (
-      direction === "BUY" &&
-      trig.score > 0
-    )
-    ||
-    (
-      direction === "SELL" &&
-      trig.score < 0
-    )
+    direction === "SELL" &&
+    liquidity.score < 0
+  ) {
+    confidence += 4;
+  }
+
+  if (
+    direction === "BUY" &&
+    trigger.score > 0
+  ) {
+    confidence += 3;
+  }
+
+  if (
+    direction === "SELL" &&
+    trigger.score < 0
   ) {
     confidence += 3;
   }
@@ -776,108 +796,121 @@ function analyze(
       )
     );
 
-  const a5 =
+  const atr =
     T.M5.atr ||
+    livePrice * 0.001;
+
+  let stopDistance =
     Math.max(
-      price * 0.001,
-      1
+      atr * 1.15,
+      livePrice * 0.001
     );
 
-  const swingLow =
-    lowest(m5, 18);
+  /*
+    Use recent structure where possible.
+  */
 
-  const swingHigh =
-    highest(m5, 18);
+  const recentHigh =
+    highestHigh(
+      m5,
+      20
+    );
 
-  let risk =
-    Math.max(
-      a5 * 0.95,
-      price * 0.0012
+  const recentLow =
+    lowestLow(
+      m5,
+      20
     );
 
   if (
     direction === "BUY" &&
-    Number.isFinite(swingLow) &&
-    swingLow < price
+    recentLow < livePrice
   ) {
+    const structuralDistance =
+      livePrice -
+      recentLow +
+      atr * 0.1;
 
-    risk =
+    stopDistance =
       Math.max(
-        risk,
-        price -
-        swingLow +
-        a5 * 0.12
+        stopDistance,
+        structuralDistance
       );
   }
 
   if (
     direction === "SELL" &&
-    Number.isFinite(swingHigh) &&
-    swingHigh > price
+    recentHigh > livePrice
   ) {
+    const structuralDistance =
+      recentHigh -
+      livePrice +
+      atr * 0.1;
 
-    risk =
+    stopDistance =
       Math.max(
-        risk,
-        swingHigh -
-        price +
-        a5 * 0.12
+        stopDistance,
+        structuralDistance
       );
   }
 
-  risk =
+  /*
+    Prevent extremely huge stop distances.
+  */
+
+  stopDistance =
     Math.min(
-      risk,
-      a5 * 2.3
+      stopDistance,
+      atr * 2.5
     );
 
   const entry =
-    price;
+    livePrice;
 
   const stopLoss =
     entry -
-    sign * risk;
+    directionalSign *
+    stopDistance;
 
   const takeProfit =
     entry +
-    sign *
-    risk *
-    2.0;
+    directionalSign *
+    stopDistance *
+    2;
 
   const takeProfit2 =
     entry +
-    sign *
-    risk *
-    3.0;
+    directionalSign *
+    stopDistance *
+    3;
 
   const reasons = [];
 
   reasons.push(
-    `${direction} bias from weighted M1/M5/M15/H1 alignment.`
+    `${direction} direction selected from weighted M1, M5, M15 and H1 analysis.`
   );
 
   reasons.push(
-    `H1 is ${T.H1.bias.toLowerCase()} and M15 is ${T.M15.bias.toLowerCase()}.`
+    `H1 bias is ${T.H1.bias} while M15 bias is ${T.M15.bias}.`
   );
 
   reasons.push(
-    `M5 RSI ${round(T.M5.rsi, 1)} with MACD histogram ${round(T.M5.macd, 3)}.`
+    `M5 RSI is ${round(T.M5.rsi, 1)} and MACD momentum is ${round(T.M5.macd, 3)}.`
   );
 
   reasons.push(
-    liq.text
+    liquidity.text
   );
 
   reasons.push(
-    trig.text
+    trigger.text
   );
 
   reasons.push(
-    "Risk is based on M5 ATR and recent swing structure; target is 2.0R."
+    "Stop loss uses current M5 volatility and recent market structure."
   );
 
   return {
-
     direction,
     confidence,
 
@@ -886,360 +919,330 @@ function analyze(
     takeProfit,
     takeProfit2,
 
-    risk,
+    timeframeBias: {
+      M1: T.M1.bias,
+      M5: T.M5.bias,
+      M15: T.M15.bias,
+      H1: T.H1.bias
+    },
 
-    T,
+    reasons,
 
-    reasons
+    indicators: {
+      m1Rsi:
+        round(T.M1.rsi, 1),
+
+      m5Rsi:
+        round(T.M5.rsi, 1),
+
+      m15Rsi:
+        round(T.M15.rsi, 1),
+
+      h1Rsi:
+        round(T.H1.rsi, 1),
+
+      m5Atr:
+        round(T.M5.atr, 2),
+
+      m5Macd:
+        round(T.M5.macd, 4)
+    }
   };
 }
 
+
 /* =========================================================
-   API HANDLER
+   VERCEL HANDLER
 ========================================================= */
 
-export default async function handler(
-  req,
-  res
-) {
-
+export default async function handler(req, res) {
   res.setHeader(
     "Cache-Control",
-    "no-store, no-cache, must-revalidate"
+    "no-store, max-age=0"
   );
 
   res.setHeader(
-    "Access-Control-Allow-Origin",
-    "*"
+    "Content-Type",
+    "application/json"
   );
-
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET,POST,OPTIONS"
-  );
-
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type"
-  );
-
-  if (
-    req.method === "OPTIONS"
-  ) {
-    return res
-      .status(204)
-      .end();
-  }
 
   try {
-
     if (!API_KEY) {
       throw new Error(
-        "TWELVE_DATA_API_KEY is missing in Vercel."
+        "TWELVE_DATA_API_KEY is not configured in Vercel."
       );
     }
 
-    const mode =
-      String(
-        req.query?.mode || ""
-      ).toLowerCase();
-
-    /* =====================================================
-       LIVE PRICE ONLY
-    ===================================================== */
+    /*
+      FAST LIVE PRICE ENDPOINT
+      /api/analysis?mode=price
+    */
 
     if (
-      mode === "price"
+      req.method === "GET" &&
+      String(req.query?.mode || "") === "price"
     ) {
+      const price =
+        await getLivePrice();
 
-      const q =
-        await liveQuote();
-
-      return res
-        .status(200)
-        .json({
-
-          success: true,
-
-          symbol:
-            SYMBOL,
-
-          price:
-            round(
-              q.price,
-              2
-            ),
-
-          time:
-            q.timestamp
-        });
+      return res.status(200).json({
+        success: true,
+        symbol: SYMBOL,
+        price: round(price, 2),
+        timestamp:
+          new Date().toISOString()
+      });
     }
 
-    /* =====================================================
-       NEW ANALYSIS
-    ===================================================== */
+    /*
+      MAIN ANALYSIS
+    */
 
-    const payload =
-      body(req);
+    if (
+      req.method !== "POST" &&
+      req.method !== "GET"
+    ) {
+      return res.status(405).json({
+        success: false,
+        error:
+          "Method not allowed."
+      });
+    }
+
+    let requestBody = {};
+
+    if (
+      req.body &&
+      typeof req.body === "object"
+    ) {
+      requestBody =
+        req.body;
+    }
+
+    const equityZAR =
+      clamp(
+        toNumber(
+          requestBody.equityZAR,
+          200
+        ),
+        1,
+        100000000
+      );
+
+    const riskPercent =
+      clamp(
+        toNumber(
+          requestBody.riskPercent,
+          0.5
+        ),
+        0.1,
+        5
+      );
+
+    /*
+      Fetch all timeframes at once.
+    */
 
     const [
       m1,
       m5,
       m15,
       h1,
-      quote
-    ] =
-      await Promise.all([
+      livePrice
+    ] = await Promise.all([
+      getCandles(
+        "1min",
+        220
+      ),
 
-        candles(
-          "1min",
-          220
-        ),
+      getCandles(
+        "5min",
+        220
+      ),
 
-        candles(
-          "5min",
-          220
-        ),
+      getCandles(
+        "15min",
+        220
+      ),
 
-        candles(
-          "15min",
-          220
-        ),
+      getCandles(
+        "1h",
+        220
+      ),
 
-        candles(
-          "1h",
-          240
-        ),
-
-        liveQuote()
-
-      ]);
+      getLivePrice()
+    ]);
 
     const result =
-      analyze(
+      buildSignal({
         m1,
         m5,
         m15,
         h1,
-        quote.price
-      );
-
-    const equity =
-      Math.max(
-        1,
-        num(
-          payload.equityZAR
-        ) ?? 200
-      );
-
-    const riskPct =
-      clamp(
-        num(
-          payload.riskPercent
-        ) ?? 0.5,
-        0.1,
-        3
-      );
-
-    const riskZAR =
-      equity *
-      (
-        riskPct /
-        100
-      );
-
-    return res
-      .status(200)
-      .json({
-
-        success: true,
-
-        model:
-          "MKAYFX CHART SCANNER V1",
-
-        symbol:
-          SYMBOL,
-
-        signalId:
-          `MK-${Date.now()}-${result.direction}`,
-
-        signal:
-          result.direction,
-
-        confidence:
-          result.confidence,
-
-        setupStrength:
-          result.confidence,
-
-        timeframe:
-          "H1",
-
-        session:
-          sessionName(),
-
-        createdAt:
-          new Date()
-            .toISOString(),
-
-        locked:
-          true,
-
-        entry:
-          round(
-            result.entry,
-            2
-          ),
-
-        stopLoss:
-          round(
-            result.stopLoss,
-            2
-          ),
-
-        takeProfit:
-          round(
-            result.takeProfit,
-            2
-          ),
-
-        takeProfit2:
-          round(
-            result.takeProfit2,
-            2
-          ),
-
-        riskReward:
-          2,
-
-        riskReward2:
-          3,
-
-        currentPrice:
-          round(
-            quote.price,
-            2
-          ),
-
-        timeframeBias: {
-
-          M1:
-            result.T.M1.bias,
-
-          M5:
-            result.T.M5.bias,
-
-          M15:
-            result.T.M15.bias,
-
-          H1:
-            result.T.H1.bias
-        },
-
-        indicators: {
-
-          m5Rsi:
-            round(
-              result.T.M5.rsi,
-              1
-            ),
-
-          m5Atr:
-            round(
-              result.T.M5.atr,
-              2
-            ),
-
-          m5Macd:
-            round(
-              result.T.M5.macd,
-              3
-            ),
-
-          h1Ema20:
-            round(
-              result.T.H1.ema20,
-              2
-            ),
-
-          h1Ema50:
-            round(
-              result.T.H1.ema50,
-              2
-            )
-        },
-
-        reasons:
-          result.reasons,
-
-        account: {
-
-          equityZAR:
-            round(
-              equity,
-              2
-            ),
-
-          riskPercent:
-            round(
-              riskPct,
-              2
-            ),
-
-          maxRiskZAR:
-            round(
-              riskZAR,
-              2
-            )
-        },
-
-        chart:
-          m1
-            .slice(-85)
-            .map(c => ({
-
-              t:
-                c.t,
-
-              o:
-                round(c.o, 2),
-
-              h:
-                round(c.h, 2),
-
-              l:
-                round(c.l, 2),
-
-              c:
-                round(c.c, 2)
-            })),
-
-        lifecycle: {
-
-          state:
-            "TRADE_ACTIVE",
-
-          rule:
-            "Keep this signal locked. Only monitor price until TP or SL is hit.",
-
-          nextAnalysis:
-            "Immediately after TP or SL is reached."
-        }
+        livePrice
       });
 
-  } catch (e) {
+    const maxRiskZAR =
+      equityZAR *
+      riskPercent /
+      100;
 
-    console.error(e);
+    const chart =
+      m1
+        .slice(-90)
+        .map(candle => ({
+          time:
+            candle.time,
 
-    return res
-      .status(500)
-      .json({
+          open:
+            round(
+              candle.open,
+              2
+            ),
 
-        success: false,
+          high:
+            round(
+              candle.high,
+              2
+            ),
 
-        error:
-          e?.message ||
-          "Analysis failed."
-      });
+          low:
+            round(
+              candle.low,
+              2
+            ),
+
+          close:
+            round(
+              candle.close,
+              2
+            )
+        }));
+
+    return res.status(200).json({
+      success: true,
+
+      model:
+        "MKAYFX CHART SCANNER V2",
+
+      symbol:
+        SYMBOL,
+
+      signal:
+        result.direction,
+
+      signalId:
+        `MKAY-${Date.now()}-${result.direction}`,
+
+      confidence:
+        result.confidence,
+
+      setupStrength:
+        result.confidence,
+
+      timeframe:
+        "H1",
+
+      session:
+        getSession(),
+
+      createdAt:
+        new Date().toISOString(),
+
+      locked:
+        true,
+
+      entry:
+        round(
+          result.entry,
+          2
+        ),
+
+      stopLoss:
+        round(
+          result.stopLoss,
+          2
+        ),
+
+      takeProfit:
+        round(
+          result.takeProfit,
+          2
+        ),
+
+      takeProfit2:
+        round(
+          result.takeProfit2,
+          2
+        ),
+
+      currentPrice:
+        round(
+          livePrice,
+          2
+        ),
+
+      riskReward:
+        2,
+
+      riskReward2:
+        3,
+
+      timeframeBias:
+        result.timeframeBias,
+
+      indicators:
+        result.indicators,
+
+      reasons:
+        result.reasons,
+
+      account: {
+        equityZAR:
+          round(
+            equityZAR,
+            2
+          ),
+
+        riskPercent:
+          round(
+            riskPercent,
+            2
+          ),
+
+        maxRiskZAR:
+          round(
+            maxRiskZAR,
+            2
+          )
+      },
+
+      chart,
+
+      lifecycle: {
+        state:
+          "TRADE_ACTIVE",
+
+        rule:
+          "Signal stays locked until TP or SL.",
+
+        nextAnalysis:
+          "Automatically create a new signal after TP or SL."
+      }
+    });
+
+  } catch (error) {
+    console.error(
+      "MKAYFX ANALYSIS ERROR:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+
+      error:
+        error?.message ||
+        "Unknown server error."
+    });
   }
 }
