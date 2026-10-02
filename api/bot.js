@@ -1,4 +1,5 @@
-MKAYFX SCALPER V2
+/* =========================================================
+   MKAYFX SCALPER V2
    M15 = directional bias
    M5  = setup / structure / liquidity
    M1  = execution trigger
