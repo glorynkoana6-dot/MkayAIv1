@@ -2,9 +2,9 @@ import {
   envNumber,
   completed,
   fetchSeries,
+  resample,
   detectRegime,
-  basicComponentScores,
-  buildFeatureState,
+  simpleTrendPullbackStrategy,
   buildFuturePath
 } from "./core.js";
 
@@ -17,8 +17,12 @@ import {
 
 
 /* =========================================================
-   SUPPORTED MARKETS
+   MKAYFX V14 STRATEGY MEMORY
 ========================================================= */
+
+const VERSION =
+  "14.0";
+
 
 const SUPPORTED_SYMBOLS =
   new Set([
@@ -27,17 +31,13 @@ const SUPPORTED_SYMBOLS =
   ]);
 
 
-/* =========================================================
-   SETTINGS
-========================================================= */
-
 const FORWARD_BARS =
   Math.round(
     envNumber(
       "HISTORICAL_FORWARD_BARS",
+      24,
       12,
-      6,
-      36
+      48
     )
   );
 
@@ -46,9 +46,7 @@ const FORWARD_BARS =
    SYMBOL
 ========================================================= */
 
-function normalizeSymbol(
-  value
-) {
+function normalizeSymbol(value) {
 
   const raw =
     String(
@@ -106,18 +104,9 @@ function queryValue(
     req.query?.[key];
 
 
-  if (
-    Array.isArray(
-      value
-    )
-  ) {
-
-    return value[0];
-
-  }
-
-
-  return value;
+  return Array.isArray(value)
+    ? value[0]
+    : value;
 }
 
 
@@ -171,6 +160,25 @@ function authorized(
 
 
 /* =========================================================
+   TIME SLICE
+========================================================= */
+
+function candlesUntil(
+  candles,
+  timestamp
+) {
+
+  return candles.filter(
+    candle =>
+      Date.parse(
+        candle.t
+      ) <=
+      timestamp
+  );
+}
+
+
+/* =========================================================
    MAIN
 ========================================================= */
 
@@ -199,7 +207,7 @@ export default async function handler(
 
   res.setHeader(
     "Access-Control-Allow-Methods",
-    "GET, POST, OPTIONS"
+    "GET,POST,OPTIONS"
   );
 
 
@@ -227,8 +235,15 @@ export default async function handler(
     return res
       .status(405)
       .json({
+
         success:false,
-        error:"Use GET or POST."
+
+        version:
+          VERSION,
+
+        error:
+          "Use GET or POST."
+
       });
 
   }
@@ -254,7 +269,11 @@ export default async function handler(
     return res
       .status(400)
       .json({
+
         success:false,
+
+        version:
+          VERSION,
 
         error:
           "Unsupported symbol.",
@@ -263,6 +282,7 @@ export default async function handler(
           "XAU/USD",
           "BTC/USD"
         ]
+
       });
 
   }
@@ -275,7 +295,11 @@ export default async function handler(
     return res
       .status(200)
       .json({
+
         success:true,
+
+        version:
+          VERSION,
 
         symbol,
 
@@ -283,6 +307,7 @@ export default async function handler(
 
         error:
           "DATABASE_URL is not set."
+
       });
 
   }
@@ -295,7 +320,8 @@ export default async function handler(
         "mode"
       ) ||
       ""
-    ).toLowerCase() ===
+    )
+      .toLowerCase() ===
     "backfill";
 
 
@@ -309,7 +335,11 @@ export default async function handler(
     return res
       .status(401)
       .json({
+
         success:false,
+
+        version:
+          VERSION,
 
         symbol,
 
@@ -317,6 +347,7 @@ export default async function handler(
           backfill
             ? "Unauthorized. Check ADMIN_SECRET."
             : "Unauthorized."
+
       });
 
   }
@@ -337,26 +368,36 @@ export default async function handler(
       backfill
         ? Math.round(
             Math.max(
-              300,
+              1000,
               Math.min(
                 4500,
                 Number.isFinite(
                   barsRaw
                 )
                   ? barsRaw
-                  : 1800
+                  : 3500
               )
             )
           )
-        : 420;
+        : 2600;
 
+
+    /*
+      Need enough history for:
+      H1 EMA200 = roughly 2400 M5 candles.
+
+      Therefore we fetch up to 5000 M5 candles.
+    */
 
     const output =
       Math.min(
         5000,
-        requested +
-        FORWARD_BARS +
-        120
+        Math.max(
+          requested +
+          FORWARD_BARS +
+          100,
+          2800
+        )
       );
 
 
@@ -368,7 +409,7 @@ export default async function handler(
       );
 
 
-    const candles =
+    const m5 =
       completed(
         raw,
         5
@@ -376,23 +417,28 @@ export default async function handler(
 
 
     if (
-      candles.length <
-      100
+      m5.length <
+      2500
     ) {
 
       throw new Error(
-        `Not enough completed ${symbol} M5 data.`
+        `Need at least 2500 completed ${symbol} M5 candles for V14 memory.`
       );
 
     }
 
 
-    const start =
-      Math.max(
-        70,
-        candles.length -
-          requested -
-          FORWARD_BARS
+    const m15All =
+      resample(
+        m5,
+        15
+      );
+
+
+    const h1All =
+      resample(
+        m5,
+        60
       );
 
 
@@ -400,30 +446,115 @@ export default async function handler(
       [];
 
 
+    /*
+      Earliest index must have enough history
+      to create 200 H1 candles.
+
+      200 H1 candles ≈ 2400 M5 candles.
+    */
+
+    const minimumIndex =
+      2400;
+
+
+    const requestedStart =
+      Math.max(
+        minimumIndex,
+        m5.length -
+          requested -
+          FORWARD_BARS
+      );
+
+
+    const lastResolvable =
+      m5.length -
+      1 -
+      FORWARD_BARS;
+
+
     for (
       let i =
-        start;
+        requestedStart;
 
-      i <
-        candles.length;
+      i <=
+        lastResolvable;
 
       i++
     ) {
 
-      const slice =
-        candles.slice(
-          Math.max(
-            0,
-            i -
-              240
-          ),
-          i + 1
+      const currentTime =
+        Date.parse(
+          m5[i].t
         );
 
 
       if (
-        slice.length <
-        70
+        !Number.isFinite(
+          currentTime
+        )
+      ) {
+        continue;
+      }
+
+
+      const m5Slice =
+        m5.slice(
+          0,
+          i + 1
+        );
+
+
+      const m15Slice =
+        candlesUntil(
+          m15All,
+          currentTime
+        );
+
+
+      const h1Slice =
+        candlesUntil(
+          h1All,
+          currentTime
+        );
+
+
+      if (
+        m15Slice.length <
+          210 ||
+        h1Slice.length <
+          210
+      ) {
+
+        continue;
+
+      }
+
+
+      const strategy =
+        simpleTrendPullbackStrategy({
+
+          m5:
+            m5Slice,
+
+          m15:
+            m15Slice,
+
+          h1:
+            h1Slice
+
+        });
+
+
+      const futurePath =
+        buildFuturePath(
+          m5,
+          i,
+          FORWARD_BARS
+        );
+
+
+      if (
+        !futurePath
       ) {
         continue;
       }
@@ -431,42 +562,8 @@ export default async function handler(
 
       const regime =
         detectRegime(
-          slice
+          m5Slice
         );
-
-
-      const components =
-        basicComponentScores(
-          slice
-        );
-
-
-      const state =
-        buildFeatureState(
-          slice,
-          components,
-          regime
-        );
-
-
-      if (!state) {
-        continue;
-      }
-
-
-      const futurePath =
-        i <=
-        candles.length -
-          1 -
-          FORWARD_BARS
-
-          ? buildFuturePath(
-              candles,
-              i,
-              FORWARD_BARS
-            )
-
-          : null;
 
 
       states.push({
@@ -477,20 +574,71 @@ export default async function handler(
           "5min",
 
         candleTime:
-          state.candleTime,
+          m5[i].t,
 
         session:
-          state.session,
+          null,
 
         regime:
-          state.regime,
+          regime.type,
 
-        vector:
-          state.vector,
+        /*
+          Keep vector for database compatibility.
+
+          V14 does NOT use similarity matching.
+        */
+
+        vector:[
+          strategy.signal ===
+            "BUY"
+            ? 1
+            : strategy.signal ===
+              "SELL"
+              ? -1
+              : 0,
+
+          strategy.score ||
+          0
+
+        ],
 
         features:{
-          ...state.features,
-          symbol
+
+          symbol,
+
+          engineVersion:
+            VERSION,
+
+          strategyName:
+            "TREND_PULLBACK_V14",
+
+          strategySignal:
+            strategy.signal,
+
+          strategyDirection:
+            strategy.direction,
+
+          strategyQualified:
+            strategy.qualified,
+
+          strategyScore:
+            strategy.score,
+
+          strategyChecks:
+            strategy.checks,
+
+          buyChecks:
+            strategy.buyChecks,
+
+          sellChecks:
+            strategy.sellChecks,
+
+          indicators:
+            strategy.indicators,
+
+          reasons:
+            strategy.reasons
+
         },
 
         futurePath
@@ -504,25 +652,18 @@ export default async function handler(
       0;
 
 
-    /*
-      Smaller batches are safer for
-      serverless HTTP database requests.
-    */
-
     for (
       let i = 0;
-
       i <
-      states.length;
-
-      i += 200
+        states.length;
+      i += 150
     ) {
 
       processed +=
         await bulkUpsertStates(
           states.slice(
             i,
-            i + 200
+            i + 150
           )
         );
 
@@ -541,6 +682,12 @@ export default async function handler(
 
         success:true,
 
+        version:
+          VERSION,
+
+        engine:
+          "TREND_PULLBACK_V14",
+
         symbol,
 
         memoryEnabled:true,
@@ -553,6 +700,32 @@ export default async function handler(
         requested,
 
         processed,
+
+        generatedStates:
+          states.length,
+
+        qualifiedSetups:
+          states.filter(
+            state =>
+              state.features
+                ?.strategyQualified
+          ).length,
+
+        buys:
+          states.filter(
+            state =>
+              state.features
+                ?.strategySignal ===
+              "BUY"
+          ).length,
+
+        sells:
+          states.filter(
+            state =>
+              state.features
+                ?.strategySignal ===
+              "SELL"
+          ).length,
 
         total:
           count.total,
@@ -576,7 +749,7 @@ export default async function handler(
   catch(error) {
 
     console.error(
-      `MEMORY ${symbol}:`,
+      `MEMORY V14 ${symbol}:`,
       error
     );
 
@@ -587,14 +760,16 @@ export default async function handler(
 
         success:false,
 
+        version:
+          VERSION,
+
         symbol,
 
         error:
           error?.message ||
-          `${symbol} memory update failed.`
+          `${symbol} V14 memory update failed.`
 
       });
 
   }
-
 }
