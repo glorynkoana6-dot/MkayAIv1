@@ -1,9 +1,0 @@
-{
-  "name": "mkayfx-gold-v11",
-  "version": "11.0.0",
-  "private": true,
-  "type": "module",
-  "dependencies": {
-    "@neondatabase/serverless": "^1.2.0"
-  }
-}
