@@ -41,28 +41,28 @@ import {
 
 
 /* =========================================================
-   MKAYFX MULTI-ASSET QUANT EDGE V12
+   MKAYFX MULTI-ASSET QUANT EDGE V12.1
 
-   SUPPORTED:
-   - XAU/USD
-   - BTC/USD
+   SUPPORTED
+   ---------
+   XAU/USD
+   BTC/USD
 
-   FEATURES:
-   - M1 / M5 / M15 / H1 analysis
-   - liquidity sweeps
-   - BOS / CHOCH
-   - displacement
-   - trend / momentum
-   - breakout
-   - mean reversion
-   - historical similarity
-   - adaptive model reliability
-   - optimized ATR SL / TP
-   - cross-market context
-   - macro calendar
-   - market-open detection
-   - stale-data protection
-   - serverless cache
+   V12.1 IMPROVEMENTS
+   ------------------
+   - Separate GOLD / BTC decision policies
+   - BTC regime-specific thresholds
+   - QUIET_CHOP BTC hard block
+   - Strict BTC RANGE filter
+   - Cost-adjusted historical expectancy
+   - H1 / M15 / M5 timeframe agreement
+   - Regime-direction conflict penalty
+   - Historical sample normalization
+   - Target hit-rate normalization
+   - Entry chase protection
+   - Adaptive historical requirements
+   - Stronger BTC qualification
+   - Better diagnostic output
 ========================================================= */
 
 
@@ -130,7 +130,7 @@ function normalizeSymbol(value) {
 
 
 /* =========================================================
-   SETTINGS
+   GENERAL SETTINGS
 ========================================================= */
 
 const M1_OUTPUT =
@@ -352,15 +352,120 @@ const MACRO_CACHE_MS =
 
 
 /* =========================================================
+   BTC ADAPTIVE SETTINGS
+========================================================= */
+
+const BTC_MIN_MATCHES =
+  Math.round(
+    envNumber(
+      "BTC_MIN_HISTORICAL_MATCHES",
+      24,
+      8,
+      200
+    )
+  );
+
+
+const BTC_MIN_EXPECTANCY =
+  envNumber(
+    "BTC_MIN_EXPECTANCY_R",
+    0.08,
+    -1,
+    3
+  );
+
+
+const BTC_RANGE_MIN_EXPECTANCY =
+  envNumber(
+    "BTC_RANGE_MIN_EXPECTANCY_R",
+    0.15,
+    -1,
+    3
+  );
+
+
+const BTC_TREND_MIN_EDGE =
+  envNumber(
+    "BTC_TREND_MIN_EDGE",
+    68,
+    40,
+    95
+  );
+
+
+const BTC_MIXED_MIN_EDGE =
+  envNumber(
+    "BTC_MIXED_MIN_EDGE",
+    66,
+    40,
+    95
+  );
+
+
+const BTC_RANGE_MIN_EDGE =
+  envNumber(
+    "BTC_RANGE_MIN_EDGE",
+    76,
+    40,
+    95
+  );
+
+
+const BTC_MIN_AGREEMENT =
+  envNumber(
+    "BTC_MIN_MODEL_AGREEMENT",
+    0.64,
+    0.4,
+    1
+  );
+
+
+const BTC_RANGE_MIN_AGREEMENT =
+  envNumber(
+    "BTC_RANGE_MIN_MODEL_AGREEMENT",
+    0.70,
+    0.4,
+    1
+  );
+
+
+const BTC_MIN_TF_ALIGNMENT =
+  envNumber(
+    "BTC_MIN_TIMEFRAME_ALIGNMENT",
+    0.60,
+    0,
+    1
+  );
+
+
+const GOLD_MIN_TF_ALIGNMENT =
+  envNumber(
+    "GOLD_MIN_TIMEFRAME_ALIGNMENT",
+    0.50,
+    0,
+    1
+  );
+
+
+const ESTIMATED_COST_ATR =
+  envNumber(
+    "ESTIMATED_COST_ATR",
+    0.03,
+    0,
+    0.5
+  );
+
+
+/* =========================================================
    SERVERLESS CACHE
 ========================================================= */
 
 const CACHE =
-  globalThis.__MKAYFX_V12_CACHE__ ||
+  globalThis.__MKAYFX_V121_CACHE__ ||
   new Map();
 
 
-globalThis.__MKAYFX_V12_CACHE__ =
+globalThis.__MKAYFX_V121_CACHE__ =
   CACHE;
 
 
@@ -1348,7 +1453,7 @@ function regimeAlignment(
     regime ===
     "QUIET_CHOP"
   ) {
-    return 20;
+    return 15;
   }
 
 
@@ -1356,7 +1461,7 @@ function regimeAlignment(
     regime ===
     "RANGE"
   ) {
-    return 55;
+    return 45;
   }
 
 
@@ -1364,47 +1469,636 @@ function regimeAlignment(
     regime ===
     "MIXED"
   ) {
-    return 50;
+    return 55;
   }
 
 
   const bullish =
-    regime.startsWith(
+    String(
+      regime
+    ).startsWith(
       "BULLISH"
     );
 
 
-  return (
+  const bearish =
+    String(
+      regime
+    ).startsWith(
+      "BEARISH"
+    );
+
+
+  if (
+    !bullish &&
+    !bearish
+  ) {
+    return 50;
+  }
+
+
+  if (
     bullish &&
     direction ===
       "BUY"
-  ) ||
-  (
-    !bullish &&
+  ) {
+    return 90;
+  }
+
+
+  if (
+    bearish &&
     direction ===
       "SELL"
-  )
-    ? 90
-    : 25;
+  ) {
+    return 90;
+  }
+
+
+  return 22;
+}
+
+
+/* =========================================================
+   NORMALIZATION
+========================================================= */
+
+function percentScore(
+  value
+) {
+
+  const n =
+    finite(
+      value
+    );
+
+
+  if (
+    n === null
+  ) {
+    return 0;
+  }
+
+
+  /*
+    Supports both:
+    0.65
+    65
+  */
+
+  return clamp(
+    n <= 1
+      ? n * 100
+      : n,
+    0,
+    100
+  );
 
 }
 
 
 /* =========================================================
-   EDGE DECISION
+   TIMEFRAME ALIGNMENT
+========================================================= */
+
+function biasDirection(
+  value
+) {
+
+  const raw =
+    String(
+      value ||
+      ""
+    )
+      .trim()
+      .toUpperCase();
+
+
+  if (
+    raw.includes(
+      "BULL"
+    ) ||
+    raw ===
+      "BUY" ||
+    raw ===
+      "UP"
+  ) {
+
+    return "BUY";
+
+  }
+
+
+  if (
+    raw.includes(
+      "BEAR"
+    ) ||
+    raw ===
+      "SELL" ||
+    raw ===
+      "DOWN"
+  ) {
+
+    return "SELL";
+
+  }
+
+
+  return "NEUTRAL";
+}
+
+
+function timeframeAgreement(
+  packet,
+  direction
+) {
+
+  const frames = [
+
+    {
+      name:
+        "H1",
+
+      weight:
+        0.40,
+
+      bias:
+        biasDirection(
+          packet.H1
+            ?.bias
+        )
+    },
+
+    {
+      name:
+        "M15",
+
+      weight:
+        0.35,
+
+      bias:
+        biasDirection(
+          packet.M15
+            ?.bias
+        )
+    },
+
+    {
+      name:
+        "M5",
+
+      weight:
+        0.25,
+
+      bias:
+        biasDirection(
+          packet.M5
+            ?.bias
+        )
+    }
+
+  ];
+
+
+  let aligned = 0;
+  let opposing = 0;
+  let neutral = 0;
+
+
+  for (
+    const frame of
+    frames
+  ) {
+
+    if (
+      frame.bias ===
+      direction
+    ) {
+
+      aligned +=
+        frame.weight;
+
+    }
+    else if (
+      frame.bias ===
+      "NEUTRAL"
+    ) {
+
+      neutral +=
+        frame.weight;
+
+    }
+    else {
+
+      opposing +=
+        frame.weight;
+
+    }
+
+  }
+
+
+  const score =
+    clamp(
+      aligned +
+      neutral *
+        0.35,
+      0,
+      1
+    );
+
+
+  return {
+
+    score:
+      round(
+        score,
+        3
+      ),
+
+    alignedWeight:
+      round(
+        aligned,
+        3
+      ),
+
+    opposingWeight:
+      round(
+        opposing,
+        3
+      ),
+
+    neutralWeight:
+      round(
+        neutral,
+        3
+      ),
+
+    frames
+
+  };
+
+}
+
+
+/* =========================================================
+   REGIME DIRECTION PENALTY
+========================================================= */
+
+function regimeDirectionAdjustment(
+  symbol,
+  regime,
+  direction
+) {
+
+  const raw =
+    String(
+      regime ||
+      ""
+    )
+      .toUpperCase();
+
+
+  const bullish =
+    raw.startsWith(
+      "BULLISH"
+    );
+
+
+  const bearish =
+    raw.startsWith(
+      "BEARISH"
+    );
+
+
+  if (
+    !bullish &&
+    !bearish
+  ) {
+
+    return 0;
+
+  }
+
+
+  const aligned =
+    (
+      bullish &&
+      direction ===
+        "BUY"
+    ) ||
+    (
+      bearish &&
+      direction ===
+        "SELL"
+    );
+
+
+  if (
+    aligned
+  ) {
+
+    return 3;
+
+  }
+
+
+  return symbol ===
+    "BTC/USD"
+      ? -12
+      : -8;
+}
+
+
+/* =========================================================
+   ASSET / REGIME POLICY
+========================================================= */
+
+function decisionPolicy(
+  symbol,
+  regimeType
+) {
+
+  /*
+    GOLD
+  */
+
+  if (
+    symbol ===
+    "XAU/USD"
+  ) {
+
+    return {
+
+      profile:
+        "GOLD_STANDARD",
+
+      hardBlocked:
+        regimeType ===
+        "QUIET_CHOP",
+
+      minEdge:
+        MIN_EDGE,
+
+      watchEdge:
+        WATCH_EDGE,
+
+      minTechnical:
+        MIN_TECHNICAL,
+
+      minAgreement:
+        MIN_AGREEMENT,
+
+      minMatches:
+        MIN_MATCHES,
+
+      minExpectancy:
+        MIN_EXPECTANCY,
+
+      minTimeframeAlignment:
+        GOLD_MIN_TF_ALIGNMENT,
+
+      regimeScoreAdjustment:
+        regimeType ===
+          "RANGE"
+          ? -3
+          : 0
+
+    };
+
+  }
+
+
+  /*
+    BTC QUIET CHOP
+
+    Research currently shows that this environment
+    produces poor walk-forward performance.
+
+    We block rather than trying to force trades.
+  */
+
+  if (
+    regimeType ===
+    "QUIET_CHOP"
+  ) {
+
+    return {
+
+      profile:
+        "BTC_QUIET_CHOP_BLOCK",
+
+      hardBlocked:
+        true,
+
+      minEdge:
+        100,
+
+      watchEdge:
+        BTC_MIXED_MIN_EDGE,
+
+      minTechnical:
+        30,
+
+      minAgreement:
+        0.80,
+
+      minMatches:
+        BTC_MIN_MATCHES,
+
+      minExpectancy:
+        BTC_RANGE_MIN_EXPECTANCY,
+
+      minTimeframeAlignment:
+        0.70,
+
+      regimeScoreAdjustment:
+        -20
+
+    };
+
+  }
+
+
+  /*
+    BTC RANGE
+
+    Requires significantly stronger evidence.
+  */
+
+  if (
+    regimeType ===
+    "RANGE"
+  ) {
+
+    return {
+
+      profile:
+        "BTC_STRICT_RANGE",
+
+      hardBlocked:
+        false,
+
+      minEdge:
+        BTC_RANGE_MIN_EDGE,
+
+      watchEdge:
+        Math.max(
+          WATCH_EDGE,
+          62
+        ),
+
+      minTechnical:
+        Math.max(
+          MIN_TECHNICAL,
+          28
+        ),
+
+      minAgreement:
+        BTC_RANGE_MIN_AGREEMENT,
+
+      minMatches:
+        Math.max(
+          BTC_MIN_MATCHES,
+          28
+        ),
+
+      minExpectancy:
+        BTC_RANGE_MIN_EXPECTANCY,
+
+      minTimeframeAlignment:
+        0.65,
+
+      regimeScoreAdjustment:
+        -8
+
+    };
+
+  }
+
+
+  /*
+    BTC MIXED
+
+    Still allowed because your walk-forward research
+    currently shows this regime can contain useful setups.
+
+    It still requires positive historical expectancy.
+  */
+
+  if (
+    regimeType ===
+    "MIXED"
+  ) {
+
+    return {
+
+      profile:
+        "BTC_MIXED",
+
+      hardBlocked:
+        false,
+
+      minEdge:
+        BTC_MIXED_MIN_EDGE,
+
+      watchEdge:
+        Math.max(
+          WATCH_EDGE,
+          54
+        ),
+
+      minTechnical:
+        Math.max(
+          MIN_TECHNICAL,
+          22
+        ),
+
+      minAgreement:
+        BTC_MIN_AGREEMENT,
+
+      minMatches:
+        BTC_MIN_MATCHES,
+
+      minExpectancy:
+        BTC_MIN_EXPECTANCY,
+
+      minTimeframeAlignment:
+        0.50,
+
+      regimeScoreAdjustment:
+        2
+
+    };
+
+  }
+
+
+  /*
+    BTC TREND / EXPANSION
+  */
+
+  return {
+
+    profile:
+      "BTC_DIRECTIONAL",
+
+    hardBlocked:
+      false,
+
+    minEdge:
+      BTC_TREND_MIN_EDGE,
+
+    watchEdge:
+      Math.max(
+        WATCH_EDGE,
+        56
+      ),
+
+    minTechnical:
+      Math.max(
+        MIN_TECHNICAL,
+        23
+      ),
+
+    minAgreement:
+      BTC_MIN_AGREEMENT,
+
+    minMatches:
+      BTC_MIN_MATCHES,
+
+    minExpectancy:
+      BTC_MIN_EXPECTANCY,
+
+    minTimeframeAlignment:
+      BTC_MIN_TF_ALIGNMENT,
+
+    regimeScoreAdjustment:
+      1
+
+  };
+
+}
+
+
+/* =========================================================
+   EDGE DECISION V12.1
 ========================================================= */
 
 function buildDecision({
+  symbol,
   ensemble,
   agreement,
   historical,
   regime,
   cross,
-  macro
+  macro,
+  packet
 }) {
 
   const direction =
-    ensemble >= 0
+    ensemble >=
+      0
       ? "BUY"
       : "SELL";
 
@@ -1415,52 +2109,116 @@ function buildDecision({
     );
 
 
+  const policy =
+    decisionPolicy(
+      symbol,
+      regime.type
+    );
+
+
+  const timeframe =
+    timeframeAgreement(
+      packet,
+      direction
+    );
+
+
+  /* -----------------------------------------------------
+     SAMPLE QUALITY
+  ----------------------------------------------------- */
+
   const sampleScore =
     clamp(
-      historical.matches /
-      MIN_MATCHES *
-      100,
+      (
+        historical.matches /
+        Math.max(
+          policy.minMatches,
+          1
+        )
+      ) *
+        100,
       0,
       100
     );
 
 
+  /* -----------------------------------------------------
+     COST-ADJUSTED EXPECTANCY
+  ----------------------------------------------------- */
+
+  const rawExpectancy =
+    finite(
+      historical
+        .expectancyR
+    ) ??
+    -1;
+
+
+  const estimatedCostR =
+    finite(
+      historical
+        ?.costModel
+        ?.estimatedCostR
+    ) ??
+    0;
+
+
+  const netExpectancy =
+    rawExpectancy -
+    estimatedCostR;
+
+
   const expectancyScore =
     clamp(
       50 +
-      (
-        historical
-          .expectancyR ??
-        -1
-      ) *
+      netExpectancy *
         55,
       0,
       100
     );
 
 
+  /* -----------------------------------------------------
+     NORMALIZED HISTORY
+  ----------------------------------------------------- */
+
+  const hitRate =
+    percentScore(
+      historical
+        .targetHitRate
+    );
+
+
+  const averageSimilarity =
+    percentScore(
+      historical
+        .averageSimilarity
+    );
+
+
   const historicalScore =
     clamp(
-      (
-        historical
-          .targetHitRate ??
-        0
-      ) *
-        0.36 +
-      (
-        historical
-          .averageSimilarity ??
-        0
-      ) *
-        0.24 +
+
+      hitRate *
+        0.34 +
+
+      averageSimilarity *
+        0.22 +
+
       sampleScore *
         0.20 +
+
       expectancyScore *
-        0.20,
+        0.24,
+
       0,
       100
     );
 
+
+  /* -----------------------------------------------------
+     CROSS MARKET
+  ----------------------------------------------------- */
 
   const crossAlignment =
     !cross.available
@@ -1474,64 +2232,169 @@ function buildDecision({
           : 25;
 
 
-  const edgeScore =
+  /* -----------------------------------------------------
+     REGIME
+  ----------------------------------------------------- */
+
+  const regimeScore =
+    regimeAlignment(
+      regime.type,
+      direction
+    );
+
+
+  const directionAdjustment =
+    regimeDirectionAdjustment(
+      symbol,
+      regime.type,
+      direction
+    );
+
+
+  /*
+    BTC:
+      less dependence on DXY / yields correlation.
+
+    GOLD:
+      cross-market relationships receive slightly
+      more weight.
+  */
+
+  const weights =
+    symbol ===
+      "BTC/USD"
+      ? {
+
+          technical:
+            0.27,
+
+          agreement:
+            0.15,
+
+          historical:
+            0.27,
+
+          regime:
+            0.10,
+
+          cross:
+            0.04,
+
+          regimeConfidence:
+            0.07,
+
+          timeframe:
+            0.10
+
+        }
+      : {
+
+          technical:
+            0.27,
+
+          agreement:
+            0.15,
+
+          historical:
+            0.25,
+
+          regime:
+            0.10,
+
+          cross:
+            0.06,
+
+          regimeConfidence:
+            0.07,
+
+          timeframe:
+            0.10
+
+        };
+
+
+  let edgeScore =
+
+    technical *
+      weights.technical +
+
+    agreement *
+      100 *
+      weights.agreement +
+
+    historicalScore *
+      weights.historical +
+
+    regimeScore *
+      weights.regime +
+
+    crossAlignment *
+      weights.cross +
+
+    (
+      regime.confidence ??
+      50
+    ) *
+      weights.regimeConfidence +
+
+    timeframe.score *
+      100 *
+      weights.timeframe;
+
+
+  edgeScore +=
+    policy
+      .regimeScoreAdjustment;
+
+
+  edgeScore +=
+    directionAdjustment;
+
+
+  edgeScore =
     clamp(
-      technical *
-        0.30 +
-      agreement *
-        100 *
-        0.16 +
-      historicalScore *
-        0.29 +
-      regimeAlignment(
-        regime.type,
-        direction
-      ) *
-        0.12 +
-      crossAlignment *
-        0.06 +
-      (
-        regime.confidence ??
-        50
-      ) *
-        0.07,
+      edgeScore,
       0,
       100
     );
 
 
+  /* -----------------------------------------------------
+     QUALIFICATION GATES
+  ----------------------------------------------------- */
+
   const gates = {
+
+    assetRegimeAllowed:
+      !policy.hardBlocked,
 
     technicalStrength:
       technical >=
-      MIN_TECHNICAL,
+      policy.minTechnical,
 
     modelAgreement:
       agreement >=
-      MIN_AGREEMENT,
+      policy.minAgreement,
+
+    timeframeAgreement:
+      timeframe.score >=
+      policy
+        .minTimeframeAlignment,
 
     historicalSample:
       historical.matches >=
-      MIN_MATCHES,
+      policy.minMatches,
 
     historicalExpectancy:
-      (
-        historical
-          .expectancyR ??
-        -99
-      ) >=
-      MIN_EXPECTANCY,
-
-    regimeNotQuietChop:
-      regime.type !==
-      "QUIET_CHOP",
+      netExpectancy >=
+      policy.minExpectancy,
 
     macroWindowClear:
       !macro.blocked,
 
     edgeScore:
       edgeScore >=
-      MIN_EDGE
+      policy.minEdge
 
   };
 
@@ -1568,8 +2431,9 @@ function buildDecision({
 
   }
   else if (
+    !policy.hardBlocked &&
     edgeScore >=
-    WATCH_EDGE
+      policy.watchEdge
   ) {
 
     signal =
@@ -1605,13 +2469,63 @@ function buildDecision({
         3
       ),
 
+    timeframeAgreement:
+      timeframe,
+
     historicalScore:
       round(
         historicalScore,
         1
       ),
 
-    crossAlignment,
+    rawHistoricalExpectancyR:
+      round(
+        rawExpectancy,
+        3
+      ),
+
+    estimatedCostR:
+      round(
+        estimatedCostR,
+        3
+      ),
+
+    netHistoricalExpectancyR:
+      round(
+        netExpectancy,
+        3
+      ),
+
+    historicalHitRate:
+      round(
+        hitRate,
+        1
+      ),
+
+    historicalAverageSimilarity:
+      round(
+        averageSimilarity,
+        1
+      ),
+
+    crossAlignment:
+      round(
+        crossAlignment,
+        1
+      ),
+
+    regimeAlignment:
+      round(
+        regimeScore,
+        1
+      ),
+
+    regimeDirectionAdjustment:
+      directionAdjustment,
+
+    policy,
+
+    weights,
 
     gates,
 
@@ -1621,22 +2535,26 @@ function buildDecision({
     thresholds: {
 
       minEdgeScore:
-        MIN_EDGE,
+        policy.minEdge,
 
       watchEdgeScore:
-        WATCH_EDGE,
+        policy.watchEdge,
 
       minTechnicalScore:
-        MIN_TECHNICAL,
+        policy.minTechnical,
 
       minModelAgreement:
-        MIN_AGREEMENT,
+        policy.minAgreement,
+
+      minTimeframeAlignment:
+        policy
+          .minTimeframeAlignment,
 
       minHistoricalMatches:
-        MIN_MATCHES,
+        policy.minMatches,
 
       minExpectancyR:
-        MIN_EXPECTANCY
+        policy.minExpectancy
 
     }
 
@@ -1682,18 +2600,24 @@ function createTradePlan(
   const swingLow =
     finite(
       packet.M1
-        .ict
-        .lastSwingLow
+        ?.ict
+        ?.lastSwingLow
     );
 
 
   const swingHigh =
     finite(
       packet.M1
-        .ict
-        .lastSwingHigh
+        ?.ict
+        ?.lastSwingHigh
     );
 
+
+  /*
+    BUY:
+    Prefer recent swing low when it produces
+    a reasonable ATR-based stop.
+  */
 
   if (
     direction ===
@@ -1727,6 +2651,11 @@ function createTradePlan(
 
   }
 
+
+  /*
+    SELL:
+    Prefer recent swing high when appropriate.
+  */
 
   if (
     direction ===
@@ -1941,6 +2870,10 @@ export default async function handler(
 
   try {
 
+    /* =====================================================
+       REQUEST
+    ===================================================== */
+
     const body =
       bodyOf(
         req
@@ -1962,7 +2895,9 @@ export default async function handler(
       );
 
 
-    if (!symbol) {
+    if (
+      !symbol
+    ) {
 
       return send(
         res,
@@ -1987,12 +2922,14 @@ export default async function handler(
 
 
     const asset =
-      ASSETS[symbol];
+      ASSETS[
+        symbol
+      ];
 
 
-    /* -----------------------------------------------------
-       ESSENTIAL DATA
-    ----------------------------------------------------- */
+    /* =====================================================
+       ESSENTIAL MARKET DATA
+    ===================================================== */
 
     const [
       rawM1,
@@ -2030,9 +2967,9 @@ export default async function handler(
       ]);
 
 
-    /* -----------------------------------------------------
+    /* =====================================================
        SECONDARY CONTEXT
-    ----------------------------------------------------- */
+    ===================================================== */
 
     const [
       cross,
@@ -2048,6 +2985,10 @@ export default async function handler(
 
       ]);
 
+
+    /* =====================================================
+       COMPLETED CANDLES ONLY
+    ===================================================== */
 
     const m1 =
       completed(
@@ -2095,8 +3036,14 @@ export default async function handler(
     }
 
 
+    /* =====================================================
+       DATA FRESHNESS
+    ===================================================== */
+
     const lastM1 =
-      m1.at(-1);
+      m1.at(
+        -1
+      );
 
 
     const lastCandleEnd =
@@ -2146,6 +3093,10 @@ export default async function handler(
     }
 
 
+    /* =====================================================
+       MULTI-TIMEFRAME PACKET
+    ===================================================== */
+
     const packet = {
 
       lastM1,
@@ -2181,9 +3132,11 @@ export default async function handler(
 
 
     /*
-      Existing goldContext() is really a generic
-      day/session/liquidity routine, so V12 also
-      uses it for BTC.
+      Existing goldContext() provides session,
+      liquidity and day context.
+
+      It is also useful for BTC despite the old
+      function name.
     */
 
     packet.gold =
@@ -2193,11 +3146,19 @@ export default async function handler(
       );
 
 
+    /* =====================================================
+       REGIME
+    ===================================================== */
+
     const regime =
       detectRegime(
         m5
       );
 
+
+    /* =====================================================
+       TECHNICAL COMPONENTS
+    ===================================================== */
 
     const technical =
       scoreTechnical(
@@ -2221,13 +3182,19 @@ export default async function handler(
 
       cross:
         (
-          cross.score ||
+          finite(
+            cross.score
+          ) ??
           0
         ) *
         asset.crossWeight
 
     };
 
+
+    /* =====================================================
+       MARKET FINGERPRINT
+    ===================================================== */
 
     const currentState =
       buildFeatureState(
@@ -2237,7 +3204,9 @@ export default async function handler(
       );
 
 
-    if (!currentState) {
+    if (
+      !currentState
+    ) {
 
       throw new Error(
         "Could not create market fingerprint."
@@ -2261,12 +3230,16 @@ export default async function handler(
       currentState.features.symbol =
         symbol;
 
+
+      currentState.features.assetType =
+        asset.type;
+
     }
 
 
-    /* -----------------------------------------------------
+    /* =====================================================
        STORE CURRENT STATE
-    ----------------------------------------------------- */
+    ===================================================== */
 
     if (
       dbEnabled()
@@ -2286,9 +3259,9 @@ export default async function handler(
     }
 
 
-    /* -----------------------------------------------------
+    /* =====================================================
        HISTORICAL MEMORY
-    ----------------------------------------------------- */
+    ===================================================== */
 
     let matches = [];
 
@@ -2336,6 +3309,11 @@ export default async function handler(
     }
 
 
+    /*
+      Fall back to fetched historical candles if
+      persistent memory is too small.
+    */
+
     if (
       matches.length <
       MIN_MATCHES
@@ -2354,9 +3332,9 @@ export default async function handler(
     }
 
 
-    /* -----------------------------------------------------
+    /* =====================================================
        ADAPTIVE ENSEMBLE
-    ----------------------------------------------------- */
+    ===================================================== */
 
     const reliability =
       adaptiveReliability(
@@ -2373,10 +3351,15 @@ export default async function handler(
 
 
     const direction =
-      ensemble >= 0
+      ensemble >=
+        0
         ? "BUY"
         : "SELL";
 
+
+    /* =====================================================
+       OPTIMIZED SL / TP
+    ===================================================== */
 
     const optimized =
       optimizeRiskReward(
@@ -2402,6 +3385,10 @@ export default async function handler(
       };
 
 
+    /* =====================================================
+       HISTORICAL STATS
+    ===================================================== */
+
     const historical =
       historicalStats(
         matches,
@@ -2412,15 +3399,20 @@ export default async function handler(
 
 
     historical.averageSimilarity =
-      round(
-        mean(
-          matches.map(
-            x =>
-              x.similarity
+      matches.length
+        ? round(
+            mean(
+              matches.map(
+                x =>
+                  finite(
+                    x.similarity
+                  ) ??
+                  0
+              )
+            ),
+            1
           )
-        ),
-        1
-      );
+        : 0;
 
 
     historical.source =
@@ -2434,23 +3426,16 @@ export default async function handler(
     historical.costModel = {
 
       estimatedCostAtr:
-        envNumber(
-          "ESTIMATED_COST_ATR",
-          0.03,
-          0,
-          0.5
-        ),
+        ESTIMATED_COST_ATR,
 
       estimatedCostR:
         round(
-          envNumber(
-            "ESTIMATED_COST_ATR",
-            0.03,
-            0,
-            0.5
-          ) /
+          ESTIMATED_COST_ATR /
           Math.max(
-            optimized.stopAtr,
+            finite(
+              optimized.stopAtr
+            ) ??
+            1,
             0.01
           ),
           3
@@ -2459,6 +3444,26 @@ export default async function handler(
     };
 
 
+    historical.netExpectancyR =
+      round(
+        (
+          finite(
+            historical
+              .expectancyR
+          ) ??
+          -1
+        ) -
+        historical
+          .costModel
+          .estimatedCostR,
+        3
+      );
+
+
+    /* =====================================================
+       MODEL AGREEMENT
+    ===================================================== */
+
     const agreement =
       modelAgreement(
         components,
@@ -2466,8 +3471,14 @@ export default async function handler(
       );
 
 
+    /* =====================================================
+       EDGE DECISION
+    ===================================================== */
+
     const decision =
       buildDecision({
+
+        symbol,
 
         ensemble,
 
@@ -2479,14 +3490,16 @@ export default async function handler(
 
         cross,
 
-        macro
+        macro,
+
+        packet
 
       });
 
 
-    /* -----------------------------------------------------
-       MARKET SAFETY GATES
-    ----------------------------------------------------- */
+    /* =====================================================
+       MARKET SAFETY
+    ===================================================== */
 
     decision.gates.marketOpen =
       schedule.open;
@@ -2542,25 +3555,15 @@ export default async function handler(
     }
 
 
-    /* -----------------------------------------------------
-       SETUP
-    ----------------------------------------------------- */
-
-    const setupType =
-      inferSetup(
-        packet,
-        regime,
-        components,
-        decision
-          .candidateDirection
-      );
-
+    /* =====================================================
+       ATR
+    ===================================================== */
 
     const m5Atr =
       finite(
         packet.M5
-          .indicators
-          .atr14
+          ?.indicators
+          ?.atr14
       );
 
 
@@ -2578,6 +3581,84 @@ export default async function handler(
     }
 
 
+    /* =====================================================
+       ENTRY CHASE PROTECTION
+    ===================================================== */
+
+    const completedPrice =
+      finite(
+        lastM1.c
+      );
+
+
+    const chaseDistance =
+      completedPrice !==
+        null
+        ? Math.abs(
+            referencePrice -
+            completedPrice
+          )
+        : 0;
+
+
+    const chaseAtr =
+      m5Atr >
+        0
+        ? chaseDistance /
+          m5Atr
+        : 0;
+
+
+    const chasePassed =
+      chaseAtr <=
+      MAX_CHASE_ATR;
+
+
+    decision.gates.entryNotChased =
+      chasePassed;
+
+
+    if (
+      !chasePassed
+    ) {
+
+      decision.failedGates =
+        [
+          ...new Set([
+            ...decision.failedGates,
+            "entryNotChased"
+          ])
+        ];
+
+
+      decision.qualified =
+        false;
+
+
+      decision.signal =
+        "WAIT";
+
+    }
+
+
+    /* =====================================================
+       SETUP TYPE
+    ===================================================== */
+
+    const setupType =
+      inferSetup(
+        packet,
+        regime,
+        components,
+        decision
+          .candidateDirection
+      );
+
+
+    /* =====================================================
+       TRADE PLAN
+    ===================================================== */
+
     const plan =
       decision.qualified
         ? createTradePlan(
@@ -2591,9 +3672,9 @@ export default async function handler(
         : null;
 
 
-    /* -----------------------------------------------------
-       ACCOUNT
-    ----------------------------------------------------- */
+    /* =====================================================
+       ACCOUNT RISK
+    ===================================================== */
 
     const equity =
       Math.max(
@@ -2627,17 +3708,21 @@ export default async function handler(
     };
 
 
+    /* =====================================================
+       SIGNAL ID
+    ===================================================== */
+
     const created =
       Date.now();
 
 
     const signalId =
-      `MKV12-${asset.code}-${created}-${direction}`;
+      `MKV121-${asset.code}-${created}-${direction}`;
 
 
-    /* -----------------------------------------------------
+    /* =====================================================
        MEMORY STATUS
-    ----------------------------------------------------- */
+    ===================================================== */
 
     const memory =
       dbEnabled()
@@ -2649,14 +3734,61 @@ export default async function handler(
               })
             )
         : {
-            total: 0,
-            resolved: 0
+
+            total:
+              0,
+
+            resolved:
+              0
+
           };
 
 
-    /* -----------------------------------------------------
+    /* =====================================================
+       EXECUTION STATE
+    ===================================================== */
+
+    let executionState =
+      decision.signal;
+
+
+    if (
+      !schedule.open
+    ) {
+
+      executionState =
+        "MARKET_CLOSED";
+
+    }
+    else if (
+      dataStale
+    ) {
+
+      executionState =
+        "STALE_DATA";
+
+    }
+    else if (
+      !chasePassed
+    ) {
+
+      executionState =
+        "PRICE_CHASED";
+
+    }
+    else if (
+      decision.qualified
+    ) {
+
+      executionState =
+        "QUALIFIED_NOT_ENTERED";
+
+    }
+
+
+    /* =====================================================
        RESPONSE
-    ----------------------------------------------------- */
+    ===================================================== */
 
     const response = {
 
@@ -2664,10 +3796,10 @@ export default async function handler(
         true,
 
       model:
-        "MKAYFX MULTI-ASSET QUANT EDGE V12",
+        "MKAYFX MULTI-ASSET QUANT EDGE V12.1",
 
       version:
-        12,
+        12.1,
 
       supportedSymbols: [
         "XAU/USD",
@@ -2679,6 +3811,7 @@ export default async function handler(
       symbol,
 
       asset: {
+
         code:
           asset.code,
 
@@ -2690,7 +3823,13 @@ export default async function handler(
 
         trades247:
           asset.trades247
+
       },
+
+
+      /* ---------------------------------------------------
+         SIGNAL
+      --------------------------------------------------- */
 
       signal:
         decision.signal,
@@ -2706,6 +3845,11 @@ export default async function handler(
 
       setupType,
 
+
+      /* ---------------------------------------------------
+         TIME
+      --------------------------------------------------- */
+
       createdAt:
         new Date(
           created
@@ -2714,11 +3858,21 @@ export default async function handler(
       session:
         packet.session,
 
+
+      /* ---------------------------------------------------
+         EDGE
+      --------------------------------------------------- */
+
       edgeScore:
         decision.edgeScore,
 
       edgeType:
         "EDGE_SCORE_NOT_GUARANTEED_PROBABILITY",
+
+
+      /* ---------------------------------------------------
+         MARKET STATUS
+      --------------------------------------------------- */
 
       marketStatus: {
 
@@ -2748,11 +3902,27 @@ export default async function handler(
 
       },
 
+
+      /* ---------------------------------------------------
+         PRICE
+      --------------------------------------------------- */
+
       currentPrice:
         round(
           referencePrice,
           asset.precision
         ),
+
+      completedCandlePrice:
+        round(
+          completedPrice,
+          asset.precision
+        ),
+
+
+      /* ---------------------------------------------------
+         TRADE LEVELS
+      --------------------------------------------------- */
 
       entry:
         plan?.entry ??
@@ -2785,8 +3955,21 @@ export default async function handler(
         plan?.riskDistance ??
         null,
 
+
+      /* ---------------------------------------------------
+         REGIME
+      --------------------------------------------------- */
+
       marketRegime:
         regime,
+
+      regimePolicy:
+        decision.policy,
+
+
+      /* ---------------------------------------------------
+         ENSEMBLE
+      --------------------------------------------------- */
 
       ensemble: {
 
@@ -2796,6 +3979,8 @@ export default async function handler(
             1
           ),
 
+        direction,
+
         components,
 
         adaptiveReliability:
@@ -2803,28 +3988,47 @@ export default async function handler(
 
       },
 
+
+      /* ---------------------------------------------------
+         EDGE DECISION
+      --------------------------------------------------- */
+
       edgeDecision:
         decision,
+
+
+      /* ---------------------------------------------------
+         HISTORICAL
+      --------------------------------------------------- */
 
       historicalEdge:
         historical,
 
+
+      /* ---------------------------------------------------
+         CROSS MARKET
+      --------------------------------------------------- */
+
       crossMarket:
         cross,
+
+
+      /* ---------------------------------------------------
+         MACRO
+      --------------------------------------------------- */
 
       macroRisk:
         macro,
 
+
+      /* ---------------------------------------------------
+         EXECUTION
+      --------------------------------------------------- */
+
       execution: {
 
         state:
-          !schedule.open
-            ? "MARKET_CLOSED"
-            : dataStale
-              ? "STALE_DATA"
-              : decision.qualified
-                ? "QUALIFIED_NOT_ENTERED"
-                : decision.signal,
+          executionState,
 
         referenceAtr:
           round(
@@ -2835,24 +4039,44 @@ export default async function handler(
         maxChaseAtr:
           MAX_CHASE_ATR,
 
+        currentChaseAtr:
+          round(
+            chaseAtr,
+            3
+          ),
+
+        chaseDistance:
+          round(
+            chaseDistance,
+            asset.precision
+          ),
+
+        entryChasePassed:
+          chasePassed,
+
         freshUntil:
           new Date(
             created +
             FRESH_MINUTES *
-            60000
+              60000
           ).toISOString(),
 
         expiresAt:
           new Date(
             created +
             EXPIRE_MINUTES *
-            60000
+              60000
           ).toISOString(),
 
         rule:
           "Manual execution only."
 
       },
+
+
+      /* ---------------------------------------------------
+         TIMEFRAME BIAS
+      --------------------------------------------------- */
 
       timeframeBias: {
 
@@ -2866,37 +4090,73 @@ export default async function handler(
           packet.M15.bias,
 
         H1:
-          packet.H1.bias
+          packet.H1.bias,
+
+        agreement:
+          decision
+            .timeframeAgreement
 
       },
+
+
+      /* ---------------------------------------------------
+         STRUCTURE
+      --------------------------------------------------- */
 
       structure: {
 
         M1:
-          packet.M1.structure,
+          packet.M1
+            .structure,
 
         M1_BOS:
           packet.M1
-            .ict
-            .bos,
+            ?.ict
+            ?.bos ??
+          null,
 
         M1_CHOCH:
           packet.M1
-            .ict
-            .choch,
+            ?.ict
+            ?.choch ??
+          null,
 
         M5:
-          packet.M5.structure,
+          packet.M5
+            .structure,
 
         M5_BOS:
           packet.M5
-            .ict
-            .bos,
+            ?.ict
+            ?.bos ??
+          null,
+
+        M5_CHOCH:
+          packet.M5
+            ?.ict
+            ?.choch ??
+          null,
 
         M15:
-          packet.M15.structure
+          packet.M15
+            .structure,
+
+        M15_BOS:
+          packet.M15
+            ?.ict
+            ?.bos ??
+          null,
+
+        H1:
+          packet.H1
+            .structure
 
       },
+
+
+      /* ---------------------------------------------------
+         CONTEXT
+      --------------------------------------------------- */
 
       marketContext:
         packet.gold,
@@ -2907,29 +4167,71 @@ export default async function handler(
           ? packet.gold
           : null,
 
+
+      /* ---------------------------------------------------
+         TECHNICAL EXPLANATION
+      --------------------------------------------------- */
+
       technical: {
 
         componentScores:
           technical,
 
+        allComponents:
+          components,
+
         reasons: [
 
-          `${asset.name} regime ${regime.type} (${regime.confidence}% confidence).`,
+          `${asset.name} regime ${regime.type} (${regime.confidence ?? 0}% confidence).`,
 
-          `H1 ${packet.H1.bias}, M15 ${packet.M15.bias}, M5 ${packet.M5.bias}.`,
+          `Policy ${decision.policy.profile}.`,
 
-          `M1 structure ${packet.M1.structure}, ${packet.M1.ict.bos}, ${packet.M1.ict.choch}.`,
+          `Candidate ${direction} with edge ${decision.edgeScore}.`,
 
-          ...packet.gold
-            .signals,
+          `H1 ${packet.H1.bias}, M15 ${packet.M15.bias}, M5 ${packet.M5.bias}, M1 ${packet.M1.bias}.`,
+
+          `Timeframe agreement ${round(
+            decision.timeframeAgreement.score * 100,
+            1
+          )}%.`,
+
+          `Model agreement ${round(
+            decision.modelAgreement * 100,
+            1
+          )}%.`,
+
+          `M1 structure ${packet.M1.structure}, ${packet.M1?.ict?.bos ?? "NO_BOS"}, ${packet.M1?.ict?.choch ?? "NO_CHOCH"}.`,
+
+          ...(
+            Array.isArray(
+              packet.gold
+                ?.signals
+            )
+              ? packet.gold.signals
+              : []
+          ),
 
           cross.available
             ? `Cross-market ${cross.direction} (${cross.score}).`
             : "Cross-market feeds unavailable.",
 
           historical.matches
-            ? `${historical.matches} similar states, ${historical.expectancyR}R historical expectancy.`
+            ? `${historical.matches} similar states, raw expectancy ${historical.expectancyR}R, net expectancy ${historical.netExpectancyR}R.`
             : "Historical sample unavailable.",
+
+          `Historical similarity ${historical.averageSimilarity}%.`,
+
+          `Optimized stop ${round(
+            finite(
+              optimized.stopAtr
+            ) ?? 1,
+            2
+          )} ATR and target ${round(
+            finite(
+              optimized.targetR
+            ) ?? 1.2,
+            2
+          )}R.`,
 
           macro.blocked
             ? `Macro block: ${macro.blockReason}.`
@@ -2945,13 +4247,37 @@ export default async function handler(
                 60000,
                 1
               )} minutes old.`
-            : "Market data freshness check passed."
+            : "Market data freshness check passed.",
+
+          chasePassed
+            ? `Entry chase check passed at ${round(
+                chaseAtr,
+                3
+              )} ATR.`
+            : `Trade rejected because live price moved ${round(
+                chaseAtr,
+                3
+              )} ATR from the completed candle.`,
+
+          decision.failedGates.length
+            ? `Failed gates: ${decision.failedGates.join(", ")}.`
+            : "All trade qualification gates passed."
 
         ]
 
       },
 
+
+      /* ---------------------------------------------------
+         ACCOUNT
+      --------------------------------------------------- */
+
       account,
+
+
+      /* ---------------------------------------------------
+         MEMORY
+      --------------------------------------------------- */
 
       memory: {
 
@@ -2965,13 +4291,23 @@ export default async function handler(
           memory.resolved,
 
         sourceUsed:
-          memorySource
+          memorySource,
+
+        currentMatches:
+          matches.length
 
       },
 
+
+      /* ---------------------------------------------------
+         CHART
+      --------------------------------------------------- */
+
       chart:
         m1
-          .slice(-180)
+          .slice(
+            -180
+          )
           .map(
             candle => ({
 
@@ -3005,6 +4341,11 @@ export default async function handler(
             })
           ),
 
+
+      /* ---------------------------------------------------
+         DATA QUALITY
+      --------------------------------------------------- */
+
       dataQuality: {
 
         completedM1:
@@ -3022,17 +4363,31 @@ export default async function handler(
         staleMilliseconds:
           dataAge,
 
+        staleMinutes:
+          round(
+            dataAge /
+            60000,
+            2
+          ),
+
         cacheEnabled:
-          true
+          true,
+
+        livePriceAvailable:
+          livePriceResult !==
+            null,
+
+        historicalMatches:
+          matches.length
 
       }
 
     };
 
 
-    /* -----------------------------------------------------
+    /* =====================================================
        SAVE SIGNAL
-    ----------------------------------------------------- */
+    ===================================================== */
 
     if (
       dbEnabled()
@@ -3062,7 +4417,7 @@ export default async function handler(
   catch (error) {
 
     console.error(
-      "MKAYFX V12:",
+      "MKAYFX V12.1:",
       error
     );
 
@@ -3076,7 +4431,10 @@ export default async function handler(
           false,
 
         model:
-          "MKAYFX MULTI-ASSET QUANT EDGE V12",
+          "MKAYFX MULTI-ASSET QUANT EDGE V12.1",
+
+        version:
+          12.1,
 
         error:
           error?.message ||
