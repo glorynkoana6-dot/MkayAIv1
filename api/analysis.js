@@ -10,9 +10,8 @@ import {
   resample,
   snapshot,
   detectRegime,
-  simpleTrendPullbackStrategy
+  multiAgentStrategy
 } from "./core.js";
-
 
 import {
   dbEnabled,
@@ -21,32 +20,25 @@ import {
 } from "./db.js";
 
 
-/* =========================================================
-   MKAYFX SIMPLE TREND ENGINE V14
-========================================================= */
-
-const VERSION =
-  "14.0";
+const VERSION = "15.0";
 
 
 const ASSETS = {
-
-  "XAU/USD":{
-    code:"XAUUSD",
-    name:"Gold",
-    type:"METAL",
-    precision:2,
-    trades247:false
+  "XAU/USD": {
+    code: "XAUUSD",
+    name: "Gold",
+    type: "METAL",
+    precision: 2,
+    trades247: false
   },
 
-  "BTC/USD":{
-    code:"BTCUSD",
-    name:"Bitcoin",
-    type:"CRYPTO",
-    precision:2,
-    trades247:true
+  "BTC/USD": {
+    code: "BTCUSD",
+    name: "Bitcoin",
+    type: "CRYPTO",
+    precision: 2,
+    trades247: true
   }
-
 };
 
 
@@ -67,24 +59,6 @@ const RISK_PERCENT =
   );
 
 
-const STOP_ATR =
-  envNumber(
-    "SIMPLE_STOP_ATR",
-    1,
-    0.5,
-    3
-  );
-
-
-const TARGET_R =
-  envNumber(
-    "SIMPLE_TARGET_R",
-    2,
-    1,
-    5
-  );
-
-
 const STALE_MS =
   envNumber(
     "STALE_MS",
@@ -94,61 +68,44 @@ const STALE_MS =
   );
 
 
-/* =========================================================
-   HELPERS
-========================================================= */
-
 function normalizeSymbol(value) {
-
   const raw =
     String(
-      value ||
-      "XAU/USD"
+      value || "XAU/USD"
     )
       .trim()
       .toUpperCase()
-      .replace(
-        /\s+/g,
-        ""
-      );
-
+      .replace(/\s+/g, "");
 
   if (
-    raw ===
-      "XAU/USD" ||
-    raw ===
-      "XAUUSD" ||
-    raw ===
+    [
+      "XAU/USD",
+      "XAUUSD",
       "GOLD"
+    ].includes(raw)
   ) {
     return "XAU/USD";
   }
 
-
   if (
-    raw ===
-      "BTC/USD" ||
-    raw ===
-      "BTCUSD" ||
-    raw ===
-      "BTC" ||
-    raw ===
+    [
+      "BTC/USD",
+      "BTCUSD",
+      "BTC",
       "BITCOIN"
+    ].includes(raw)
   ) {
     return "BTC/USD";
   }
-
 
   return null;
 }
 
 
 function bodyOf(req) {
-
   if (!req.body) {
     return {};
   }
-
 
   if (
     typeof req.body ===
@@ -157,18 +114,11 @@ function bodyOf(req) {
     return req.body;
   }
 
-
   try {
-
-    return JSON.parse(
-      req.body
-    );
-
+    return JSON.parse(req.body);
   }
   catch {
-
     return {};
-
   }
 }
 
@@ -177,10 +127,8 @@ function queryValue(
   req,
   key
 ) {
-
   const value =
     req.query?.[key];
-
 
   return Array.isArray(value)
     ? value[0]
@@ -192,146 +140,109 @@ function marketOpen(
   symbol,
   now = Date.now()
 ) {
-
   if (
-    symbol ===
-    "BTC/USD"
+    symbol === "BTC/USD"
   ) {
-
     return {
-      open:true,
-      reason:"24_7_MARKET"
+      open: true,
+      reason: "24_7_MARKET"
     };
-
   }
-
 
   const date =
     new Date(now);
 
-
   const day =
     date.getUTCDay();
-
 
   const hour =
     date.getUTCHours();
 
-
-  if (
-    day === 6
-  ) {
-
+  if (day === 6) {
     return {
-      open:false,
-      reason:"WEEKEND"
+      open: false,
+      reason: "WEEKEND"
     };
-
   }
-
 
   if (
     day === 0 &&
     hour < 22
   ) {
-
     return {
-      open:false,
-      reason:"WEEKEND"
+      open: false,
+      reason: "WEEKEND"
     };
-
   }
-
 
   if (
     day === 5 &&
     hour >= 22
   ) {
-
     return {
-      open:false,
-      reason:"WEEKEND"
+      open: false,
+      reason: "WEEKEND"
     };
-
   }
 
-
   return {
-    open:true,
-    reason:"NORMAL_SESSION"
+    open: true,
+    reason:
+      "NORMAL_SESSION"
   };
 }
 
-
-/* =========================================================
-   MAIN
-========================================================= */
 
 export default async function handler(
   req,
   res
 ) {
-
   res.setHeader(
     "Cache-Control",
     "no-store"
   );
-
 
   res.setHeader(
     "Access-Control-Allow-Origin",
     "*"
   );
 
-
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Content-Type"
   );
-
 
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET,POST,OPTIONS"
   );
 
-
   if (
-    req.method ===
-    "OPTIONS"
+    req.method === "OPTIONS"
   ) {
-
     return res
       .status(204)
       .end();
-
   }
-
 
   if (
     ![
       "GET",
       "POST"
-    ].includes(
-      req.method
-    )
+    ].includes(req.method)
   ) {
-
     return res
       .status(405)
       .json({
-        success:false,
-        error:"Use GET or POST."
+        success: false,
+        error:
+          "Use GET or POST."
       });
-
   }
 
-
   try {
-
     const body =
       bodyOf(req);
-
 
     const symbol =
       normalizeSymbol(
@@ -343,40 +254,24 @@ export default async function handler(
         "XAU/USD"
       );
 
-
     if (!symbol) {
-
       return res
         .status(400)
         .json({
-
-          success:false,
+          success: false,
 
           error:
             "Unsupported symbol.",
 
-          supportedSymbols:[
+          supportedSymbols: [
             "XAU/USD",
             "BTC/USD"
           ]
-
         });
-
     }
-
 
     const asset =
       ASSETS[symbol];
-
-
-    /* =====================================================
-       MARKET DATA
-
-       M5 drives the strategy.
-
-       M15 and H1 are built from the exact same M5 data.
-       This is important because the backtest does the same.
-    ===================================================== */
 
     const [
       rawM5,
@@ -384,7 +279,6 @@ export default async function handler(
       livePriceResult
     ] =
       await Promise.all([
-
         fetchSeries(
           symbol,
           "5min",
@@ -397,15 +291,9 @@ export default async function handler(
           300
         ),
 
-        fetchPrice(
-          symbol
-        )
-          .catch(
-            () => null
-          )
-
+        fetchPrice(symbol)
+          .catch(() => null)
       ]);
-
 
     const m5 =
       completed(
@@ -413,13 +301,11 @@ export default async function handler(
         5
       );
 
-
     const m1 =
       completed(
         rawM1,
         1
       );
-
 
     const m15 =
       resample(
@@ -427,49 +313,35 @@ export default async function handler(
         15
       );
 
-
     const h1 =
       resample(
         m5,
         60
       );
 
-
     if (
-      m5.length <
-        2500 ||
-      m15.length <
-        210 ||
-      h1.length <
-        210
+      m5.length < 800 ||
+      m15.length < 210 ||
+      h1.length < 60
     ) {
-
       throw new Error(
-        `Not enough completed ${symbol} data for the V14 strategy.`
+        `Not enough completed ${symbol} data for V15.`
       );
-
     }
 
-
-    /* =====================================================
-       STRATEGY
-    ===================================================== */
-
     const strategy =
-      simpleTrendPullbackStrategy({
+      multiAgentStrategy({
+        symbol,
         m5,
         m15,
         h1
       });
 
-
     const lastM5 =
       m5.at(-1);
 
-
     const lastM1 =
       m1.at(-1);
-
 
     const referencePrice =
       finite(
@@ -482,18 +354,13 @@ export default async function handler(
         lastM5?.c
       );
 
-
     if (
-      referencePrice ===
-      null
+      referencePrice === null
     ) {
-
       throw new Error(
         "Reference price unavailable."
       );
-
     }
-
 
     const m5Atr =
       finite(
@@ -502,127 +369,85 @@ export default async function handler(
           ?.m5Atr
       );
 
-
     if (
-      m5Atr ===
-      null ||
-      m5Atr <=
-        0
+      m5Atr === null ||
+      m5Atr <= 0
     ) {
-
       throw new Error(
         "M5 ATR unavailable."
       );
-
     }
 
-
-    /* =====================================================
-       MARKET STATUS
-    ===================================================== */
-
     const schedule =
-      marketOpen(
-        symbol
-      );
-
+      marketOpen(symbol);
 
     const lastCandleEnd =
-      parseUTC(
-        lastM5.t
-      ) +
-      5 *
-      60_000;
-
+      parseUTC(lastM5.t) +
+      5 * 60_000;
 
     const dataAge =
       Math.max(
         0,
         Date.now() -
-        lastCandleEnd
+          lastCandleEnd
       );
 
-
     const dataStale =
-      dataAge >
-      STALE_MS;
-
+      dataAge > STALE_MS;
 
     let signal =
       strategy.signal;
-
 
     if (
       !schedule.open ||
       dataStale
     ) {
-
-      signal =
-        "WAIT";
-
+      signal = "WAIT";
     }
 
-
-    /* =====================================================
-       TRADE PLAN
-    ===================================================== */
-
-    let plan =
-      null;
-
+    let plan = null;
 
     if (
-      signal ===
-        "BUY" ||
-      signal ===
-        "SELL"
+      signal === "BUY" ||
+      signal === "SELL"
     ) {
-
-      const direction =
-        signal;
-
-
       const sign =
-        direction ===
-          "BUY"
+        signal === "BUY"
           ? 1
           : -1;
-
 
       const entry =
         referencePrice;
 
+      const stopAtr =
+        strategy.stopAtr;
+
+      const targetR =
+        strategy.targetR;
 
       const riskDistance =
-        m5Atr *
-        STOP_ATR;
-
+        m5Atr * stopAtr;
 
       const stopLoss =
         entry -
         sign *
-        riskDistance;
-
+          riskDistance;
 
       const takeProfit =
         entry +
         sign *
-        riskDistance *
-        TARGET_R;
-
+          riskDistance *
+          targetR;
 
       const takeProfit2 =
         entry +
         sign *
-        riskDistance *
-        (
-          TARGET_R +
-          0.5
-        );
-
+          riskDistance *
+          (
+            targetR + 0.5
+          );
 
       plan = {
-
         entry:
           round(
             entry,
@@ -653,83 +478,48 @@ export default async function handler(
             asset.precision
           ),
 
-        stopAtr:
-          STOP_ATR,
+        stopAtr,
 
-        targetR:
-          TARGET_R,
+        targetR,
 
         riskReward:
-          `1:${TARGET_R}`,
+          `1:${targetR}`,
 
         riskReward2:
           `1:${round(
-            TARGET_R +
-            0.5,
+            targetR + 0.5,
             1
           )}`
-
       };
-
     }
 
-
-    /* =====================================================
-       TIMEFRAMES
-    ===================================================== */
-
     const packet = {
-
       M1:
-        snapshot(
-          m1
-        ),
+        snapshot(m1),
 
       M5:
-        snapshot(
-          m5
-        ),
+        snapshot(m5),
 
       M15:
-        snapshot(
-          m15
-        ),
+        snapshot(m15),
 
       H1:
-        snapshot(
-          h1
-        )
-
+        snapshot(h1)
     };
 
-
     const regime =
-      detectRegime(
-        m5
-      );
-
-
-    /* =====================================================
-       ACCOUNT
-    ===================================================== */
+      detectRegime(m5);
 
     const equity =
       Math.max(
         1,
-        finite(
-          body.equity
-        ) ??
+        finite(body.equity) ??
         DEFAULT_EQUITY
       );
 
-
     const account = {
-
       equityZAR:
-        round(
-          equity,
-          2
-        ),
+        round(equity, 2),
 
       riskPercent:
         RISK_PERCENT,
@@ -741,124 +531,65 @@ export default async function handler(
           100,
           2
         )
-
     };
-
-
-    /* =====================================================
-       MEMORY
-    ===================================================== */
 
     const memory =
       dbEnabled()
         ? await memoryCount(
             symbol
+          ).catch(
+            () => ({
+              total: 0,
+              resolved: 0
+            })
           )
-            .catch(
-              () => ({
-                total:0,
-                resolved:0
-              })
-            )
         : {
-            total:0,
-            resolved:0
+            total: 0,
+            resolved: 0
           };
-
-
-    /* =====================================================
-       EDGE SCORE
-
-       This is setup completion, NOT win probability.
-    ===================================================== */
-
-    const edgeScore =
-      strategy.score;
-
 
     const created =
       Date.now();
 
-
-    const candidateDirection =
-      strategy.direction ||
-      (
-        packet.H1.bias ===
-          "BULLISH"
-          ? "BUY"
-          : packet.H1.bias ===
-            "BEARISH"
-            ? "SELL"
-            : null
-      );
-
-
     const signalId =
-      `MKV14-${asset.code}-${created}-${signal}`;
-
+      `MKV15-${asset.code}-${created}-${signal}`;
 
     const reasons = [
       ...strategy.reasons
     ];
 
-
-    if (
-      !schedule.open
-    ) {
-
+    if (!schedule.open) {
       reasons.push(
         `${asset.name} market is closed.`
       );
-
     }
 
-
-    if (
-      dataStale
-    ) {
-
+    if (dataStale) {
       reasons.push(
         `Market data is stale: ${round(
-          dataAge /
-          60000,
+          dataAge / 60000,
           1
         )} minutes old.`
       );
-
     }
-
-
-    if (
-      signal ===
-      "WAIT"
-    ) {
-
-      reasons.push(
-        "No valid trend-pullback entry. Waiting is part of the strategy."
-      );
-
-    }
-
 
     const response = {
-
-      success:true,
+      success: true,
 
       model:
-        "MKAYFX SIMPLE TREND ENGINE V14",
+        "MKAYFX MULTI-AGENT ENGINE V15",
 
       version:
         VERSION,
 
-      supportedSymbols:[
+      supportedSymbols: [
         "XAU/USD",
         "BTC/USD"
       ],
 
       symbol,
 
-      asset:{
-
+      asset: {
         code:
           asset.code,
 
@@ -870,25 +601,23 @@ export default async function handler(
 
         trades247:
           asset.trades247
-
       },
 
       signalId,
 
       signal,
 
-      candidateDirection,
+      candidateDirection:
+        strategy.direction,
 
       tradeQualified:
-        signal ===
-          "BUY" ||
-        signal ===
-          "SELL",
+        signal === "BUY" ||
+        signal === "SELL",
 
-      locked:false,
+      locked: false,
 
       setupType:
-        "TREND_PULLBACK",
+        "MULTI_AGENT_CONSENSUS",
 
       createdAt:
         new Date(
@@ -897,15 +626,14 @@ export default async function handler(
 
       session:
         sessionFor(
-          parseUTC(
-            lastM5.t
-          )
+          parseUTC(lastM5.t)
         ),
 
-      edgeScore,
+      edgeScore:
+        strategy.score,
 
       edgeType:
-        "SETUP_COMPLETION_SCORE_NOT_WIN_PROBABILITY",
+        "MULTI_AGENT_CONSENSUS_SCORE",
 
       currentPrice:
         round(
@@ -953,52 +681,57 @@ export default async function handler(
       marketRegime:
         regime,
 
-      regimePolicy:{
-
+      regimePolicy: {
         profile:
-          "SIMPLE_TREND_PULLBACK",
+          symbol === "BTC/USD"
+            ? "BTC_V15"
+            : "XAU_V15",
 
         hardBlocked:
-          false
-
+          regime.type ===
+          "QUIET_CHOP"
       },
 
-      ensemble:{
-
+      ensemble: {
         signedScore:
-          signal ===
-            "BUY"
-            ? edgeScore
-            : signal ===
-              "SELL"
-              ? -edgeScore
-              : 0,
+          strategy.signedScore,
 
         direction:
-          candidateDirection,
+          strategy.direction,
 
-        components:{
-          strategy:
-            edgeScore
-        },
+        components:
+          Object.fromEntries(
+            Object.entries(
+              strategy.agents
+            ).map(
+              ([name, agent]) => [
+                name,
+                agent.score
+              ]
+            )
+          ),
 
-        adaptiveReliability:{}
-
+        adaptiveReliability: {}
       },
 
-      edgeDecision:{
+      agents:
+        strategy.agents,
 
+      agentAgreement:
+        strategy.agreement,
+
+      edgeDecision: {
         signal,
 
-        candidateDirection,
+        candidateDirection:
+          strategy.direction,
 
         qualified:
-          signal ===
-            "BUY" ||
-          signal ===
-            "SELL",
+          signal === "BUY" ||
+          signal === "SELL",
 
-        edgeScore,
+        edgeScore:
+          strategy.score,
 
         strategy:
           strategy.setup,
@@ -1006,78 +739,57 @@ export default async function handler(
         checks:
           strategy.checks,
 
-        buyChecks:
-          strategy.buyChecks,
-
-        sellChecks:
-          strategy.sellChecks,
-
         failedGates:
           Object.entries(
-            strategy.checks ||
-            {}
+            strategy.checks || {}
           )
             .filter(
               ([, passed]) =>
                 !passed
             )
             .map(
-              ([name]) =>
-                name
+              ([name]) => name
             )
-
       },
 
-      historicalEdge:{
-
+      historicalEdge: {
         strategy:
-          "TREND_PULLBACK_V14",
+          "MULTI_AGENT_V15",
 
         matches:
-          memory.resolved ||
-          0,
+          memory.resolved || 0,
 
-        expectancyR:null,
+        expectancyR: null,
 
-        netExpectancyR:null,
+        netExpectancyR: null,
 
-        targetHitRate:null,
+        targetHitRate: null,
 
-        averageSimilarity:null,
-
-        note:
-          "Use the Research screen for V14 historical performance."
-
-      },
-
-      crossMarket:{
-
-        available:false,
-
-        direction:"NEUTRAL",
-
-        score:0,
+        averageSimilarity: null,
 
         note:
-          "Cross-market scoring is not used by V14."
-
+          "Use Research for V15 holdout performance."
       },
 
-      macroRisk:{
-
-        available:false,
-
-        blocked:false,
-
-        upcoming:[],
+      crossMarket: {
+        available: false,
+        direction: "NEUTRAL",
+        score: 0,
 
         note:
-          "Macro data is not part of the V14 entry rule."
-
+          "External cross-market feeds are not used in V15."
       },
 
-      marketStatus:{
+      macroRisk: {
+        available: false,
+        blocked: false,
+        upcoming: [],
 
+        note:
+          "Macro-event blocking is not enabled."
+      },
+
+      marketStatus: {
         open:
           schedule.open,
 
@@ -1091,28 +803,22 @@ export default async function handler(
 
         dataAgeMinutes:
           round(
-            dataAge /
-            60000,
+            dataAge / 60000,
             1
           ),
 
         priceSource:
-          livePriceResult !==
-            null
+          livePriceResult !== null
             ? "LIVE_PRICE_ENDPOINT"
             : "LAST_COMPLETED_CANDLE"
-
       },
 
-      execution:{
-
+      execution: {
         state:
-          signal ===
-            "BUY" ||
-          signal ===
-            "SELL"
+          signal === "BUY" ||
+          signal === "SELL"
             ? "QUALIFIED_NOT_ENTERED"
-            : "WAITING_FOR_SETUP",
+            : "WAITING_FOR_CONSENSUS",
 
         referenceAtr:
           round(
@@ -1121,18 +827,16 @@ export default async function handler(
           ),
 
         stopAtr:
-          STOP_ATR,
+          strategy.stopAtr,
 
         targetR:
-          TARGET_R,
+          strategy.targetR,
 
         rule:
           "Manual execution only."
-
       },
 
-      timeframeBias:{
-
+      timeframeBias: {
         M1:
           packet.M1.bias,
 
@@ -1145,17 +849,13 @@ export default async function handler(
         H1:
           packet.H1.bias,
 
-        agreement:{
-
+        agreement: {
           strategy:
-            "H1_M15_M5_TREND_PULLBACK"
-
+            "V15_MULTI_AGENT"
         }
-
       },
 
-      structure:{
-
+      structure: {
         M1:
           packet.M1.structure,
 
@@ -1167,62 +867,60 @@ export default async function handler(
 
         H1:
           packet.H1.structure
-
       },
 
-      marketContext:{
-
+      marketContext: {
         strategy:
-          "TREND_PULLBACK",
+          "MULTI_AGENT_V15",
 
-        indicators:
-          strategy.indicators,
+        regime,
+
+        agents:
+          strategy.agents,
 
         checks:
           strategy.checks
-
       },
 
-      goldContext:null,
+      goldContext: null,
 
-      technical:{
+      technical: {
+        componentScores:
+          Object.fromEntries(
+            Object.entries(
+              strategy.agents
+            ).map(
+              ([name, agent]) => [
+                name,
+                agent.score
+              ]
+            )
+          ),
 
-        componentScores:{
-          strategy:
-            edgeScore
-        },
-
-        allComponents:{
-          strategy:
-            edgeScore
-        },
+        allComponents:
+          strategy.agents,
 
         strategy,
 
         reasons
-
       },
 
       account,
 
-      memory:{
-
+      memory: {
         enabled:
           dbEnabled(),
 
         totalStates:
-          memory.total ||
-          0,
+          memory.total || 0,
 
         resolvedStates:
-          memory.resolved ||
-          0,
+          memory.resolved || 0,
 
         sourceUsed:
-          "V14_STRATEGY_MEMORY",
+          "V15_STRATEGY_MEMORY",
 
-        currentMatches:0
-
+        currentMatches: 0
       },
 
       chart:
@@ -1230,7 +928,6 @@ export default async function handler(
           .slice(-180)
           .map(
             candle => ({
-
               t:
                 candle.t,
 
@@ -1257,12 +954,10 @@ export default async function handler(
                   candle.c,
                   asset.precision
                 )
-
             })
           ),
 
-      dataQuality:{
-
+      dataQuality: {
         completedM1:
           m1.length,
 
@@ -1280,61 +975,44 @@ export default async function handler(
 
         staleMinutes:
           round(
-            dataAge /
-            60000,
+            dataAge / 60000,
             2
           ),
 
         livePriceAvailable:
-          livePriceResult !==
-          null
-
+          livePriceResult !== null
       }
-
     };
 
-
-    if (
-      dbEnabled()
-    ) {
-
+    if (dbEnabled()) {
       await saveSignalRecord(
         response
-      )
-        .catch(
-          error =>
-            console.error(
-              "Save signal:",
-              error.message
-            )
-        );
-
+      ).catch(
+        error =>
+          console.error(
+            "Save signal:",
+            error.message
+          )
+      );
     }
-
 
     return res
       .status(200)
-      .json(
-        response
-      );
-
+      .json(response);
   }
-  catch(error) {
-
+  catch (error) {
     console.error(
-      "MKAYFX V14:",
+      "MKAYFX V15:",
       error
     );
-
 
     return res
       .status(500)
       .json({
-
-        success:false,
+        success: false,
 
         model:
-          "MKAYFX SIMPLE TREND ENGINE V14",
+          "MKAYFX MULTI-AGENT ENGINE V15",
 
         version:
           VERSION,
@@ -1343,12 +1021,10 @@ export default async function handler(
           error?.message ||
           "Analysis failed.",
 
-        supportedSymbols:[
+        supportedSymbols: [
           "XAU/USD",
           "BTC/USD"
         ]
-
       });
-
   }
 }
