@@ -4,15 +4,91 @@ import {
   mean,
   ensembleScore,
   evaluatePath
-} from "../lib/core.js";
+} from "./core.js";
 
 
 import {
   dbEnabled,
   loadResolvedStates,
   memoryCount
-} from "../lib/db.js";
+} from "./db.js";
 
+
+/* =========================================================
+   SYMBOL
+========================================================= */
+
+function normalizeSymbol(
+  value
+) {
+
+  const raw =
+    String(
+      value ||
+      "XAU/USD"
+    )
+      .trim()
+      .toUpperCase()
+      .replace(
+        /\s+/g,
+        ""
+      );
+
+
+  if (
+    raw ===
+      "XAU/USD" ||
+    raw ===
+      "XAUUSD" ||
+    raw ===
+      "GOLD"
+  ) {
+
+    return "XAU/USD";
+
+  }
+
+
+  if (
+    raw ===
+      "BTC/USD" ||
+    raw ===
+      "BTCUSD" ||
+    raw ===
+      "BTC" ||
+    raw ===
+      "BITCOIN"
+  ) {
+
+    return "BTC/USD";
+
+  }
+
+
+  return null;
+}
+
+
+function queryValue(
+  req,
+  key
+) {
+
+  const value =
+    req.query?.[key];
+
+
+  return Array.isArray(
+    value
+  )
+    ? value[0]
+    : value;
+}
+
+
+/* =========================================================
+   METRICS
+========================================================= */
 
 function metrics(
   trades
@@ -23,23 +99,19 @@ function metrics(
   ) {
 
     return {
-      trades:
-        0,
 
-      winRate:
-        null,
+      trades:0,
 
-      expectancyR:
-        null,
+      winRate:null,
 
-      profitFactor:
-        null,
+      expectancyR:null,
 
-      totalR:
-        0,
+      profitFactor:null,
 
-      maxDrawdownR:
-        0
+      totalR:0,
+
+      maxDrawdownR:0
+
     };
 
   }
@@ -91,9 +163,16 @@ function metrics(
     );
 
 
-  let equity = 0;
-  let peak = 0;
-  let drawdown = 0;
+  let equity =
+    0;
+
+
+  let peak =
+    0;
+
+
+  let drawdown =
+    0;
 
 
   for (
@@ -104,11 +183,13 @@ function metrics(
     equity +=
       trade.r;
 
+
     peak =
       Math.max(
         peak,
         equity
       );
+
 
     drawdown =
       Math.max(
@@ -121,6 +202,7 @@ function metrics(
 
 
   return {
+
     trades:
       trades.length,
 
@@ -146,12 +228,17 @@ function metrics(
     profitFactor:
       grossLoss >
       0
+
         ? round(
             grossWin /
             grossLoss,
             2
           )
-        : null,
+
+        : grossWin >
+          0
+          ? null
+          : 0,
 
     totalR:
       round(
@@ -164,16 +251,22 @@ function metrics(
         drawdown,
         2
       )
+
   };
 }
 
+
+/* =========================================================
+   SIMULATION
+========================================================= */
 
 function simulate(
   rows,
   threshold
 ) {
 
-  const trades = [];
+  const trades =
+    [];
 
 
   for (
@@ -196,6 +289,16 @@ function simulate(
     }
 
 
+    if (
+      !Array.isArray(
+        row.future_path
+      ) ||
+      !row.future_path.length
+    ) {
+      continue;
+    }
+
+
     const score =
       ensembleScore(
         components,
@@ -205,7 +308,9 @@ function simulate(
 
 
     if (
-      Math.abs(score) <
+      Math.abs(
+        score
+      ) <
       threshold
     ) {
       continue;
@@ -213,7 +318,8 @@ function simulate(
 
 
     const direction =
-      score >= 0
+      score >=
+      0
         ? "BUY"
         : "SELL";
 
@@ -233,6 +339,10 @@ function simulate(
 
 
     trades.push({
+
+      symbol:
+        row.symbol,
+
       time:
         row.candle_time,
 
@@ -248,6 +358,7 @@ function simulate(
 
       session:
         row.session
+
     });
 
   }
@@ -257,30 +368,38 @@ function simulate(
 }
 
 
+/* =========================================================
+   GROUPED METRICS
+========================================================= */
+
 function groupedMetrics(
   trades,
   key
 ) {
 
-  const out = {};
+  const out =
+    {};
+
+
+  const names =
+    [
+      ...new Set(
+        trades
+          .map(
+            x =>
+              x[key]
+          )
+          .filter(
+            Boolean
+          )
+      )
+    ];
 
 
   for (
     const name of
-    [
-      ...new Set(
-        trades.map(
-          x =>
-            x[key]
-        )
-      )
-    ]
+    names
   ) {
-
-    if (!name) {
-      continue;
-    }
-
 
     out[name] =
       metrics(
@@ -298,6 +417,10 @@ function groupedMetrics(
 }
 
 
+/* =========================================================
+   MAIN
+========================================================= */
+
 export default async function handler(
   req,
   res
@@ -309,6 +432,76 @@ export default async function handler(
   );
 
 
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "*"
+  );
+
+
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, OPTIONS"
+  );
+
+
+  if (
+    req.method ===
+    "OPTIONS"
+  ) {
+
+    return res
+      .status(204)
+      .end();
+
+  }
+
+
+  if (
+    req.method !==
+    "GET"
+  ) {
+
+    return res
+      .status(405)
+      .json({
+        success:false,
+        error:"Use GET."
+      });
+
+  }
+
+
+  const symbol =
+    normalizeSymbol(
+      queryValue(
+        req,
+        "symbol"
+      ) ||
+      "XAU/USD"
+    );
+
+
+  if (!symbol) {
+
+    return res
+      .status(400)
+      .json({
+
+        success:false,
+
+        error:
+          "Unsupported symbol.",
+
+        supportedSymbols:[
+          "XAU/USD",
+          "BTC/USD"
+        ]
+
+      });
+
+  }
+
+
   if (
     !dbEnabled()
   ) {
@@ -316,14 +509,16 @@ export default async function handler(
     return res
       .status(200)
       .json({
-        success:
-          true,
 
-        available:
-          false,
+        success:true,
+
+        symbol,
+
+        available:false,
 
         error:
           "DATABASE_URL is not configured."
+
       });
 
   }
@@ -331,22 +526,45 @@ export default async function handler(
 
   try {
 
+    /*
+      THIS IS THE IMPORTANT FIX.
+
+      BTC research only loads BTC rows.
+      Gold research only loads Gold rows.
+    */
+
     let rows =
       await loadResolvedStates({
+
+        symbol,
+
         limit:
           5000
+
       });
 
 
     rows =
-      rows.sort(
-        (a, b) =>
-          new Date(
-            a.candle_time
-          ) -
-          new Date(
-            b.candle_time
-          )
+      rows
+        .filter(
+          row =>
+            row.symbol ===
+            symbol
+        )
+        .sort(
+          (a,b) =>
+            new Date(
+              a.candle_time
+            ) -
+            new Date(
+              b.candle_time
+            )
+        );
+
+
+    const count =
+      await memoryCount(
+        symbol
       );
 
 
@@ -358,26 +576,43 @@ export default async function handler(
       return res
         .status(200)
         .json({
-          success:
-            true,
 
-          available:
-            false,
+          success:true,
+
+          symbol,
+
+          available:false,
+
+          memory:
+            count,
 
           resolvedStates:
             rows.length,
 
+          requiredStates:
+            100,
+
           error:
-            "Need at least 100 resolved market states."
+            `Need at least 100 resolved ${symbol} market states. Backfill ${symbol} memory first.`
+
         });
 
     }
 
 
+    /*
+      Chronological split.
+
+      The earlier 70% is used for selecting
+      the score threshold.
+
+      The later 30% is untouched holdout data.
+    */
+
     const split =
       Math.floor(
         rows.length *
-        0.7
+        0.70
       );
 
 
@@ -407,6 +642,7 @@ export default async function handler(
     const candidates =
       thresholds.map(
         threshold => ({
+
           threshold,
 
           metrics:
@@ -416,6 +652,7 @@ export default async function handler(
                 threshold
               )
             )
+
         })
       );
 
@@ -423,30 +660,94 @@ export default async function handler(
     const viable =
       candidates.filter(
         x =>
-          x.metrics.trades >=
+          x.metrics
+            .trades >=
           20
       );
 
 
+    const pool =
+      viable.length
+        ? viable
+        : candidates;
+
+
+    const ranked =
+      [...pool]
+        .sort(
+          (a,b) => {
+
+            const expA =
+              finite(
+                a.metrics
+                  .expectancyR
+              ) ??
+              -999;
+
+
+            const expB =
+              finite(
+                b.metrics
+                  .expectancyR
+              ) ??
+              -999;
+
+
+            /*
+              Primary selection:
+              higher training expectancy.
+
+              Secondary selection:
+              larger sample size.
+            */
+
+            if (
+              expB !==
+              expA
+            ) {
+
+              return expB -
+                expA;
+
+            }
+
+
+            return (
+              b.metrics
+                .trades -
+              a.metrics
+                .trades
+            );
+
+          }
+        );
+
+
     const best =
-      (
-        viable.length
-          ? viable
-          : candidates
-      )
-      .sort(
-        (a, b) =>
-          (
-            b.metrics
-              .expectancyR ??
-            -99
-          ) -
-          (
-            a.metrics
-              .expectancyR ??
-            -99
-          )
-      )[0];
+      ranked[0];
+
+
+    if (!best) {
+
+      return res
+        .status(200)
+        .json({
+
+          success:true,
+
+          symbol,
+
+          available:false,
+
+          memory:
+            count,
+
+          error:
+            `Could not create a ${symbol} research candidate.`
+
+        });
+
+    }
 
 
     const testTrades =
@@ -456,20 +757,27 @@ export default async function handler(
       );
 
 
+    const testMetrics =
+      metrics(
+        testTrades
+      );
+
+
     return res
       .status(200)
       .json({
-        success:
-          true,
 
-        available:
-          true,
+        success:true,
+
+        symbol,
+
+        available:true,
 
         memory:
-          await memoryCount(),
+          count,
 
         method:
-          "70/30 chronological walk-forward holdout",
+          "70/30 chronological training/holdout",
 
         trainRows:
           training.length,
@@ -484,9 +792,7 @@ export default async function handler(
           best.metrics,
 
         test:
-          metrics(
-            testTrades
-          ),
+          testMetrics,
 
         byRegime:
           groupedMetrics(
@@ -500,22 +806,36 @@ export default async function handler(
             "session"
           ),
 
-        candidates
+        candidates,
+
+        note:
+          "Research results are historical estimates and do not guarantee future performance."
+
       });
 
   }
-  catch (error) {
+  catch(error) {
+
+    console.error(
+      `RESEARCH ${symbol}:`,
+      error
+    );
+
 
     return res
       .status(500)
       .json({
-        success:
-          false,
+
+        success:false,
+
+        symbol,
 
         error:
           error?.message ||
-          "Research failed."
+          `${symbol} research failed.`
+
       });
 
   }
+
 }
