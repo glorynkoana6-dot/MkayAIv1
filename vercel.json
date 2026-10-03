@@ -1,8 +1,14 @@
 {
-  "crons": [
+  "version": 2,
+  "headers": [
     {
-      "path": "/api/memory",
-      "schedule": "0 * * * *"
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate"
+        }
+      ]
     }
   ]
 }
