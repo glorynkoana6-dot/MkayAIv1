@@ -1,5 +1,4 @@
 import {
-  SYMBOL,
   envNumber,
   completed,
   fetchSeries,
@@ -7,15 +6,30 @@ import {
   basicComponentScores,
   buildFeatureState,
   buildFuturePath
-} from "../lib/core.js";
+} from "./core.js";
 
 
 import {
   dbEnabled,
   bulkUpsertStates,
   memoryCount
-} from "../lib/db.js";
+} from "./db.js";
 
+
+/* =========================================================
+   SUPPORTED MARKETS
+========================================================= */
+
+const SUPPORTED_SYMBOLS =
+  new Set([
+    "XAU/USD",
+    "BTC/USD"
+  ]);
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
 
 const FORWARD_BARS =
   Math.round(
@@ -28,6 +42,89 @@ const FORWARD_BARS =
   );
 
 
+/* =========================================================
+   SYMBOL
+========================================================= */
+
+function normalizeSymbol(
+  value
+) {
+
+  const raw =
+    String(
+      value ||
+      "XAU/USD"
+    )
+      .trim()
+      .toUpperCase()
+      .replace(
+        /\s+/g,
+        ""
+      );
+
+
+  if (
+    raw ===
+      "XAU/USD" ||
+    raw ===
+      "XAUUSD" ||
+    raw ===
+      "GOLD"
+  ) {
+
+    return "XAU/USD";
+
+  }
+
+
+  if (
+    raw ===
+      "BTC/USD" ||
+    raw ===
+      "BTCUSD" ||
+    raw ===
+      "BTC" ||
+    raw ===
+      "BITCOIN"
+  ) {
+
+    return "BTC/USD";
+
+  }
+
+
+  return null;
+}
+
+
+function queryValue(
+  req,
+  key
+) {
+
+  const value =
+    req.query?.[key];
+
+
+  if (
+    Array.isArray(
+      value
+    )
+  ) {
+
+    return value[0];
+
+  }
+
+
+  return value;
+}
+
+
+/* =========================================================
+   AUTH
+========================================================= */
+
 function authorized(
   req,
   backfill
@@ -38,15 +135,19 @@ function authorized(
       .authorization;
 
 
-  if (backfill) {
+  if (
+    backfill
+  ) {
 
     const secret =
       process.env
         .ADMIN_SECRET;
 
+
     if (!secret) {
       return false;
     }
+
 
     return supplied ===
       `Bearer ${secret}`;
@@ -69,6 +170,10 @@ function authorized(
 }
 
 
+/* =========================================================
+   MAIN
+========================================================= */
+
 export default async function handler(
   req,
   res
@@ -80,6 +185,89 @@ export default async function handler(
   );
 
 
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "*"
+  );
+
+
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
+
+
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS"
+  );
+
+
+  if (
+    req.method ===
+    "OPTIONS"
+  ) {
+
+    return res
+      .status(204)
+      .end();
+
+  }
+
+
+  if (
+    ![
+      "GET",
+      "POST"
+    ].includes(
+      req.method
+    )
+  ) {
+
+    return res
+      .status(405)
+      .json({
+        success:false,
+        error:"Use GET or POST."
+      });
+
+  }
+
+
+  const symbol =
+    normalizeSymbol(
+      queryValue(
+        req,
+        "symbol"
+      ) ||
+      "XAU/USD"
+    );
+
+
+  if (
+    !symbol ||
+    !SUPPORTED_SYMBOLS.has(
+      symbol
+    )
+  ) {
+
+    return res
+      .status(400)
+      .json({
+        success:false,
+
+        error:
+          "Unsupported symbol.",
+
+        supportedSymbols:[
+          "XAU/USD",
+          "BTC/USD"
+        ]
+      });
+
+  }
+
+
   if (
     !dbEnabled()
   ) {
@@ -87,11 +275,11 @@ export default async function handler(
     return res
       .status(200)
       .json({
-        success:
-          true,
+        success:true,
 
-        memoryEnabled:
-          false,
+        symbol,
+
+        memoryEnabled:false,
 
         error:
           "DATABASE_URL is not set."
@@ -101,7 +289,13 @@ export default async function handler(
 
 
   const backfill =
-    req.query?.mode ===
+    String(
+      queryValue(
+        req,
+        "mode"
+      ) ||
+      ""
+    ).toLowerCase() ===
     "backfill";
 
 
@@ -115,17 +309,29 @@ export default async function handler(
     return res
       .status(401)
       .json({
-        success:
-          false,
+        success:false,
+
+        symbol,
 
         error:
-          "Unauthorized."
+          backfill
+            ? "Unauthorized. Check ADMIN_SECRET."
+            : "Unauthorized."
       });
 
   }
 
 
   try {
+
+    const barsRaw =
+      Number(
+        queryValue(
+          req,
+          "bars"
+        )
+      );
+
 
     const requested =
       backfill
@@ -134,11 +340,11 @@ export default async function handler(
               300,
               Math.min(
                 4500,
-                Number(
-                  req.query
-                    ?.bars ||
-                  1800
+                Number.isFinite(
+                  barsRaw
                 )
+                  ? barsRaw
+                  : 1800
               )
             )
           )
@@ -156,7 +362,7 @@ export default async function handler(
 
     const raw =
       await fetchSeries(
-        SYMBOL,
+        symbol,
         "5min",
         output
       );
@@ -175,7 +381,7 @@ export default async function handler(
     ) {
 
       throw new Error(
-        "Not enough M5 data."
+        `Not enough completed ${symbol} M5 data.`
       );
 
     }
@@ -190,7 +396,8 @@ export default async function handler(
       );
 
 
-    const states = [];
+    const states =
+      [];
 
 
     for (
@@ -252,17 +459,19 @@ export default async function handler(
         candles.length -
           1 -
           FORWARD_BARS
+
           ? buildFuturePath(
               candles,
               i,
               FORWARD_BARS
             )
+
           : null;
 
 
       states.push({
-        symbol:
-          SYMBOL,
+
+        symbol,
 
         timeframe:
           "5min",
@@ -279,32 +488,41 @@ export default async function handler(
         vector:
           state.vector,
 
-        features:
-          state.features,
+        features:{
+          ...state.features,
+          symbol
+        },
 
         futurePath
+
       });
 
     }
 
 
-    let processed = 0;
+    let processed =
+      0;
 
+
+    /*
+      Smaller batches are safer for
+      serverless HTTP database requests.
+    */
 
     for (
       let i = 0;
+
       i <
-        states.length;
-      i +=
-        250
+      states.length;
+
+      i += 200
     ) {
 
       processed +=
         await bulkUpsertStates(
           states.slice(
             i,
-            i +
-              250
+            i + 200
           )
         );
 
@@ -312,22 +530,27 @@ export default async function handler(
 
 
     const count =
-      await memoryCount();
+      await memoryCount(
+        symbol
+      );
 
 
     return res
       .status(200)
       .json({
-        success:
-          true,
 
-        memoryEnabled:
-          true,
+        success:true,
+
+        symbol,
+
+        memoryEnabled:true,
 
         mode:
           backfill
             ? "BACKFILL"
             : "UPDATE",
+
+        requested,
 
         processed,
 
@@ -346,13 +569,14 @@ export default async function handler(
           states.at(-1)
             ?.candleTime ||
           null
+
       });
 
   }
-  catch (error) {
+  catch(error) {
 
     console.error(
-      "MEMORY:",
+      `MEMORY ${symbol}:`,
       error
     );
 
@@ -360,13 +584,17 @@ export default async function handler(
     return res
       .status(500)
       .json({
-        success:
-          false,
+
+        success:false,
+
+        symbol,
 
         error:
           error?.message ||
-          "Memory update failed."
+          `${symbol} memory update failed.`
+
       });
 
   }
+
 }
