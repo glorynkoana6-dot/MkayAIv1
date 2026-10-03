@@ -1,5 +1,4 @@
 import {
-  SYMBOL,
   envNumber,
   finite,
   round,
@@ -42,33 +41,137 @@ import {
 
 
 /* =========================================================
+   MKAYFX MULTI-ASSET QUANT EDGE V12
+
+   SUPPORTED:
+   - XAU/USD
+   - BTC/USD
+
+   FEATURES:
+   - M1 / M5 / M15 / H1 analysis
+   - liquidity sweeps
+   - BOS / CHOCH
+   - displacement
+   - trend / momentum
+   - breakout
+   - mean reversion
+   - historical similarity
+   - adaptive model reliability
+   - optimized ATR SL / TP
+   - cross-market context
+   - macro calendar
+   - market-open detection
+   - stale-data protection
+   - serverless cache
+========================================================= */
+
+
+/* =========================================================
+   ASSETS
+========================================================= */
+
+const ASSETS = {
+
+  "XAU/USD": {
+    symbol: "XAU/USD",
+    code: "XAUUSD",
+    name: "Gold",
+    type: "METAL",
+    precision: 2,
+    trades247: false,
+    crossWeight: 1
+  },
+
+  "BTC/USD": {
+    symbol: "BTC/USD",
+    code: "BTCUSD",
+    name: "Bitcoin",
+    type: "CRYPTO",
+    precision: 2,
+    trades247: true,
+    crossWeight: 0.55
+  }
+
+};
+
+
+function normalizeSymbol(value) {
+
+  const raw =
+    String(
+      value ||
+      "XAU/USD"
+    )
+      .trim()
+      .toUpperCase()
+      .replace(/\s+/g, "");
+
+
+  if (
+    raw === "XAUUSD" ||
+    raw === "XAU/USD" ||
+    raw === "GOLD"
+  ) {
+    return "XAU/USD";
+  }
+
+
+  if (
+    raw === "BTCUSD" ||
+    raw === "BTC/USD" ||
+    raw === "BTC"
+  ) {
+    return "BTC/USD";
+  }
+
+
+  return null;
+}
+
+
+/* =========================================================
    SETTINGS
 ========================================================= */
 
 const M1_OUTPUT =
-  envNumber(
-    "M1_OUTPUT",
-    5000,
-    1000,
-    5000
+  Math.round(
+    envNumber(
+      "M1_OUTPUT",
+      3000,
+      1000,
+      5000
+    )
   );
 
 
 const H1_OUTPUT =
-  envNumber(
-    "H1_OUTPUT",
-    300,
-    100,
-    1000
+  Math.round(
+    envNumber(
+      "H1_OUTPUT",
+      300,
+      100,
+      1000
+    )
+  );
+
+
+const LOCAL_HISTORY_BARS =
+  Math.round(
+    envNumber(
+      "LOCAL_HISTORY_BARS",
+      520,
+      200,
+      900
+    )
   );
 
 
 const STALE_MS =
   envNumber(
     "STALE_MS",
-    10 *
-      60_000,
-    60_000
+    10 * 60_000,
+    60_000,
+    60 * 60_000
   );
 
 
@@ -149,7 +252,7 @@ const TOP_K =
   Math.round(
     envNumber(
       "HISTORICAL_TOP_K",
-      100,
+      80,
       20,
       250
     )
@@ -203,8 +306,111 @@ const MAX_CHASE_ATR =
   );
 
 
+const SERIES_CACHE_MS =
+  envNumber(
+    "SERIES_CACHE_MS",
+    45_000,
+    5_000,
+    300_000
+  );
+
+
+const H1_CACHE_MS =
+  envNumber(
+    "H1_CACHE_MS",
+    180_000,
+    30_000,
+    600_000
+  );
+
+
+const PRICE_CACHE_MS =
+  envNumber(
+    "PRICE_CACHE_MS",
+    8_000,
+    1_000,
+    60_000
+  );
+
+
+const CROSS_CACHE_MS =
+  envNumber(
+    "CROSS_CACHE_MS",
+    120_000,
+    30_000,
+    600_000
+  );
+
+
+const MACRO_CACHE_MS =
+  envNumber(
+    "MACRO_CACHE_MS",
+    60_000,
+    10_000,
+    600_000
+  );
+
+
 /* =========================================================
-   HELPERS
+   SERVERLESS CACHE
+========================================================= */
+
+const CACHE =
+  globalThis.__MKAYFX_V12_CACHE__ ||
+  new Map();
+
+
+globalThis.__MKAYFX_V12_CACHE__ =
+  CACHE;
+
+
+async function cached(
+  key,
+  ttl,
+  loader
+) {
+
+  const now =
+    Date.now();
+
+
+  const existing =
+    CACHE.get(
+      key
+    );
+
+
+  if (
+    existing &&
+    now -
+      existing.time <
+      ttl
+  ) {
+
+    return existing.value;
+
+  }
+
+
+  const value =
+    await loader();
+
+
+  CACHE.set(
+    key,
+    {
+      time: now,
+      value
+    }
+  );
+
+
+  return value;
+}
+
+
+/* =========================================================
+   REQUEST HELPERS
 ========================================================= */
 
 function bodyOf(req) {
@@ -213,12 +419,14 @@ function bodyOf(req) {
     return {};
   }
 
+
   if (
     typeof req.body ===
     "object"
   ) {
     return req.body;
   }
+
 
   try {
 
@@ -232,6 +440,52 @@ function bodyOf(req) {
     return {};
 
   }
+
+}
+
+
+function queryValue(
+  req,
+  key
+) {
+
+  if (
+    req.query &&
+    req.query[key] !==
+      undefined
+  ) {
+
+    const value =
+      req.query[key];
+
+    return Array.isArray(
+      value
+    )
+      ? value[0]
+      : value;
+
+  }
+
+
+  try {
+
+    const url =
+      new URL(
+        req.url,
+        "http://localhost"
+      );
+
+    return url.searchParams.get(
+      key
+    );
+
+  }
+  catch {
+
+    return null;
+
+  }
+
 }
 
 
@@ -248,391 +502,529 @@ function send(
 
 
 /* =========================================================
-   CROSS MARKET
+   MARKET SCHEDULE
 ========================================================= */
 
-async function crossContext() {
+function marketOpen(
+  symbol,
+  now = Date.now()
+) {
 
-  const symbols = {
-    dxy:
-      process.env
-        .DXY_SYMBOL ||
-      "DXY",
-
-    us10y:
-      process.env
-        .US10Y_SYMBOL ||
-      "US10Y",
-
-    us2y:
-      process.env
-        .US2Y_SYMBOL ||
-      "US2Y",
-
-    eurusd:
-      "EUR/USD",
-
-    usdjpy:
-      "USD/JPY"
-  };
+  const asset =
+    ASSETS[symbol];
 
 
-  const [
-    dxy,
-    us10y,
-    us2y,
-    eurusd,
-    usdjpy
-  ] =
-    await Promise.all([
+  if (
+    asset?.trades247
+  ) {
 
-      fetchSeriesSafe(
-        symbols.dxy,
-        "5min",
-        90
-      ),
+    return {
+      open: true,
+      reason: "24_7_MARKET"
+    };
 
-      fetchSeriesSafe(
-        symbols.us10y,
-        "5min",
-        90
-      ),
-
-      fetchSeriesSafe(
-        symbols.us2y,
-        "5min",
-        90
-      ),
-
-      fetchSeriesSafe(
-        symbols.eurusd,
-        "5min",
-        90
-      ),
-
-      fetchSeriesSafe(
-        symbols.usdjpy,
-        "5min",
-        90
-      )
-
-    ]);
+  }
 
 
-  const detail = {
-    dxy:
-      dxy.length
-        ? seriesDirection(
-            dxy
-          )
-        : null,
+  const date =
+    new Date(
+      now
+    );
 
-    us10y:
-      us10y.length
-        ? seriesDirection(
-            us10y
-          )
-        : null,
 
-    us2y:
-      us2y.length
-        ? seriesDirection(
-            us2y
-          )
-        : null,
+  const day =
+    date.getUTCDay();
 
-    eurusd:
-      eurusd.length
-        ? seriesDirection(
-            eurusd
-          )
-        : null,
 
-    usdjpy:
-      usdjpy.length
-        ? seriesDirection(
-            usdjpy
-          )
-        : null
-  };
+  const hour =
+    date.getUTCHours();
+
+
+  if (
+    day === 6
+  ) {
+
+    return {
+      open: false,
+      reason: "WEEKEND"
+    };
+
+  }
+
+
+  if (
+    day === 0 &&
+    hour < 22
+  ) {
+
+    return {
+      open: false,
+      reason: "WEEKEND"
+    };
+
+  }
+
+
+  if (
+    day === 5 &&
+    hour >= 22
+  ) {
+
+    return {
+      open: false,
+      reason: "WEEKEND"
+    };
+
+  }
 
 
   return {
-    ...crossMarketScore(
-      detail
-    ),
-
-    detail,
-
-    symbols
+    open: true,
+    reason: "NORMAL_SESSION"
   };
 }
 
 
 /* =========================================================
-   OPTIONAL MACRO CALENDAR
+   SAFE LIVE PRICE
+========================================================= */
+
+async function livePriceSafe(
+  symbol
+) {
+
+  try {
+
+    return await cached(
+      `price:${symbol}`,
+      PRICE_CACHE_MS,
+      () =>
+        fetchPrice(
+          symbol
+        )
+    );
+
+  }
+  catch {
+
+    return null;
+
+  }
+}
+
+
+/* =========================================================
+   CROSS MARKET
+========================================================= */
+
+async function crossContext(
+  symbol
+) {
+
+  return cached(
+    `cross:${symbol}`,
+    CROSS_CACHE_MS,
+    async () => {
+
+      const symbols = {
+
+        dxy:
+          process.env
+            .DXY_SYMBOL ||
+          "DXY",
+
+        us10y:
+          process.env
+            .US10Y_SYMBOL ||
+          "US10Y",
+
+        eurusd:
+          "EUR/USD",
+
+        usdjpy:
+          "USD/JPY"
+
+      };
+
+
+      const [
+        dxy,
+        us10y,
+        eurusd,
+        usdjpy
+      ] =
+        await Promise.all([
+
+          fetchSeriesSafe(
+            symbols.dxy,
+            "5min",
+            70
+          ),
+
+          fetchSeriesSafe(
+            symbols.us10y,
+            "5min",
+            70
+          ),
+
+          fetchSeriesSafe(
+            symbols.eurusd,
+            "5min",
+            70
+          ),
+
+          fetchSeriesSafe(
+            symbols.usdjpy,
+            "5min",
+            70
+          )
+
+        ]);
+
+
+      const detail = {
+
+        dxy:
+          dxy.length
+            ? seriesDirection(
+                dxy
+              )
+            : null,
+
+        us10y:
+          us10y.length
+            ? seriesDirection(
+                us10y
+              )
+            : null,
+
+        us2y:
+          null,
+
+        eurusd:
+          eurusd.length
+            ? seriesDirection(
+                eurusd
+              )
+            : null,
+
+        usdjpy:
+          usdjpy.length
+            ? seriesDirection(
+                usdjpy
+              )
+            : null
+
+      };
+
+
+      return {
+
+        ...crossMarketScore(
+          detail
+        ),
+
+        detail,
+
+        symbols,
+
+        profile:
+          symbol ===
+          "BTC/USD"
+            ? "CRYPTO_MACRO_CONTEXT"
+            : "GOLD_MACRO_CONTEXT"
+
+      };
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   MACRO CALENDAR
 ========================================================= */
 
 async function macroRisk() {
 
-  const key =
-    process.env
-      .TRADING_ECONOMICS_KEY;
+  return cached(
+    "macro:us",
+    MACRO_CACHE_MS,
+    async () => {
+
+      const key =
+        process.env
+          .TRADING_ECONOMICS_KEY;
 
 
-  if (!key) {
+      if (!key) {
 
-    return {
-      available:
-        false,
+        return {
 
-      blocked:
-        false,
+          available:
+            false,
 
-      reason:
-        "TRADING_ECONOMICS_KEY_NOT_SET",
+          blocked:
+            false,
 
-      upcoming:
-        []
-    };
+          reason:
+            "TRADING_ECONOMICS_KEY_NOT_SET",
 
-  }
+          upcoming:
+            []
 
+        };
 
-  try {
-
-    const url =
-      new URL(
-        "https://api.tradingeconomics.com/calendar/country/united%20states"
-      );
+      }
 
 
-    url.searchParams.set(
-      "c",
-      key
-    );
+      try {
+
+        const url =
+          new URL(
+            "https://api.tradingeconomics.com/calendar/country/united%20states"
+          );
 
 
-    url.searchParams.set(
-      "importance",
-      "3"
-    );
+        url.searchParams.set(
+          "c",
+          key
+        );
 
 
-    url.searchParams.set(
-      "f",
-      "json"
-    );
+        url.searchParams.set(
+          "importance",
+          "3"
+        );
 
 
-    const controller =
-      new AbortController();
+        url.searchParams.set(
+          "f",
+          "json"
+        );
 
 
-    const timeout =
-      setTimeout(
-        () =>
-          controller.abort(),
-        10000
-      );
+        const controller =
+          new AbortController();
 
 
-    const response =
-      await fetch(
-        url,
-        {
-          cache:
-            "no-store",
-
-          signal:
-            controller.signal
-        }
-      );
+        const timeout =
+          setTimeout(
+            () =>
+              controller.abort(),
+            8000
+          );
 
 
-    clearTimeout(
-      timeout
-    );
+        const response =
+          await fetch(
+            url,
+            {
+              cache:
+                "no-store",
+
+              signal:
+                controller.signal
+            }
+          );
 
 
-    if (
-      !response.ok
-    ) {
-
-      throw new Error(
-        `Macro HTTP ${response.status}`
-      );
-
-    }
+        clearTimeout(
+          timeout
+        );
 
 
-    const raw =
-      await response.json();
+        if (
+          !response.ok
+        ) {
 
-
-    const now =
-      Date.now();
-
-
-    const before =
-      envNumber(
-        "MACRO_BLOCK_MINUTES_BEFORE",
-        15,
-        0,
-        120
-      ) *
-      60000;
-
-
-    const after =
-      envNumber(
-        "MACRO_BLOCK_MINUTES_AFTER",
-        5,
-        0,
-        120
-      ) *
-      60000;
-
-
-    const upcoming =
-      (
-        Array.isArray(raw)
-          ? raw
-          : []
-      )
-      .map(
-        x => ({
-          event:
-            x.Event ||
-            x.Category ||
-            "US event",
-
-          category:
-            x.Category ||
-            null,
-
-          date:
-            x.Date ||
-            null,
-
-          importance:
-            Number(
-              x.Importance ||
-              0
-            ),
-
-          actual:
-            x.Actual ??
-            null,
-
-          forecast:
-            x.Forecast ??
-            null,
-
-          previous:
-            x.Previous ??
-            null
-        })
-      )
-      .filter(
-        x =>
-          x.date &&
-          Number.isFinite(
-            Date.parse(
-              x.date
-            )
-          )
-      )
-      .filter(
-        x =>
-          Math.abs(
-            Date.parse(
-              x.date
-            ) -
-            now
-          ) <=
-          6 *
-          60 *
-          60 *
-          1000
-      )
-      .sort(
-        (a, b) =>
-          Date.parse(
-            a.date
-          ) -
-          Date.parse(
-            b.date
-          )
-      );
-
-
-    const blocking =
-      upcoming.find(
-        event => {
-
-          const difference =
-            Date.parse(
-              event.date
-            ) -
-            now;
-
-          return (
-            event.importance >= 3 &&
-            difference <=
-              before &&
-            difference >=
-              -after
+          throw new Error(
+            `Macro HTTP ${response.status}`
           );
 
         }
-      );
 
 
-    return {
-      available:
-        true,
+        const raw =
+          await response.json();
 
-      blocked:
-        Boolean(
-          blocking
-        ),
 
-      blockReason:
-        blocking
-          ? `${blocking.event} high-impact window`
-          : null,
+        const now =
+          Date.now();
 
-      blockingEvent:
-        blocking ||
-        null,
 
-      upcoming:
-        upcoming.slice(
-          0,
-          8
-        )
-    };
+        const before =
+          envNumber(
+            "MACRO_BLOCK_MINUTES_BEFORE",
+            15,
+            0,
+            120
+          ) *
+          60000;
 
-  }
-  catch (error) {
 
-    return {
-      available:
-        false,
+        const after =
+          envNumber(
+            "MACRO_BLOCK_MINUTES_AFTER",
+            5,
+            0,
+            120
+          ) *
+          60000;
 
-      blocked:
-        false,
 
-      reason:
-        error?.message ||
-        "MACRO_UNAVAILABLE",
+        const upcoming =
+          (
+            Array.isArray(raw)
+              ? raw
+              : []
+          )
+            .map(
+              x => ({
 
-      upcoming:
-        []
-    };
+                event:
+                  x.Event ||
+                  x.Category ||
+                  "US event",
 
-  }
+                category:
+                  x.Category ||
+                  null,
+
+                date:
+                  x.Date ||
+                  null,
+
+                importance:
+                  Number(
+                    x.Importance ||
+                    0
+                  ),
+
+                actual:
+                  x.Actual ??
+                  null,
+
+                forecast:
+                  x.Forecast ??
+                  null,
+
+                previous:
+                  x.Previous ??
+                  null
+
+              })
+            )
+            .filter(
+              x =>
+                x.date &&
+                Number.isFinite(
+                  Date.parse(
+                    x.date
+                  )
+                )
+            )
+            .filter(
+              x =>
+                Math.abs(
+                  Date.parse(
+                    x.date
+                  ) -
+                  now
+                ) <=
+                6 *
+                60 *
+                60 *
+                1000
+            )
+            .sort(
+              (a, b) =>
+                Date.parse(
+                  a.date
+                ) -
+                Date.parse(
+                  b.date
+                )
+            );
+
+
+        const blocking =
+          upcoming.find(
+            event => {
+
+              const difference =
+                Date.parse(
+                  event.date
+                ) -
+                now;
+
+
+              return (
+                event.importance >=
+                  3 &&
+                difference <=
+                  before &&
+                difference >=
+                  -after
+              );
+
+            }
+          );
+
+
+        return {
+
+          available:
+            true,
+
+          blocked:
+            Boolean(
+              blocking
+            ),
+
+          blockReason:
+            blocking
+              ? `${blocking.event} high-impact window`
+              : null,
+
+          blockingEvent:
+            blocking ||
+            null,
+
+          upcoming:
+            upcoming.slice(
+              0,
+              8
+            )
+
+        };
+
+      }
+      catch (error) {
+
+        return {
+
+          available:
+            false,
+
+          blocked:
+            false,
+
+          reason:
+            error?.message ||
+            "MACRO_UNAVAILABLE",
+
+          upcoming:
+            []
+
+        };
+
+      }
+
+    }
+  );
+
 }
 
 
@@ -652,7 +1044,7 @@ function localMatches(
     Math.max(
       70,
       candles.length -
-        850
+        LOCAL_HISTORY_BARS
     );
 
 
@@ -663,12 +1055,8 @@ function localMatches(
 
 
   for (
-    let i =
-      first;
-
-    i <=
-      last;
-
+    let i = first;
+    i <= last;
     i++
   ) {
 
@@ -676,8 +1064,7 @@ function localMatches(
       candles.slice(
         Math.max(
           0,
-          i -
-            240
+          i - 240
         ),
         i + 1
       );
@@ -747,6 +1134,10 @@ function localMatches(
 
 
     results.push({
+
+      symbol:
+        currentState.symbol,
+
       candle_time:
         state.candleTime,
 
@@ -769,6 +1160,7 @@ function localMatches(
 
       source:
         "FETCHED_HISTORY"
+
     });
 
   }
@@ -784,12 +1176,36 @@ function localMatches(
       0,
       TOP_K
     );
+
 }
 
 
 /* =========================================================
-   PERSISTENT MEMORY MATCHES
+   PERSISTENT MEMORY
 ========================================================= */
+
+function rowSymbol(
+  row
+) {
+
+  const raw =
+    row?.symbol ||
+    row?.market_symbol ||
+    row?.features?.symbol ||
+    null;
+
+
+  if (!raw) {
+    return "XAU/USD";
+  }
+
+
+  return normalizeSymbol(
+    raw
+  );
+
+}
+
 
 function persistentMatches(
   rows,
@@ -797,8 +1213,16 @@ function persistentMatches(
 ) {
 
   return rows
+    .filter(
+      row =>
+        rowSymbol(
+          row
+        ) ===
+        currentState.symbol
+    )
     .map(
       row => ({
+
         ...row,
 
         similarity:
@@ -811,6 +1235,7 @@ function persistentMatches(
 
         source:
           "PERSISTENT_MEMORY"
+
       })
     )
     .filter(
@@ -830,11 +1255,12 @@ function persistentMatches(
       0,
       TOP_K
     );
+
 }
 
 
 /* =========================================================
-   AGREEMENT
+   MODEL AGREEMENT
 ========================================================= */
 
 function modelAgreement(
@@ -848,8 +1274,10 @@ function modelAgreement(
       ? 1
       : -1;
 
+
   let total = 0;
   let aligned = 0;
+
 
   for (
     const score of
@@ -859,11 +1287,17 @@ function modelAgreement(
   ) {
 
     const n =
-      finite(score) ??
+      finite(
+        score
+      ) ??
       0;
 
+
     const magnitude =
-      Math.abs(n);
+      Math.abs(
+        n
+      );
+
 
     if (
       magnitude <
@@ -872,29 +1306,37 @@ function modelAgreement(
       continue;
     }
 
+
     total +=
       magnitude;
 
+
     if (
-      Math.sign(n) ===
+      Math.sign(
+        n
+      ) ===
       sign
     ) {
+
       aligned +=
         magnitude;
+
     }
 
   }
+
 
   return total >
     0
     ? aligned /
       total
     : 0.5;
+
 }
 
 
 /* =========================================================
-   EDGE DECISION
+   REGIME ALIGNMENT
 ========================================================= */
 
 function regimeAlignment(
@@ -909,12 +1351,14 @@ function regimeAlignment(
     return 20;
   }
 
+
   if (
     regime ===
     "RANGE"
   ) {
     return 55;
   }
+
 
   if (
     regime ===
@@ -923,10 +1367,12 @@ function regimeAlignment(
     return 50;
   }
 
+
   const bullish =
     regime.startsWith(
       "BULLISH"
     );
+
 
   return (
     bullish &&
@@ -940,8 +1386,13 @@ function regimeAlignment(
   )
     ? 90
     : 25;
+
 }
 
+
+/* =========================================================
+   EDGE DECISION
+========================================================= */
 
 function buildDecision({
   ensemble,
@@ -1050,6 +1501,7 @@ function buildDecision({
 
 
   const gates = {
+
     technicalStrength:
       technical >=
       MIN_TECHNICAL,
@@ -1080,6 +1532,7 @@ function buildDecision({
     edgeScore:
       edgeScore >=
       MIN_EDGE
+
   };
 
 
@@ -1088,20 +1541,11 @@ function buildDecision({
       gates
     )
       .filter(
-        (
-          [
-            ,
-            passed
-          ]
-        ) =>
+        ([, passed]) =>
           !passed
       )
       .map(
-        (
-          [
-            key
-          ]
-        ) =>
+        ([key]) =>
           key
       );
 
@@ -1125,7 +1569,7 @@ function buildDecision({
   }
   else if (
     edgeScore >=
-      WATCH_EDGE
+    WATCH_EDGE
   ) {
 
     signal =
@@ -1135,6 +1579,7 @@ function buildDecision({
 
 
   return {
+
     signal,
 
     candidateDirection:
@@ -1174,6 +1619,7 @@ function buildDecision({
       failed,
 
     thresholds: {
+
       minEdgeScore:
         MIN_EDGE,
 
@@ -1191,8 +1637,11 @@ function buildDecision({
 
       minExpectancyR:
         MIN_EXPECTANCY
+
     }
+
   };
+
 }
 
 
@@ -1205,7 +1654,8 @@ function createTradePlan(
   entry,
   packet,
   m5Atr,
-  optimized
+  optimized,
+  precision
 ) {
 
   const stopAtr =
@@ -1343,12 +1793,13 @@ function createTradePlan(
 
 
   return {
+
     direction,
 
     entry:
       round(
         entry,
-        2
+        precision
       ),
 
     stopLoss:
@@ -1356,7 +1807,7 @@ function createTradePlan(
         entry -
         sign *
           risk,
-        2
+        precision
       ),
 
     takeProfit:
@@ -1365,7 +1816,7 @@ function createTradePlan(
         sign *
           risk *
           targetR,
-        2
+        precision
       ),
 
     takeProfit2:
@@ -1374,13 +1825,13 @@ function createTradePlan(
         sign *
           risk *
           tp2R,
-        2
+        precision
       ),
 
     riskDistance:
       round(
         risk,
-        2
+        precision
       ),
 
     stopAtr:
@@ -1413,12 +1864,14 @@ function createTradePlan(
         tp2R,
         2
       )}`
+
   };
+
 }
 
 
 /* =========================================================
-   MAIN
+   MAIN API
 ========================================================= */
 
 export default async function handler(
@@ -1441,6 +1894,12 @@ export default async function handler(
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Content-Type"
+  );
+
+
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET,POST,OPTIONS"
   );
 
 
@@ -1483,35 +1942,107 @@ export default async function handler(
   try {
 
     const body =
-      bodyOf(req);
+      bodyOf(
+        req
+      );
 
+
+    const requested =
+      body.symbol ||
+      queryValue(
+        req,
+        "symbol"
+      ) ||
+      "XAU/USD";
+
+
+    const symbol =
+      normalizeSymbol(
+        requested
+      );
+
+
+    if (!symbol) {
+
+      return send(
+        res,
+        400,
+        {
+
+          success:
+            false,
+
+          error:
+            "Unsupported symbol.",
+
+          supportedSymbols: [
+            "XAU/USD",
+            "BTC/USD"
+          ]
+
+        }
+      );
+
+    }
+
+
+    const asset =
+      ASSETS[symbol];
+
+
+    /* -----------------------------------------------------
+       ESSENTIAL DATA
+    ----------------------------------------------------- */
 
     const [
       rawM1,
       rawH1,
-      livePrice,
+      livePriceResult
+    ] =
+      await Promise.all([
+
+        cached(
+          `series:${symbol}:1min:${M1_OUTPUT}`,
+          SERIES_CACHE_MS,
+          () =>
+            fetchSeries(
+              symbol,
+              "1min",
+              M1_OUTPUT
+            )
+        ),
+
+        cached(
+          `series:${symbol}:1h:${H1_OUTPUT}`,
+          H1_CACHE_MS,
+          () =>
+            fetchSeries(
+              symbol,
+              "1h",
+              H1_OUTPUT
+            )
+        ),
+
+        livePriceSafe(
+          symbol
+        )
+
+      ]);
+
+
+    /* -----------------------------------------------------
+       SECONDARY CONTEXT
+    ----------------------------------------------------- */
+
+    const [
       cross,
       macro
     ] =
       await Promise.all([
 
-        fetchSeries(
-          SYMBOL,
-          "1min",
-          M1_OUTPUT
+        crossContext(
+          symbol
         ),
-
-        fetchSeries(
-          SYMBOL,
-          "1h",
-          H1_OUTPUT
-        ),
-
-        fetchPrice(
-          SYMBOL
-        ),
-
-        crossContext(),
 
         macroRisk()
 
@@ -1558,7 +2089,7 @@ export default async function handler(
     ) {
 
       throw new Error(
-        "Not enough completed XAU/USD data."
+        `Not enough completed ${symbol} market data.`
       );
 
     }
@@ -1568,29 +2099,55 @@ export default async function handler(
       m1.at(-1);
 
 
+    const lastCandleEnd =
+      parseUTC(
+        lastM1.t
+      ) +
+      60000;
+
+
     const dataAge =
-      Date.now() -
-      (
-        parseUTC(
-          lastM1.t
-        ) +
-        60000
+      Math.max(
+        0,
+        Date.now() -
+          lastCandleEnd
+      );
+
+
+    const schedule =
+      marketOpen(
+        symbol
+      );
+
+
+    const dataStale =
+      dataAge >
+      STALE_MS;
+
+
+    const referencePrice =
+      finite(
+        livePriceResult
+      ) ??
+      finite(
+        lastM1.c
       );
 
 
     if (
-      dataAge >
-      STALE_MS
+      referencePrice ===
+      null
     ) {
 
       throw new Error(
-        "Gold data is stale."
+        `${symbol} reference price unavailable.`
       );
 
     }
 
 
     const packet = {
+
       lastM1,
 
       session:
@@ -1619,8 +2176,15 @@ export default async function handler(
         snapshot(
           h1
         )
+
     };
 
+
+    /*
+      Existing goldContext() is really a generic
+      day/session/liquidity routine, so V12 also
+      uses it for BTC.
+    */
 
     packet.gold =
       goldContext(
@@ -1642,6 +2206,7 @@ export default async function handler(
 
 
     const components = {
+
       ...technical,
 
       breakout:
@@ -1655,8 +2220,12 @@ export default async function handler(
         ),
 
       cross:
-        cross.score ||
-        0
+        (
+          cross.score ||
+          0
+        ) *
+        asset.crossWeight
+
     };
 
 
@@ -1678,8 +2247,26 @@ export default async function handler(
 
 
     currentState.symbol =
-      SYMBOL;
+      symbol;
 
+
+    currentState.assetType =
+      asset.type;
+
+
+    if (
+      currentState.features
+    ) {
+
+      currentState.features.symbol =
+        symbol;
+
+    }
+
+
+    /* -----------------------------------------------------
+       STORE CURRENT STATE
+    ----------------------------------------------------- */
 
     if (
       dbEnabled()
@@ -1688,18 +2275,23 @@ export default async function handler(
       await upsertMarketState(
         currentState
       )
-      .catch(
-        error =>
-          console.error(
-            "Memory write:",
-            error.message
-          )
-      );
+        .catch(
+          error =>
+            console.error(
+              "Memory write:",
+              error.message
+            )
+        );
 
     }
 
 
+    /* -----------------------------------------------------
+       HISTORICAL MEMORY
+    ----------------------------------------------------- */
+
     let matches = [];
+
 
     let memorySource =
       "FETCHED_HISTORY";
@@ -1711,15 +2303,17 @@ export default async function handler(
 
       const rows =
         await loadResolvedStates({
+
           regime:
             regime.type,
 
           limit:
-            2000
+            1200
+
         })
-        .catch(
-          () => []
-        );
+          .catch(
+            () => []
+          );
 
 
       matches =
@@ -1760,6 +2354,10 @@ export default async function handler(
     }
 
 
+    /* -----------------------------------------------------
+       ADAPTIVE ENSEMBLE
+    ----------------------------------------------------- */
+
     const reliability =
       adaptiveReliability(
         matches
@@ -1785,6 +2383,7 @@ export default async function handler(
         matches,
         direction
       ) || {
+
         stopAtr:
           1,
 
@@ -1799,6 +2398,7 @@ export default async function handler(
 
         sample:
           0
+
       };
 
 
@@ -1832,6 +2432,7 @@ export default async function handler(
 
 
     historical.costModel = {
+
       estimatedCostAtr:
         envNumber(
           "ESTIMATED_COST_ATR",
@@ -1854,6 +2455,7 @@ export default async function handler(
           ),
           3
         )
+
     };
 
 
@@ -1866,14 +2468,83 @@ export default async function handler(
 
     const decision =
       buildDecision({
+
         ensemble,
+
         agreement,
+
         historical,
+
         regime,
+
         cross,
+
         macro
+
       });
 
+
+    /* -----------------------------------------------------
+       MARKET SAFETY GATES
+    ----------------------------------------------------- */
+
+    decision.gates.marketOpen =
+      schedule.open;
+
+
+    decision.gates.freshMarketData =
+      !dataStale;
+
+
+    if (
+      !schedule.open
+    ) {
+
+      decision.failedGates =
+        [
+          ...new Set([
+            ...decision.failedGates,
+            "marketOpen"
+          ])
+        ];
+
+
+      decision.qualified =
+        false;
+
+
+      decision.signal =
+        "WAIT";
+
+    }
+
+
+    if (
+      dataStale
+    ) {
+
+      decision.failedGates =
+        [
+          ...new Set([
+            ...decision.failedGates,
+            "freshMarketData"
+          ])
+        ];
+
+
+      decision.qualified =
+        false;
+
+
+      decision.signal =
+        "WAIT";
+
+    }
+
+
+    /* -----------------------------------------------------
+       SETUP
+    ----------------------------------------------------- */
 
     const setupType =
       inferSetup(
@@ -1894,8 +2565,10 @@ export default async function handler(
 
 
     if (
-      m5Atr === null ||
-      m5Atr <= 0
+      m5Atr ===
+        null ||
+      m5Atr <=
+        0
     ) {
 
       throw new Error(
@@ -1909,13 +2582,18 @@ export default async function handler(
       decision.qualified
         ? createTradePlan(
             direction,
-            livePrice,
+            referencePrice,
             packet,
             m5Atr,
-            optimized
+            optimized,
+            asset.precision
           )
         : null;
 
+
+    /* -----------------------------------------------------
+       ACCOUNT
+    ----------------------------------------------------- */
 
     const equity =
       Math.max(
@@ -1928,6 +2606,7 @@ export default async function handler(
 
 
     const account = {
+
       equityZAR:
         round(
           equity,
@@ -1944,6 +2623,7 @@ export default async function handler(
           100,
           2
         )
+
     };
 
 
@@ -1952,41 +2632,65 @@ export default async function handler(
 
 
     const signalId =
-      `MKV11-${created}-${direction}`;
+      `MKV12-${asset.code}-${created}-${direction}`;
 
+
+    /* -----------------------------------------------------
+       MEMORY STATUS
+    ----------------------------------------------------- */
 
     const memory =
       dbEnabled()
         ? await memoryCount()
             .catch(
               () => ({
-                total:
-                  0,
-
-                resolved:
-                  0
+                total: 0,
+                resolved: 0
               })
             )
         : {
-            total:
-              0,
-
-            resolved:
-              0
+            total: 0,
+            resolved: 0
           };
 
 
+    /* -----------------------------------------------------
+       RESPONSE
+    ----------------------------------------------------- */
+
     const response = {
+
       success:
         true,
 
       model:
-        "MKAYFX GOLD QUANT EDGE V11",
+        "MKAYFX MULTI-ASSET QUANT EDGE V12",
+
+      version:
+        12,
+
+      supportedSymbols: [
+        "XAU/USD",
+        "BTC/USD"
+      ],
 
       signalId,
 
-      symbol:
-        SYMBOL,
+      symbol,
+
+      asset: {
+        code:
+          asset.code,
+
+        name:
+          asset.name,
+
+        type:
+          asset.type,
+
+        trades247:
+          asset.trades247
+      },
 
       signal:
         decision.signal,
@@ -2016,11 +2720,45 @@ export default async function handler(
       edgeType:
         "EDGE_SCORE_NOT_GUARANTEED_PROBABILITY",
 
+      marketStatus: {
+
+        open:
+          schedule.open,
+
+        reason:
+          schedule.reason,
+
+        dataStale,
+
+        lastCompletedCandle:
+          lastM1.t,
+
+        dataAgeMinutes:
+          round(
+            dataAge /
+            60000,
+            1
+          ),
+
+        priceSource:
+          livePriceResult !==
+            null
+            ? "LIVE_PRICE_ENDPOINT"
+            : "LAST_COMPLETED_CANDLE"
+
+      },
+
+      currentPrice:
+        round(
+          referencePrice,
+          asset.precision
+        ),
+
       entry:
         plan?.entry ??
         round(
-          livePrice,
-          2
+          referencePrice,
+          asset.precision
         ),
 
       stopLoss:
@@ -2051,6 +2789,7 @@ export default async function handler(
         regime,
 
       ensemble: {
+
         signedScore:
           round(
             ensemble,
@@ -2061,6 +2800,7 @@ export default async function handler(
 
         adaptiveReliability:
           reliability
+
       },
 
       edgeDecision:
@@ -2076,10 +2816,15 @@ export default async function handler(
         macro,
 
       execution: {
+
         state:
-          decision.qualified
-            ? "QUALIFIED_NOT_ENTERED"
-            : decision.signal,
+          !schedule.open
+            ? "MARKET_CLOSED"
+            : dataStale
+              ? "STALE_DATA"
+              : decision.qualified
+                ? "QUALIFIED_NOT_ENTERED"
+                : decision.signal,
 
         referenceAtr:
           round(
@@ -2106,9 +2851,11 @@ export default async function handler(
 
         rule:
           "Manual execution only."
+
       },
 
       timeframeBias: {
+
         M1:
           packet.M1.bias,
 
@@ -2120,9 +2867,11 @@ export default async function handler(
 
         H1:
           packet.H1.bias
+
       },
 
       structure: {
+
         M1:
           packet.M1.structure,
 
@@ -2146,17 +2895,26 @@ export default async function handler(
 
         M15:
           packet.M15.structure
+
       },
 
-      goldContext:
+      marketContext:
         packet.gold,
 
+      goldContext:
+        symbol ===
+          "XAU/USD"
+          ? packet.gold
+          : null,
+
       technical: {
+
         componentScores:
           technical,
 
         reasons: [
-          `Regime ${regime.type} (${regime.confidence}% confidence).`,
+
+          `${asset.name} regime ${regime.type} (${regime.confidence}% confidence).`,
 
           `H1 ${packet.H1.bias}, M15 ${packet.M15.bias}, M5 ${packet.M5.bias}.`,
 
@@ -2170,18 +2928,33 @@ export default async function handler(
             : "Cross-market feeds unavailable.",
 
           historical.matches
-            ? `${historical.matches} similar states, ${historical.expectancyR}R expectancy.`
+            ? `${historical.matches} similar states, ${historical.expectancyR}R historical expectancy.`
             : "Historical sample unavailable.",
 
           macro.blocked
             ? `Macro block: ${macro.blockReason}.`
-            : "No active high-impact macro block."
+            : "No active high-impact macro block.",
+
+          !schedule.open
+            ? `${asset.name} market currently closed.`
+            : `${asset.name} market currently open.`,
+
+          dataStale
+            ? `Latest completed data is ${round(
+                dataAge /
+                60000,
+                1
+              )} minutes old.`
+            : "Market data freshness check passed."
+
         ]
+
       },
 
       account,
 
       memory: {
+
         enabled:
           dbEnabled(),
 
@@ -2193,6 +2966,7 @@ export default async function handler(
 
         sourceUsed:
           memorySource
+
       },
 
       chart:
@@ -2200,36 +2974,39 @@ export default async function handler(
           .slice(-180)
           .map(
             candle => ({
+
               t:
                 candle.t,
 
               o:
                 round(
                   candle.o,
-                  2
+                  asset.precision
                 ),
 
               h:
                 round(
                   candle.h,
-                  2
+                  asset.precision
                 ),
 
               l:
                 round(
                   candle.l,
-                  2
+                  asset.precision
                 ),
 
               c:
                 round(
                   candle.c,
-                  2
+                  asset.precision
                 )
+
             })
           ),
 
       dataQuality: {
+
         completedM1:
           m1.length,
 
@@ -2243,13 +3020,19 @@ export default async function handler(
           h1.length,
 
         staleMilliseconds:
-          Math.max(
-            0,
-            dataAge
-          )
+          dataAge,
+
+        cacheEnabled:
+          true
+
       }
+
     };
 
+
+    /* -----------------------------------------------------
+       SAVE SIGNAL
+    ----------------------------------------------------- */
 
     if (
       dbEnabled()
@@ -2258,13 +3041,13 @@ export default async function handler(
       await saveSignalRecord(
         response
       )
-      .catch(
-        error =>
-          console.error(
-            "Save signal:",
-            error.message
-          )
-      );
+        .catch(
+          error =>
+            console.error(
+              "Save signal:",
+              error.message
+            )
+        );
 
     }
 
@@ -2279,7 +3062,7 @@ export default async function handler(
   catch (error) {
 
     console.error(
-      "MKAYFX V11:",
+      "MKAYFX V12:",
       error
     );
 
@@ -2288,14 +3071,25 @@ export default async function handler(
       res,
       500,
       {
+
         success:
           false,
 
+        model:
+          "MKAYFX MULTI-ASSET QUANT EDGE V12",
+
         error:
           error?.message ||
-          "Analysis failed."
+          "Analysis failed.",
+
+        supportedSymbols: [
+          "XAU/USD",
+          "BTC/USD"
+        ]
+
       }
     );
 
   }
+
 }
