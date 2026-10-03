@@ -1,0 +1,7072 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"
+>
+
+<meta name="theme-color" content="#040608">
+
+<meta
+  name="apple-mobile-web-app-capable"
+  content="yes"
+>
+
+<meta
+  name="apple-mobile-web-app-status-bar-style"
+  content="black-translucent"
+>
+
+<title>MKAYFX TERMINAL V12</title>
+
+<style>
+
+:root{
+  --bg:#040608;
+  --card:#0a1017;
+  --border:rgba(255,255,255,.08);
+  --text:#f5f7fa;
+  --muted:#7b899b;
+  --green:#35e6a1;
+  --red:#ff6077;
+  --gold:#f5ca61;
+  --btc:#f7931a;
+  --blue:#7891ff;
+  --purple:#b28cff;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html{
+  background:var(--bg);
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  color:var(--text);
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  background:
+    radial-gradient(
+      circle at 18% -5%,
+      rgba(95,108,255,.20),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 100% 25%,
+      rgba(53,230,161,.05),
+      transparent 25%
+    ),
+    var(--bg);
+
+  padding:
+    max(12px,env(safe-area-inset-top))
+    10px
+    calc(96px + env(safe-area-inset-bottom));
+}
+
+.app{
+  max-width:900px;
+  margin:auto;
+}
+
+.hidden{
+  display:none!important;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.logo{
+  width:46px;
+  height:46px;
+  display:grid;
+  place-items:center;
+  border-radius:15px;
+  color:#171204;
+  font-size:14px;
+  font-weight:1000;
+
+  background:
+    linear-gradient(
+      145deg,
+      #fff1aa,
+      #f5ca61,
+      #8e6519
+    );
+}
+
+.logo.btc{
+  color:#fff;
+
+  background:
+    linear-gradient(
+      145deg,
+      #ffb84e,
+      #f7931a,
+      #9b4e00
+    );
+}
+
+h1{
+  margin:0;
+  font-size:14px;
+}
+
+.subtitle{
+  margin-top:3px;
+  color:var(--muted);
+  font-size:7px;
+  letter-spacing:.7px;
+}
+
+.status{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 10px;
+  border:1px solid var(--border);
+  border-radius:999px;
+  background:rgba(255,255,255,.025);
+  font-size:7px;
+  font-weight:1000;
+}
+
+.dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:currentColor;
+}
+
+.status-active{
+  color:var(--green);
+}
+
+.status-wait{
+  color:var(--gold);
+}
+
+.status-error{
+  color:var(--red);
+}
+
+
+/* =========================================================
+   MARKET SELECTOR
+========================================================= */
+
+.market-selector{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:10px;
+}
+
+.market-button{
+  min-height:58px;
+  margin:0;
+  padding:9px 11px;
+
+  display:flex;
+  align-items:center;
+  gap:9px;
+
+  text-align:left;
+
+  border:1px solid var(--border);
+  border-radius:14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.025),
+      rgba(255,255,255,.012)
+    );
+
+  color:var(--muted);
+}
+
+.market-button .market-icon{
+  width:34px;
+  height:34px;
+  flex:0 0 auto;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:10px;
+
+  font-size:12px;
+  font-weight:1000;
+
+  background:rgba(255,255,255,.055);
+}
+
+.market-button strong{
+  display:block;
+  font-size:8px;
+}
+
+.market-button small{
+  display:block;
+  margin-top:2px;
+  font-size:6px;
+  color:var(--muted);
+}
+
+.market-button.selected{
+  color:white;
+
+  border-color:
+    rgba(120,145,255,.35);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(120,145,255,.16),
+      rgba(120,145,255,.05)
+    );
+}
+
+.market-button.gold.selected .market-icon{
+  color:#161204;
+
+  background:
+    linear-gradient(
+      145deg,
+      #fff1aa,
+      #f5ca61,
+      #a77516
+    );
+}
+
+.market-button.btc.selected .market-icon{
+  color:white;
+
+  background:
+    linear-gradient(
+      145deg,
+      #ffb84e,
+      #f7931a,
+      #9b4e00
+    );
+}
+
+
+/* =========================================================
+   GENERAL
+========================================================= */
+
+.card{
+  margin-bottom:10px;
+  padding:14px;
+  border:1px solid var(--border);
+  border-radius:18px;
+
+  background:
+    linear-gradient(
+      160deg,
+      rgba(13,20,29,.98),
+      rgba(8,12,18,.98)
+    );
+
+  overflow:hidden;
+}
+
+.view{
+  display:none;
+}
+
+.view.active{
+  display:block;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:11px;
+  color:var(--muted);
+  font-size:7px;
+  font-weight:1000;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+
+.section-title strong{
+  color:var(--text);
+}
+
+.error{
+  display:none;
+  margin-bottom:10px;
+  padding:10px;
+
+  border:
+    1px solid
+    rgba(255,96,119,.18);
+
+  border-radius:11px;
+
+  background:
+    rgba(255,96,119,.06);
+
+  color:#ffb6c1;
+  font-size:8px;
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero{
+  padding-top:18px;
+  text-align:center;
+}
+
+.hero-label{
+  color:var(--muted);
+  font-size:6px;
+  font-weight:900;
+  letter-spacing:1.2px;
+}
+
+.signal{
+  margin-top:5px;
+
+  font-size:
+    clamp(
+      42px,
+      12vw,
+      66px
+    );
+
+  font-weight:1000;
+  line-height:1;
+  letter-spacing:-2px;
+}
+
+.signal.BUY{
+  color:var(--green);
+}
+
+.signal.SELL{
+  color:var(--red);
+}
+
+.signal.WAIT,
+.signal.WATCH{
+  color:var(--gold);
+}
+
+.signal.QUALIFIED{
+  color:var(--blue);
+}
+
+.subsignal{
+  min-height:18px;
+  margin-top:6px;
+  color:var(--muted);
+  font-size:8px;
+}
+
+.badge{
+  display:inline-flex;
+  margin-top:7px;
+  padding:6px 10px;
+
+  border:
+    1px solid
+    rgba(120,145,255,.18);
+
+  border-radius:999px;
+
+  background:
+    rgba(120,145,255,.07);
+
+  color:var(--blue);
+  font-size:7px;
+  font-weight:1000;
+}
+
+.price{
+  margin-top:14px;
+  font-size:35px;
+  font-weight:1000;
+}
+
+.price-label{
+  color:var(--muted);
+  font-size:6px;
+}
+
+.state{
+  max-width:580px;
+  margin:7px auto 0;
+  color:var(--muted);
+  font-size:8px;
+  line-height:1.5;
+}
+
+
+/* =========================================================
+   GAUGE
+========================================================= */
+
+.gauge-row{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:15px;
+  flex-wrap:wrap;
+  margin-top:14px;
+}
+
+.gauge{
+  --score:0;
+
+  width:105px;
+  height:105px;
+
+  position:relative;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:50%;
+
+  background:
+    conic-gradient(
+      var(--blue)
+      calc(var(--score) * 1%),
+      rgba(255,255,255,.06)
+      0
+    );
+}
+
+.gauge:after{
+  content:"";
+  position:absolute;
+  inset:8px;
+  border-radius:50%;
+  background:#0a0f16;
+}
+
+.gauge-inner{
+  position:relative;
+  z-index:2;
+}
+
+.gauge strong{
+  display:block;
+  font-size:25px;
+}
+
+.gauge small{
+  display:block;
+  color:var(--muted);
+  font-size:5px;
+}
+
+.quality{
+  min-width:145px;
+  padding:12px;
+  text-align:left;
+  border:1px solid var(--border);
+  border-radius:12px;
+}
+
+.quality small{
+  color:var(--muted);
+  font-size:6px;
+}
+
+.quality strong{
+  display:block;
+  margin-top:5px;
+  font-size:18px;
+}
+
+.quality-track{
+  height:6px;
+  margin-top:7px;
+  border-radius:999px;
+  background:rgba(255,255,255,.06);
+  overflow:hidden;
+}
+
+.quality-track span{
+  display:block;
+  width:0;
+  height:100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--gold),
+      var(--green)
+    );
+}
+
+
+/* =========================================================
+   LEVELS
+========================================================= */
+
+.levels{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;
+  margin-top:14px;
+}
+
+.level{
+  padding:10px 4px;
+  text-align:center;
+  border:1px solid var(--border);
+  border-radius:10px;
+}
+
+.level small{
+  display:block;
+  margin-bottom:5px;
+  color:var(--muted);
+  font-size:5px;
+}
+
+.level strong{
+  font-size:12px;
+}
+
+.entry strong{
+  color:var(--blue);
+}
+
+.sl strong{
+  color:var(--red);
+}
+
+.tp strong{
+  color:var(--green);
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+.progress-wrap{
+  margin-top:14px;
+}
+
+.progress-info{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:6px;
+  color:var(--muted);
+  font-size:6px;
+}
+
+.progress{
+  height:8px;
+  overflow:hidden;
+  border-radius:999px;
+  background:rgba(255,255,255,.055);
+}
+
+.progress span{
+  display:block;
+  width:50%;
+  height:100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--blue),
+      var(--green)
+    );
+}
+
+
+/* =========================================================
+   KV
+========================================================= */
+
+.kv{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:8px;
+  align-items:center;
+
+  padding:8px 0;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.045);
+
+  font-size:8px;
+}
+
+.kv:last-child{
+  border-bottom:0;
+}
+
+.kv span{
+  color:var(--muted);
+}
+
+
+/* =========================================================
+   TFS
+========================================================= */
+
+.tfs{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;
+}
+
+.tf{
+  padding:10px 3px;
+  text-align:center;
+  border:1px solid var(--border);
+  border-radius:10px;
+}
+
+.tf small{
+  display:block;
+  margin-bottom:5px;
+  color:var(--muted);
+  font-size:5px;
+}
+
+.tf strong{
+  font-size:7px;
+}
+
+.BULLISH,
+.BUY{
+  color:var(--green);
+}
+
+.BEARISH,
+.SELL{
+  color:var(--red);
+}
+
+.NEUTRAL,
+.MIXED,
+.WAIT,
+.WATCH{
+  color:var(--gold);
+}
+
+
+/* =========================================================
+   CHIPS
+========================================================= */
+
+.chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+.chip{
+  padding:7px 9px;
+  border:1px solid var(--border);
+  border-radius:999px;
+  color:#c7d0dc;
+  font-size:6px;
+}
+
+.reason{
+  display:flex;
+  gap:8px;
+  margin-bottom:6px;
+  padding:9px;
+  border-radius:9px;
+  background:rgba(255,255,255,.025);
+  color:#c9d2dc;
+  font-size:7px;
+  line-height:1.5;
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:7px;
+}
+
+.stat{
+  padding:11px;
+  border:1px solid var(--border);
+  border-radius:11px;
+}
+
+.stat small{
+  display:block;
+  color:var(--muted);
+  font-size:5px;
+}
+
+.stat strong{
+  display:block;
+  margin-top:5px;
+  font-size:15px;
+}
+
+
+/* =========================================================
+   MODEL
+========================================================= */
+
+.model{
+  margin-bottom:13px;
+}
+
+.model-head{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:6px;
+  font-size:7px;
+}
+
+.track{
+  position:relative;
+  height:7px;
+  overflow:hidden;
+  border-radius:999px;
+  background:rgba(255,255,255,.05);
+}
+
+.track:after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:0;
+  width:1px;
+  height:100%;
+  background:rgba(255,255,255,.15);
+}
+
+.fill{
+  position:absolute;
+  top:0;
+  height:100%;
+}
+
+.fill.bull{
+  left:50%;
+  background:var(--green);
+}
+
+.fill.bear{
+  right:50%;
+  background:var(--red);
+}
+
+
+/* =========================================================
+   GATES
+========================================================= */
+
+.gate{
+  display:grid;
+  grid-template-columns:21px 1fr auto;
+  gap:8px;
+  align-items:center;
+  margin-bottom:7px;
+  padding:9px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  font-size:7px;
+}
+
+.gate-icon{
+  width:20px;
+  height:20px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+}
+
+.pass .gate-icon{
+  color:var(--green);
+  background:rgba(53,230,161,.08);
+}
+
+.fail .gate-icon{
+  color:var(--red);
+  background:rgba(255,96,119,.08);
+}
+
+
+/* =========================================================
+   CROSS MARKET
+========================================================= */
+
+.market{
+  display:grid;
+  grid-template-columns:70px 1fr auto;
+  gap:8px;
+  align-items:center;
+  margin-bottom:7px;
+  padding:9px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  font-size:7px;
+}
+
+.market-track{
+  height:6px;
+  overflow:hidden;
+  border-radius:999px;
+  background:rgba(255,255,255,.05);
+}
+
+.market-track span{
+  display:block;
+  height:100%;
+  background:var(--blue);
+}
+
+
+/* =========================================================
+   CHART
+========================================================= */
+
+.chart-wrap{
+  width:100%;
+  min-height:360px;
+  overflow:hidden;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:#060a0f;
+}
+
+canvas{
+  display:block;
+  width:100%;
+  height:360px;
+}
+
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+.history-row{
+  display:grid;
+  grid-template-columns:46px 50px 1fr auto;
+  gap:7px;
+  align-items:center;
+  padding:9px 0;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.04);
+
+  font-size:7px;
+}
+
+
+/* =========================================================
+   FORMS
+========================================================= */
+
+.controls{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:9px;
+}
+
+label{
+  display:block;
+  margin-bottom:5px;
+  color:var(--muted);
+  font-size:6px;
+}
+
+input,
+select{
+  width:100%;
+  min-height:42px;
+  padding:0 10px;
+  color:white;
+  font-size:14px;
+  outline:none;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:#070b10;
+}
+
+button{
+  width:100%;
+  min-height:44px;
+  margin-top:8px;
+  padding:11px;
+  border:0;
+  border-radius:11px;
+  color:white;
+
+  background:
+    linear-gradient(
+      135deg,
+      #718cff,
+      #655cff
+    );
+
+  font-size:8px;
+  font-weight:1000;
+}
+
+button.secondary{
+  background:rgba(255,255,255,.035);
+  border:1px solid var(--border);
+}
+
+button.danger{
+  color:#ffadb9;
+  background:rgba(255,96,119,.06);
+  border:1px solid rgba(255,96,119,.14);
+}
+
+button.enter{
+  background:
+    linear-gradient(
+      135deg,
+      #2fd99a,
+      #1ca66f
+    );
+
+  font-size:10px;
+}
+
+.button-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+
+
+/* =========================================================
+   NAV
+========================================================= */
+
+.bottom-nav{
+  position:fixed;
+  z-index:50;
+
+  left:10px;
+  right:10px;
+
+  bottom:
+    max(
+      8px,
+      env(safe-area-inset-bottom)
+    );
+
+  max-width:880px;
+  margin:auto;
+
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:4px;
+
+  padding:6px;
+
+  border:
+    1px solid
+    rgba(255,255,255,.12);
+
+  border-radius:17px;
+
+  background:
+    rgba(7,11,16,.95);
+
+  backdrop-filter:blur(22px);
+}
+
+.nav{
+  min-height:45px;
+  margin:0;
+  padding:5px;
+  background:transparent;
+  color:var(--muted);
+}
+
+.nav.selected{
+  color:white;
+  background:rgba(120,145,255,.12);
+}
+
+.meta{
+  display:flex;
+  justify-content:space-between;
+  color:var(--muted);
+  font-size:6px;
+}
+
+@media(max-width:600px){
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .levels{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .controls{
+    grid-template-columns:1fr;
+  }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<main class="app">
+
+<header>
+
+  <div class="brand">
+
+    <div
+      id="logo"
+      class="logo"
+    >
+      Au
+    </div>
+
+    <div>
+
+      <h1 id="brandTitle">
+        MKAYFX GOLD
+      </h1>
+
+      <div class="subtitle">
+        MULTI-ASSET QUANT EDGE TERMINAL V12
+      </div>
+
+    </div>
+
+  </div>
+
+  <div
+    id="status"
+    class="status status-wait"
+  >
+
+    <span class="dot"></span>
+
+    <span id="statusText">
+      STARTING
+    </span>
+
+  </div>
+
+</header>
+
+
+<!-- =======================================================
+     GOLD / BTC MARKET SELECTOR
+======================================================= -->
+
+<section class="market-selector">
+
+  <button
+    id="goldMarket"
+    class="market-button gold selected"
+    type="button"
+  >
+
+    <span class="market-icon">
+      Au
+    </span>
+
+    <span>
+
+      <strong>
+        GOLD
+      </strong>
+
+      <small>
+        XAU/USD
+      </small>
+
+    </span>
+
+  </button>
+
+
+  <button
+    id="btcMarket"
+    class="market-button btc"
+    type="button"
+  >
+
+    <span class="market-icon">
+      ₿
+    </span>
+
+    <span>
+
+      <strong>
+        BITCOIN
+      </strong>
+
+      <small>
+        BTC/USD
+      </small>
+
+    </span>
+
+  </button>
+
+</section>
+
+
+<div
+  id="error"
+  class="error"
+>
+</div>
+
+
+<!-- =======================================================
+     DASHBOARD
+======================================================= -->
+
+<div
+  id="dashboard"
+  class="view active"
+>
+
+<section class="card hero">
+
+  <div
+    id="heroLabel"
+    class="hero-label"
+  >
+    XAU/USD DECISION ENGINE
+  </div>
+
+  <div
+    id="signal"
+    class="signal WAIT"
+  >
+    ...
+  </div>
+
+  <div
+    id="subsignal"
+    class="subsignal"
+  >
+  </div>
+
+  <div
+    id="badge"
+    class="badge"
+  >
+    ANALYZING
+  </div>
+
+  <div
+    id="price"
+    class="price"
+  >
+    —
+  </div>
+
+  <div
+    id="priceLabel"
+    class="price-label"
+  >
+    XAU/USD
+  </div>
+
+  <div
+    id="state"
+    class="state"
+  >
+    Building market state...
+  </div>
+
+  <div class="gauge-row">
+
+    <div
+      id="gauge"
+      class="gauge"
+      style="--score:0"
+    >
+
+      <div class="gauge-inner">
+
+        <strong id="edge">
+          —
+        </strong>
+
+        <small>
+          EDGE SCORE
+        </small>
+
+      </div>
+
+    </div>
+
+
+    <div class="quality">
+
+      <small>
+        SIGNAL QUALITY
+      </small>
+
+      <strong id="quality">
+        —
+      </strong>
+
+      <div class="quality-track">
+
+        <span id="qualityBar">
+        </span>
+
+      </div>
+
+      <small id="qualityDetail">
+        Awaiting signal
+      </small>
+
+    </div>
+
+  </div>
+
+
+  <div class="levels">
+
+    <div class="level entry">
+      <small>ENTRY</small>
+      <strong id="entry">—</strong>
+    </div>
+
+    <div class="level sl">
+      <small>STOP LOSS</small>
+      <strong id="sl">—</strong>
+    </div>
+
+    <div class="level tp">
+      <small>TP1</small>
+      <strong id="tp">—</strong>
+    </div>
+
+    <div class="level tp">
+      <small>TP2</small>
+      <strong id="tp2">—</strong>
+    </div>
+
+  </div>
+
+
+  <div class="progress-wrap">
+
+    <div class="progress-info">
+
+      <span>SL</span>
+
+      <span id="progressLabel">
+        —
+      </span>
+
+      <span>TP</span>
+
+    </div>
+
+    <div class="progress">
+
+      <span
+        id="progressBar"
+        style="width:50%"
+      >
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <button
+    id="enterTrade"
+    class="enter hidden"
+  >
+    MARK TRADE ENTERED
+  </button>
+
+</section>
+
+
+<div class="grid">
+
+
+<section class="card">
+
+  <div class="section-title">
+    MARKET
+  </div>
+
+  <div class="kv">
+    <span>Instrument</span>
+    <strong id="instrumentDisplay">XAU/USD</strong>
+  </div>
+
+  <div class="kv">
+    <span>Market status</span>
+    <strong id="marketStatusDisplay">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Regime</span>
+    <strong id="regime">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Setup</span>
+    <strong id="setup">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Agreement</span>
+    <strong id="agreement">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Expectancy</span>
+    <strong id="expectancy">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>TP-first rate</span>
+    <strong id="probability">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Matches</span>
+    <strong id="matches">—</strong>
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+    ACCOUNT
+  </div>
+
+  <div class="kv">
+    <span>Session</span>
+    <strong id="session">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>RR</span>
+    <strong id="rr">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Equity</span>
+    <strong id="equityDisplay">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Max risk</span>
+    <strong id="maxRisk">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Memory source</span>
+    <strong id="memorySource">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Resolved states</span>
+    <strong id="memoryResolved">—</strong>
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+    TIMEFRAMES
+  </div>
+
+  <div class="tfs">
+
+    <div class="tf">
+      <small>M1</small>
+      <strong id="m1">—</strong>
+    </div>
+
+    <div class="tf">
+      <small>M5</small>
+      <strong id="m5">—</strong>
+    </div>
+
+    <div class="tf">
+      <small>M15</small>
+      <strong id="m15">—</strong>
+    </div>
+
+    <div class="tf">
+      <small>H1</small>
+      <strong id="h1">—</strong>
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+    INTELLIGENCE
+  </div>
+
+  <div
+    id="chips"
+    class="chips"
+  >
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+    WHY?
+  </div>
+
+  <div id="reasons">
+  </div>
+
+</section>
+
+</div>
+
+</div>
+
+
+<!-- =======================================================
+     EDGE
+======================================================= -->
+
+<div
+  id="edgeView"
+  class="view"
+>
+
+<section class="card">
+
+  <div class="section-title">
+
+    <span>
+      MODEL ENSEMBLE
+    </span>
+
+    <strong id="ensembleScore">
+      —
+    </strong>
+
+  </div>
+
+  <div id="models">
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+
+    <span>
+      QUALIFICATION GATES
+    </span>
+
+    <strong id="gateSummary">
+      —
+    </strong>
+
+  </div>
+
+  <div id="gates">
+  </div>
+
+</section>
+
+
+<div class="grid">
+
+<section class="card">
+
+  <div class="section-title">
+    HISTORICAL EDGE
+  </div>
+
+  <div class="stats">
+
+    <div class="stat">
+      <small>MATCHES</small>
+      <strong id="histMatches">—</strong>
+    </div>
+
+    <div class="stat">
+      <small>EXPECTANCY</small>
+      <strong id="histExp">—</strong>
+    </div>
+
+    <div class="stat">
+      <small>TP-FIRST</small>
+      <strong id="histWin">—</strong>
+    </div>
+
+    <div class="stat">
+      <small>SIMILARITY</small>
+      <strong id="histSim">—</strong>
+    </div>
+
+    <div class="stat">
+      <small>MFE</small>
+      <strong id="histMfe">—</strong>
+    </div>
+
+    <div class="stat">
+      <small>MAE</small>
+      <strong id="histMae">—</strong>
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+    DYNAMIC SL / TP
+  </div>
+
+  <div class="kv">
+    <span>Stop ATR</span>
+    <strong id="optStop">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Target R</span>
+    <strong id="optTarget">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Expected R</span>
+    <strong id="optExp">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Win rate</span>
+    <strong id="optWin">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Sample</span>
+    <strong id="optSample">—</strong>
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+    CROSS MARKET
+  </div>
+
+  <div id="cross">
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+
+    <span>
+      MACRO
+    </span>
+
+    <strong id="macroState">
+      —
+    </strong>
+
+  </div>
+
+  <div id="macro">
+  </div>
+
+</section>
+
+</div>
+
+</div>
+
+
+<!-- =======================================================
+     CHART
+======================================================= -->
+
+<div
+  id="chartView"
+  class="view"
+>
+
+<section class="card">
+
+  <div class="section-title">
+
+    <span id="chartTitle">
+      XAU/USD M1 PRICE ACTION
+    </span>
+
+    <strong id="chartCount">
+      —
+    </strong>
+
+  </div>
+
+  <div class="chart-wrap">
+    <canvas id="chart"></canvas>
+  </div>
+
+</section>
+
+
+<div class="grid">
+
+<section class="card">
+
+  <div class="section-title">
+    STRUCTURE
+  </div>
+
+  <div class="kv">
+    <span>M1</span>
+    <strong id="structureM1">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>BOS</span>
+    <strong id="bos">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>CHOCH</span>
+    <strong id="choch">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>M5</span>
+    <strong id="structureM5">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>M15</span>
+    <strong id="structureM15">—</strong>
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+    LIQUIDITY
+  </div>
+
+  <div class="kv">
+    <span>Asia high</span>
+    <strong id="asiaHigh">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Asia low</span>
+    <strong id="asiaLow">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Previous high</span>
+    <strong id="pdh">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Previous low</span>
+    <strong id="pdl">—</strong>
+  </div>
+
+</section>
+
+</div>
+
+</div>
+
+
+<!-- =======================================================
+     RESEARCH
+======================================================= -->
+
+<div
+  id="researchView"
+  class="view"
+>
+
+<section class="card">
+
+  <div class="section-title">
+
+    <span id="researchTitle">
+      XAU/USD WALK-FORWARD RESEARCH
+    </span>
+
+    <strong id="researchState">
+      NOT RUN
+    </strong>
+
+  </div>
+
+  <button id="runResearch">
+    RUN WALK-FORWARD TEST
+  </button>
+
+</section>
+
+
+<section class="card">
+
+  <div class="stats">
+
+    <div class="stat">
+      <small>TEST TRADES</small>
+      <strong id="researchTrades">—</strong>
+    </div>
+
+    <div class="stat">
+      <small>WIN RATE</small>
+      <strong id="researchWin">—</strong>
+    </div>
+
+    <div class="stat">
+      <small>EXPECTANCY</small>
+      <strong id="researchExp">—</strong>
+    </div>
+
+    <div class="stat">
+      <small>PROFIT FACTOR</small>
+      <strong id="researchPF">—</strong>
+    </div>
+
+    <div class="stat">
+      <small>TOTAL R</small>
+      <strong id="researchR">—</strong>
+    </div>
+
+    <div class="stat">
+      <small>MAX DD</small>
+      <strong id="researchDD">—</strong>
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+    BY REGIME
+  </div>
+
+  <div id="researchRegimes">
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+
+    <span>
+      LOCAL JOURNAL
+    </span>
+
+    <strong id="journalCount">
+      0
+    </strong>
+
+  </div>
+
+  <div class="stats">
+
+    <div class="stat">
+      <small>TRADES</small>
+      <strong id="journalTrades">0</strong>
+    </div>
+
+    <div class="stat">
+      <small>WIN RATE</small>
+      <strong id="journalWin">—</strong>
+    </div>
+
+    <div class="stat">
+      <small>TOTAL R</small>
+      <strong id="journalR">0R</strong>
+    </div>
+
+    <div class="stat">
+      <small>STREAK</small>
+      <strong id="journalStreak">—</strong>
+    </div>
+
+  </div>
+
+  <div
+    id="history"
+    style="margin-top:10px"
+  >
+  </div>
+
+  <div class="button-row">
+
+    <button
+      id="exportHistory"
+      class="secondary"
+    >
+      EXPORT CSV
+    </button>
+
+    <button
+      id="clearHistory"
+      class="danger"
+    >
+      CLEAR
+    </button>
+
+  </div>
+
+</section>
+
+
+<div class="grid">
+
+<section class="card">
+
+  <div class="section-title">
+    BY SESSION
+  </div>
+
+  <div id="journalSession">
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+    BY REGIME
+  </div>
+
+  <div id="journalRegime">
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+    BY SETUP
+  </div>
+
+  <div id="journalSetup">
+  </div>
+
+</section>
+
+</div>
+
+</div>
+
+
+<!-- =======================================================
+     CONTROL
+======================================================= -->
+
+<div
+  id="controlView"
+  class="view"
+>
+
+<section class="card">
+
+  <div class="section-title">
+    SETTINGS
+  </div>
+
+  <div class="controls">
+
+    <div>
+
+      <label>
+        Equity ZAR
+      </label>
+
+      <input
+        id="equity"
+        type="number"
+        value="200"
+      >
+
+    </div>
+
+
+    <div>
+
+      <label>
+        Price check
+      </label>
+
+      <select id="priceInterval">
+
+        <option value="15">
+          15 sec
+        </option>
+
+        <option value="20">
+          20 sec
+        </option>
+
+        <option value="30">
+          30 sec
+        </option>
+
+        <option value="60">
+          60 sec
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div>
+
+      <label>
+        Rescan
+      </label>
+
+      <select id="scanInterval">
+
+        <option value="60">
+          1 min
+        </option>
+
+        <option value="120">
+          2 min
+        </option>
+
+        <option
+          value="300"
+          selected
+        >
+          5 min
+        </option>
+
+        <option value="600">
+          10 min
+        </option>
+
+      </select>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="card">
+
+  <button id="freshAnalysis">
+    RUN FRESH ANALYSIS
+  </button>
+
+  <button
+    id="backfill"
+    class="secondary"
+  >
+    BACKFILL MARKET MEMORY
+  </button>
+
+  <div class="button-row">
+
+    <button
+      id="copy"
+      class="secondary"
+    >
+      COPY SIGNAL
+    </button>
+
+    <button
+      id="share"
+      class="secondary"
+    >
+      SHARE
+    </button>
+
+  </div>
+
+  <button
+    id="clearTrade"
+    class="danger"
+  >
+    CLEAR CURRENT MARKET TRADE
+  </button>
+
+</section>
+
+
+<section class="card">
+
+  <div class="section-title">
+    ENGINE
+  </div>
+
+  <div class="kv">
+    <span>Instrument</span>
+    <strong id="engineSymbol">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Model</span>
+    <strong id="engineModel">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Memory enabled</span>
+    <strong id="memoryEnabled">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Total states</span>
+    <strong id="memoryTotal">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Resolved</span>
+    <strong id="memoryResolved2">—</strong>
+  </div>
+
+  <div class="kv">
+    <span>Data candles</span>
+    <strong id="dataCounts">—</strong>
+  </div>
+
+</section>
+
+</div>
+
+
+<div class="meta">
+
+  <span id="lastCheck">
+    —
+  </span>
+
+  <span id="nextCheck">
+    —
+  </span>
+
+</div>
+
+</main>
+
+
+<nav class="bottom-nav">
+
+  <button
+    class="nav selected"
+    data-view="dashboard"
+  >
+    DASH
+  </button>
+
+  <button
+    class="nav"
+    data-view="edgeView"
+  >
+    EDGE
+  </button>
+
+  <button
+    class="nav"
+    data-view="chartView"
+  >
+    CHART
+  </button>
+
+  <button
+    class="nav"
+    data-view="researchView"
+  >
+    RESEARCH
+  </button>
+
+  <button
+    class="nav"
+    data-view="controlView"
+  >
+    CONTROL
+  </button>
+
+</nav>
+
+
+<script>
+
+/* =========================================================
+   MARKETS
+========================================================= */
+
+const MARKETS = {
+
+  "XAU/USD": {
+    code:"XAUUSD",
+    name:"GOLD",
+    fullName:"Gold",
+    logo:"Au",
+    storage:"XAUUSD",
+    precision:2
+  },
+
+  "BTC/USD": {
+    code:"BTCUSD",
+    name:"BITCOIN",
+    fullName:"Bitcoin",
+    logo:"₿",
+    storage:"BTCUSD",
+    precision:2
+  }
+
+};
+
+
+const MARKET_SELECTION_KEY =
+  "mkayfx_v12_selected_market";
+
+
+let selectedSymbol =
+  localStorage.getItem(
+    MARKET_SELECTION_KEY
+  ) ||
+  "XAU/USD";
+
+
+if(
+  !MARKETS[
+    selectedSymbol
+  ]
+){
+
+  selectedSymbol =
+    "XAU/USD";
+
+}
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+const $ =
+  id =>
+    document.getElementById(
+      id
+    );
+
+
+function market(){
+  return MARKETS[
+    selectedSymbol
+  ];
+}
+
+
+function storageKey(
+  type,
+  symbol = selectedSymbol
+){
+
+  return `mkayfx_v12_${MARKETS[symbol].storage}_${type}`;
+
+}
+
+
+function finite(v){
+
+  if(
+    v === null ||
+    v === undefined ||
+    v === ""
+  ){
+    return null;
+  }
+
+
+  const n =
+    Number(v);
+
+
+  return Number.isFinite(n)
+    ? n
+    : null;
+
+}
+
+
+function fmt(
+  v,
+  d = null
+){
+
+  const n =
+    finite(v);
+
+
+  if(
+    n === null
+  ){
+    return "—";
+  }
+
+
+  const digits =
+    d === null
+      ? market().precision
+      : d;
+
+
+  return n.toFixed(
+    digits
+  );
+
+}
+
+
+function pct(v){
+
+  const n =
+    finite(v);
+
+
+  return n === null
+    ? "—"
+    : `${n.toFixed(1)}%`;
+
+}
+
+
+function store(
+  key,
+  value
+){
+
+  if(
+    value === null
+  ){
+
+    localStorage.removeItem(
+      key
+    );
+
+  }
+  else{
+
+    localStorage.setItem(
+      key,
+      JSON.stringify(
+        value
+      )
+    );
+
+  }
+
+}
+
+
+function load(
+  key,
+  fallback = null
+){
+
+  try{
+
+    return JSON.parse(
+      localStorage.getItem(
+        key
+      )
+    ) ??
+    fallback;
+
+  }
+  catch{
+
+    return fallback;
+
+  }
+
+}
+
+
+function saveState(
+  type,
+  value,
+  symbol = selectedSymbol
+){
+
+  store(
+    storageKey(
+      type,
+      symbol
+    ),
+    value
+  );
+
+}
+
+
+function loadState(
+  type,
+  fallback = null,
+  symbol = selectedSymbol
+){
+
+  return load(
+    storageKey(
+      type,
+      symbol
+    ),
+    fallback
+  );
+
+}
+
+
+function text(
+  id,
+  value
+){
+
+  const element =
+    $(id);
+
+
+  if(element){
+
+    element.textContent =
+      value;
+
+  }
+
+}
+
+
+function setStatus(
+  label,
+  type
+){
+
+  text(
+    "statusText",
+    label
+  );
+
+
+  $("status").className =
+    `status ${type || "status-wait"}`;
+
+}
+
+
+function showError(
+  message
+){
+
+  $("error").textContent =
+    message;
+
+
+  $("error").style.display =
+    "block";
+
+}
+
+
+function clearError(){
+
+  $("error").style.display =
+    "none";
+
+}
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let lastAnalysis =
+  null;
+
+
+let pendingSignal =
+  null;
+
+
+let activeTrade =
+  null;
+
+
+let analyzing =
+  false;
+
+
+let checking =
+  false;
+
+
+let timer =
+  null;
+
+
+let countdown =
+  null;
+
+
+let remaining =
+  0;
+
+
+let analysisController =
+  null;
+
+
+/* =========================================================
+   OPTIONAL OLD GOLD V11 MIGRATION
+========================================================= */
+
+function migrateOldGoldData(){
+
+  const newAnalysis =
+    localStorage.getItem(
+      storageKey(
+        "analysis",
+        "XAU/USD"
+      )
+    );
+
+
+  if(
+    newAnalysis !==
+    null
+  ){
+    return;
+  }
+
+
+  const oldKeys = {
+
+    analysis:
+      "mkayfx_v11_analysis",
+
+    pending:
+      "mkayfx_v11_pending",
+
+    active:
+      "mkayfx_v11_active",
+
+    history:
+      "mkayfx_v11_history"
+
+  };
+
+
+  for(
+    const [
+      type,
+      oldKey
+    ] of
+    Object.entries(
+      oldKeys
+    )
+  ){
+
+    const value =
+      localStorage.getItem(
+        oldKey
+      );
+
+
+    if(
+      value !==
+      null
+    ){
+
+      localStorage.setItem(
+        storageKey(
+          type,
+          "XAU/USD"
+        ),
+        value
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   MARKET UI
+========================================================= */
+
+function updateMarketChrome(){
+
+  const config =
+    market();
+
+
+  document.title =
+    `MKAYFX ${config.name} V12`;
+
+
+  text(
+    "brandTitle",
+    `MKAYFX ${config.name}`
+  );
+
+
+  text(
+    "logo",
+    config.logo
+  );
+
+
+  $("logo").className =
+    selectedSymbol ===
+    "BTC/USD"
+      ? "logo btc"
+      : "logo";
+
+
+  text(
+    "heroLabel",
+    `${selectedSymbol} DECISION ENGINE`
+  );
+
+
+  text(
+    "priceLabel",
+    selectedSymbol
+  );
+
+
+  text(
+    "instrumentDisplay",
+    selectedSymbol
+  );
+
+
+  text(
+    "engineSymbol",
+    selectedSymbol
+  );
+
+
+  text(
+    "chartTitle",
+    `${selectedSymbol} M1 PRICE ACTION`
+  );
+
+
+  text(
+    "researchTitle",
+    `${selectedSymbol} WALK-FORWARD RESEARCH`
+  );
+
+
+  $("goldMarket")
+    .classList.toggle(
+      "selected",
+      selectedSymbol ===
+      "XAU/USD"
+    );
+
+
+  $("btcMarket")
+    .classList.toggle(
+      "selected",
+      selectedSymbol ===
+      "BTC/USD"
+    );
+
+}
+
+
+/* =========================================================
+   LOAD CURRENT MARKET
+========================================================= */
+
+function loadCurrentMarketState(){
+
+  lastAnalysis =
+    loadState(
+      "analysis",
+      null
+    );
+
+
+  pendingSignal =
+    loadState(
+      "pending",
+      null
+    );
+
+
+  activeTrade =
+    loadState(
+      "active",
+      null
+    );
+
+}
+
+
+/* =========================================================
+   RESET DISPLAY
+========================================================= */
+
+function resetDisplay(){
+
+  text(
+    "signal",
+    "..."
+  );
+
+
+  $("signal").className =
+    "signal WAIT";
+
+
+  text(
+    "subsignal",
+    ""
+  );
+
+
+  text(
+    "badge",
+    "ANALYZING"
+  );
+
+
+  text(
+    "price",
+    "—"
+  );
+
+
+  text(
+    "entry",
+    "—"
+  );
+
+
+  text(
+    "sl",
+    "—"
+  );
+
+
+  text(
+    "tp",
+    "—"
+  );
+
+
+  text(
+    "tp2",
+    "—"
+  );
+
+
+  text(
+    "progressLabel",
+    "NO ACTIVE TRADE"
+  );
+
+
+  text(
+    "quality",
+    "—"
+  );
+
+
+  $("qualityBar").style.width =
+    "0%";
+
+
+  text(
+    "qualityDetail",
+    "Awaiting signal"
+  );
+
+
+  $("enterTrade")
+    .classList.add(
+      "hidden"
+    );
+
+}
+
+
+/* =========================================================
+   MARKET SWITCH
+========================================================= */
+
+async function selectMarket(
+  symbol
+){
+
+  if(
+    !MARKETS[symbol]
+  ){
+    return;
+  }
+
+
+  if(
+    symbol ===
+    selectedSymbol
+  ){
+    return;
+  }
+
+
+  if(
+    analysisController
+  ){
+
+    analysisController.abort();
+
+  }
+
+
+  analyzing =
+    false;
+
+
+  checking =
+    false;
+
+
+  stopTimer();
+
+
+  selectedSymbol =
+    symbol;
+
+
+  localStorage.setItem(
+    MARKET_SELECTION_KEY,
+    selectedSymbol
+  );
+
+
+  clearError();
+
+
+  updateMarketChrome();
+
+
+  loadCurrentMarketState();
+
+
+  renderHistory();
+
+
+  if(
+    lastAnalysis
+  ){
+
+    renderAnalysis(
+      lastAnalysis
+    );
+
+  }
+  else{
+
+    resetDisplay();
+
+  }
+
+
+  if(
+    activeTrade
+  ){
+
+    renderActive();
+
+
+    setStatus(
+      "TRADE ACTIVE",
+      "status-active"
+    );
+
+
+    startPriceMonitor();
+
+
+    await checkPrice();
+
+
+    return;
+
+  }
+
+
+  if(
+    pendingSignal
+  ){
+
+    renderPending();
+
+
+    setStatus(
+      "QUALIFIED",
+      "status-active"
+    );
+
+
+    startPriceMonitor();
+
+
+    await checkPrice();
+
+
+    return;
+
+  }
+
+
+  await runAnalysis();
+
+}
+
+
+$("goldMarket")
+  .addEventListener(
+    "click",
+    () =>
+      selectMarket(
+        "XAU/USD"
+      )
+  );
+
+
+$("btcMarket")
+  .addEventListener(
+    "click",
+    () =>
+      selectMarket(
+        "BTC/USD"
+      )
+  );
+
+
+/* =========================================================
+   NAV
+========================================================= */
+
+document
+  .querySelectorAll(
+    ".nav"
+  )
+  .forEach(
+    button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          document
+            .querySelectorAll(
+              ".view"
+            )
+            .forEach(
+              view =>
+                view.classList.remove(
+                  "active"
+                )
+            );
+
+
+          document
+            .querySelectorAll(
+              ".nav"
+            )
+            .forEach(
+              nav =>
+                nav.classList.remove(
+                  "selected"
+                )
+            );
+
+
+          $(
+            button.dataset.view
+          )
+            .classList.add(
+              "active"
+            );
+
+
+          button.classList.add(
+            "selected"
+          );
+
+
+          if(
+            button.dataset.view ===
+            "chartView"
+          ){
+
+            setTimeout(
+              drawChart,
+              50
+            );
+
+          }
+
+
+          window.scrollTo({
+            top:0,
+            behavior:"smooth"
+          });
+
+        }
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   ANALYSIS
+========================================================= */
+
+async function runAnalysis(){
+
+  if(
+    analyzing ||
+    activeTrade
+  ){
+    return;
+  }
+
+
+  const requestSymbol =
+    selectedSymbol;
+
+
+  analyzing =
+    true;
+
+
+  stopTimer();
+
+
+  clearError();
+
+
+  setStatus(
+    "ANALYZING",
+    "status-wait"
+  );
+
+
+  text(
+    "signal",
+    "..."
+  );
+
+
+  $("signal").className =
+    "signal WAIT";
+
+
+  text(
+    "state",
+    `Analyzing ${requestSymbol} structure, liquidity, regime, cross-markets and historical memory...`
+  );
+
+
+  const controller =
+    new AbortController();
+
+
+  analysisController =
+    controller;
+
+
+  try{
+
+    const response =
+      await fetch(
+        "/api/analysis",
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          cache:"no-store",
+
+          signal:
+            controller.signal,
+
+          body:
+            JSON.stringify({
+
+              symbol:
+                requestSymbol,
+
+              equity:
+                Math.max(
+                  1,
+                  Number(
+                    $("equity").value ||
+                    200
+                  )
+                )
+
+            })
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if(
+      requestSymbol !==
+      selectedSymbol
+    ){
+      return;
+    }
+
+
+    if(
+      !response.ok ||
+      data.success ===
+      false
+    ){
+
+      throw new Error(
+        data.error ||
+        "Analysis failed."
+      );
+
+    }
+
+
+    lastAnalysis =
+      data;
+
+
+    saveState(
+      "analysis",
+      data,
+      requestSymbol
+    );
+
+
+    renderAnalysis(
+      data
+    );
+
+
+    const marketStatus =
+      data.marketStatus ||
+      {};
+
+
+    if(
+      marketStatus.open ===
+      false
+    ){
+
+      pendingSignal =
+        null;
+
+
+      saveState(
+        "pending",
+        null,
+        requestSymbol
+      );
+
+
+      renderWaiting(
+        data
+      );
+
+
+      setStatus(
+        "MARKET CLOSED",
+        "status-wait"
+      );
+
+
+      startScanMonitor();
+
+      return;
+
+    }
+
+
+    if(
+      marketStatus.dataStale
+    ){
+
+      pendingSignal =
+        null;
+
+
+      saveState(
+        "pending",
+        null,
+        requestSymbol
+      );
+
+
+      renderWaiting(
+        data
+      );
+
+
+      setStatus(
+        "STALE DATA",
+        "status-wait"
+      );
+
+
+      startScanMonitor();
+
+      return;
+
+    }
+
+
+    if(
+      data.tradeQualified &&
+      [
+        "BUY",
+        "SELL"
+      ].includes(
+        data.signal
+      )
+    ){
+
+      pendingSignal = {
+        ...data,
+
+        currentPrice:
+          data.currentPrice ??
+          data.entry
+      };
+
+
+      saveState(
+        "pending",
+        pendingSignal,
+        requestSymbol
+      );
+
+
+      renderPending();
+
+
+      setStatus(
+        "QUALIFIED",
+        "status-active"
+      );
+
+
+      startPriceMonitor();
+
+
+      await checkPrice();
+
+    }
+    else{
+
+      pendingSignal =
+        null;
+
+
+      saveState(
+        "pending",
+        null,
+        requestSymbol
+      );
+
+
+      renderWaiting(
+        data
+      );
+
+
+      setStatus(
+        data.signal ||
+        "WAIT",
+        "status-wait"
+      );
+
+
+      startScanMonitor();
+
+    }
+
+  }
+  catch(error){
+
+    if(
+      error?.name ===
+      "AbortError"
+    ){
+      return;
+    }
+
+
+    console.error(
+      error
+    );
+
+
+    if(
+      requestSymbol ===
+      selectedSymbol
+    ){
+
+      showError(
+        error.message
+      );
+
+
+      setStatus(
+        "ERROR",
+        "status-error"
+      );
+
+    }
+
+  }
+  finally{
+
+    if(
+      analysisController ===
+      controller
+    ){
+
+      analyzing =
+        false;
+
+
+      analysisController =
+        null;
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   MAIN RENDER
+========================================================= */
+
+function renderAnalysis(data){
+
+  const edge =
+    data.edgeDecision ||
+    {};
+
+
+  const hist =
+    data.historicalEdge ||
+    {};
+
+
+  const opt =
+    hist.optimizedRisk ||
+    {};
+
+
+  const score =
+    finite(
+      data.edgeScore
+    ) ??
+    0;
+
+
+  $("gauge")
+    .style
+    .setProperty(
+      "--score",
+      Math.max(
+        0,
+        Math.min(
+          100,
+          score
+        )
+      )
+    );
+
+
+  text(
+    "edge",
+    fmt(
+      score,
+      0
+    )
+  );
+
+
+  text(
+    "instrumentDisplay",
+    data.symbol ||
+    selectedSymbol
+  );
+
+
+  const status =
+    data.marketStatus;
+
+
+  text(
+    "marketStatusDisplay",
+    status
+      ? status.open
+        ? status.dataStale
+          ? "STALE DATA"
+          : "OPEN"
+        : "CLOSED"
+      : "—"
+  );
+
+
+  text(
+    "regime",
+    data.marketRegime
+      ?.type ||
+    "—"
+  );
+
+
+  text(
+    "setup",
+    data.setupType ||
+    "—"
+  );
+
+
+  text(
+    "agreement",
+    edge.modelAgreement != null
+      ? pct(
+          edge.modelAgreement *
+          100
+        )
+      : "—"
+  );
+
+
+  text(
+    "expectancy",
+    hist.expectancyR != null
+      ? `${hist.expectancyR >= 0 ? "+" : ""}${fmt(hist.expectancyR,3)}R`
+      : "—"
+  );
+
+
+  text(
+    "probability",
+    pct(
+      hist.calibratedTpFirstRate
+    )
+  );
+
+
+  text(
+    "matches",
+    hist.matches ??
+    "—"
+  );
+
+
+  text(
+    "session",
+    data.session ||
+    "—"
+  );
+
+
+  text(
+    "rr",
+    data.riskReward ||
+    "—"
+  );
+
+
+  text(
+    "equityDisplay",
+    `R${fmt(
+      data.account
+        ?.equityZAR
+    )}`
+  );
+
+
+  text(
+    "maxRisk",
+    `R${fmt(
+      data.account
+        ?.maxRiskZAR
+    )}`
+  );
+
+
+  text(
+    "memorySource",
+    data.memory
+      ?.sourceUsed ||
+    "—"
+  );
+
+
+  text(
+    "memoryResolved",
+    data.memory
+      ?.resolvedStates ??
+    0
+  );
+
+
+  renderTF(
+    data.timeframeBias
+  );
+
+
+  renderReasons(
+    data.technical
+      ?.reasons ||
+    []
+  );
+
+
+  renderChips(
+    data
+  );
+
+
+  renderModels(
+    data
+  );
+
+
+  renderGates(
+    data.edgeDecision
+  );
+
+
+  text(
+    "histMatches",
+    hist.matches ??
+    "—"
+  );
+
+
+  text(
+    "histExp",
+    hist.expectancyR != null
+      ? `${hist.expectancyR >= 0 ? "+" : ""}${fmt(hist.expectancyR,3)}R`
+      : "—"
+  );
+
+
+  text(
+    "histWin",
+    pct(
+      hist.calibratedTpFirstRate
+    )
+  );
+
+
+  text(
+    "histSim",
+    pct(
+      hist.averageSimilarity
+    )
+  );
+
+
+  text(
+    "histMfe",
+    hist.medianMfeR != null
+      ? `${fmt(hist.medianMfeR)}R`
+      : "—"
+  );
+
+
+  text(
+    "histMae",
+    hist.medianMaeR != null
+      ? `${fmt(hist.medianMaeR)}R`
+      : "—"
+  );
+
+
+  text(
+    "optStop",
+    opt.stopAtr != null
+      ? `${fmt(opt.stopAtr)} ATR`
+      : "—"
+  );
+
+
+  text(
+    "optTarget",
+    opt.targetR != null
+      ? `${fmt(opt.targetR)}R`
+      : "—"
+  );
+
+
+  text(
+    "optExp",
+    opt.expectancy != null
+      ? `${opt.expectancy >= 0 ? "+" : ""}${fmt(opt.expectancy,3)}R`
+      : "—"
+  );
+
+
+  text(
+    "optWin",
+    pct(
+      opt.winRate
+    )
+  );
+
+
+  text(
+    "optSample",
+    opt.sample ??
+    "—"
+  );
+
+
+  renderCross(
+    data.crossMarket
+  );
+
+
+  renderMacro(
+    data.macroRisk
+  );
+
+
+  const structure =
+    data.structure ||
+    {};
+
+
+  text(
+    "structureM1",
+    structure.M1 ||
+    "—"
+  );
+
+
+  text(
+    "bos",
+    structure.M1_BOS ||
+    "—"
+  );
+
+
+  text(
+    "choch",
+    structure.M1_CHOCH ||
+    "—"
+  );
+
+
+  text(
+    "structureM5",
+    structure.M5 ||
+    "—"
+  );
+
+
+  text(
+    "structureM15",
+    structure.M15 ||
+    "—"
+  );
+
+
+  /*
+    V12 backend returns marketContext for both
+    Gold and BTC.
+
+    Gold-only older versions returned goldContext.
+  */
+
+  const context =
+    data.marketContext ||
+    data.goldContext ||
+    {};
+
+
+  text(
+    "asiaHigh",
+    fmt(
+      context.asianRange
+        ?.high
+    )
+  );
+
+
+  text(
+    "asiaLow",
+    fmt(
+      context.asianRange
+        ?.low
+    )
+  );
+
+
+  text(
+    "pdh",
+    fmt(
+      context.previousDay
+        ?.high
+    )
+  );
+
+
+  text(
+    "pdl",
+    fmt(
+      context.previousDay
+        ?.low
+    )
+  );
+
+
+  text(
+    "chartCount",
+    `${data.chart?.length || 0} candles`
+  );
+
+
+  text(
+    "engineSymbol",
+    data.symbol ||
+    selectedSymbol
+  );
+
+
+  text(
+    "engineModel",
+    data.model ||
+    "—"
+  );
+
+
+  text(
+    "memoryEnabled",
+    data.memory
+      ?.enabled
+      ? "YES"
+      : "NO"
+  );
+
+
+  text(
+    "memoryTotal",
+    data.memory
+      ?.totalStates ??
+    0
+  );
+
+
+  text(
+    "memoryResolved2",
+    data.memory
+      ?.resolvedStates ??
+    0
+  );
+
+
+  const q =
+    data.dataQuality ||
+    {};
+
+
+  text(
+    "dataCounts",
+    `${q.completedM1 || 0} / ${q.completedM5 || 0} / ${q.completedM15 || 0} / ${q.completedH1 || 0}`
+  );
+
+
+  setTimeout(
+    drawChart,
+    20
+  );
+
+}
+
+
+/* =========================================================
+   WAIT
+========================================================= */
+
+function renderWaiting(data){
+
+  const marketStatus =
+    data.marketStatus ||
+    {};
+
+
+  text(
+    "signal",
+    data.signal ||
+    "WAIT"
+  );
+
+
+  $("signal").className =
+    `signal ${data.signal || "WAIT"}`;
+
+
+  text(
+    "subsignal",
+    data.candidateDirection
+      ? `Directional lean: ${data.candidateDirection}`
+      : ""
+  );
+
+
+  if(
+    marketStatus.open ===
+    false
+  ){
+
+    text(
+      "badge",
+      "MARKET CLOSED"
+    );
+
+  }
+  else if(
+    marketStatus.dataStale
+  ){
+
+    text(
+      "badge",
+      "STALE DATA"
+    );
+
+  }
+  else{
+
+    text(
+      "badge",
+      data.signal ===
+        "WATCH"
+        ? "SETUP DEVELOPING"
+        : "NO TRADE"
+    );
+
+  }
+
+
+  text(
+    "price",
+    fmt(
+      data.currentPrice ??
+      data.entry
+    )
+  );
+
+
+  text(
+    "entry",
+    data.signal ===
+      "WATCH"
+      ? "WATCH"
+      : "WAIT"
+  );
+
+
+  text(
+    "sl",
+    "—"
+  );
+
+
+  text(
+    "tp",
+    "—"
+  );
+
+
+  text(
+    "tp2",
+    "—"
+  );
+
+
+  text(
+    "progressLabel",
+    "NO ACTIVE TRADE"
+  );
+
+
+  $("progressBar")
+    .style.width =
+      "50%";
+
+
+  $("enterTrade")
+    .classList.add(
+      "hidden"
+    );
+
+
+  if(
+    marketStatus.open ===
+    false
+  ){
+
+    text(
+      "state",
+      `${selectedSymbol} is currently closed. Analysis is based on the latest available completed market data.`
+    );
+
+  }
+  else if(
+    marketStatus.dataStale
+  ){
+
+    text(
+      "state",
+      `${selectedSymbol} data is currently stale. No trade will be qualified until fresh data returns.`
+    );
+
+  }
+  else{
+
+    text(
+      "state",
+      data.signal ===
+        "WATCH"
+        ? "Interesting setup detected, but all qualification gates have not passed yet."
+        : "No statistically qualified setup right now."
+    );
+
+  }
+
+
+  updateQuality(
+    data
+  );
+
+}
+
+
+/* =========================================================
+   PENDING
+========================================================= */
+
+function renderPending(){
+
+  if(
+    !pendingSignal
+  ){
+    return;
+  }
+
+
+  text(
+    "signal",
+    "QUALIFIED"
+  );
+
+
+  $("signal").className =
+    "signal QUALIFIED";
+
+
+  text(
+    "subsignal",
+    `${pendingSignal.candidateDirection} · ${pendingSignal.setupType}`
+  );
+
+
+  text(
+    "badge",
+    "READY — NOT ENTERED"
+  );
+
+
+  text(
+    "price",
+    fmt(
+      pendingSignal.currentPrice ??
+      pendingSignal.entry
+    )
+  );
+
+
+  text(
+    "entry",
+    fmt(
+      pendingSignal.entry
+    )
+  );
+
+
+  text(
+    "sl",
+    fmt(
+      pendingSignal.stopLoss
+    )
+  );
+
+
+  text(
+    "tp",
+    fmt(
+      pendingSignal.takeProfit
+    )
+  );
+
+
+  text(
+    "tp2",
+    fmt(
+      pendingSignal.takeProfit2
+    )
+  );
+
+
+  text(
+    "state",
+    `${selectedSymbol} setup qualifies, but you have not marked it as entered. Entry decay is being monitored.`
+  );
+
+
+  $("enterTrade")
+    .classList.remove(
+      "hidden"
+    );
+
+
+  updateQuality(
+    pendingSignal
+  );
+
+
+  drawChart();
+
+}
+
+
+/* =========================================================
+   ACTIVE
+========================================================= */
+
+function renderActive(){
+
+  if(
+    !activeTrade
+  ){
+    return;
+  }
+
+
+  renderAnalysis(
+    activeTrade
+  );
+
+
+  text(
+    "signal",
+    activeTrade.signal
+  );
+
+
+  $("signal").className =
+    `signal ${activeTrade.signal}`;
+
+
+  text(
+    "subsignal",
+    `ENTERED · ${activeTrade.setupType}`
+  );
+
+
+  text(
+    "badge",
+    "🔒 TRADE ACTIVE"
+  );
+
+
+  text(
+    "price",
+    fmt(
+      activeTrade.currentPrice ??
+      activeTrade.manualEntryPrice
+    )
+  );
+
+
+  text(
+    "entry",
+    fmt(
+      activeTrade.manualEntryPrice
+    )
+  );
+
+
+  text(
+    "sl",
+    fmt(
+      activeTrade.stopLoss
+    )
+  );
+
+
+  text(
+    "tp",
+    fmt(
+      activeTrade.takeProfit
+    )
+  );
+
+
+  text(
+    "tp2",
+    fmt(
+      activeTrade.takeProfit2
+    )
+  );
+
+
+  text(
+    "state",
+    `${selectedSymbol} trade marked as entered. New analysis for this market is paused until TP1 or SL.`
+  );
+
+
+  $("enterTrade")
+    .classList.add(
+      "hidden"
+    );
+
+
+  updateProgress(
+    activeTrade.currentPrice ??
+    activeTrade.manualEntryPrice
+  );
+
+}
+
+
+/* =========================================================
+   SUPPORT RENDER
+========================================================= */
+
+function renderTF(
+  biases = {}
+){
+
+  [
+    ["m1","M1"],
+    ["m5","M5"],
+    ["m15","M15"],
+    ["h1","H1"]
+  ]
+  .forEach(
+    ([id,tf]) => {
+
+      const value =
+        biases[tf] ||
+        "NEUTRAL";
+
+
+      text(
+        id,
+        value
+      );
+
+
+      $(id).className =
+        value;
+
+    }
+  );
+
+}
+
+
+function renderReasons(
+  reasons
+){
+
+  $("reasons").innerHTML =
+    reasons.length
+      ? reasons.map(
+          reason =>
+            `<div class="reason">◆ <span>${reason}</span></div>`
+        )
+        .join("")
+      : `<div class="reason">No explanation.</div>`;
+
+}
+
+
+function renderChips(data){
+
+  const values = [
+
+    selectedSymbol,
+
+    `REGIME ${data.marketRegime?.type || "—"}`,
+
+    `SESSION ${data.session || "—"}`,
+
+    `SETUP ${data.setupType || "—"}`,
+
+    `MEMORY ${data.memory?.resolvedStates || 0}`,
+
+    data.historicalEdge
+      ?.expectancyR != null
+      ? `EXP ${data.historicalEdge.expectancyR}R`
+      : null,
+
+    data.crossMarket
+      ?.available
+      ? `CROSS ${data.crossMarket.direction}`
+      : null,
+
+    data.macroRisk
+      ?.blocked
+      ? "MACRO BLOCK"
+      : "MACRO CLEAR"
+
+  ].filter(Boolean);
+
+
+  $("chips").innerHTML =
+    values.map(
+      value =>
+        `<span class="chip">${value}</span>`
+    )
+    .join("");
+
+}
+
+
+function renderModels(data){
+
+  const components =
+    data.ensemble
+      ?.components ||
+    {};
+
+
+  const reliability =
+    data.ensemble
+      ?.adaptiveReliability ||
+    {};
+
+
+  text(
+    "ensembleScore",
+    fmt(
+      data.ensemble
+        ?.signedScore,
+      1
+    )
+  );
+
+
+  $("models").innerHTML =
+    Object.entries(
+      components
+    )
+    .map(
+      ([name,value]) => {
+
+        const v =
+          finite(value) ??
+          0;
+
+
+        const width =
+          Math.min(
+            50,
+            Math.abs(v) /
+            2
+          );
+
+
+        const bull =
+          v >= 0;
+
+
+        const rel =
+          reliability[name];
+
+
+        return `
+          <div class="model">
+
+            <div class="model-head">
+
+              <span>
+                ${name.toUpperCase()}
+                ${
+                  rel
+                    ? ` · ${rel.accuracy}%`
+                    : ""
+                }
+              </span>
+
+              <strong class="${bull ? "BUY" : "SELL"}">
+                ${v > 0 ? "+" : ""}${v.toFixed(1)}
+              </strong>
+
+            </div>
+
+            <div class="track">
+
+              <span
+                class="fill ${bull ? "bull" : "bear"}"
+                style="width:${width}%"
+              ></span>
+
+            </div>
+
+          </div>
+        `;
+
+      }
+    )
+    .join("");
+
+}
+
+
+function renderGates(
+  edge = {}
+){
+
+  const gates =
+    edge.gates ||
+    {};
+
+
+  const failed =
+    Object.values(
+      gates
+    )
+    .filter(
+      x =>
+        !x
+    ).length;
+
+
+  text(
+    "gateSummary",
+    failed
+      ? `${failed} FAILING`
+      : "ALL PASS"
+  );
+
+
+  $("gates").innerHTML =
+    Object.entries(
+      gates
+    )
+    .map(
+      ([name,pass]) =>
+        `
+          <div class="gate ${pass ? "pass" : "fail"}">
+
+            <div class="gate-icon">
+              ${pass ? "✓" : "×"}
+            </div>
+
+            <div>
+              ${name}
+            </div>
+
+            <strong>
+              ${pass ? "PASS" : "FAIL"}
+            </strong>
+
+          </div>
+        `
+    )
+    .join("");
+
+}
+
+
+function renderCross(
+  cross = {}
+){
+
+  const detail =
+    cross.detail ||
+    {};
+
+
+  const labels = {
+    dxy:"DXY",
+    us10y:"US10Y",
+    us2y:"US2Y",
+    eurusd:"EUR/USD",
+    usdjpy:"USD/JPY"
+  };
+
+
+  $("cross").innerHTML =
+    Object.entries(
+      labels
+    )
+    .map(
+      ([key,label]) => {
+
+        const value =
+          detail[key];
+
+
+        if(!value){
+
+          return `
+            <div class="market">
+
+              <strong>
+                ${label}
+              </strong>
+
+              <div class="market-track">
+              </div>
+
+              <span>
+                OFFLINE
+              </span>
+
+            </div>
+          `;
+
+        }
+
+
+        return `
+          <div class="market">
+
+            <strong>
+              ${label}
+            </strong>
+
+            <div class="market-track">
+
+              <span
+                style="width:${Math.min(100,Math.abs(value.score))}%"
+              ></span>
+
+            </div>
+
+            <span class="${value.direction}">
+              ${value.direction}
+              ${value.score}
+            </span>
+
+          </div>
+        `;
+
+      }
+    )
+    .join("");
+
+}
+
+
+function renderMacro(
+  macro = {}
+){
+
+  text(
+    "macroState",
+    macro.blocked
+      ? "BLOCKED"
+      : macro.available
+        ? "CLEAR"
+        : "OFFLINE"
+  );
+
+
+  const events =
+    macro.upcoming ||
+    [];
+
+
+  $("macro").innerHTML =
+    events.length
+      ? events.map(
+          event =>
+            `
+              <div class="kv">
+
+                <span>
+                  ${event.event}
+                </span>
+
+                <strong>
+                  ${
+                    new Date(
+                      event.date
+                    )
+                    .toLocaleTimeString(
+                      [],
+                      {
+                        hour:"2-digit",
+                        minute:"2-digit"
+                      }
+                    )
+                  }
+                </strong>
+
+              </div>
+            `
+        )
+        .join("")
+      : `
+          <div class="reason">
+            ${
+              macro.available
+                ? "No nearby high-impact event."
+                : "Macro calendar not connected."
+            }
+          </div>
+        `;
+
+}
+
+
+/* =========================================================
+   SIGNAL QUALITY
+========================================================= */
+
+function updateQuality(data){
+
+  const execution =
+    data.execution ||
+    {};
+
+
+  if(
+    !execution.expiresAt
+  ){
+
+    text(
+      "quality",
+      "—"
+    );
+
+
+    $("qualityBar")
+      .style.width =
+        "0%";
+
+
+    text(
+      "qualityDetail",
+      "No active entry window"
+    );
+
+
+    return;
+
+  }
+
+
+  const now =
+    Date.now();
+
+
+  const fresh =
+    Date.parse(
+      execution.freshUntil
+    );
+
+
+  const expires =
+    Date.parse(
+      execution.expiresAt
+    );
+
+
+  let quality =
+    100;
+
+
+  if(
+    now >
+    fresh
+  ){
+
+    quality =
+      Math.max(
+        0,
+        Math.min(
+          100,
+          (
+            expires -
+            now
+          ) /
+          Math.max(
+            1,
+            expires -
+            fresh
+          ) *
+          100
+        )
+      );
+
+  }
+
+
+  const price =
+    finite(
+      data.currentPrice
+    );
+
+
+  const entry =
+    finite(
+      data.entry
+    );
+
+
+  const atr =
+    finite(
+      execution.referenceAtr
+    );
+
+
+  let chase =
+    0;
+
+
+  if(
+    price !== null &&
+    entry !== null &&
+    atr !== null &&
+    atr >
+    0
+  ){
+
+    chase =
+      (
+        data.candidateDirection ===
+        "BUY"
+          ? price -
+            entry
+          : entry -
+            price
+      ) /
+      atr;
+
+
+    if(
+      chase >
+      0
+    ){
+
+      quality =
+        Math.min(
+          quality,
+          Math.max(
+            0,
+            (
+              execution.maxChaseAtr -
+              chase
+            ) /
+            Math.max(
+              execution.maxChaseAtr,
+              .000001
+            ) *
+            100
+          )
+        );
+
+    }
+
+  }
+
+
+  text(
+    "quality",
+    `${Math.round(quality)}%`
+  );
+
+
+  $("qualityBar")
+    .style.width =
+      `${quality}%`;
+
+
+  text(
+    "qualityDetail",
+    quality <= 0
+      ? "EXPIRED / MISSED"
+      : chase >
+        0
+        ? `${chase.toFixed(2)} ATR entry degradation`
+        : "ENTRY STILL FRESH"
+  );
+
+}
+
+
+/* =========================================================
+   PRICE CHECK
+========================================================= */
+
+async function checkPrice(){
+
+  if(
+    checking ||
+    analyzing ||
+    (
+      !activeTrade &&
+      !pendingSignal
+    )
+  ){
+    return;
+  }
+
+
+  checking =
+    true;
+
+
+  const requestSymbol =
+    selectedSymbol;
+
+
+  try{
+
+    const response =
+      await fetch(
+        `/api/price?symbol=${encodeURIComponent(requestSymbol)}`,
+        {
+          cache:"no-store"
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if(
+      requestSymbol !==
+      selectedSymbol
+    ){
+      return;
+    }
+
+
+    if(
+      !response.ok ||
+      data.success ===
+      false
+    ){
+
+      throw new Error(
+        data.error ||
+        "Price unavailable."
+      );
+
+    }
+
+
+    const price =
+      finite(
+        data.price
+      );
+
+
+    if(
+      price === null
+    ){
+      return;
+    }
+
+
+    text(
+      "lastCheck",
+      `${requestSymbol} ${new Date().toLocaleTimeString()}`
+    );
+
+
+    if(
+      activeTrade
+    ){
+
+      activeTrade.currentPrice =
+        price;
+
+
+      saveState(
+        "active",
+        activeTrade
+      );
+
+
+      text(
+        "price",
+        fmt(price)
+      );
+
+
+      updateProgress(
+        price
+      );
+
+
+      if(
+        activeTrade.signal ===
+        "BUY"
+      ){
+
+        if(
+          price >=
+          activeTrade.takeProfit
+        ){
+
+          return closeTrade(
+            "TP",
+            price
+          );
+
+        }
+
+
+        if(
+          price <=
+          activeTrade.stopLoss
+        ){
+
+          return closeTrade(
+            "SL",
+            price
+          );
+
+        }
+
+      }
+      else{
+
+        if(
+          price <=
+          activeTrade.takeProfit
+        ){
+
+          return closeTrade(
+            "TP",
+            price
+          );
+
+        }
+
+
+        if(
+          price >=
+          activeTrade.stopLoss
+        ){
+
+          return closeTrade(
+            "SL",
+            price
+          );
+
+        }
+
+      }
+
+    }
+    else if(
+      pendingSignal
+    ){
+
+      pendingSignal.currentPrice =
+        price;
+
+
+      saveState(
+        "pending",
+        pendingSignal
+      );
+
+
+      text(
+        "price",
+        fmt(price)
+      );
+
+
+      updateQuality(
+        pendingSignal
+      );
+
+
+      const execution =
+        pendingSignal.execution ||
+        {};
+
+
+      if(
+        execution.expiresAt &&
+        Date.now() >=
+        Date.parse(
+          execution.expiresAt
+        )
+      ){
+
+        invalidateSignal(
+          "SIGNAL EXPIRED"
+        );
+
+
+        return;
+
+      }
+
+
+      const atr =
+        finite(
+          execution.referenceAtr
+        );
+
+
+      const maxChase =
+        finite(
+          execution.maxChaseAtr
+        );
+
+
+      const chase =
+        atr >
+        0
+          ? (
+              pendingSignal.candidateDirection ===
+              "BUY"
+                ? price -
+                  pendingSignal.entry
+                : pendingSignal.entry -
+                  price
+            ) /
+            atr
+          : 0;
+
+
+      if(
+        maxChase !== null &&
+        chase >
+        maxChase
+      ){
+
+        invalidateSignal(
+          "MISSED ENTRY — DO NOT CHASE"
+        );
+
+      }
+
+    }
+
+  }
+  catch(error){
+
+    console.error(
+      error
+    );
+
+  }
+  finally{
+
+    checking =
+      false;
+
+  }
+
+}
+
+
+/* =========================================================
+   INVALIDATE
+========================================================= */
+
+function invalidateSignal(
+  message
+){
+
+  pendingSignal =
+    null;
+
+
+  saveState(
+    "pending",
+    null
+  );
+
+
+  text(
+    "signal",
+    "WAIT"
+  );
+
+
+  $("signal").className =
+    "signal WAIT";
+
+
+  text(
+    "badge",
+    message
+  );
+
+
+  text(
+    "state",
+    `${message}. Waiting for another ${selectedSymbol} setup.`
+  );
+
+
+  $("enterTrade")
+    .classList.add(
+      "hidden"
+    );
+
+
+  stopTimer();
+
+
+  startScanMonitor();
+
+}
+
+
+/* =========================================================
+   MANUAL ENTRY
+========================================================= */
+
+$("enterTrade")
+  .addEventListener(
+    "click",
+    () => {
+
+      if(
+        !pendingSignal
+      ){
+        return;
+      }
+
+
+      const price =
+        finite(
+          pendingSignal.currentPrice
+        ) ??
+        pendingSignal.entry;
+
+
+      if(
+        !confirm(
+          `Mark ${selectedSymbol} ${pendingSignal.candidateDirection} trade as entered around ${fmt(price)}?`
+        )
+      ){
+        return;
+      }
+
+
+      activeTrade = {
+        ...pendingSignal,
+
+        symbol:
+          selectedSymbol,
+
+        signal:
+          pendingSignal.candidateDirection,
+
+        manualEntryPrice:
+          price,
+
+        enteredAt:
+          new Date()
+            .toISOString(),
+
+        status:
+          "ACTIVE"
+      };
+
+
+      pendingSignal =
+        null;
+
+
+      saveState(
+        "pending",
+        null
+      );
+
+
+      saveState(
+        "active",
+        activeTrade
+      );
+
+
+      renderActive();
+
+
+      setStatus(
+        "TRADE ACTIVE",
+        "status-active"
+      );
+
+
+      startPriceMonitor();
+
+    }
+  );
+
+
+/* =========================================================
+   ACTIVE PROGRESS
+========================================================= */
+
+function updateProgress(
+  price
+){
+
+  if(
+    !activeTrade
+  ){
+    return;
+  }
+
+
+  const entry =
+    finite(
+      activeTrade.manualEntryPrice
+    );
+
+
+  const sl =
+    finite(
+      activeTrade.stopLoss
+    );
+
+
+  const tp =
+    finite(
+      activeTrade.takeProfit
+    );
+
+
+  if(
+    entry === null ||
+    sl === null ||
+    tp === null
+  ){
+    return;
+  }
+
+
+  const range =
+    Math.abs(
+      tp -
+      sl
+    );
+
+
+  if(
+    range <= 0
+  ){
+    return;
+  }
+
+
+  let percentage =
+    activeTrade.signal ===
+    "BUY"
+      ? (
+          price -
+          sl
+        ) /
+        range *
+        100
+      : (
+          sl -
+          price
+        ) /
+        range *
+        100;
+
+
+  percentage =
+    Math.max(
+      0,
+      Math.min(
+        100,
+        percentage
+      )
+    );
+
+
+  $("progressBar")
+    .style.width =
+      `${percentage}%`;
+
+
+  const risk =
+    Math.abs(
+      entry -
+      sl
+    );
+
+
+  if(
+    risk <= 0
+  ){
+    return;
+  }
+
+
+  const currentR =
+    activeTrade.signal ===
+    "BUY"
+      ? (
+          price -
+          entry
+        ) /
+        risk
+      : (
+          entry -
+          price
+        ) /
+        risk;
+
+
+  text(
+    "progressLabel",
+    `${currentR >= 0 ? "+" : ""}${currentR.toFixed(2)}R`
+  );
+
+
+  drawChart();
+
+}
+
+
+/* =========================================================
+   CLOSE TRADE
+========================================================= */
+
+async function closeTrade(
+  result,
+  price
+){
+
+  if(
+    !activeTrade
+  ){
+    return;
+  }
+
+
+  const trade = {
+    ...activeTrade,
+
+    symbol:
+      selectedSymbol,
+
+    result,
+
+    hitPrice:
+      price,
+
+    closedAt:
+      new Date()
+        .toISOString()
+  };
+
+
+  const entry =
+    trade.manualEntryPrice;
+
+
+  const risk =
+    Math.abs(
+      entry -
+      trade.stopLoss
+    );
+
+
+  trade.resultR =
+    result ===
+    "SL"
+      ? -1
+      : risk >
+        0
+        ? Math.abs(
+            trade.takeProfit -
+            entry
+          ) /
+          risk
+        : 0;
+
+
+  const history =
+    loadState(
+      "history",
+      []
+    );
+
+
+  history.unshift(
+    trade
+  );
+
+
+  saveState(
+    "history",
+    history.slice(
+      0,
+      250
+    )
+  );
+
+
+  activeTrade =
+    null;
+
+
+  saveState(
+    "active",
+    null
+  );
+
+
+  stopTimer();
+
+
+  renderHistory();
+
+
+  text(
+    "state",
+    `${selectedSymbol} ${result} hit at ${fmt(price)}. Reanalyzing...`
+  );
+
+
+  await runAnalysis();
+
+}
+
+
+/* =========================================================
+   TIMERS
+========================================================= */
+
+function stopTimer(){
+
+  if(timer){
+    clearInterval(timer);
+  }
+
+
+  if(countdown){
+    clearInterval(countdown);
+  }
+
+
+  timer =
+    null;
+
+
+  countdown =
+    null;
+
+}
+
+
+function startCountdown(
+  seconds,
+  type
+){
+
+  remaining =
+    seconds;
+
+
+  countdown =
+    setInterval(
+      () => {
+
+        remaining--;
+
+
+        if(
+          remaining <= 0
+        ){
+
+          remaining =
+            seconds;
+
+        }
+
+
+        text(
+          "nextCheck",
+          type ===
+          "scan"
+            ? `${selectedSymbol} scan ${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2,"0")}`
+            : `${selectedSymbol} price ${remaining}s`
+        );
+
+      },
+      1000
+    );
+
+}
+
+
+function startPriceMonitor(){
+
+  stopTimer();
+
+
+  const seconds =
+    Number(
+      $("priceInterval")
+        .value ||
+      15
+    );
+
+
+  timer =
+    setInterval(
+      checkPrice,
+      seconds *
+      1000
+    );
+
+
+  startCountdown(
+    seconds,
+    "price"
+  );
+
+}
+
+
+function startScanMonitor(){
+
+  stopTimer();
+
+
+  const seconds =
+    Number(
+      $("scanInterval")
+        .value ||
+      300
+    );
+
+
+  timer =
+    setInterval(
+      () => {
+
+        if(
+          !activeTrade &&
+          !pendingSignal &&
+          !analyzing
+        ){
+
+          runAnalysis();
+
+        }
+
+      },
+      seconds *
+      1000
+    );
+
+
+  startCountdown(
+    seconds,
+    "scan"
+  );
+
+}
+
+
+/* =========================================================
+   JOURNAL
+========================================================= */
+
+function renderHistory(){
+
+  const history =
+    loadState(
+      "history",
+      []
+    );
+
+
+  text(
+    "journalCount",
+    history.length
+  );
+
+
+  const wins =
+    history.filter(
+      trade =>
+        trade.result ===
+        "TP"
+    ).length;
+
+
+  const totalR =
+    history.reduce(
+      (
+        sum,
+        trade
+      ) =>
+        sum +
+        (
+          finite(
+            trade.resultR
+          ) ??
+          0
+        ),
+      0
+    );
+
+
+  let streak =
+    0;
+
+
+  const first =
+    history[0]
+      ?.result;
+
+
+  if(first){
+
+    for(
+      const trade of
+      history
+    ){
+
+      if(
+        trade.result ===
+        first
+      ){
+
+        streak++;
+
+      }
+      else{
+
+        break;
+
+      }
+
+    }
+
+  }
+
+
+  text(
+    "journalTrades",
+    history.length
+  );
+
+
+  text(
+    "journalWin",
+    history.length
+      ? pct(
+          wins /
+          history.length *
+          100
+        )
+      : "—"
+  );
+
+
+  text(
+    "journalR",
+    `${totalR >= 0 ? "+" : ""}${fmt(totalR)}R`
+  );
+
+
+  text(
+    "journalStreak",
+    first
+      ? `${first} ×${streak}`
+      : "—"
+  );
+
+
+  $("history").innerHTML =
+    history.length
+      ? history
+          .slice(
+            0,
+            50
+          )
+          .map(
+            trade =>
+              `
+                <div class="history-row">
+
+                  <span>
+                    ${
+                      new Date(
+                        trade.closedAt
+                      )
+                      .toLocaleTimeString(
+                        [],
+                        {
+                          hour:"2-digit",
+                          minute:"2-digit"
+                        }
+                      )
+                    }
+                  </span>
+
+                  <strong class="${trade.signal}">
+                    ${trade.signal}
+                  </strong>
+
+                  <span>
+                    ${trade.result}
+                    ·
+                    ${fmt(trade.hitPrice)}
+                  </span>
+
+                  <strong class="${trade.resultR >= 0 ? "BUY" : "SELL"}">
+                    ${trade.resultR >= 0 ? "+" : ""}${fmt(trade.resultR)}R
+                  </strong>
+
+                </div>
+              `
+          )
+          .join("")
+      : `<div class="reason">No completed ${selectedSymbol} trades.</div>`;
+
+
+  renderJournalGroup(
+    "journalSession",
+    history,
+    trade =>
+      trade.session
+  );
+
+
+  renderJournalGroup(
+    "journalRegime",
+    history,
+    trade =>
+      trade.marketRegime
+        ?.type
+  );
+
+
+  renderJournalGroup(
+    "journalSetup",
+    history,
+    trade =>
+      trade.setupType
+  );
+
+}
+
+
+function renderJournalGroup(
+  id,
+  history,
+  keyFn
+){
+
+  const groups =
+    {};
+
+
+  for(
+    const trade of
+    history
+  ){
+
+    const key =
+      keyFn(trade) ||
+      "UNKNOWN";
+
+
+    groups[key] ??=
+      [];
+
+
+    groups[key].push(
+      trade
+    );
+
+  }
+
+
+  $(id).innerHTML =
+    Object.entries(
+      groups
+    )
+    .map(
+      ([key,trades]) => {
+
+        const average =
+          trades.reduce(
+            (
+              sum,
+              trade
+            ) =>
+              sum +
+              (
+                finite(
+                  trade.resultR
+                ) ??
+                0
+              ),
+            0
+          ) /
+          trades.length;
+
+
+        return `
+          <div class="kv">
+
+            <span>
+              ${key}
+              ·
+              ${trades.length}
+            </span>
+
+            <strong class="${average >= 0 ? "BUY" : "SELL"}">
+              ${average >= 0 ? "+" : ""}${average.toFixed(2)}R
+            </strong>
+
+          </div>
+        `;
+
+      }
+    )
+    .join("") ||
+    `<div class="reason">No data.</div>`;
+
+}
+
+
+/* =========================================================
+   WALK FORWARD
+========================================================= */
+
+async function runResearch(){
+
+  text(
+    "researchState",
+    "RUNNING"
+  );
+
+
+  clearError();
+
+
+  try{
+
+    const response =
+      await fetch(
+        `/api/research?symbol=${encodeURIComponent(selectedSymbol)}`,
+        {
+          cache:"no-store"
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if(
+      !response.ok ||
+      data.success ===
+      false
+    ){
+
+      throw new Error(
+        data.error ||
+        "Research failed."
+      );
+
+    }
+
+
+    if(
+      !data.available
+    ){
+
+      text(
+        "researchState",
+        "NOT ENOUGH MEMORY"
+      );
+
+
+      showError(
+        data.error ||
+        "Not enough market memory."
+      );
+
+
+      return;
+
+    }
+
+
+    text(
+      "researchState",
+      `THRESHOLD ${data.selectedThreshold}`
+    );
+
+
+    const test =
+      data.test ||
+      {};
+
+
+    text(
+      "researchTrades",
+      test.trades ??
+      "—"
+    );
+
+
+    text(
+      "researchWin",
+      pct(
+        test.winRate
+      )
+    );
+
+
+    text(
+      "researchExp",
+      test.expectancyR != null
+        ? `${test.expectancyR >= 0 ? "+" : ""}${fmt(test.expectancyR,3)}R`
+        : "—"
+    );
+
+
+    text(
+      "researchPF",
+      fmt(
+        test.profitFactor
+      )
+    );
+
+
+    text(
+      "researchR",
+      test.totalR != null
+        ? `${test.totalR >= 0 ? "+" : ""}${fmt(test.totalR)}R`
+        : "—"
+    );
+
+
+    text(
+      "researchDD",
+      test.maxDrawdownR != null
+        ? `${fmt(test.maxDrawdownR)}R`
+        : "—"
+    );
+
+
+    $("researchRegimes").innerHTML =
+      Object.entries(
+        data.byRegime ||
+        {}
+      )
+      .map(
+        ([name,result]) =>
+          `
+            <div class="kv">
+
+              <span>
+                ${name}
+                ·
+                ${result.trades}
+              </span>
+
+              <strong class="${result.expectancyR >= 0 ? "BUY" : "SELL"}">
+                ${result.expectancyR >= 0 ? "+" : ""}${fmt(result.expectancyR,3)}R
+              </strong>
+
+            </div>
+          `
+      )
+      .join("");
+
+  }
+  catch(error){
+
+    text(
+      "researchState",
+      "ERROR"
+    );
+
+
+    showError(
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   BACKFILL
+========================================================= */
+
+async function backfillMemory(){
+
+  const secret =
+    prompt(
+      "Enter ADMIN_SECRET"
+    );
+
+
+  if(!secret){
+    return;
+  }
+
+
+  const bars =
+    prompt(
+      `How many ${selectedSymbol} M5 candles?`,
+      "1800"
+    );
+
+
+  try{
+
+    text(
+      "backfill",
+      "BACKFILLING..."
+    );
+
+
+    const response =
+      await fetch(
+        `/api/memory?mode=backfill&symbol=${encodeURIComponent(selectedSymbol)}&bars=${encodeURIComponent(bars || 1800)}`,
+        {
+          method:"POST",
+
+          headers:{
+            Authorization:
+              `Bearer ${secret}`
+          },
+
+          cache:"no-store"
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if(
+      !response.ok ||
+      data.success ===
+      false
+    ){
+
+      throw new Error(
+        data.error ||
+        "Backfill failed."
+      );
+
+    }
+
+
+    alert(
+      `${selectedSymbol}: processed ${data.processed}. Resolved states: ${data.resolved}`
+    );
+
+
+    await runAnalysis();
+
+  }
+  catch(error){
+
+    showError(
+      error.message
+    );
+
+  }
+  finally{
+
+    text(
+      "backfill",
+      "BACKFILL MARKET MEMORY"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   EXPORT
+========================================================= */
+
+function exportHistory(){
+
+  const history =
+    loadState(
+      "history",
+      []
+    );
+
+
+  if(
+    !history.length
+  ){
+
+    alert(
+      `No completed ${selectedSymbol} trades.`
+    );
+
+
+    return;
+
+  }
+
+
+  const rows = [
+    [
+      "Symbol",
+      "Created",
+      "Entered",
+      "Closed",
+      "Direction",
+      "Setup",
+      "Regime",
+      "Session",
+      "Entry",
+      "SL",
+      "TP",
+      "Result",
+      "R",
+      "Edge"
+    ]
+  ];
+
+
+  history.forEach(
+    trade => {
+
+      rows.push([
+
+        trade.symbol ||
+        selectedSymbol,
+
+        trade.createdAt,
+
+        trade.enteredAt,
+
+        trade.closedAt,
+
+        trade.signal,
+
+        trade.setupType,
+
+        trade.marketRegime
+          ?.type,
+
+        trade.session,
+
+        trade.manualEntryPrice,
+
+        trade.stopLoss,
+
+        trade.takeProfit,
+
+        trade.result,
+
+        trade.resultR,
+
+        trade.edgeScore
+
+      ]);
+
+    }
+  );
+
+
+  const csv =
+    rows.map(
+      row =>
+        row.map(
+          value =>
+            `"${String(value ?? "").replace(/"/g,'""')}"`
+        )
+        .join(",")
+    )
+    .join("\n");
+
+
+  const blob =
+    new Blob(
+      [csv],
+      {
+        type:"text/csv"
+      }
+    );
+
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+
+  const link =
+    document.createElement(
+      "a"
+    );
+
+
+  link.href =
+    url;
+
+
+  link.download =
+    `mkayfx-v12-${market().storage.toLowerCase()}-journal.csv`;
+
+
+  link.click();
+
+
+  URL.revokeObjectURL(
+    url
+  );
+
+}
+
+
+/* =========================================================
+   COPY / SHARE
+========================================================= */
+
+function signalText(){
+
+  const data =
+    activeTrade ||
+    pendingSignal ||
+    lastAnalysis;
+
+
+  if(!data){
+
+    return `MKAYFX V12 ${selectedSymbol} — no signal.`;
+
+  }
+
+
+  return [
+
+    `MKAYFX ${market().name} V12`,
+
+    `Market: ${selectedSymbol}`,
+
+    `State: ${
+      activeTrade
+        ? "ENTERED"
+        : pendingSignal
+          ? "QUALIFIED"
+          : data.signal
+    }`,
+
+    `Direction: ${data.candidateDirection || data.signal}`,
+
+    `Edge: ${data.edgeScore}/100`,
+
+    `Regime: ${data.marketRegime?.type}`,
+
+    `Setup: ${data.setupType}`,
+
+    data.stopLoss
+      ? `Entry ${fmt(data.entry)} | SL ${fmt(data.stopLoss)} | TP ${fmt(data.takeProfit)}`
+      : null,
+
+    `Historical expectancy: ${data.historicalEdge?.expectancyR ?? "—"}R`,
+
+    `Matches: ${data.historicalEdge?.matches ?? 0}`
+
+  ]
+  .filter(Boolean)
+  .join("\n");
+
+}
+
+
+async function copySignal(){
+
+  try{
+
+    await navigator.clipboard
+      .writeText(
+        signalText()
+      );
+
+
+    alert(
+      "Copied."
+    );
+
+  }
+  catch{
+
+    prompt(
+      "Copy:",
+      signalText()
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   CHART
+========================================================= */
+
+function drawChart(){
+
+  const canvas =
+    $("chart");
+
+
+  const source =
+    activeTrade ||
+    pendingSignal ||
+    lastAnalysis;
+
+
+  const candles =
+    source
+      ?.chart
+      ?.slice(-100) ||
+    [];
+
+
+  const rect =
+    canvas.getBoundingClientRect();
+
+
+  if(
+    !rect.width
+  ){
+    return;
+  }
+
+
+  const dpr =
+    Math.min(
+      window.devicePixelRatio ||
+      1,
+      2
+    );
+
+
+  const width =
+    rect.width;
+
+
+  const height =
+    360;
+
+
+  canvas.width =
+    width *
+    dpr;
+
+
+  canvas.height =
+    height *
+    dpr;
+
+
+  const ctx =
+    canvas.getContext(
+      "2d"
+    );
+
+
+  ctx.setTransform(
+    dpr,
+    0,
+    0,
+    dpr,
+    0,
+    0
+  );
+
+
+  ctx.fillStyle =
+    "#060a0f";
+
+
+  ctx.fillRect(
+    0,
+    0,
+    width,
+    height
+  );
+
+
+  if(
+    candles.length <
+    2
+  ){
+    return;
+  }
+
+
+  const live =
+    activeTrade ||
+    pendingSignal;
+
+
+  const extra = [
+    live?.entry,
+    live?.stopLoss,
+    live?.takeProfit,
+    live?.takeProfit2,
+    live?.currentPrice
+  ]
+  .filter(
+    Number.isFinite
+  );
+
+
+  const lows =
+    candles.map(
+      x => x.l
+    );
+
+
+  const highs =
+    candles.map(
+      x => x.h
+    );
+
+
+  if(
+    extra.length
+  ){
+
+    lows.push(
+      ...extra
+    );
+
+
+    highs.push(
+      ...extra
+    );
+
+  }
+
+
+  let min =
+    Math.min(
+      ...lows
+    );
+
+
+  let max =
+    Math.max(
+      ...highs
+    );
+
+
+  const range =
+    Math.max(
+      0.01,
+      max -
+      min
+    );
+
+
+  min -=
+    range *
+    0.08;
+
+
+  max +=
+    range *
+    0.08;
+
+
+  const left =
+    8;
+
+
+  const right =
+    55;
+
+
+  const top =
+    10;
+
+
+  const bottom =
+    18;
+
+
+  const chartWidth =
+    width -
+    left -
+    right;
+
+
+  const chartHeight =
+    height -
+    top -
+    bottom;
+
+
+  const y =
+    price =>
+      top +
+      (
+        max -
+        price
+      ) /
+      (
+        max -
+        min
+      ) *
+      chartHeight;
+
+
+  ctx.strokeStyle =
+    "rgba(255,255,255,.05)";
+
+
+  for(
+    let i = 0;
+    i <= 5;
+    i++
+  ){
+
+    const yy =
+      top +
+      chartHeight *
+      i /
+      5;
+
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+      left,
+      yy
+    );
+
+
+    ctx.lineTo(
+      left +
+      chartWidth,
+      yy
+    );
+
+
+    ctx.stroke();
+
+  }
+
+
+  const step =
+    chartWidth /
+    candles.length;
+
+
+  const bodyWidth =
+    Math.max(
+      2,
+      step *
+      0.58
+    );
+
+
+  candles.forEach(
+    (
+      candle,
+      index
+    ) => {
+
+      const x =
+        left +
+        index *
+        step +
+        step /
+        2;
+
+
+      const bullish =
+        candle.c >=
+        candle.o;
+
+
+      const color =
+        bullish
+          ? "#35e6a1"
+          : "#ff6077";
+
+
+      ctx.strokeStyle =
+        color;
+
+
+      ctx.fillStyle =
+        color;
+
+
+      ctx.beginPath();
+
+
+      ctx.moveTo(
+        x,
+        y(candle.h)
+      );
+
+
+      ctx.lineTo(
+        x,
+        y(candle.l)
+      );
+
+
+      ctx.stroke();
+
+
+      const open =
+        y(
+          candle.o
+        );
+
+
+      const close =
+        y(
+          candle.c
+        );
+
+
+      ctx.fillRect(
+        x -
+        bodyWidth /
+        2,
+
+        Math.min(
+          open,
+          close
+        ),
+
+        bodyWidth,
+
+        Math.max(
+          1,
+          Math.abs(
+            close -
+            open
+          )
+        )
+      );
+
+    }
+  );
+
+
+  if(live){
+
+    drawLevel(
+      ctx,
+      left,
+      left +
+      chartWidth,
+      y(
+        live.entry
+      ),
+      "#7891ff",
+      "ENTRY"
+    );
+
+
+    drawLevel(
+      ctx,
+      left,
+      left +
+      chartWidth,
+      y(
+        live.stopLoss
+      ),
+      "#ff6077",
+      "SL"
+    );
+
+
+    drawLevel(
+      ctx,
+      left,
+      left +
+      chartWidth,
+      y(
+        live.takeProfit
+      ),
+      "#35e6a1",
+      "TP1"
+    );
+
+
+    drawLevel(
+      ctx,
+      left,
+      left +
+      chartWidth,
+      y(
+        live.takeProfit2
+      ),
+      "#35e6a1",
+      "TP2"
+    );
+
+  }
+
+}
+
+
+function drawLevel(
+  ctx,
+  x1,
+  x2,
+  y,
+  color,
+  label
+){
+
+  if(
+    !Number.isFinite(y)
+  ){
+    return;
+  }
+
+
+  ctx.save();
+
+
+  ctx.strokeStyle =
+    color;
+
+
+  ctx.setLineDash(
+    [5,5]
+  );
+
+
+  ctx.beginPath();
+
+
+  ctx.moveTo(
+    x1,
+    y
+  );
+
+
+  ctx.lineTo(
+    x2,
+    y
+  );
+
+
+  ctx.stroke();
+
+
+  ctx.setLineDash(
+    []
+  );
+
+
+  ctx.fillStyle =
+    color;
+
+
+  ctx.font =
+    "8px -apple-system";
+
+
+  ctx.fillText(
+    label,
+    x1 +
+    4,
+    y -
+    3
+  );
+
+
+  ctx.restore();
+
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+$("freshAnalysis")
+  .addEventListener(
+    "click",
+    async () => {
+
+      if(
+        activeTrade &&
+        !confirm(
+          `Clear current ${selectedSymbol} active trade?`
+        )
+      ){
+        return;
+      }
+
+
+      activeTrade =
+        null;
+
+
+      pendingSignal =
+        null;
+
+
+      saveState(
+        "active",
+        null
+      );
+
+
+      saveState(
+        "pending",
+        null
+      );
+
+
+      await runAnalysis();
+
+    }
+  );
+
+
+$("clearTrade")
+  .addEventListener(
+    "click",
+    () => {
+
+      if(
+        activeTrade &&
+        !confirm(
+          `Clear ${selectedSymbol} active trade?`
+        )
+      ){
+        return;
+      }
+
+
+      activeTrade =
+        null;
+
+
+      pendingSignal =
+        null;
+
+
+      saveState(
+        "active",
+        null
+      );
+
+
+      saveState(
+        "pending",
+        null
+      );
+
+
+      stopTimer();
+
+
+      if(lastAnalysis){
+
+        renderWaiting(
+          lastAnalysis
+        );
+
+
+        startScanMonitor();
+
+      }
+      else{
+
+        resetDisplay();
+
+      }
+
+    }
+  );
+
+
+$("backfill")
+  .addEventListener(
+    "click",
+    backfillMemory
+  );
+
+
+$("runResearch")
+  .addEventListener(
+    "click",
+    runResearch
+  );
+
+
+$("exportHistory")
+  .addEventListener(
+    "click",
+    exportHistory
+  );
+
+
+$("clearHistory")
+  .addEventListener(
+    "click",
+    () => {
+
+      if(
+        confirm(
+          `Delete ${selectedSymbol} trade history?`
+        )
+      ){
+
+        saveState(
+          "history",
+          []
+        );
+
+
+        renderHistory();
+
+      }
+
+    }
+  );
+
+
+$("copy")
+  .addEventListener(
+    "click",
+    copySignal
+  );
+
+
+$("share")
+  .addEventListener(
+    "click",
+    async () => {
+
+      if(
+        navigator.share
+      ){
+
+        try{
+
+          await navigator.share({
+            text:
+              signalText()
+          });
+
+        }
+        catch{
+
+        }
+
+      }
+      else{
+
+        copySignal();
+
+      }
+
+    }
+  );
+
+
+$("priceInterval")
+  .addEventListener(
+    "change",
+    () => {
+
+      if(
+        activeTrade ||
+        pendingSignal
+      ){
+
+        startPriceMonitor();
+
+      }
+
+    }
+  );
+
+
+$("scanInterval")
+  .addEventListener(
+    "change",
+    () => {
+
+      if(
+        !activeTrade &&
+        !pendingSignal
+      ){
+
+        startScanMonitor();
+
+      }
+
+    }
+  );
+
+
+window.addEventListener(
+  "resize",
+  () => {
+
+    setTimeout(
+      drawChart,
+      100
+    );
+
+  }
+);
+
+
+/* =========================================================
+   START
+========================================================= */
+
+async function start(){
+
+  migrateOldGoldData();
+
+
+  updateMarketChrome();
+
+
+  loadCurrentMarketState();
+
+
+  renderHistory();
+
+
+  if(
+    lastAnalysis
+  ){
+
+    renderAnalysis(
+      lastAnalysis
+    );
+
+  }
+
+
+  if(
+    activeTrade
+  ){
+
+    renderActive();
+
+
+    setStatus(
+      "TRADE ACTIVE",
+      "status-active"
+    );
+
+
+    startPriceMonitor();
+
+
+    await checkPrice();
+
+
+    return;
+
+  }
+
+
+  if(
+    pendingSignal
+  ){
+
+    renderPending();
+
+
+    setStatus(
+      "QUALIFIED",
+      "status-active"
+    );
+
+
+    startPriceMonitor();
+
+
+    await checkPrice();
+
+
+    return;
+
+  }
+
+
+  await runAnalysis();
+
+}
+
+
+start();
+
+</script>
+
+</body>
+
+</html>
