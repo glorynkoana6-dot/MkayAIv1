@@ -29,7 +29,7 @@ import {
   adaptiveReliability,
   ensembleScore,
   inferSetup
-} from "../lib/core.js";
+} from "./core.js";
 
 
 import {
@@ -38,7 +38,7 @@ import {
   loadResolvedStates,
   saveSignalRecord,
   memoryCount
-} from "../lib/db.js";
+} from "./db.js";
 
 
 /* =========================================================
