@@ -15,96 +15,77 @@ import {
 
 
 /* =========================================================
-   MKAYFX WALK-FORWARD RESEARCH V13
+   MKAYFX RESEARCH ENGINE V13.1
 
    PURPOSE
    -------
-   - XAU/USD + BTC/USD
-   - chronological train / validation / test
-   - threshold sweep
-   - regime-aware BTC filtering
-   - trading-cost adjustment
-   - BUY / SELL statistics
-   - regime statistics
-   - session statistics
-   - sample-size protection
-   - drawdown-aware selection
-   - profit-factor-aware selection
-   - untouched final holdout
+   - XAU/USD research uses only XAU/USD memory
+   - BTC/USD research uses only BTC/USD memory
+   - Chronological train / holdout split
+   - Threshold selected ONLY from training data
+   - Final metrics calculated ONLY on untouched holdout
+   - No random split
+   - No holdout leakage
+   - Includes version information for deployment debugging
 
-   IMPORTANT
-   ---------
-   This is a research engine.
-
-   It does NOT guarantee that a configuration that worked
-   historically will work in the future.
 ========================================================= */
 
+const RESEARCH_VERSION =
+  "13.1";
 
-/* =========================================================
-   SETTINGS
-========================================================= */
+
+const MIN_RESOLVED_STATES =
+  100;
+
+
+const MAX_RESOLVED_STATES =
+  5000;
+
+
+const TRAINING_RATIO =
+  0.70;
+
+
+const MIN_TRAINING_TRADES =
+  20;
+
+
+/*
+  Thresholds that the training period
+  is allowed to test.
+
+  IMPORTANT:
+  The holdout period does NOT choose
+  the threshold.
+*/
 
 const THRESHOLDS = [
   20,
-  25,
   30,
-  35,
   40,
-  45,
   50,
-  55,
   60,
-  65,
-  70,
-  75,
-  80
+  70
 ];
 
 
-const STOP_ATR =
+/*
+  Fixed research exit model.
+
+  Stop = 1R
+  Target = 1.2R
+
+  Keep these fixed during the threshold
+  experiment so thresholds are compared
+  on the same basis.
+*/
+
+const RESEARCH_STOP_R =
   1;
 
 
-const TARGET_R =
+const RESEARCH_TARGET_R =
   1.2;
-
-
-/*
-  Approximate cost expressed in ATR.
-
-  This mirrors the cost assumption used by analysis.js.
-*/
-
-const ESTIMATED_COST_ATR =
-  0.03;
-
-
-const ESTIMATED_COST_R =
-  ESTIMATED_COST_ATR /
-  STOP_ATR;
-
-
-/*
-  Minimum number of trades needed before we place much
-  confidence in a candidate.
-*/
-
-const MIN_TRAIN_TRADES =
-  25;
-
-
-const MIN_VALIDATION_TRADES =
-  10;
-
-
-/*
-  Extremely large historical drawdown should reduce
-  candidate quality even when expectancy is positive.
-*/
-
-const MAX_REASONABLE_DD_R =
-  20;
 
 
 /* =========================================================
@@ -129,12 +110,9 @@ function normalizeSymbol(
 
 
   if (
-    raw ===
-      "XAU/USD" ||
-    raw ===
-      "XAUUSD" ||
-    raw ===
-      "GOLD"
+    raw === "XAU/USD" ||
+    raw === "XAUUSD" ||
+    raw === "GOLD"
   ) {
 
     return "XAU/USD";
@@ -143,14 +121,10 @@ function normalizeSymbol(
 
 
   if (
-    raw ===
-      "BTC/USD" ||
-    raw ===
-      "BTCUSD" ||
-    raw ===
-      "BTC" ||
-    raw ===
-      "BITCOIN"
+    raw === "BTC/USD" ||
+    raw === "BTCUSD" ||
+    raw === "BTC" ||
+    raw === "BITCOIN"
   ) {
 
     return "BTC/USD";
@@ -162,19 +136,9 @@ function normalizeSymbol(
 }
 
 
-function rowSymbol(
-  row
-) {
-
-  return normalizeSymbol(
-    row?.symbol ||
-    row?.market_symbol ||
-    row?.features?.symbol ||
-    null
-  );
-
-}
-
+/* =========================================================
+   QUERY HELPER
+========================================================= */
 
 function queryValue(
   req,
@@ -194,7 +158,7 @@ function queryValue(
 
 
 /* =========================================================
-   SAFE HELPERS
+   SAFE NUMBER
 ========================================================= */
 
 function safeNumber(
@@ -202,231 +166,16 @@ function safeNumber(
   fallback = 0
 ) {
 
-  const n =
+  const number =
     finite(
       value
     );
 
 
-  return n ===
-    null
+  return number === null ||
+    number === undefined
       ? fallback
-      : n;
-}
-
-
-function safeDate(
-  value
-) {
-
-  const time =
-    Date.parse(
-      value
-    );
-
-
-  return Number.isFinite(
-    time
-  )
-    ? time
-    : 0;
-}
-
-
-/* =========================================================
-   BTC REGIME POLICY
-
-   IMPORTANT:
-   These rules are deliberately simple.
-
-   We are NOT hard-coding the exact historical expectancy
-   numbers from one test.
-
-   Instead we use the research result to determine which
-   market environments require stronger evidence.
-========================================================= */
-
-function regimeAllowed(
-  symbol,
-  regime,
-  score
-) {
-
-  const strength =
-    Math.abs(
-      score
-    );
-
-
-  if (
-    symbol !==
-    "BTC/USD"
-  ) {
-
-    /*
-      Gold:
-      remove obvious quiet chop from research candidates.
-    */
-
-    if (
-      regime ===
-      "QUIET_CHOP"
-    ) {
-
-      return false;
-
-    }
-
-
-    return true;
-
-  }
-
-
-  /*
-    BTC QUIET CHOP
-
-    Completely excluded.
-  */
-
-  if (
-    regime ===
-    "QUIET_CHOP"
-  ) {
-
-    return false;
-
-  }
-
-
-  /*
-    BTC RANGE
-
-    Only exceptionally strong raw signals survive.
-  */
-
-  if (
-    regime ===
-    "RANGE"
-  ) {
-
-    return strength >=
-      70;
-
-  }
-
-
-  /*
-    BTC expansion regimes are volatile.
-
-    Require stronger signal strength.
-  */
-
-  if (
-    String(
-      regime
-    ).includes(
-      "EXPANSION"
-    )
-  ) {
-
-    return strength >=
-      60;
-
-  }
-
-
-  /*
-    BTC trends.
-  */
-
-  if (
-    String(
-      regime
-    ).includes(
-      "TREND"
-    )
-  ) {
-
-    return strength >=
-      45;
-
-  }
-
-
-  /*
-    MIXED stays available because this environment
-    has shown useful behaviour in the current research,
-    but we still rely on the selected threshold.
-  */
-
-  return true;
-}
-
-
-/* =========================================================
-   DIRECTION / REGIME ALIGNMENT
-========================================================= */
-
-function directionAllowed(
-  symbol,
-  regime,
-  direction
-) {
-
-  const raw =
-    String(
-      regime ||
-      ""
-    ).toUpperCase();
-
-
-  /*
-    For Gold we leave both directions available.
-  */
-
-  if (
-    symbol !==
-    "BTC/USD"
-  ) {
-
-    return true;
-
-  }
-
-
-  /*
-    For strong directional BTC regimes, do not take
-    the opposite side.
-
-    MIXED and RANGE can still use either direction.
-  */
-
-  if (
-    raw.startsWith(
-      "BULLISH"
-    )
-  ) {
-
-    return direction ===
-      "BUY";
-
-  }
-
-
-  if (
-    raw.startsWith(
-      "BEARISH"
-    )
-  ) {
-
-    return direction ===
-      "SELL";
-
-  }
-
-
-  return true;
+      : number;
 }
 
 
@@ -439,130 +188,112 @@ function metrics(
 ) {
 
   if (
+    !Array.isArray(
+      trades
+    ) ||
     !trades.length
   ) {
 
     return {
 
-      trades:
-        0,
+      trades:0,
 
-      wins:
-        0,
+      wins:0,
 
-      losses:
-        0,
+      losses:0,
 
-      breakeven:
-        0,
+      winRate:null,
 
-      winRate:
-        null,
+      expectancyR:null,
 
-      expectancyR:
-        null,
+      profitFactor:null,
 
-      grossExpectancyR:
-        null,
+      totalR:0,
 
-      profitFactor:
-        null,
+      maxDrawdownR:0,
 
-      totalR:
-        0,
+      averageWinR:null,
 
-      grossTotalR:
-        0,
-
-      maxDrawdownR:
-        0,
-
-      averageWinR:
-        null,
-
-      averageLossR:
-        null,
-
-      payoffRatio:
-        null,
-
-      recoveryFactor:
-        null,
-
-      longestWinStreak:
-        0,
-
-      longestLossStreak:
-        0
+      averageLossR:null
 
     };
 
   }
 
 
-  const wins =
+  const winningTrades =
     trades.filter(
-      x =>
-        x.r >
+      trade =>
+        safeNumber(
+          trade.r
+        ) >
         0
     );
+
+
+  const losingTrades =
+    trades.filter(
+      trade =>
+        safeNumber(
+          trade.r
+        ) <
+        0
+    );
+
+
+  const wins =
+    winningTrades.length;
 
 
   const losses =
-    trades.filter(
-      x =>
-        x.r <
-        0
-    );
-
-
-  const breakeven =
-    trades.filter(
-      x =>
-        x.r ===
-        0
-    );
+    losingTrades.length;
 
 
   const grossWin =
-    wins.reduce(
+    winningTrades.reduce(
       (
-        sum,
-        x
+        total,
+        trade
       ) =>
-        sum +
-        x.r,
+        total +
+        safeNumber(
+          trade.r
+        ),
       0
     );
 
 
   const grossLoss =
     Math.abs(
-      losses.reduce(
+      losingTrades.reduce(
         (
-          sum,
-          x
+          total,
+          trade
         ) =>
-          sum +
-          x.r,
+          total +
+          safeNumber(
+            trade.r
+          ),
         0
       )
     );
 
 
-  const grossTotalR =
-    trades.reduce(
-      (
-        sum,
-        x
-      ) =>
-        sum +
+  const values =
+    trades.map(
+      trade =>
         safeNumber(
-          x.grossR
-        ),
-      0
+          trade.r
+        )
     );
 
+
+  /*
+    Equity curve in R.
+
+    Max drawdown is measured from the
+    highest historical equity point.
+  */
 
   let equity =
     0;
@@ -572,23 +303,7 @@ function metrics(
     0;
 
 
-  let drawdown =
-    0;
-
-
-  let winStreak =
-    0;
-
-
-  let lossStreak =
-    0;
-
-
-  let longestWinStreak =
-    0;
-
-
-  let longestLossStreak =
+  let maxDrawdown =
     0;
 
 
@@ -598,7 +313,9 @@ function metrics(
   ) {
 
     equity +=
-      trade.r;
+      safeNumber(
+        trade.r
+      );
 
 
     peak =
@@ -608,130 +325,65 @@ function metrics(
       );
 
 
-    drawdown =
+    maxDrawdown =
       Math.max(
-        drawdown,
+        maxDrawdown,
         peak -
         equity
       );
-
-
-    if (
-      trade.r >
-      0
-    ) {
-
-      winStreak +=
-        1;
-
-
-      lossStreak =
-        0;
-
-
-      longestWinStreak =
-        Math.max(
-          longestWinStreak,
-          winStreak
-        );
-
-    }
-    else if (
-      trade.r <
-      0
-    ) {
-
-      lossStreak +=
-        1;
-
-
-      winStreak =
-        0;
-
-
-      longestLossStreak =
-        Math.max(
-          longestLossStreak,
-          lossStreak
-        );
-
-    }
-    else {
-
-      winStreak =
-        0;
-
-
-      lossStreak =
-        0;
-
-    }
 
   }
 
 
   const averageWin =
-    wins.length
+    winningTrades.length
       ? mean(
-          wins.map(
-            x =>
-              x.r
+          winningTrades.map(
+            trade =>
+              safeNumber(
+                trade.r
+              )
           )
         )
       : null;
 
 
   const averageLoss =
-    losses.length
-      ? Math.abs(
-          mean(
-            losses.map(
-              x =>
-                x.r
-            )
+    losingTrades.length
+      ? mean(
+          losingTrades.map(
+            trade =>
+              safeNumber(
+                trade.r
+              )
           )
         )
       : null;
 
 
-  const payoffRatio =
-    averageWin !==
-      null &&
-    averageLoss !==
-      null &&
-    averageLoss >
-      0
-
-      ? averageWin /
-        averageLoss
-
-      : null;
+  let profitFactor =
+    null;
 
 
-  const profitFactor =
+  if (
     grossLoss >
-      0
+    0
+  ) {
 
-      ? grossWin /
-        grossLoss
+    profitFactor =
+      grossWin /
+      grossLoss;
 
-      : grossWin >
-        0
-        ? null
-        : 0;
+  }
+  else if (
+    grossWin ===
+    0
+  ) {
 
+    profitFactor =
+      0;
 
-  const recoveryFactor =
-    drawdown >
-      0
-
-      ? equity /
-        drawdown
-
-      : equity >
-        0
-        ? null
-        : 0;
+  }
 
 
   return {
@@ -739,18 +391,13 @@ function metrics(
     trades:
       trades.length,
 
-    wins:
-      wins.length,
+    wins,
 
-    losses:
-      losses.length,
-
-    breakeven:
-      breakeven.length,
+    losses,
 
     winRate:
       round(
-        wins.length /
+        wins /
         trades.length *
         100,
         1
@@ -759,30 +406,14 @@ function metrics(
     expectancyR:
       round(
         mean(
-          trades.map(
-            x =>
-              x.r
-          )
-        ),
-        3
-      ),
-
-    grossExpectancyR:
-      round(
-        mean(
-          trades.map(
-            x =>
-              safeNumber(
-                x.grossR
-              )
-          )
+          values
         ),
         3
       ),
 
     profitFactor:
       profitFactor ===
-        null
+      null
         ? null
         : round(
             profitFactor,
@@ -795,21 +426,15 @@ function metrics(
         2
       ),
 
-    grossTotalR:
-      round(
-        grossTotalR,
-        2
-      ),
-
     maxDrawdownR:
       round(
-        drawdown,
+        maxDrawdown,
         2
       ),
 
     averageWinR:
       averageWin ===
-        null
+      null
         ? null
         : round(
             averageWin,
@@ -818,36 +443,103 @@ function metrics(
 
     averageLossR:
       averageLoss ===
-        null
+      null
         ? null
         : round(
             averageLoss,
             3
-          ),
-
-    payoffRatio:
-      payoffRatio ===
-        null
-        ? null
-        : round(
-            payoffRatio,
-            2
-          ),
-
-    recoveryFactor:
-      recoveryFactor ===
-        null
-        ? null
-        : round(
-            recoveryFactor,
-            2
-          ),
-
-    longestWinStreak,
-
-    longestLossStreak
+          )
 
   };
+}
+
+
+/* =========================================================
+   VALID ROW
+========================================================= */
+
+function validResearchRow(
+  row,
+  symbol
+) {
+
+  if (
+    !row
+  ) {
+
+    return false;
+
+  }
+
+
+  if (
+    row.symbol !==
+    symbol
+  ) {
+
+    return false;
+
+  }
+
+
+  const components =
+    row.features
+      ?.componentScores;
+
+
+  if (
+    !components ||
+    typeof components !==
+    "object" ||
+    !Object.keys(
+      components
+    ).length
+  ) {
+
+    return false;
+
+  }
+
+
+  if (
+    !Array.isArray(
+      row.future_path
+    ) ||
+    !row.future_path.length
+  ) {
+
+    return false;
+
+  }
+
+
+  if (
+    !row.candle_time
+  ) {
+
+    return false;
+
+  }
+
+
+  const time =
+    Date.parse(
+      row.candle_time
+    );
+
+
+  if (
+    !Number.isFinite(
+      time
+    )
+  ) {
+
+    return false;
+
+  }
+
+
+  return true;
 }
 
 
@@ -857,8 +549,7 @@ function metrics(
 
 function simulate(
   rows,
-  threshold,
-  symbol
+  threshold
 ) {
 
   const trades =
@@ -899,23 +590,34 @@ function simulate(
     }
 
 
-    const regime =
-      row.regime ||
-      "UNKNOWN";
+    let score;
 
 
-    const score =
-      ensembleScore(
-        components,
-        regime,
-        {}
+    try {
+
+      score =
+        ensembleScore(
+          components,
+          row.regime,
+          {}
+        );
+
+    }
+    catch {
+
+      continue;
+
+    }
+
+
+    score =
+      finite(
+        score
       );
 
 
     if (
-      !Number.isFinite(
-        score
-      )
+      score === null
     ) {
 
       continue;
@@ -923,36 +625,11 @@ function simulate(
     }
 
 
-    const strength =
+    if (
       Math.abs(
         score
-      );
-
-
-    /*
-      Main threshold.
-    */
-
-    if (
-      strength <
+      ) <
       threshold
-    ) {
-
-      continue;
-
-    }
-
-
-    /*
-      Regime filter.
-    */
-
-    if (
-      !regimeAllowed(
-        symbol,
-        regime,
-        score
-      )
     ) {
 
       continue;
@@ -962,35 +639,30 @@ function simulate(
 
     const direction =
       score >=
-        0
+      0
         ? "BUY"
         : "SELL";
 
 
-    /*
-      BTC directional regime alignment.
-    */
+    let outcome;
 
-    if (
-      !directionAllowed(
-        symbol,
-        regime,
-        direction
-      )
-    ) {
+
+    try {
+
+      outcome =
+        evaluatePath(
+          row.future_path,
+          direction,
+          RESEARCH_STOP_R,
+          RESEARCH_TARGET_R
+        );
+
+    }
+    catch {
 
       continue;
 
     }
-
-
-    const outcome =
-      evaluatePath(
-        row.future_path,
-        direction,
-        STOP_ATR,
-        TARGET_R
-      );
 
 
     if (
@@ -1002,61 +674,40 @@ function simulate(
     }
 
 
-    const grossR =
-      safeNumber(
+    const resultR =
+      finite(
         outcome.resultR
       );
 
 
-    /*
-      Cost applied to every executed trade.
-    */
+    if (
+      resultR ===
+      null
+    ) {
 
-    const netR =
-      grossR -
-      ESTIMATED_COST_R;
+      continue;
+
+    }
 
 
     trades.push({
 
-      symbol,
+      symbol:
+        row.symbol,
 
       time:
         row.candle_time,
 
-      grossR:
-        round(
-          grossR,
-          4
-        ),
-
-      costR:
-        round(
-          ESTIMATED_COST_R,
-          4
-        ),
-
       r:
-        round(
-          netR,
-          4
-        ),
+        resultR,
 
       direction,
 
-      score:
-        round(
-          score,
-          2
-        ),
+      score,
 
-      strength:
-        round(
-          strength,
-          2
-        ),
-
-      regime,
+      regime:
+        row.regime ||
+        "UNKNOWN",
 
       session:
         row.session ||
@@ -1067,22 +718,7 @@ function simulate(
   }
 
 
-  /*
-    Always preserve chronological order for DD/streak stats.
-  */
-
-  return trades.sort(
-    (
-      a,
-      b
-    ) =>
-      safeDate(
-        a.time
-      ) -
-      safeDate(
-        b.time
-      )
-  );
+  return trades;
 }
 
 
@@ -1095,208 +731,63 @@ function groupedMetrics(
   key
 ) {
 
-  const out =
+  const groups =
     {};
 
 
-  const names =
-    [
-      ...new Set(
-        trades
-          .map(
-            x =>
-              x[key]
-          )
-          .filter(
-            Boolean
-          )
-      )
-    ];
+  for (
+    const trade of
+    trades
+  ) {
+
+    const name =
+      trade[key] ||
+      "UNKNOWN";
+
+
+    groups[name] ??=
+      [];
+
+
+    groups[name].push(
+      trade
+    );
+
+  }
+
+
+  const output =
+    {};
 
 
   for (
-    const name of
-    names
+    const [
+      name,
+      groupTrades
+    ] of
+    Object.entries(
+      groups
+    )
   ) {
 
-    out[name] =
+    output[name] =
       metrics(
-        trades.filter(
-          x =>
-            x[key] ===
-            name
-        )
+        groupTrades
       );
 
   }
 
 
-  return out;
+  return output;
 }
 
 
 /* =========================================================
-   CANDIDATE QUALITY
+   THRESHOLD RESEARCH
 ========================================================= */
 
-function candidateQuality(
-  result,
-  phase
-) {
-
-  const m =
-    result.metrics;
-
-
-  if (
-    !m ||
-    !m.trades
-  ) {
-
-    return -9999;
-
-  }
-
-
-  const expectancy =
-    safeNumber(
-      m.expectancyR,
-      -1
-    );
-
-
-  const pf =
-    m.profitFactor ===
-      null
-      ? 3
-      : safeNumber(
-          m.profitFactor
-        );
-
-
-  const dd =
-    safeNumber(
-      m.maxDrawdownR
-    );
-
-
-  const total =
-    safeNumber(
-      m.totalR
-    );
-
-
-  /*
-    Sample confidence saturates.
-
-    50+ trades = full sample credit.
-  */
-
-  const sampleQuality =
-    Math.min(
-      m.trades /
-        50,
-      1
-    );
-
-
-  /*
-    Penalize candidates with very small samples.
-  */
-
-  let samplePenalty =
-    0;
-
-
-  if (
-    phase ===
-      "TRAIN" &&
-    m.trades <
-      MIN_TRAIN_TRADES
-  ) {
-
-    samplePenalty +=
-      (
-        MIN_TRAIN_TRADES -
-        m.trades
-      ) *
-      0.15;
-
-  }
-
-
-  if (
-    phase ===
-      "VALIDATION" &&
-    m.trades <
-      MIN_VALIDATION_TRADES
-  ) {
-
-    samplePenalty +=
-      (
-        MIN_VALIDATION_TRADES -
-        m.trades
-      ) *
-      0.25;
-
-  }
-
-
-  /*
-    Extra penalty once DD becomes excessive.
-  */
-
-  const excessDrawdown =
-    Math.max(
-      0,
-      dd -
-      MAX_REASONABLE_DD_R
-    );
-
-
-  return (
-
-    expectancy *
-      10 +
-
-    Math.min(
-      pf,
-      3
-    ) *
-      1.5 +
-
-    sampleQuality *
-      2 +
-
-    Math.max(
-      Math.min(
-        total,
-        20
-      ),
-      -20
-    ) *
-      0.08 -
-
-    dd *
-      0.10 -
-
-    excessDrawdown *
-      0.20 -
-
-    samplePenalty
-
-  );
-}
-
-
-/* =========================================================
-   THRESHOLD SWEEP
-========================================================= */
-
-function evaluateThresholds(
-  rows,
-  symbol,
-  phase
+function testThresholds(
+  trainingRows
 ) {
 
   return THRESHOLDS.map(
@@ -1304,13 +795,12 @@ function evaluateThresholds(
 
       const trades =
         simulate(
-          rows,
-          threshold,
-          symbol
+          trainingRows,
+          threshold
         );
 
 
-      const result = {
+      return {
 
         threshold,
 
@@ -1321,19 +811,6 @@ function evaluateThresholds(
 
       };
 
-
-      result.qualityScore =
-        round(
-          candidateQuality(
-            result,
-            phase
-          ),
-          3
-        );
-
-
-      return result;
-
     }
   );
 
@@ -1341,44 +818,31 @@ function evaluateThresholds(
 
 
 /* =========================================================
-   CHOOSE TRAINING CANDIDATES
+   SELECT THRESHOLD
 ========================================================= */
 
-function chooseTrainingCandidates(
+function selectThreshold(
   candidates
 ) {
 
+  /*
+    First preference:
+
+    Threshold must have at least
+    MIN_TRAINING_TRADES.
+
+    This prevents tiny samples from
+    dominating threshold selection.
+  */
+
   const viable =
     candidates.filter(
-      x =>
-        x.metrics.trades >=
-          MIN_TRAIN_TRADES &&
-        safeNumber(
-          x.metrics
-            .expectancyR,
-          -999
-        ) >
-          0 &&
-        (
-          x.metrics
-            .profitFactor ===
-            null ||
-          safeNumber(
-            x.metrics
-              .profitFactor
-          ) >
-            1
-        )
+      candidate =>
+        candidate.metrics
+          .trades >=
+        MIN_TRAINING_TRADES
     );
 
-
-  /*
-    If nothing is profitable in training, do NOT pretend
-    that a positive edge exists.
-
-    We still return candidates for diagnostics, but the
-    caller can mark the research as no viable edge.
-  */
 
   const pool =
     viable.length
@@ -1386,224 +850,195 @@ function chooseTrainingCandidates(
       : candidates;
 
 
-  return [...pool]
-    .sort(
-      (
-        a,
-        b
-      ) =>
-        b.qualityScore -
-        a.qualityScore
-    );
-}
-
-
-/* =========================================================
-   VALIDATE TRAINING SHORTLIST
-========================================================= */
-
-function validateCandidates(
-  trainingRanked,
-  validationRows,
-  symbol
-) {
-
   /*
-    Only validate the strongest few training thresholds.
+    IMPORTANT:
 
-    This reduces repeatedly searching the validation set.
+    Selection uses TRAINING ONLY.
+
+    Holdout/test results are never used
+    here.
+
+    Ranking:
+    1. Higher expectancy
+    2. Higher profit factor
+    3. Lower drawdown
+    4. Larger sample
+    5. Higher threshold
   */
 
-  const shortlist =
-    trainingRanked.slice(
-      0,
-      4
-    );
+  const ranked =
+    [...pool]
+      .sort(
+        (
+          a,
+          b
+        ) => {
+
+          const expectancyA =
+            finite(
+              a.metrics
+                .expectancyR
+            ) ??
+            -999;
 
 
-  return shortlist.map(
-    trainingCandidate => {
-
-      const trades =
-        simulate(
-          validationRows,
-          trainingCandidate.threshold,
-          symbol
-        );
+          const expectancyB =
+            finite(
+              b.metrics
+                .expectancyR
+            ) ??
+            -999;
 
 
-      const validationMetrics =
-        metrics(
-          trades
-        );
+          if (
+            expectancyA !==
+            expectancyB
+          ) {
+
+            return (
+              expectancyB -
+              expectancyA
+            );
+
+          }
 
 
-      const validationResult = {
-
-        threshold:
-          trainingCandidate.threshold,
-
-        metrics:
-          validationMetrics
-
-      };
+          const pfA =
+            finite(
+              a.metrics
+                .profitFactor
+            ) ??
+            -999;
 
 
-      const validationQuality =
-        candidateQuality(
-          validationResult,
-          "VALIDATION"
-        );
+          const pfB =
+            finite(
+              b.metrics
+                .profitFactor
+            ) ??
+            -999;
 
 
-      /*
-        Training matters, but validation receives
-        greater weight.
-      */
+          if (
+            pfA !==
+            pfB
+          ) {
 
-      const combinedScore =
-        trainingCandidate
-          .qualityScore *
-          0.35 +
-        validationQuality *
-          0.65;
+            return (
+              pfB -
+              pfA
+            );
 
-
-      return {
-
-        threshold:
-          trainingCandidate.threshold,
-
-        training:
-          trainingCandidate.metrics,
-
-        trainingQuality:
-          trainingCandidate
-            .qualityScore,
-
-        validation:
-          validationMetrics,
-
-        validationQuality:
-          round(
-            validationQuality,
-            3
-          ),
-
-        combinedScore:
-          round(
-            combinedScore,
-            3
-          )
-
-      };
-
-    }
-  )
-    .sort(
-      (
-        a,
-        b
-      ) =>
-        b.combinedScore -
-        a.combinedScore
-    );
-}
+          }
 
 
-/* =========================================================
-   ROBUSTNESS CHECK
-========================================================= */
-
-function robustness(
-  selectedThreshold,
-  trainingCandidates,
-  validationRows,
-  symbol
-) {
-
-  const nearby =
-    THRESHOLDS.filter(
-      x =>
-        Math.abs(
-          x -
-          selectedThreshold
-        ) <=
-        10
-    );
+          const ddA =
+            finite(
+              a.metrics
+                .maxDrawdownR
+            ) ??
+            999999;
 
 
-  const results =
-    nearby.map(
-      threshold => {
+          const ddB =
+            finite(
+              b.metrics
+                .maxDrawdownR
+            ) ??
+            999999;
 
-        const training =
-          trainingCandidates.find(
-            x =>
-              x.threshold ===
-              threshold
+
+          if (
+            ddA !==
+            ddB
+          ) {
+
+            return (
+              ddA -
+              ddB
+            );
+
+          }
+
+
+          if (
+            a.metrics
+              .trades !==
+            b.metrics
+              .trades
+          ) {
+
+            return (
+              b.metrics
+                .trades -
+              a.metrics
+                .trades
+            );
+
+          }
+
+
+          return (
+            b.threshold -
+            a.threshold
           );
 
-
-        const validationTrades =
-          simulate(
-            validationRows,
-            threshold,
-            symbol
-          );
-
-
-        return {
-
-          threshold,
-
-          training:
-            training
-              ?.metrics ??
-            null,
-
-          validation:
-            metrics(
-              validationTrades
-            )
-
-        };
-
-      }
-    );
-
-
-  const positiveValidation =
-    results.filter(
-      x =>
-        safeNumber(
-          x.validation
-            ?.expectancyR,
-          -999
-        ) >
-          0
-    ).length;
+        }
+      );
 
 
   return {
 
-    nearbyThresholds:
-      results,
+    best:
+      ranked[0] ||
+      null,
 
-    positiveValidationThresholds:
-      positiveValidation,
+    viableCandidates:
+      viable.length,
 
-    testedThresholds:
-      results.length,
+    ranked
 
-    stable:
-      results.length >
-        0 &&
-      positiveValidation >=
-        Math.ceil(
-          results.length /
-          2
-        )
+  };
+}
+
+
+/* =========================================================
+   DATE RANGE
+========================================================= */
+
+function dateRange(
+  rows
+) {
+
+  if (
+    !rows.length
+  ) {
+
+    return {
+
+      from:null,
+
+      to:null
+
+    };
+
+  }
+
+
+  return {
+
+    from:
+      rows[0]
+        ?.candle_time ||
+      null,
+
+    to:
+      rows[
+        rows.length -
+        1
+      ]
+        ?.candle_time ||
+      null
 
   };
 }
@@ -1618,8 +1053,32 @@ export default async function handler(
   res
 ) {
 
+  /*
+    Disable caching so an old Vercel/API
+    research response cannot remain on
+    the phone.
+  */
+
   res.setHeader(
     "Cache-Control",
+    "no-store, no-cache, must-revalidate, proxy-revalidate"
+  );
+
+
+  res.setHeader(
+    "Pragma",
+    "no-cache"
+  );
+
+
+  res.setHeader(
+    "Expires",
+    "0"
+  );
+
+
+  res.setHeader(
+    "Surrogate-Control",
     "no-store"
   );
 
@@ -1633,6 +1092,12 @@ export default async function handler(
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, OPTIONS"
+  );
+
+
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
   );
 
 
@@ -1657,8 +1122,10 @@ export default async function handler(
       .status(405)
       .json({
 
-        success:
-          false,
+        success:false,
+
+        version:
+          RESEARCH_VERSION,
 
         error:
           "Use GET."
@@ -1667,6 +1134,10 @@ export default async function handler(
 
   }
 
+
+  /* =======================================================
+     SYMBOL
+  ======================================================= */
 
   const symbol =
     normalizeSymbol(
@@ -1686,13 +1157,15 @@ export default async function handler(
       .status(400)
       .json({
 
-        success:
-          false,
+        success:false,
+
+        version:
+          RESEARCH_VERSION,
 
         error:
           "Unsupported symbol.",
 
-        supportedSymbols: [
+        supportedSymbols:[
           "XAU/USD",
           "BTC/USD"
         ]
@@ -1702,6 +1175,10 @@ export default async function handler(
   }
 
 
+  /* =======================================================
+     DATABASE
+  ======================================================= */
+
   if (
     !dbEnabled()
   ) {
@@ -1710,13 +1187,14 @@ export default async function handler(
       .status(200)
       .json({
 
-        success:
-          true,
+        success:true,
+
+        version:
+          RESEARCH_VERSION,
 
         symbol,
 
-        available:
-          false,
+        available:false,
 
         error:
           "DATABASE_URL is not configured."
@@ -1729,7 +1207,7 @@ export default async function handler(
   try {
 
     /* =====================================================
-       LOAD ONLY THE REQUESTED ASSET
+       LOAD SYMBOL-SPECIFIC MEMORY
     ===================================================== */
 
     let rows =
@@ -1738,36 +1216,53 @@ export default async function handler(
         symbol,
 
         limit:
-          5000
+          MAX_RESOLVED_STATES
 
       });
 
+
+    if (
+      !Array.isArray(
+        rows
+      )
+    ) {
+
+      rows =
+        [];
+
+    }
+
+
+    /*
+      IMPORTANT SAFETY CHECK:
+
+      Even though loadResolvedStates()
+      receives the requested symbol,
+      filter again here.
+
+      This guarantees BTC research cannot
+      accidentally process Gold rows and
+      Gold research cannot process BTC.
+    */
 
     rows =
       rows
         .filter(
           row =>
-            rowSymbol(
-              row
-            ) ===
-            symbol
-        )
-        .filter(
-          row =>
-            Array.isArray(
-              row.future_path
-            ) &&
-            row.future_path.length
+            validResearchRow(
+              row,
+              symbol
+            )
         )
         .sort(
           (
             a,
             b
           ) =>
-            safeDate(
+            Date.parse(
               a.candle_time
             ) -
-            safeDate(
+            Date.parse(
               b.candle_time
             )
         );
@@ -1780,25 +1275,29 @@ export default async function handler(
 
 
     /* =====================================================
-       MINIMUM MEMORY
+       MINIMUM SAMPLE
     ===================================================== */
 
     if (
       rows.length <
-      150
+      MIN_RESOLVED_STATES
     ) {
 
       return res
         .status(200)
         .json({
 
-          success:
-            true,
+          success:true,
+
+          version:
+            RESEARCH_VERSION,
+
+          engineVersion:
+            RESEARCH_VERSION,
 
           symbol,
 
-          available:
-            false,
+          available:false,
 
           memory:
             count,
@@ -1807,10 +1306,10 @@ export default async function handler(
             rows.length,
 
           requiredStates:
-            150,
+            MIN_RESOLVED_STATES,
 
           error:
-            `Need at least 150 resolved ${symbol} market states. Backfill ${symbol} memory first.`
+            `Need at least ${MIN_RESOLVED_STATES} resolved ${symbol} market states. Backfill ${symbol} memory first.`
 
         });
 
@@ -1818,128 +1317,88 @@ export default async function handler(
 
 
     /* =====================================================
-       CHRONOLOGICAL 60 / 20 / 20 SPLIT
-
-       TRAIN:
-       discover reasonable thresholds.
-
-       VALIDATION:
-       choose between training candidates.
-
-       TEST:
-       untouched final holdout.
+       CHRONOLOGICAL SPLIT
     ===================================================== */
 
-    const trainEnd =
+    const split =
       Math.floor(
         rows.length *
-        0.60
+        TRAINING_RATIO
       );
-
-
-    const validationEnd =
-      Math.floor(
-        rows.length *
-        0.80
-      );
-
-
-    const trainingRows =
-      rows.slice(
-        0,
-        trainEnd
-      );
-
-
-    const validationRows =
-      rows.slice(
-        trainEnd,
-        validationEnd
-      );
-
-
-    const testRows =
-      rows.slice(
-        validationEnd
-      );
-
-
-    /* =====================================================
-       TRAINING SWEEP
-    ===================================================== */
-
-    const trainingCandidates =
-      evaluateThresholds(
-        trainingRows,
-        symbol,
-        "TRAIN"
-      );
-
-
-    const rankedTraining =
-      chooseTrainingCandidates(
-        trainingCandidates
-      );
-
-
-    const profitableTrainingCandidates =
-      trainingCandidates.filter(
-        x =>
-          x.metrics.trades >=
-            MIN_TRAIN_TRADES &&
-          safeNumber(
-            x.metrics
-              .expectancyR,
-            -999
-          ) >
-            0 &&
-          (
-            x.metrics
-              .profitFactor ===
-              null ||
-            safeNumber(
-              x.metrics
-                .profitFactor
-            ) >
-              1
-          )
-      );
-
-
-    /* =====================================================
-       VALIDATION
-    ===================================================== */
-
-    const validationCandidates =
-      validateCandidates(
-        rankedTraining,
-        validationRows,
-        symbol
-      );
-
-
-    const selected =
-      validationCandidates[0];
 
 
     if (
-      !selected
+      split <=
+      0 ||
+      split >=
+      rows.length
+    ) {
+
+      throw new Error(
+        "Could not create chronological training/test split."
+      );
+
+    }
+
+
+    const training =
+      rows.slice(
+        0,
+        split
+      );
+
+
+    const test =
+      rows.slice(
+        split
+      );
+
+
+    /* =====================================================
+       TRAINING THRESHOLD SEARCH
+    ===================================================== */
+
+    const candidates =
+      testThresholds(
+        training
+      );
+
+
+    const selection =
+      selectThreshold(
+        candidates
+      );
+
+
+    const best =
+      selection.best;
+
+
+    if (
+      !best
     ) {
 
       return res
         .status(200)
         .json({
 
-          success:
-            true,
+          success:true,
+
+          version:
+            RESEARCH_VERSION,
+
+          engineVersion:
+            RESEARCH_VERSION,
 
           symbol,
 
-          available:
-            false,
+          available:false,
 
           memory:
             count,
+
+          resolvedStates:
+            rows.length,
 
           error:
             `Could not create a ${symbol} research candidate.`
@@ -1950,14 +1409,21 @@ export default async function handler(
 
 
     /* =====================================================
-       FINAL HOLDOUT TEST
+       UNTOUCHED HOLDOUT
     ===================================================== */
+
+    /*
+      Only NOW do we run the selected
+      threshold against the holdout.
+
+      Nothing from this test result was
+      used to choose the threshold.
+    */
 
     const testTrades =
       simulate(
-        testRows,
-        selected.threshold,
-        symbol
+        test,
+        best.threshold
       );
 
 
@@ -1968,90 +1434,43 @@ export default async function handler(
 
 
     /* =====================================================
-       ROBUSTNESS
+       GROUP ANALYSIS
     ===================================================== */
 
-    const robustnessCheck =
-      robustness(
-        selected.threshold,
-        trainingCandidates,
-        validationRows,
-        symbol
+    const byRegime =
+      groupedMetrics(
+        testTrades,
+        "regime"
+      );
+
+
+    const bySession =
+      groupedMetrics(
+        testTrades,
+        "session"
       );
 
 
     /* =====================================================
-       EDGE STATUS
-
-       This is descriptive only.
-
-       It prevents a negative holdout from being displayed
-       as though the system discovered a profitable edge.
+       DATE INFORMATION
     ===================================================== */
 
-    const validationPositive =
-      safeNumber(
-        selected
-          .validation
-          .expectancyR,
-        -999
-      ) >
-        0;
+    const fullRange =
+      dateRange(
+        rows
+      );
 
 
-    const testPositive =
-      safeNumber(
-        testMetrics
-          .expectancyR,
-        -999
-      ) >
-        0;
+    const trainingRange =
+      dateRange(
+        training
+      );
 
 
-    const testPFPositive =
-      testMetrics
-        .profitFactor ===
-        null
-        ? testMetrics.totalR >
-          0
-        : safeNumber(
-            testMetrics
-              .profitFactor
-          ) >
-          1;
-
-
-    const sufficientTestSample =
-      testMetrics.trades >=
-      10;
-
-
-    let researchStatus =
-      "NO_CONFIRMED_EDGE";
-
-
-    if (
-      profitableTrainingCandidates.length &&
-      validationPositive &&
-      testPositive &&
-      testPFPositive &&
-      sufficientTestSample &&
-      robustnessCheck.stable
-    ) {
-
-      researchStatus =
-        "POSITIVE_HOLDOUT_RESULT";
-
-    }
-    else if (
-      testPositive &&
-      testPFPositive
-    ) {
-
-      researchStatus =
-        "PROMISING_SMALL_OR_UNSTABLE_SAMPLE";
-
-    }
+    const testRange =
+      dateRange(
+        test
+      );
 
 
     /* =====================================================
@@ -2062,19 +1481,23 @@ export default async function handler(
       .status(200)
       .json({
 
-        success:
-          true,
+        success:true,
+
+        /*
+          Your frontend will display:
+
+          V13.1 · THRESHOLD XX
+        */
+
+        version:
+          RESEARCH_VERSION,
+
+        engineVersion:
+          RESEARCH_VERSION,
 
         symbol,
 
-        available:
-          true,
-
-        model:
-          "MKAYFX WALK-FORWARD RESEARCH V13",
-
-        researchVersion:
-          13,
+        available:true,
 
         memory:
           count,
@@ -2082,174 +1505,78 @@ export default async function handler(
         resolvedStates:
           rows.length,
 
-        method:
-          "60/20/20 chronological train-validation-holdout",
+        methodology:{
 
-        costModel: {
+          split:
+            "chronological",
 
-          stopAtr:
-            STOP_ATR,
+          trainingPercent:
+            70,
+
+          holdoutPercent:
+            30,
+
+          thresholdSelection:
+            "training-only",
+
+          holdoutUsedForSelection:
+            false,
+
+          stopR:
+            RESEARCH_STOP_R,
 
           targetR:
-            TARGET_R,
-
-          estimatedCostAtr:
-            ESTIMATED_COST_ATR,
-
-          estimatedCostR:
-            round(
-              ESTIMATED_COST_R,
-              4
-            )
-
-        },
-
-        filters: {
-
-          regimeAware:
-            true,
-
-          directionAware:
-            symbol ===
-            "BTC/USD",
-
-          btcQuietChopBlocked:
-            symbol ===
-            "BTC/USD",
+            RESEARCH_TARGET_R,
 
           minimumTrainingTrades:
-            MIN_TRAIN_TRADES,
-
-          minimumValidationTrades:
-            MIN_VALIDATION_TRADES
+            MIN_TRAINING_TRADES
 
         },
+
+        method:
+          "70/30 chronological training/untouched holdout",
+
+        dateRange:
+          fullRange,
+
+        trainingRange,
+
+        testRange,
 
         trainRows:
-          trainingRows.length,
-
-        validationRows:
-          validationRows.length,
+          training.length,
 
         testRows:
-          testRows.length,
+          test.length,
 
         selectedThreshold:
-          selected.threshold,
+          best.threshold,
 
-        researchStatus,
-
-
-        /* -------------------------------------------------
-           SELECTED CONFIGURATION
-        ------------------------------------------------- */
-
-        selected: {
-
-          threshold:
-            selected.threshold,
-
-          combinedScore:
-            selected.combinedScore,
-
-          trainingQuality:
-            selected.trainingQuality,
-
-          validationQuality:
-            selected.validationQuality
-
-        },
-
-
-        /* -------------------------------------------------
-           TRAIN
-        ------------------------------------------------- */
+        viableCandidates:
+          selection.viableCandidates,
 
         training:
-          selected.training,
-
-
-        /* -------------------------------------------------
-           VALIDATION
-        ------------------------------------------------- */
-
-        validation:
-          selected.validation,
-
-
-        /* -------------------------------------------------
-           FINAL UNTOUCHED HOLDOUT
-
-           Keep "test" because your existing frontend
-           already reads this field.
-        ------------------------------------------------- */
+          best.metrics,
 
         test:
           testMetrics,
 
+        byRegime,
 
-        /* -------------------------------------------------
-           EXISTING UI COMPATIBILITY
-        ------------------------------------------------- */
+        bySession,
 
-        byRegime:
-          groupedMetrics(
-            testTrades,
-            "regime"
-          ),
+        /*
+          All threshold candidates are
+          TRAINING results.
 
-        bySession:
-          groupedMetrics(
-            testTrades,
-            "session"
-          ),
+          This is useful for debugging
+          why a threshold was selected.
+        */
 
-
-        /* -------------------------------------------------
-           NEW BREAKDOWNS
-        ------------------------------------------------- */
-
-        byDirection:
-          groupedMetrics(
-            testTrades,
-            "direction"
-          ),
-
-
-        /* -------------------------------------------------
-           THRESHOLD RESEARCH
-        ------------------------------------------------- */
-
-        candidates:
-          trainingCandidates,
-
-        validationCandidates,
-
-
-        /* -------------------------------------------------
-           ROBUSTNESS
-        ------------------------------------------------- */
-
-        robustness:
-          robustnessCheck,
-
-
-        /* -------------------------------------------------
-           TEST TRADE SAMPLE
-
-           Useful for debugging without sending thousands
-           of trades to the browser.
-        ------------------------------------------------- */
-
-        testTradeSample:
-          testTrades
-            .slice(
-              -50
-            ),
-
+        candidates,
 
         note:
-          "Research results are historical estimates. Threshold selection uses training and validation data; the final test segment is kept as a chronological holdout and is not used to select the threshold."
+          "Threshold selection uses training data only. Holdout results are reported after selection and are not used to optimize the threshold. Historical results do not guarantee future performance."
 
       });
 
@@ -2259,7 +1586,7 @@ export default async function handler(
   ) {
 
     console.error(
-      `RESEARCH V13 ${symbol}:`,
+      `RESEARCH ${symbol} V${RESEARCH_VERSION}:`,
       error
     );
 
@@ -2268,13 +1595,15 @@ export default async function handler(
       .status(500)
       .json({
 
-        success:
-          false,
+        success:false,
+
+        version:
+          RESEARCH_VERSION,
+
+        engineVersion:
+          RESEARCH_VERSION,
 
         symbol,
-
-        model:
-          "MKAYFX WALK-FORWARD RESEARCH V13",
 
         error:
           error?.message ||
