@@ -4,10 +4,10 @@ import {
   fetchSeries,
   resample,
   detectRegime,
-  simpleTrendPullbackStrategy,
+  multiAgentStrategy,
+  buildFeatureState,
   buildFuturePath
 } from "./core.js";
-
 
 import {
   dbEnabled,
@@ -16,12 +16,7 @@ import {
 } from "./db.js";
 
 
-/* =========================================================
-   MKAYFX V14 STRATEGY MEMORY
-========================================================= */
-
-const VERSION =
-  "14.0";
+const VERSION = "15.0";
 
 
 const SUPPORTED_SYMBOLS =
@@ -42,54 +37,35 @@ const FORWARD_BARS =
   );
 
 
-/* =========================================================
-   SYMBOL
-========================================================= */
-
 function normalizeSymbol(value) {
-
   const raw =
     String(
-      value ||
-      "XAU/USD"
+      value || "XAU/USD"
     )
       .trim()
       .toUpperCase()
-      .replace(
-        /\s+/g,
-        ""
-      );
-
+      .replace(/\s+/g, "");
 
   if (
-    raw ===
-      "XAU/USD" ||
-    raw ===
-      "XAUUSD" ||
-    raw ===
+    [
+      "XAU/USD",
+      "XAUUSD",
       "GOLD"
+    ].includes(raw)
   ) {
-
     return "XAU/USD";
-
   }
-
 
   if (
-    raw ===
-      "BTC/USD" ||
-    raw ===
-      "BTCUSD" ||
-    raw ===
-      "BTC" ||
-    raw ===
+    [
+      "BTC/USD",
+      "BTCUSD",
+      "BTC",
       "BITCOIN"
+    ].includes(raw)
   ) {
-
     return "BTC/USD";
-
   }
-
 
   return null;
 }
@@ -99,10 +75,8 @@ function queryValue(
   req,
   key
 ) {
-
   const value =
     req.query?.[key];
-
 
   return Array.isArray(value)
     ? value[0]
@@ -110,144 +84,83 @@ function queryValue(
 }
 
 
-/* =========================================================
-   AUTH
-========================================================= */
-
 function authorized(
   req,
   backfill
 ) {
-
   const supplied =
-    req.headers
-      .authorization;
+    req.headers.authorization;
 
-
-  if (
-    backfill
-  ) {
-
+  if (backfill) {
     const secret =
-      process.env
-        .ADMIN_SECRET;
-
+      process.env.ADMIN_SECRET;
 
     if (!secret) {
       return false;
     }
 
-
     return supplied ===
       `Bearer ${secret}`;
-
   }
 
-
   const cronSecret =
-    process.env
-      .CRON_SECRET;
-
+    process.env.CRON_SECRET;
 
   if (!cronSecret) {
     return true;
   }
-
 
   return supplied ===
     `Bearer ${cronSecret}`;
 }
 
 
-/* =========================================================
-   TIME SLICE
-========================================================= */
-
-function candlesUntil(
-  candles,
-  timestamp
-) {
-
-  return candles.filter(
-    candle =>
-      Date.parse(
-        candle.t
-      ) <=
-      timestamp
-  );
-}
-
-
-/* =========================================================
-   MAIN
-========================================================= */
-
 export default async function handler(
   req,
   res
 ) {
-
   res.setHeader(
     "Cache-Control",
     "no-store"
   );
-
 
   res.setHeader(
     "Access-Control-Allow-Origin",
     "*"
   );
 
-
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Content-Type, Authorization"
   );
-
 
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET,POST,OPTIONS"
   );
 
-
   if (
-    req.method ===
-    "OPTIONS"
+    req.method === "OPTIONS"
   ) {
-
     return res
       .status(204)
       .end();
-
   }
-
 
   if (
     ![
       "GET",
       "POST"
-    ].includes(
-      req.method
-    )
+    ].includes(req.method)
   ) {
-
     return res
       .status(405)
       .json({
-
-        success:false,
-
-        version:
-          VERSION,
-
+        success: false,
         error:
           "Use GET or POST."
-
       });
-
   }
-
 
   const symbol =
     normalizeSymbol(
@@ -258,72 +171,49 @@ export default async function handler(
       "XAU/USD"
     );
 
-
   if (
     !symbol ||
     !SUPPORTED_SYMBOLS.has(
       symbol
     )
   ) {
-
     return res
       .status(400)
       .json({
-
-        success:false,
-
-        version:
-          VERSION,
+        success: false,
 
         error:
           "Unsupported symbol.",
 
-        supportedSymbols:[
+        supportedSymbols: [
           "XAU/USD",
           "BTC/USD"
         ]
-
       });
-
   }
 
-
-  if (
-    !dbEnabled()
-  ) {
-
+  if (!dbEnabled()) {
     return res
       .status(200)
       .json({
-
-        success:true,
-
-        version:
-          VERSION,
-
+        success: true,
+        version: VERSION,
         symbol,
-
-        memoryEnabled:false,
+        memoryEnabled: false,
 
         error:
           "DATABASE_URL is not set."
-
       });
-
   }
-
 
   const backfill =
     String(
       queryValue(
         req,
         "mode"
-      ) ||
-      ""
-    )
-      .toLowerCase() ===
+      ) || ""
+    ).toLowerCase() ===
     "backfill";
-
 
   if (
     !authorized(
@@ -331,30 +221,20 @@ export default async function handler(
       backfill
     )
   ) {
-
     return res
       .status(401)
       .json({
-
-        success:false,
-
-        version:
-          VERSION,
-
+        success: false,
         symbol,
 
         error:
           backfill
             ? "Unauthorized. Check ADMIN_SECRET."
             : "Unauthorized."
-
       });
-
   }
 
-
   try {
-
     const barsRaw =
       Number(
         queryValue(
@@ -363,43 +243,30 @@ export default async function handler(
         )
       );
 
-
     const requested =
       backfill
         ? Math.round(
             Math.max(
-              1000,
+              900,
               Math.min(
                 4500,
                 Number.isFinite(
                   barsRaw
                 )
                   ? barsRaw
-                  : 3500
+                  : 3000
               )
             )
           )
-        : 2600;
-
-
-    /*
-      Need enough history for:
-      H1 EMA200 = roughly 2400 M5 candles.
-
-      Therefore we fetch up to 5000 M5 candles.
-    */
+        : 900;
 
     const output =
       Math.min(
         5000,
-        Math.max(
-          requested +
+        requested +
           FORWARD_BARS +
-          100,
-          2800
-        )
+          800
       );
-
 
     const raw =
       await fetchSeries(
@@ -408,257 +275,142 @@ export default async function handler(
         output
       );
 
-
-    const m5 =
+    const candles =
       completed(
         raw,
         5
       );
 
-
     if (
-      m5.length <
-      2500
+      candles.length < 850
     ) {
-
       throw new Error(
-        `Need at least 2500 completed ${symbol} M5 candles for V14 memory.`
+        `Not enough completed ${symbol} M5 data.`
       );
-
     }
 
-
-    const m15All =
-      resample(
-        m5,
-        15
-      );
-
-
-    const h1All =
-      resample(
-        m5,
-        60
-      );
-
-
-    const states =
-      [];
-
-
-    /*
-      Earliest index must have enough history
-      to create 200 H1 candles.
-
-      200 H1 candles ≈ 2400 M5 candles.
-    */
-
-    const minimumIndex =
-      2400;
-
-
-    const requestedStart =
+    const start =
       Math.max(
-        minimumIndex,
-        m5.length -
+        800,
+        candles.length -
           requested -
           FORWARD_BARS
       );
 
-
-    const lastResolvable =
-      m5.length -
-      1 -
-      FORWARD_BARS;
-
+    const states = [];
 
     for (
-      let i =
-        requestedStart;
-
-      i <=
-        lastResolvable;
-
+      let i = start;
+      i < candles.length;
       i++
     ) {
+      /*
+        We create the exact historical
+        information that would have been
+        available at candle i.
 
-      const currentTime =
-        Date.parse(
-          m5[i].t
-        );
+        No future candle enters strategy().
+      */
 
-
-      if (
-        !Number.isFinite(
-          currentTime
-        )
-      ) {
-        continue;
-      }
-
-
-      const m5Slice =
-        m5.slice(
+      const history =
+        candles.slice(
           0,
           i + 1
         );
 
+      const m5 =
+        history.slice(-2600);
 
-      const m15Slice =
-        candlesUntil(
-          m15All,
-          currentTime
+      const m15 =
+        resample(
+          m5,
+          15
         );
 
-
-      const h1Slice =
-        candlesUntil(
-          h1All,
-          currentTime
+      const h1 =
+        resample(
+          m5,
+          60
         );
-
 
       if (
-        m15Slice.length <
-          210 ||
-        h1Slice.length <
-          210
+        m5.length < 800 ||
+        m15.length < 210 ||
+        h1.length < 60
       ) {
-
         continue;
-
       }
-
 
       const strategy =
-        simpleTrendPullbackStrategy({
-
-          m5:
-            m5Slice,
-
-          m15:
-            m15Slice,
-
-          h1:
-            h1Slice
-
+        multiAgentStrategy({
+          symbol,
+          m5,
+          m15,
+          h1
         });
 
+      const regime =
+        detectRegime(m5);
 
-      const futurePath =
-        buildFuturePath(
+      const state =
+        buildFeatureState(
           m5,
-          i,
-          FORWARD_BARS
+          strategy,
+          regime
         );
 
-
-      if (
-        !futurePath
-      ) {
+      if (!state) {
         continue;
       }
 
-
-      const regime =
-        detectRegime(
-          m5Slice
-        );
-
+      const futurePath =
+        i <=
+        candles.length -
+          1 -
+          FORWARD_BARS
+          ? buildFuturePath(
+              candles,
+              i,
+              FORWARD_BARS
+            )
+          : null;
 
       states.push({
-
         symbol,
 
         timeframe:
           "5min",
 
         candleTime:
-          m5[i].t,
+          state.candleTime,
 
         session:
-          null,
+          state.session,
 
         regime:
-          regime.type,
+          state.regime,
 
-        /*
-          Keep vector for database compatibility.
+        vector:
+          state.vector,
 
-          V14 does NOT use similarity matching.
-        */
-
-        vector:[
-          strategy.signal ===
-            "BUY"
-            ? 1
-            : strategy.signal ===
-              "SELL"
-              ? -1
-              : 0,
-
-          strategy.score ||
-          0
-
-        ],
-
-        features:{
-
+        features: {
+          ...state.features,
           symbol,
-
           engineVersion:
-            VERSION,
-
-          strategyName:
-            "TREND_PULLBACK_V14",
-
-          strategySignal:
-            strategy.signal,
-
-          strategyDirection:
-            strategy.direction,
-
-          strategyQualified:
-            strategy.qualified,
-
-          strategyScore:
-            strategy.score,
-
-          strategyChecks:
-            strategy.checks,
-
-          buyChecks:
-            strategy.buyChecks,
-
-          sellChecks:
-            strategy.sellChecks,
-
-          indicators:
-            strategy.indicators,
-
-          reasons:
-            strategy.reasons
-
+            VERSION
         },
 
         futurePath
-
       });
-
     }
 
-
-    let processed =
-      0;
-
+    let processed = 0;
 
     for (
       let i = 0;
-      i <
-        states.length;
+      i < states.length;
       i += 150
     ) {
-
       processed +=
         await bulkUpsertStates(
           states.slice(
@@ -666,31 +418,25 @@ export default async function handler(
             i + 150
           )
         );
-
     }
 
-
     const count =
-      await memoryCount(
-        symbol
-      );
-
+      await memoryCount(symbol);
 
     return res
       .status(200)
       .json({
-
-        success:true,
+        success: true,
 
         version:
           VERSION,
 
         engine:
-          "TREND_PULLBACK_V14",
+          "MULTI_AGENT_V15",
 
         symbol,
 
-        memoryEnabled:true,
+        memoryEnabled: true,
 
         mode:
           backfill
@@ -699,33 +445,13 @@ export default async function handler(
 
         requested,
 
-        processed,
+        forwardBars:
+          FORWARD_BARS,
 
-        generatedStates:
+        generated:
           states.length,
 
-        qualifiedSetups:
-          states.filter(
-            state =>
-              state.features
-                ?.strategyQualified
-          ).length,
-
-        buys:
-          states.filter(
-            state =>
-              state.features
-                ?.strategySignal ===
-              "BUY"
-          ).length,
-
-        sells:
-          states.filter(
-            state =>
-              state.features
-                ?.strategySignal ===
-              "SELL"
-          ).length,
+        processed,
 
         total:
           count.total,
@@ -742,23 +468,18 @@ export default async function handler(
           states.at(-1)
             ?.candleTime ||
           null
-
       });
-
   }
-  catch(error) {
-
+  catch (error) {
     console.error(
-      `MEMORY V14 ${symbol}:`,
+      `MEMORY V15 ${symbol}:`,
       error
     );
-
 
     return res
       .status(500)
       .json({
-
-        success:false,
+        success: false,
 
         version:
           VERSION,
@@ -767,9 +488,7 @@ export default async function handler(
 
         error:
           error?.message ||
-          `${symbol} V14 memory update failed.`
-
+          `${symbol} memory update failed.`
       });
-
   }
 }
