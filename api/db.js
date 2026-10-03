@@ -11,22 +11,73 @@ let schemaReady =
   false;
 
 
+/* =========================================================
+   DATABASE CONFIG
+========================================================= */
+
 export function dbEnabled() {
 
   return Boolean(
-    process.env
-      .DATABASE_URL
+    String(
+      process.env
+        .DATABASE_URL ||
+      ""
+    ).trim()
   );
+}
+
+
+function databaseUrl() {
+
+  const value =
+    String(
+      process.env
+        .DATABASE_URL ||
+      ""
+    ).trim();
+
+
+  if (!value) {
+    return null;
+  }
+
+
+  /*
+    This catches common Vercel mistakes such as:
+
+    DATABASE_URL="postgresql://..."
+
+    where the quotation marks were accidentally
+    included in the actual environment value.
+  */
+
+  if (
+    !/^postgres(?:ql)?:\/\//i.test(
+      value
+    )
+  ) {
+
+    throw new Error(
+      "DATABASE_URL is invalid. It must begin with postgres:// or postgresql://. Copy the connection string directly from Neon without surrounding quotes."
+    );
+
+  }
+
+
+  return value;
 }
 
 
 function sql() {
 
-  if (
-    !dbEnabled()
-  ) {
+  const connectionString =
+    databaseUrl();
+
+
+  if (!connectionString) {
     return null;
   }
+
 
   if (
     !sqlClient
@@ -34,11 +85,11 @@ function sql() {
 
     sqlClient =
       neon(
-        process.env
-          .DATABASE_URL
+        connectionString
       );
 
   }
+
 
   return sqlClient;
 }
@@ -56,6 +107,7 @@ export async function ensureSchema() {
   ) {
     return;
   }
+
 
   const db =
     sql();
@@ -102,9 +154,11 @@ export async function ensureSchema() {
 
   await db.query(`
     CREATE INDEX IF NOT EXISTS
-    idx_market_states_resolved
+      idx_market_states_symbol_resolved
 
-    ON market_states(
+    ON market_states
+    (
+      symbol,
       resolved,
       candle_time DESC
     )
@@ -113,10 +167,13 @@ export async function ensureSchema() {
 
   await db.query(`
     CREATE INDEX IF NOT EXISTS
-    idx_market_states_regime
+      idx_market_states_symbol_regime
 
-    ON market_states(
+    ON market_states
+    (
+      symbol,
       regime,
+      resolved,
       candle_time DESC
     )
   `);
@@ -177,12 +234,15 @@ export async function upsertMarketState(
 
   if (
     !dbEnabled() ||
-    !state
+    !state ||
+    !state.symbol
   ) {
     return;
   }
 
+
   await ensureSchema();
+
 
   const db =
     sql();
@@ -222,6 +282,7 @@ export async function upsertMarketState(
       )
 
       DO UPDATE SET
+
         session =
           EXCLUDED.session,
 
@@ -236,8 +297,11 @@ export async function upsertMarketState(
     `,
     [
       state.symbol,
+
       state.candleTime,
+
       state.session,
+
       state.regime,
 
       JSON.stringify(
@@ -262,53 +326,73 @@ export async function bulkUpsertStates(
 
   if (
     !dbEnabled() ||
-    !Array.isArray(states) ||
+    !Array.isArray(
+      states
+    ) ||
     !states.length
   ) {
     return 0;
   }
 
+
   await ensureSchema();
+
 
   const db =
     sql();
 
 
   const payload =
-    states.map(
-      x => ({
-        symbol:
-          x.symbol,
+    states
+      .filter(
+        x =>
+          x &&
+          x.symbol &&
+          x.candleTime
+      )
+      .map(
+        x => ({
 
-        timeframe:
-          x.timeframe ||
-          "5min",
+          symbol:
+            x.symbol,
 
-        candle_time:
-          x.candleTime,
+          timeframe:
+            x.timeframe ||
+            "5min",
 
-        session:
-          x.session,
+          candle_time:
+            x.candleTime,
 
-        regime:
-          x.regime,
+          session:
+            x.session,
 
-        vector:
-          x.vector,
+          regime:
+            x.regime,
 
-        features:
-          x.features,
+          vector:
+            x.vector,
 
-        future_path:
-          x.futurePath ||
-          null,
+          features:
+            x.features,
 
-        resolved:
-          Boolean(
-            x.futurePath
-          )
-      })
-    );
+          future_path:
+            x.futurePath ??
+            null,
+
+          resolved:
+            Boolean(
+              x.futurePath
+            )
+
+        })
+      );
+
+
+  if (
+    !payload.length
+  ) {
+    return 0;
+  }
 
 
   await db.query(
@@ -338,6 +422,7 @@ export async function bulkUpsertStates(
       )
 
       SELECT
+
         j->>'symbol',
 
         COALESCE(
@@ -364,15 +449,22 @@ export async function bulkUpsertStates(
         ),
 
         CASE
+
           WHEN
             j->'future_path'
             IS NULL
+
             OR
+
             j->'future_path' =
-              'null'::jsonb
-          THEN NULL
+            'null'::jsonb
+
+          THEN
+            NULL
+
           ELSE
             j->'future_path'
+
         END,
 
         COALESCE(
@@ -430,9 +522,13 @@ export async function bulkUpsertStates(
 
 /* =========================================================
    HISTORICAL MEMORY
+
+   IMPORTANT:
+   SYMBOL FILTERING IS NOW BUILT INTO DATABASE QUERY.
 ========================================================= */
 
 export async function loadResolvedStates({
+  symbol = null,
   regime = null,
   limit = 1800
 } = {}) {
@@ -443,18 +539,44 @@ export async function loadResolvedStates({
     return [];
   }
 
+
   await ensureSchema();
+
 
   const db =
     sql();
 
 
-  if (regime) {
+  const safeLimit =
+    Math.max(
+      1,
+      Math.min(
+        10000,
+        Math.round(
+          Number(
+            limit
+          ) ||
+          1800
+        )
+      )
+    );
 
-    const same =
+
+  /*
+    SYMBOL + REGIME
+  */
+
+  if (
+    symbol &&
+    regime
+  ) {
+
+    const sameRegime =
       await db.query(
         `
           SELECT
+            symbol,
+            timeframe,
             candle_time,
             session,
             regime,
@@ -466,37 +588,177 @@ export async function loadResolvedStates({
             market_states
 
           WHERE
-            resolved =
-              TRUE
+            resolved = TRUE
 
-            AND regime =
-              $1
+            AND symbol = $1
+
+            AND regime = $2
 
           ORDER BY
             candle_time DESC
 
-          LIMIT $2
+          LIMIT $3
         `,
         [
+          symbol,
           regime,
-          limit
+          safeLimit
         ]
       );
 
 
+    /*
+      Enough matching-regime memory:
+      return it directly.
+    */
+
     if (
-      same.length >=
-      150
+      sameRegime.length >=
+      Math.min(
+        150,
+        safeLimit
+      )
     ) {
-      return same;
+
+      return sameRegime;
+
     }
+
+
+    /*
+      Not enough same-regime history.
+      Expand search, BUT remain on the same symbol.
+    */
+
+    return await db.query(
+      `
+        SELECT
+          symbol,
+          timeframe,
+          candle_time,
+          session,
+          regime,
+          vector,
+          features,
+          future_path
+
+        FROM
+          market_states
+
+        WHERE
+          resolved = TRUE
+
+          AND symbol = $1
+
+        ORDER BY
+          candle_time DESC
+
+        LIMIT $2
+      `,
+      [
+        symbol,
+        safeLimit
+      ]
+    );
 
   }
 
 
+  /*
+    SYMBOL ONLY
+  */
+
+  if (
+    symbol
+  ) {
+
+    return await db.query(
+      `
+        SELECT
+          symbol,
+          timeframe,
+          candle_time,
+          session,
+          regime,
+          vector,
+          features,
+          future_path
+
+        FROM
+          market_states
+
+        WHERE
+          resolved = TRUE
+
+          AND symbol = $1
+
+        ORDER BY
+          candle_time DESC
+
+        LIMIT $2
+      `,
+      [
+        symbol,
+        safeLimit
+      ]
+    );
+
+  }
+
+
+  /*
+    REGIME ONLY
+    Backward compatibility.
+  */
+
+  if (
+    regime
+  ) {
+
+    return await db.query(
+      `
+        SELECT
+          symbol,
+          timeframe,
+          candle_time,
+          session,
+          regime,
+          vector,
+          features,
+          future_path
+
+        FROM
+          market_states
+
+        WHERE
+          resolved = TRUE
+
+          AND regime = $1
+
+        ORDER BY
+          candle_time DESC
+
+        LIMIT $2
+      `,
+      [
+        regime,
+        safeLimit
+      ]
+    );
+
+  }
+
+
+  /*
+    ALL MARKETS.
+    Used only when no symbol is supplied.
+  */
+
   return await db.query(
     `
       SELECT
+        symbol,
+        timeframe,
         candle_time,
         session,
         regime,
@@ -508,8 +770,7 @@ export async function loadResolvedStates({
         market_states
 
       WHERE
-        resolved =
-          TRUE
+        resolved = TRUE
 
       ORDER BY
         candle_time DESC
@@ -517,7 +778,7 @@ export async function loadResolvedStates({
       LIMIT $1
     `,
     [
-      limit
+      safeLimit
     ]
   );
 }
@@ -538,7 +799,9 @@ export async function saveSignalRecord(
     return;
   }
 
+
   await ensureSchema();
+
 
   const db =
     sql();
@@ -591,10 +854,15 @@ export async function saveSignalRecord(
     `,
     [
       signal.signalId,
+
       signal.createdAt,
+
       signal.symbol,
+
       signal.signal,
+
       signal.candidateDirection,
+
       signal.edgeScore,
 
       signal.marketRegime
@@ -602,11 +870,15 @@ export async function saveSignalRecord(
       null,
 
       signal.session,
+
       signal.setupType,
 
       signal.entry,
+
       signal.stopLoss,
+
       signal.takeProfit,
+
       signal.takeProfit2,
 
       JSON.stringify(
@@ -619,52 +891,92 @@ export async function saveSignalRecord(
 
 /* =========================================================
    MEMORY COUNT
+
+   Can return:
+   - counts for one market
+   - counts across all markets
 ========================================================= */
 
-export async function memoryCount() {
+export async function memoryCount(
+  symbol = null
+) {
 
   if (
     !dbEnabled()
   ) {
 
     return {
-      total:
-        0,
-
-      resolved:
-        0
+      total:0,
+      resolved:0
     };
 
   }
 
+
   await ensureSchema();
+
 
   const db =
     sql();
 
 
-  const rows =
-    await db.query(`
-      SELECT
-        COUNT(*)::int
-          AS total,
+  let rows;
 
-        COUNT(*)
-        FILTER(
-          WHERE resolved
-        )::int
-          AS resolved
 
-      FROM
-        market_states
-    `);
+  if (
+    symbol
+  ) {
+
+    rows =
+      await db.query(
+        `
+          SELECT
+
+            COUNT(*)::int
+              AS total,
+
+            COUNT(*)
+            FILTER(
+              WHERE resolved
+            )::int
+              AS resolved
+
+          FROM
+            market_states
+
+          WHERE
+            symbol = $1
+        `,
+        [
+          symbol
+        ]
+      );
+
+  }
+  else{
+
+    rows =
+      await db.query(`
+        SELECT
+
+          COUNT(*)::int
+            AS total,
+
+          COUNT(*)
+          FILTER(
+            WHERE resolved
+          )::int
+            AS resolved
+
+        FROM
+          market_states
+      `);
+
+  }
 
 
   return rows[0] || {
-    total:
-      0,
-
-    resolved:
-      0
+    total:0,
+    resolved:0
   };
 }
