@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
@@ -11,10 +10,7 @@
   content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"
 >
 
-<meta
-  name="theme-color"
-  content="#040608"
->
+<meta name="theme-color" content="#040608">
 
 <meta
   name="apple-mobile-web-app-capable"
@@ -26,45 +22,35 @@
   content="black-translucent"
 >
 
-<title>MKAYFX GOLD V11</title>
-
+<title>MKAYFX TERMINAL V12</title>
 
 <style>
 
 :root{
-
   --bg:#040608;
   --card:#0a1017;
   --border:rgba(255,255,255,.08);
-
   --text:#f5f7fa;
   --muted:#7b899b;
-
   --green:#35e6a1;
   --red:#ff6077;
   --gold:#f5ca61;
+  --btc:#f7931a;
   --blue:#7891ff;
   --purple:#b28cff;
-
 }
-
 
 *{
   box-sizing:border-box;
 }
 
-
 html{
   background:var(--bg);
 }
 
-
 body{
-
   margin:0;
-
   min-height:100vh;
-
   color:var(--text);
 
   font-family:
@@ -74,88 +60,61 @@ body{
     sans-serif;
 
   background:
-
     radial-gradient(
       circle at 18% -5%,
       rgba(95,108,255,.20),
       transparent 28%
     ),
-
     radial-gradient(
       circle at 100% 25%,
       rgba(53,230,161,.05),
       transparent 25%
     ),
-
     var(--bg);
 
   padding:
-    max(
-      12px,
-      env(safe-area-inset-top)
-    )
+    max(12px,env(safe-area-inset-top))
     10px
-    calc(
-      96px +
-      env(safe-area-inset-bottom)
-    );
-
+    calc(96px + env(safe-area-inset-bottom));
 }
-
 
 .app{
-
   max-width:900px;
-
   margin:auto;
-
 }
-
 
 .hidden{
   display:none!important;
 }
 
 
-/* HEADER */
+/* =========================================================
+   HEADER
+========================================================= */
 
 header{
-
   display:flex;
-
   align-items:center;
-
-  justify-content:
-    space-between;
-
+  justify-content:space-between;
   gap:10px;
-
   margin-bottom:10px;
-
 }
-
 
 .brand{
-
   display:flex;
-
   align-items:center;
-
   gap:10px;
-
 }
 
-
 .logo{
-
   width:46px;
   height:46px;
-
   display:grid;
-
   place-items:center;
-
   border-radius:15px;
+  color:#171204;
+  font-size:14px;
+  font-weight:1000;
 
   background:
     linear-gradient(
@@ -164,104 +123,174 @@ header{
       #f5ca61,
       #8e6519
     );
-
-  color:#171204;
-
-  font-size:14px;
-
-  font-weight:1000;
-
 }
 
-
-h1{
-
-  margin:0;
-
-  font-size:14px;
-
-}
-
-
-.subtitle{
-
-  margin-top:3px;
-
-  color:var(--muted);
-
-  font-size:7px;
-
-  letter-spacing:.7px;
-
-}
-
-
-.status{
-
-  display:flex;
-
-  align-items:center;
-
-  gap:6px;
-
-  padding:
-    8px 10px;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:999px;
+.logo.btc{
+  color:#fff;
 
   background:
-    rgba(255,255,255,.025);
-
-  font-size:7px;
-
-  font-weight:1000;
-
+    linear-gradient(
+      145deg,
+      #ffb84e,
+      #f7931a,
+      #9b4e00
+    );
 }
 
+h1{
+  margin:0;
+  font-size:14px;
+}
+
+.subtitle{
+  margin-top:3px;
+  color:var(--muted);
+  font-size:7px;
+  letter-spacing:.7px;
+}
+
+.status{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 10px;
+  border:1px solid var(--border);
+  border-radius:999px;
+  background:rgba(255,255,255,.025);
+  font-size:7px;
+  font-weight:1000;
+}
 
 .dot{
-
   width:6px;
   height:6px;
-
   border-radius:50%;
-
   background:currentColor;
-
 }
-
 
 .status-active{
   color:var(--green);
 }
 
-
 .status-wait{
   color:var(--gold);
 }
-
 
 .status-error{
   color:var(--red);
 }
 
 
-/* GENERAL */
+/* =========================================================
+   MARKET SELECTOR
+========================================================= */
+
+.market-selector{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:10px;
+}
+
+.market-button{
+  min-height:58px;
+  margin:0;
+  padding:9px 11px;
+
+  display:flex;
+  align-items:center;
+  gap:9px;
+
+  text-align:left;
+
+  border:1px solid var(--border);
+  border-radius:14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.025),
+      rgba(255,255,255,.012)
+    );
+
+  color:var(--muted);
+}
+
+.market-button .market-icon{
+  width:34px;
+  height:34px;
+  flex:0 0 auto;
+
+  display:grid;
+  place-items:center;
+
+  border-radius:10px;
+
+  font-size:12px;
+  font-weight:1000;
+
+  background:rgba(255,255,255,.055);
+}
+
+.market-button strong{
+  display:block;
+  font-size:8px;
+}
+
+.market-button small{
+  display:block;
+  margin-top:2px;
+  font-size:6px;
+  color:var(--muted);
+}
+
+.market-button.selected{
+  color:white;
+
+  border-color:
+    rgba(120,145,255,.35);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(120,145,255,.16),
+      rgba(120,145,255,.05)
+    );
+}
+
+.market-button.gold.selected .market-icon{
+  color:#161204;
+
+  background:
+    linear-gradient(
+      145deg,
+      #fff1aa,
+      #f5ca61,
+      #a77516
+    );
+}
+
+.market-button.btc.selected .market-icon{
+  color:white;
+
+  background:
+    linear-gradient(
+      145deg,
+      #ffb84e,
+      #f7931a,
+      #9b4e00
+    );
+}
+
+
+/* =========================================================
+   GENERAL
+========================================================= */
 
 .card{
-
   margin-bottom:10px;
-
   padding:14px;
-
-  border:
-    1px solid
-    var(--border);
-
+  border:1px solid var(--border);
   border-radius:18px;
 
   background:
@@ -272,77 +301,42 @@ h1{
     );
 
   overflow:hidden;
-
 }
-
 
 .view{
   display:none;
 }
 
-
 .view.active{
   display:block;
 }
 
-
 .grid{
-
   display:grid;
-
-  grid-template-columns:
-    repeat(
-      2,
-      minmax(
-        0,
-        1fr
-      )
-    );
-
+  grid-template-columns:repeat(2,minmax(0,1fr));
   gap:10px;
-
 }
-
 
 .section-title{
-
   display:flex;
-
   align-items:center;
-
-  justify-content:
-    space-between;
-
+  justify-content:space-between;
   gap:8px;
-
   margin-bottom:11px;
-
   color:var(--muted);
-
   font-size:7px;
-
   font-weight:1000;
-
   letter-spacing:1px;
-
   text-transform:uppercase;
-
 }
-
 
 .section-title strong{
-
   color:var(--text);
-
 }
 
-
 .error{
-
   display:none;
-
   margin-bottom:10px;
-
   padding:10px;
 
   border:
@@ -355,38 +349,27 @@ h1{
     rgba(255,96,119,.06);
 
   color:#ffb6c1;
-
   font-size:8px;
-
 }
 
 
-/* HERO */
+/* =========================================================
+   HERO
+========================================================= */
 
 .hero{
-
   padding-top:18px;
-
   text-align:center;
-
 }
-
 
 .hero-label{
-
   color:var(--muted);
-
   font-size:6px;
-
   font-weight:900;
-
   letter-spacing:1.2px;
-
 }
 
-
 .signal{
-
   margin-top:5px;
 
   font-size:
@@ -397,56 +380,38 @@ h1{
     );
 
   font-weight:1000;
-
   line-height:1;
-
   letter-spacing:-2px;
-
 }
-
 
 .signal.BUY{
   color:var(--green);
 }
 
-
 .signal.SELL{
   color:var(--red);
 }
-
 
 .signal.WAIT,
 .signal.WATCH{
   color:var(--gold);
 }
 
-
 .signal.QUALIFIED{
   color:var(--blue);
 }
 
-
 .subsignal{
-
   min-height:18px;
-
   margin-top:6px;
-
   color:var(--muted);
-
   font-size:8px;
-
 }
 
-
 .badge{
-
   display:inline-flex;
-
   margin-top:7px;
-
-  padding:
-    6px 10px;
+  padding:6px 10px;
 
   border:
     1px solid
@@ -458,71 +423,44 @@ h1{
     rgba(120,145,255,.07);
 
   color:var(--blue);
-
   font-size:7px;
-
   font-weight:1000;
-
 }
-
 
 .price{
-
   margin-top:14px;
-
   font-size:35px;
-
   font-weight:1000;
-
 }
-
 
 .price-label{
-
   color:var(--muted);
-
   font-size:6px;
-
 }
-
 
 .state{
-
   max-width:580px;
-
-  margin:
-    7px auto 0;
-
+  margin:7px auto 0;
   color:var(--muted);
-
   font-size:8px;
-
   line-height:1.5;
-
 }
 
 
-/* GAUGE */
+/* =========================================================
+   GAUGE
+========================================================= */
 
 .gauge-row{
-
   display:flex;
-
   justify-content:center;
-
   align-items:center;
-
   gap:15px;
-
   flex-wrap:wrap;
-
   margin-top:14px;
-
 }
 
-
 .gauge{
-
   --score:0;
 
   width:105px;
@@ -531,7 +469,6 @@ h1{
   position:relative;
 
   display:grid;
-
   place-items:center;
 
   border-radius:50%;
@@ -539,118 +476,65 @@ h1{
   background:
     conic-gradient(
       var(--blue)
-      calc(
-        var(--score) *
-        1%
-      ),
+      calc(var(--score) * 1%),
       rgba(255,255,255,.06)
       0
     );
-
 }
-
 
 .gauge:after{
-
   content:"";
-
   position:absolute;
-
   inset:8px;
-
   border-radius:50%;
-
   background:#0a0f16;
-
 }
-
 
 .gauge-inner{
-
   position:relative;
-
   z-index:2;
-
 }
-
 
 .gauge strong{
-
   display:block;
-
   font-size:25px;
-
 }
-
 
 .gauge small{
-
   display:block;
-
   color:var(--muted);
-
   font-size:5px;
-
 }
-
 
 .quality{
-
   min-width:145px;
-
   padding:12px;
-
   text-align:left;
-
-  border:
-    1px solid
-    var(--border);
-
+  border:1px solid var(--border);
   border-radius:12px;
-
 }
-
 
 .quality small{
-
   color:var(--muted);
-
   font-size:6px;
-
 }
-
 
 .quality strong{
-
   display:block;
-
   margin-top:5px;
-
   font-size:18px;
-
 }
-
 
 .quality-track{
-
   height:6px;
-
   margin-top:7px;
-
   border-radius:999px;
-
-  background:
-    rgba(255,255,255,.06);
-
+  background:rgba(255,255,255,.06);
   overflow:hidden;
-
 }
 
-
 .quality-track span{
-
   display:block;
-
   width:0;
   height:100%;
 
@@ -660,123 +544,76 @@ h1{
       var(--gold),
       var(--green)
     );
-
 }
 
 
-/* LEVELS */
+/* =========================================================
+   LEVELS
+========================================================= */
 
 .levels{
-
   display:grid;
-
-  grid-template-columns:
-    repeat(
-      4,
-      1fr
-    );
-
+  grid-template-columns:repeat(4,1fr);
   gap:6px;
-
   margin-top:14px;
-
 }
-
 
 .level{
-
-  padding:
-    10px 4px;
-
+  padding:10px 4px;
   text-align:center;
-
-  border:
-    1px solid
-    var(--border);
-
+  border:1px solid var(--border);
   border-radius:10px;
-
 }
-
 
 .level small{
-
   display:block;
-
   margin-bottom:5px;
-
   color:var(--muted);
-
   font-size:5px;
-
 }
-
 
 .level strong{
-
   font-size:12px;
-
 }
-
 
 .entry strong{
   color:var(--blue);
 }
 
-
 .sl strong{
   color:var(--red);
 }
-
 
 .tp strong{
   color:var(--green);
 }
 
 
-/* PROGRESS */
+/* =========================================================
+   PROGRESS
+========================================================= */
 
 .progress-wrap{
-
   margin-top:14px;
-
 }
-
 
 .progress-info{
-
   display:flex;
-
-  justify-content:
-    space-between;
-
+  justify-content:space-between;
   margin-bottom:6px;
-
   color:var(--muted);
-
   font-size:6px;
-
 }
-
 
 .progress{
-
   height:8px;
-
   overflow:hidden;
-
   border-radius:999px;
-
-  background:
-    rgba(255,255,255,.055);
-
+  background:rgba(255,255,255,.055);
 }
 
-
 .progress span{
-
   display:block;
-
   width:50%;
   height:100%;
 
@@ -786,107 +623,74 @@ h1{
       var(--blue),
       var(--green)
     );
-
 }
 
 
-/* KV */
+/* =========================================================
+   KV
+========================================================= */
 
 .kv{
-
   display:grid;
-
-  grid-template-columns:
-    1fr
-    auto;
-
+  grid-template-columns:1fr auto;
   gap:8px;
-
   align-items:center;
 
-  padding:
-    8px 0;
+  padding:8px 0;
 
   border-bottom:
     1px solid
     rgba(255,255,255,.045);
 
   font-size:8px;
-
 }
-
 
 .kv:last-child{
   border-bottom:0;
 }
-
 
 .kv span{
   color:var(--muted);
 }
 
 
-/* TFS */
+/* =========================================================
+   TFS
+========================================================= */
 
 .tfs{
-
   display:grid;
-
-  grid-template-columns:
-    repeat(
-      4,
-      1fr
-    );
-
+  grid-template-columns:repeat(4,1fr);
   gap:6px;
-
 }
-
 
 .tf{
-
   padding:10px 3px;
-
   text-align:center;
-
-  border:
-    1px solid
-    var(--border);
-
+  border:1px solid var(--border);
   border-radius:10px;
-
 }
-
 
 .tf small{
-
   display:block;
-
   margin-bottom:5px;
-
   color:var(--muted);
-
   font-size:5px;
-
 }
-
 
 .tf strong{
   font-size:7px;
 }
-
 
 .BULLISH,
 .BUY{
   color:var(--green);
 }
 
-
 .BEARISH,
 .SELL{
   color:var(--red);
 }
-
 
 .NEUTRAL,
 .MIXED,
@@ -896,452 +700,257 @@ h1{
 }
 
 
-/* CHIPS */
+/* =========================================================
+   CHIPS
+========================================================= */
 
 .chips{
-
   display:flex;
-
   flex-wrap:wrap;
-
   gap:6px;
-
 }
-
 
 .chip{
-
-  padding:
-    7px 9px;
-
-  border:
-    1px solid
-    var(--border);
-
+  padding:7px 9px;
+  border:1px solid var(--border);
   border-radius:999px;
-
   color:#c7d0dc;
-
   font-size:6px;
-
 }
-
-
-/* REASON */
 
 .reason{
-
   display:flex;
-
   gap:8px;
-
   margin-bottom:6px;
-
   padding:9px;
-
   border-radius:9px;
-
-  background:
-    rgba(255,255,255,.025);
-
+  background:rgba(255,255,255,.025);
   color:#c9d2dc;
-
   font-size:7px;
-
   line-height:1.5;
-
 }
 
 
-/* STATS */
+/* =========================================================
+   STATS
+========================================================= */
 
 .stats{
-
   display:grid;
-
-  grid-template-columns:
-    repeat(
-      2,
-      1fr
-    );
-
+  grid-template-columns:repeat(2,1fr);
   gap:7px;
-
 }
-
 
 .stat{
-
   padding:11px;
-
-  border:
-    1px solid
-    var(--border);
-
+  border:1px solid var(--border);
   border-radius:11px;
-
 }
-
 
 .stat small{
-
   display:block;
-
   color:var(--muted);
-
   font-size:5px;
-
 }
-
 
 .stat strong{
-
   display:block;
-
   margin-top:5px;
-
   font-size:15px;
-
 }
 
 
-/* MODEL BARS */
+/* =========================================================
+   MODEL
+========================================================= */
 
 .model{
-
   margin-bottom:13px;
-
 }
-
 
 .model-head{
-
   display:flex;
-
-  justify-content:
-    space-between;
-
+  justify-content:space-between;
   margin-bottom:6px;
-
   font-size:7px;
-
 }
-
 
 .track{
-
   position:relative;
-
   height:7px;
-
   overflow:hidden;
-
   border-radius:999px;
-
-  background:
-    rgba(255,255,255,.05);
-
+  background:rgba(255,255,255,.05);
 }
-
 
 .track:after{
-
   content:"";
-
   position:absolute;
-
   left:50%;
-
   top:0;
-
   width:1px;
   height:100%;
-
-  background:
-    rgba(255,255,255,.15);
-
+  background:rgba(255,255,255,.15);
 }
-
 
 .fill{
-
   position:absolute;
-
   top:0;
-
   height:100%;
-
 }
-
 
 .fill.bull{
-
   left:50%;
-
   background:var(--green);
-
 }
-
 
 .fill.bear{
-
   right:50%;
-
   background:var(--red);
-
 }
 
 
-/* GATES */
+/* =========================================================
+   GATES
+========================================================= */
 
 .gate{
-
   display:grid;
-
-  grid-template-columns:
-    21px
-    1fr
-    auto;
-
+  grid-template-columns:21px 1fr auto;
   gap:8px;
-
   align-items:center;
-
   margin-bottom:7px;
-
   padding:9px;
-
-  border:
-    1px solid
-    var(--border);
-
+  border:1px solid var(--border);
   border-radius:10px;
-
   font-size:7px;
-
 }
-
 
 .gate-icon{
-
   width:20px;
   height:20px;
-
   display:grid;
-
   place-items:center;
-
   border-radius:50%;
-
 }
-
 
 .pass .gate-icon{
-
   color:var(--green);
-
-  background:
-    rgba(53,230,161,.08);
-
+  background:rgba(53,230,161,.08);
 }
-
 
 .fail .gate-icon{
-
   color:var(--red);
-
-  background:
-    rgba(255,96,119,.08);
-
+  background:rgba(255,96,119,.08);
 }
 
 
-/* MARKET */
+/* =========================================================
+   CROSS MARKET
+========================================================= */
 
 .market{
-
   display:grid;
-
-  grid-template-columns:
-    70px
-    1fr
-    auto;
-
+  grid-template-columns:70px 1fr auto;
   gap:8px;
-
   align-items:center;
-
   margin-bottom:7px;
-
   padding:9px;
-
-  border:
-    1px solid
-    var(--border);
-
+  border:1px solid var(--border);
   border-radius:10px;
-
   font-size:7px;
-
 }
-
 
 .market-track{
-
   height:6px;
-
   overflow:hidden;
-
   border-radius:999px;
-
-  background:
-    rgba(255,255,255,.05);
-
+  background:rgba(255,255,255,.05);
 }
-
 
 .market-track span{
-
   display:block;
-
   height:100%;
-
   background:var(--blue);
-
 }
 
 
-/* CHART */
+/* =========================================================
+   CHART
+========================================================= */
 
 .chart-wrap{
-
   width:100%;
-
   min-height:360px;
-
   overflow:hidden;
-
-  border:
-    1px solid
-    var(--border);
-
+  border:1px solid var(--border);
   border-radius:12px;
-
   background:#060a0f;
-
 }
-
 
 canvas{
-
   display:block;
-
   width:100%;
   height:360px;
-
 }
 
 
-/* HISTORY */
+/* =========================================================
+   HISTORY
+========================================================= */
 
 .history-row{
-
   display:grid;
-
-  grid-template-columns:
-    46px
-    50px
-    1fr
-    auto;
-
+  grid-template-columns:46px 50px 1fr auto;
   gap:7px;
-
   align-items:center;
-
-  padding:
-    9px 0;
+  padding:9px 0;
 
   border-bottom:
     1px solid
     rgba(255,255,255,.04);
 
   font-size:7px;
-
 }
 
 
-/* FORMS */
+/* =========================================================
+   FORMS
+========================================================= */
 
 .controls{
-
   display:grid;
-
-  grid-template-columns:
-    repeat(
-      2,
-      1fr
-    );
-
+  grid-template-columns:repeat(2,1fr);
   gap:9px;
-
 }
-
 
 label{
-
   display:block;
-
   margin-bottom:5px;
-
   color:var(--muted);
-
   font-size:6px;
-
 }
-
 
 input,
 select{
-
   width:100%;
-
   min-height:42px;
-
-  padding:
-    0 10px;
-
+  padding:0 10px;
   color:white;
-
   font-size:14px;
-
   outline:none;
-
-  border:
-    1px solid
-    var(--border);
-
+  border:1px solid var(--border);
   border-radius:10px;
-
   background:#070b10;
-
 }
 
-
 button{
-
   width:100%;
-
   min-height:44px;
-
   margin-top:8px;
-
-  padding:
-    11px;
-
+  padding:11px;
   border:0;
-
   border-radius:11px;
-
   color:white;
 
   background:
@@ -1352,40 +961,21 @@ button{
     );
 
   font-size:8px;
-
   font-weight:1000;
-
 }
-
 
 button.secondary{
-
-  background:
-    rgba(255,255,255,.035);
-
-  border:
-    1px solid
-    var(--border);
-
+  background:rgba(255,255,255,.035);
+  border:1px solid var(--border);
 }
-
 
 button.danger{
-
   color:#ffadb9;
-
-  background:
-    rgba(255,96,119,.06);
-
-  border:
-    1px solid
-    rgba(255,96,119,.14);
-
+  background:rgba(255,96,119,.06);
+  border:1px solid rgba(255,96,119,.14);
 }
 
-
 button.enter{
-
   background:
     linear-gradient(
       135deg,
@@ -1394,29 +984,21 @@ button.enter{
     );
 
   font-size:10px;
-
 }
-
 
 .button-row{
-
   display:grid;
-
-  grid-template-columns:
-    1fr
-    1fr;
-
+  grid-template-columns:1fr 1fr;
   gap:7px;
-
 }
 
 
-/* NAV */
+/* =========================================================
+   NAV
+========================================================= */
 
 .bottom-nav{
-
   position:fixed;
-
   z-index:50;
 
   left:10px;
@@ -1429,17 +1011,10 @@ button.enter{
     );
 
   max-width:880px;
-
   margin:auto;
 
   display:grid;
-
-  grid-template-columns:
-    repeat(
-      5,
-      1fr
-    );
-
+  grid-template-columns:repeat(5,1fr);
   gap:4px;
 
   padding:6px;
@@ -1453,50 +1028,28 @@ button.enter{
   background:
     rgba(7,11,16,.95);
 
-  backdrop-filter:
-    blur(22px);
-
+  backdrop-filter:blur(22px);
 }
-
 
 .nav{
-
   min-height:45px;
-
   margin:0;
-
   padding:5px;
-
   background:transparent;
-
   color:var(--muted);
-
 }
-
 
 .nav.selected{
-
   color:white;
-
-  background:
-    rgba(120,145,255,.12);
-
+  background:rgba(120,145,255,.12);
 }
-
 
 .meta{
-
   display:flex;
-
-  justify-content:
-    space-between;
-
+  justify-content:space-between;
   color:var(--muted);
-
   font-size:6px;
-
 }
-
 
 @media(max-width:600px){
 
@@ -1505,11 +1058,7 @@ button.enter{
   }
 
   .levels{
-    grid-template-columns:
-      repeat(
-        2,
-        1fr
-      );
+    grid-template-columns:repeat(2,1fr);
   }
 
   .controls{
@@ -1522,35 +1071,34 @@ button.enter{
 
 </head>
 
-
 <body>
 
-
 <main class="app">
-
 
 <header>
 
   <div class="brand">
 
-    <div class="logo">
+    <div
+      id="logo"
+      class="logo"
+    >
       Au
     </div>
 
     <div>
 
-      <h1>
+      <h1 id="brandTitle">
         MKAYFX GOLD
       </h1>
 
       <div class="subtitle">
-        QUANT EDGE TERMINAL V11
+        MULTI-ASSET QUANT EDGE TERMINAL V12
       </div>
 
     </div>
 
   </div>
-
 
   <div
     id="status"
@@ -1568,6 +1116,64 @@ button.enter{
 </header>
 
 
+<!-- =======================================================
+     GOLD / BTC MARKET SELECTOR
+======================================================= -->
+
+<section class="market-selector">
+
+  <button
+    id="goldMarket"
+    class="market-button gold selected"
+    type="button"
+  >
+
+    <span class="market-icon">
+      Au
+    </span>
+
+    <span>
+
+      <strong>
+        GOLD
+      </strong>
+
+      <small>
+        XAU/USD
+      </small>
+
+    </span>
+
+  </button>
+
+
+  <button
+    id="btcMarket"
+    class="market-button btc"
+    type="button"
+  >
+
+    <span class="market-icon">
+      ₿
+    </span>
+
+    <span>
+
+      <strong>
+        BITCOIN
+      </strong>
+
+      <small>
+        BTC/USD
+      </small>
+
+    </span>
+
+  </button>
+
+</section>
+
+
 <div
   id="error"
   class="error"
@@ -1575,20 +1181,23 @@ button.enter{
 </div>
 
 
-<!-- DASHBOARD -->
+<!-- =======================================================
+     DASHBOARD
+======================================================= -->
 
 <div
   id="dashboard"
   class="view active"
 >
 
-
 <section class="card hero">
 
-  <div class="hero-label">
+  <div
+    id="heroLabel"
+    class="hero-label"
+  >
     XAU/USD DECISION ENGINE
   </div>
-
 
   <div
     id="signal"
@@ -1597,13 +1206,11 @@ button.enter{
     ...
   </div>
 
-
   <div
     id="subsignal"
     class="subsignal"
   >
   </div>
-
 
   <div
     id="badge"
@@ -1612,7 +1219,6 @@ button.enter{
     ANALYZING
   </div>
 
-
   <div
     id="price"
     class="price"
@@ -1620,11 +1226,12 @@ button.enter{
     —
   </div>
 
-
-  <div class="price-label">
+  <div
+    id="priceLabel"
+    class="price-label"
+  >
     XAU/USD
   </div>
-
 
   <div
     id="state"
@@ -1632,7 +1239,6 @@ button.enter{
   >
     Building market state...
   </div>
-
 
   <div class="gauge-row">
 
@@ -1712,17 +1318,13 @@ button.enter{
 
     <div class="progress-info">
 
-      <span>
-        SL
-      </span>
+      <span>SL</span>
 
       <span id="progressLabel">
         —
       </span>
 
-      <span>
-        TP
-      </span>
+      <span>TP</span>
 
     </div>
 
@@ -1756,6 +1358,16 @@ button.enter{
 
   <div class="section-title">
     MARKET
+  </div>
+
+  <div class="kv">
+    <span>Instrument</span>
+    <strong id="instrumentDisplay">XAU/USD</strong>
+  </div>
+
+  <div class="kv">
+    <span>Market status</span>
+    <strong id="marketStatusDisplay">—</strong>
   </div>
 
   <div class="kv">
@@ -1889,19 +1501,19 @@ button.enter{
 
 </section>
 
-
 </div>
 
 </div>
 
 
-<!-- EDGE -->
+<!-- =======================================================
+     EDGE
+======================================================= -->
 
 <div
   id="edgeView"
   class="view"
 >
-
 
 <section class="card">
 
@@ -1944,7 +1556,6 @@ button.enter{
 
 
 <div class="grid">
-
 
 <section class="card">
 
@@ -2054,26 +1665,26 @@ button.enter{
 
 </section>
 
-
 </div>
 
 </div>
 
 
-<!-- CHART -->
+<!-- =======================================================
+     CHART
+======================================================= -->
 
 <div
   id="chartView"
   class="view"
 >
 
-
 <section class="card">
 
   <div class="section-title">
 
-    <span>
-      M1 PRICE ACTION
+    <span id="chartTitle">
+      XAU/USD M1 PRICE ACTION
     </span>
 
     <strong id="chartCount">
@@ -2082,19 +1693,14 @@ button.enter{
 
   </div>
 
-
   <div class="chart-wrap">
-
-    <canvas id="chart">
-    </canvas>
-
+    <canvas id="chart"></canvas>
   </div>
 
 </section>
 
 
 <div class="grid">
-
 
 <section class="card">
 
@@ -2147,37 +1753,37 @@ button.enter{
   </div>
 
   <div class="kv">
-    <span>PDH</span>
+    <span>Previous high</span>
     <strong id="pdh">—</strong>
   </div>
 
   <div class="kv">
-    <span>PDL</span>
+    <span>Previous low</span>
     <strong id="pdl">—</strong>
   </div>
 
 </section>
 
-
 </div>
 
 </div>
 
 
-<!-- RESEARCH -->
+<!-- =======================================================
+     RESEARCH
+======================================================= -->
 
 <div
   id="researchView"
   class="view"
 >
 
-
 <section class="card">
 
   <div class="section-title">
 
-    <span>
-      WALK-FORWARD RESEARCH
+    <span id="researchTitle">
+      XAU/USD WALK-FORWARD RESEARCH
     </span>
 
     <strong id="researchState">
@@ -2258,7 +1864,6 @@ button.enter{
 
   </div>
 
-
   <div class="stats">
 
     <div class="stat">
@@ -2283,13 +1888,11 @@ button.enter{
 
   </div>
 
-
   <div
     id="history"
     style="margin-top:10px"
   >
   </div>
-
 
   <div class="button-row">
 
@@ -2351,17 +1954,17 @@ button.enter{
 
 </div>
 
-
 </div>
 
 
-<!-- CONTROL -->
+<!-- =======================================================
+     CONTROL
+======================================================= -->
 
 <div
   id="controlView"
   class="view"
 >
-
 
 <section class="card">
 
@@ -2486,7 +2089,7 @@ button.enter{
     id="clearTrade"
     class="danger"
   >
-    CLEAR TRADE / SIGNAL
+    CLEAR CURRENT MARKET TRADE
   </button>
 
 </section>
@@ -2496,6 +2099,11 @@ button.enter{
 
   <div class="section-title">
     ENGINE
+  </div>
+
+  <div class="kv">
+    <span>Instrument</span>
+    <strong id="engineSymbol">—</strong>
   </div>
 
   <div class="kv">
@@ -2525,7 +2133,6 @@ button.enter{
 
 </section>
 
-
 </div>
 
 
@@ -2540,7 +2147,6 @@ button.enter{
   </span>
 
 </div>
-
 
 </main>
 
@@ -2588,7 +2194,57 @@ button.enter{
 <script>
 
 /* =========================================================
-   STATE
+   MARKETS
+========================================================= */
+
+const MARKETS = {
+
+  "XAU/USD": {
+    code:"XAUUSD",
+    name:"GOLD",
+    fullName:"Gold",
+    logo:"Au",
+    storage:"XAUUSD",
+    precision:2
+  },
+
+  "BTC/USD": {
+    code:"BTCUSD",
+    name:"BITCOIN",
+    fullName:"Bitcoin",
+    logo:"₿",
+    storage:"BTCUSD",
+    precision:2
+  }
+
+};
+
+
+const MARKET_SELECTION_KEY =
+  "mkayfx_v12_selected_market";
+
+
+let selectedSymbol =
+  localStorage.getItem(
+    MARKET_SELECTION_KEY
+  ) ||
+  "XAU/USD";
+
+
+if(
+  !MARKETS[
+    selectedSymbol
+  ]
+){
+
+  selectedSymbol =
+    "XAU/USD";
+
+}
+
+
+/* =========================================================
+   HELPERS
 ========================================================= */
 
 const $ =
@@ -2598,56 +2254,22 @@ const $ =
     );
 
 
-const KEYS = {
-  analysis:
-    "mkayfx_v11_analysis",
-
-  pending:
-    "mkayfx_v11_pending",
-
-  active:
-    "mkayfx_v11_active",
-
-  history:
-    "mkayfx_v11_history"
-};
+function market(){
+  return MARKETS[
+    selectedSymbol
+  ];
+}
 
 
-let lastAnalysis =
-  null;
+function storageKey(
+  type,
+  symbol = selectedSymbol
+){
 
+  return `mkayfx_v12_${MARKETS[symbol].storage}_${type}`;
 
-let pendingSignal =
-  null;
+}
 
-
-let activeTrade =
-  null;
-
-
-let analyzing =
-  false;
-
-
-let checking =
-  false;
-
-
-let timer =
-  null;
-
-
-let countdown =
-  null;
-
-
-let remaining =
-  0;
-
-
-/* =========================================================
-   UTILITIES
-========================================================= */
 
 function finite(v){
 
@@ -2659,8 +2281,10 @@ function finite(v){
     return null;
   }
 
+
   const n =
     Number(v);
+
 
   return Number.isFinite(n)
     ? n
@@ -2671,15 +2295,29 @@ function finite(v){
 
 function fmt(
   v,
-  d = 2
+  d = null
 ){
 
   const n =
     finite(v);
 
-  return n === null
-    ? "—"
-    : n.toFixed(d);
+
+  if(
+    n === null
+  ){
+    return "—";
+  }
+
+
+  const digits =
+    d === null
+      ? market().precision
+      : d;
+
+
+  return n.toFixed(
+    digits
+  );
 
 }
 
@@ -2688,6 +2326,7 @@ function pct(v){
 
   const n =
     finite(v);
+
 
   return n === null
     ? "—"
@@ -2748,6 +2387,40 @@ function load(
 }
 
 
+function saveState(
+  type,
+  value,
+  symbol = selectedSymbol
+){
+
+  store(
+    storageKey(
+      type,
+      symbol
+    ),
+    value
+  );
+
+}
+
+
+function loadState(
+  type,
+  fallback = null,
+  symbol = selectedSymbol
+){
+
+  return load(
+    storageKey(
+      type,
+      symbol
+    ),
+    fallback
+  );
+
+}
+
+
 function text(
   id,
   value
@@ -2756,9 +2429,12 @@ function text(
   const element =
     $(id);
 
+
   if(element){
+
     element.textContent =
       value;
+
   }
 
 }
@@ -2775,9 +2451,8 @@ function setStatus(
   );
 
 
-  $("status")
-    .className =
-      `status ${type || "status-wait"}`;
+  $("status").className =
+    `status ${type || "status-wait"}`;
 
 }
 
@@ -2786,25 +2461,496 @@ function showError(
   message
 ){
 
-  $("error")
-    .textContent =
-      message;
+  $("error").textContent =
+    message;
 
 
-  $("error")
-    .style.display =
-      "block";
+  $("error").style.display =
+    "block";
 
 }
 
 
 function clearError(){
 
-  $("error")
-    .style.display =
-      "none";
+  $("error").style.display =
+    "none";
 
 }
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let lastAnalysis =
+  null;
+
+
+let pendingSignal =
+  null;
+
+
+let activeTrade =
+  null;
+
+
+let analyzing =
+  false;
+
+
+let checking =
+  false;
+
+
+let timer =
+  null;
+
+
+let countdown =
+  null;
+
+
+let remaining =
+  0;
+
+
+let analysisController =
+  null;
+
+
+/* =========================================================
+   OPTIONAL OLD GOLD V11 MIGRATION
+========================================================= */
+
+function migrateOldGoldData(){
+
+  const newAnalysis =
+    localStorage.getItem(
+      storageKey(
+        "analysis",
+        "XAU/USD"
+      )
+    );
+
+
+  if(
+    newAnalysis !==
+    null
+  ){
+    return;
+  }
+
+
+  const oldKeys = {
+
+    analysis:
+      "mkayfx_v11_analysis",
+
+    pending:
+      "mkayfx_v11_pending",
+
+    active:
+      "mkayfx_v11_active",
+
+    history:
+      "mkayfx_v11_history"
+
+  };
+
+
+  for(
+    const [
+      type,
+      oldKey
+    ] of
+    Object.entries(
+      oldKeys
+    )
+  ){
+
+    const value =
+      localStorage.getItem(
+        oldKey
+      );
+
+
+    if(
+      value !==
+      null
+    ){
+
+      localStorage.setItem(
+        storageKey(
+          type,
+          "XAU/USD"
+        ),
+        value
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   MARKET UI
+========================================================= */
+
+function updateMarketChrome(){
+
+  const config =
+    market();
+
+
+  document.title =
+    `MKAYFX ${config.name} V12`;
+
+
+  text(
+    "brandTitle",
+    `MKAYFX ${config.name}`
+  );
+
+
+  text(
+    "logo",
+    config.logo
+  );
+
+
+  $("logo").className =
+    selectedSymbol ===
+    "BTC/USD"
+      ? "logo btc"
+      : "logo";
+
+
+  text(
+    "heroLabel",
+    `${selectedSymbol} DECISION ENGINE`
+  );
+
+
+  text(
+    "priceLabel",
+    selectedSymbol
+  );
+
+
+  text(
+    "instrumentDisplay",
+    selectedSymbol
+  );
+
+
+  text(
+    "engineSymbol",
+    selectedSymbol
+  );
+
+
+  text(
+    "chartTitle",
+    `${selectedSymbol} M1 PRICE ACTION`
+  );
+
+
+  text(
+    "researchTitle",
+    `${selectedSymbol} WALK-FORWARD RESEARCH`
+  );
+
+
+  $("goldMarket")
+    .classList.toggle(
+      "selected",
+      selectedSymbol ===
+      "XAU/USD"
+    );
+
+
+  $("btcMarket")
+    .classList.toggle(
+      "selected",
+      selectedSymbol ===
+      "BTC/USD"
+    );
+
+}
+
+
+/* =========================================================
+   LOAD CURRENT MARKET
+========================================================= */
+
+function loadCurrentMarketState(){
+
+  lastAnalysis =
+    loadState(
+      "analysis",
+      null
+    );
+
+
+  pendingSignal =
+    loadState(
+      "pending",
+      null
+    );
+
+
+  activeTrade =
+    loadState(
+      "active",
+      null
+    );
+
+}
+
+
+/* =========================================================
+   RESET DISPLAY
+========================================================= */
+
+function resetDisplay(){
+
+  text(
+    "signal",
+    "..."
+  );
+
+
+  $("signal").className =
+    "signal WAIT";
+
+
+  text(
+    "subsignal",
+    ""
+  );
+
+
+  text(
+    "badge",
+    "ANALYZING"
+  );
+
+
+  text(
+    "price",
+    "—"
+  );
+
+
+  text(
+    "entry",
+    "—"
+  );
+
+
+  text(
+    "sl",
+    "—"
+  );
+
+
+  text(
+    "tp",
+    "—"
+  );
+
+
+  text(
+    "tp2",
+    "—"
+  );
+
+
+  text(
+    "progressLabel",
+    "NO ACTIVE TRADE"
+  );
+
+
+  text(
+    "quality",
+    "—"
+  );
+
+
+  $("qualityBar").style.width =
+    "0%";
+
+
+  text(
+    "qualityDetail",
+    "Awaiting signal"
+  );
+
+
+  $("enterTrade")
+    .classList.add(
+      "hidden"
+    );
+
+}
+
+
+/* =========================================================
+   MARKET SWITCH
+========================================================= */
+
+async function selectMarket(
+  symbol
+){
+
+  if(
+    !MARKETS[symbol]
+  ){
+    return;
+  }
+
+
+  if(
+    symbol ===
+    selectedSymbol
+  ){
+    return;
+  }
+
+
+  if(
+    analysisController
+  ){
+
+    analysisController.abort();
+
+  }
+
+
+  analyzing =
+    false;
+
+
+  checking =
+    false;
+
+
+  stopTimer();
+
+
+  selectedSymbol =
+    symbol;
+
+
+  localStorage.setItem(
+    MARKET_SELECTION_KEY,
+    selectedSymbol
+  );
+
+
+  clearError();
+
+
+  updateMarketChrome();
+
+
+  loadCurrentMarketState();
+
+
+  renderHistory();
+
+
+  if(
+    lastAnalysis
+  ){
+
+    renderAnalysis(
+      lastAnalysis
+    );
+
+  }
+  else{
+
+    resetDisplay();
+
+  }
+
+
+  if(
+    activeTrade
+  ){
+
+    renderActive();
+
+
+    setStatus(
+      "TRADE ACTIVE",
+      "status-active"
+    );
+
+
+    startPriceMonitor();
+
+
+    await checkPrice();
+
+
+    return;
+
+  }
+
+
+  if(
+    pendingSignal
+  ){
+
+    renderPending();
+
+
+    setStatus(
+      "QUALIFIED",
+      "status-active"
+    );
+
+
+    startPriceMonitor();
+
+
+    await checkPrice();
+
+
+    return;
+
+  }
+
+
+  await runAnalysis();
+
+}
+
+
+$("goldMarket")
+  .addEventListener(
+    "click",
+    () =>
+      selectMarket(
+        "XAU/USD"
+      )
+  );
+
+
+$("btcMarket")
+  .addEventListener(
+    "click",
+    () =>
+      selectMarket(
+        "BTC/USD"
+      )
+  );
 
 
 /* =========================================================
@@ -2898,6 +3044,10 @@ async function runAnalysis(){
   }
 
 
+  const requestSymbol =
+    selectedSymbol;
+
+
   analyzing =
     true;
 
@@ -2920,15 +3070,22 @@ async function runAnalysis(){
   );
 
 
-  $("signal")
-    .className =
-      "signal WAIT";
+  $("signal").className =
+    "signal WAIT";
 
 
   text(
     "state",
-    "Analyzing market structure, liquidity, regime, cross-markets and historical memory..."
+    `Analyzing ${requestSymbol} structure, liquidity, regime, cross-markets and historical memory...`
   );
+
+
+  const controller =
+    new AbortController();
+
+
+  analysisController =
+    controller;
 
 
   try{
@@ -2944,20 +3101,26 @@ async function runAnalysis(){
               "application/json"
           },
 
-          cache:
-            "no-store",
+          cache:"no-store",
+
+          signal:
+            controller.signal,
 
           body:
             JSON.stringify({
+
+              symbol:
+                requestSymbol,
+
               equity:
                 Math.max(
                   1,
                   Number(
-                    $("equity")
-                      .value ||
+                    $("equity").value ||
                     200
                   )
                 )
+
             })
         }
       );
@@ -2965,6 +3128,14 @@ async function runAnalysis(){
 
     const data =
       await response.json();
+
+
+    if(
+      requestSymbol !==
+      selectedSymbol
+    ){
+      return;
+    }
 
 
     if(
@@ -2985,15 +3156,88 @@ async function runAnalysis(){
       data;
 
 
-    store(
-      KEYS.analysis,
-      data
+    saveState(
+      "analysis",
+      data,
+      requestSymbol
     );
 
 
     renderAnalysis(
       data
     );
+
+
+    const marketStatus =
+      data.marketStatus ||
+      {};
+
+
+    if(
+      marketStatus.open ===
+      false
+    ){
+
+      pendingSignal =
+        null;
+
+
+      saveState(
+        "pending",
+        null,
+        requestSymbol
+      );
+
+
+      renderWaiting(
+        data
+      );
+
+
+      setStatus(
+        "MARKET CLOSED",
+        "status-wait"
+      );
+
+
+      startScanMonitor();
+
+      return;
+
+    }
+
+
+    if(
+      marketStatus.dataStale
+    ){
+
+      pendingSignal =
+        null;
+
+
+      saveState(
+        "pending",
+        null,
+        requestSymbol
+      );
+
+
+      renderWaiting(
+        data
+      );
+
+
+      setStatus(
+        "STALE DATA",
+        "status-wait"
+      );
+
+
+      startScanMonitor();
+
+      return;
+
+    }
 
 
     if(
@@ -3008,14 +3252,17 @@ async function runAnalysis(){
 
       pendingSignal = {
         ...data,
+
         currentPrice:
+          data.currentPrice ??
           data.entry
       };
 
 
-      store(
-        KEYS.pending,
-        pendingSignal
+      saveState(
+        "pending",
+        pendingSignal,
+        requestSymbol
       );
 
 
@@ -3040,9 +3287,10 @@ async function runAnalysis(){
         null;
 
 
-      store(
-        KEYS.pending,
-        null
+      saveState(
+        "pending",
+        null,
+        requestSymbol
       );
 
 
@@ -3052,7 +3300,8 @@ async function runAnalysis(){
 
 
       setStatus(
-        data.signal,
+        data.signal ||
+        "WAIT",
         "status-wait"
       );
 
@@ -3064,24 +3313,52 @@ async function runAnalysis(){
   }
   catch(error){
 
-    console.error(error);
+    if(
+      error?.name ===
+      "AbortError"
+    ){
+      return;
+    }
 
 
-    showError(
-      error.message
+    console.error(
+      error
     );
 
 
-    setStatus(
-      "ERROR",
-      "status-error"
-    );
+    if(
+      requestSymbol ===
+      selectedSymbol
+    ){
+
+      showError(
+        error.message
+      );
+
+
+      setStatus(
+        "ERROR",
+        "status-error"
+      );
+
+    }
 
   }
   finally{
 
-    analyzing =
-      false;
+    if(
+      analysisController ===
+      controller
+    ){
+
+      analyzing =
+        false;
+
+
+      analysisController =
+        null;
+
+    }
 
   }
 
@@ -3136,6 +3413,29 @@ function renderAnalysis(data){
       score,
       0
     )
+  );
+
+
+  text(
+    "instrumentDisplay",
+    data.symbol ||
+    selectedSymbol
+  );
+
+
+  const status =
+    data.marketStatus;
+
+
+  text(
+    "marketStatusDisplay",
+    status
+      ? status.open
+        ? status.dataStale
+          ? "STALE DATA"
+          : "OPEN"
+        : "CLOSED"
+      : "—"
   );
 
 
@@ -3399,7 +3699,15 @@ function renderAnalysis(data){
   );
 
 
-  const gold =
+  /*
+    V12 backend returns marketContext for both
+    Gold and BTC.
+
+    Gold-only older versions returned goldContext.
+  */
+
+  const context =
+    data.marketContext ||
     data.goldContext ||
     {};
 
@@ -3407,7 +3715,7 @@ function renderAnalysis(data){
   text(
     "asiaHigh",
     fmt(
-      gold.asianRange
+      context.asianRange
         ?.high
     )
   );
@@ -3416,7 +3724,7 @@ function renderAnalysis(data){
   text(
     "asiaLow",
     fmt(
-      gold.asianRange
+      context.asianRange
         ?.low
     )
   );
@@ -3425,7 +3733,7 @@ function renderAnalysis(data){
   text(
     "pdh",
     fmt(
-      gold.previousDay
+      context.previousDay
         ?.high
     )
   );
@@ -3434,7 +3742,7 @@ function renderAnalysis(data){
   text(
     "pdl",
     fmt(
-      gold.previousDay
+      context.previousDay
         ?.low
     )
   );
@@ -3443,6 +3751,13 @@ function renderAnalysis(data){
   text(
     "chartCount",
     `${data.chart?.length || 0} candles`
+  );
+
+
+  text(
+    "engineSymbol",
+    data.symbol ||
+    selectedSymbol
   );
 
 
@@ -3503,6 +3818,11 @@ function renderAnalysis(data){
 
 function renderWaiting(data){
 
+  const marketStatus =
+    data.marketStatus ||
+    {};
+
+
   text(
     "signal",
     data.signal ||
@@ -3510,9 +3830,8 @@ function renderWaiting(data){
   );
 
 
-  $("signal")
-    .className =
-      `signal ${data.signal || "WAIT"}`;
+  $("signal").className =
+    `signal ${data.signal || "WAIT"}`;
 
 
   text(
@@ -3523,18 +3842,44 @@ function renderWaiting(data){
   );
 
 
-  text(
-    "badge",
-    data.signal ===
-      "WATCH"
-      ? "SETUP DEVELOPING"
-      : "NO TRADE"
-  );
+  if(
+    marketStatus.open ===
+    false
+  ){
+
+    text(
+      "badge",
+      "MARKET CLOSED"
+    );
+
+  }
+  else if(
+    marketStatus.dataStale
+  ){
+
+    text(
+      "badge",
+      "STALE DATA"
+    );
+
+  }
+  else{
+
+    text(
+      "badge",
+      data.signal ===
+        "WATCH"
+        ? "SETUP DEVELOPING"
+        : "NO TRADE"
+    );
+
+  }
 
 
   text(
     "price",
     fmt(
+      data.currentPrice ??
       data.entry
     )
   );
@@ -3573,19 +3918,49 @@ function renderWaiting(data){
   );
 
 
+  $("progressBar")
+    .style.width =
+      "50%";
+
+
   $("enterTrade")
     .classList.add(
       "hidden"
     );
 
 
-  text(
-    "state",
-    data.signal ===
-      "WATCH"
-      ? "Interesting setup detected, but all qualification gates have not passed yet."
-      : "No statistically qualified setup right now."
-  );
+  if(
+    marketStatus.open ===
+    false
+  ){
+
+    text(
+      "state",
+      `${selectedSymbol} is currently closed. Analysis is based on the latest available completed market data.`
+    );
+
+  }
+  else if(
+    marketStatus.dataStale
+  ){
+
+    text(
+      "state",
+      `${selectedSymbol} data is currently stale. No trade will be qualified until fresh data returns.`
+    );
+
+  }
+  else{
+
+    text(
+      "state",
+      data.signal ===
+        "WATCH"
+        ? "Interesting setup detected, but all qualification gates have not passed yet."
+        : "No statistically qualified setup right now."
+    );
+
+  }
 
 
   updateQuality(
@@ -3614,9 +3989,8 @@ function renderPending(){
   );
 
 
-  $("signal")
-    .className =
-      "signal QUALIFIED";
+  $("signal").className =
+    "signal QUALIFIED";
 
 
   text(
@@ -3674,7 +4048,7 @@ function renderPending(){
 
   text(
     "state",
-    "Trade qualifies, but you have not marked it as entered. Entry decay is being monitored."
+    `${selectedSymbol} setup qualifies, but you have not marked it as entered. Entry decay is being monitored.`
   );
 
 
@@ -3718,9 +4092,8 @@ function renderActive(){
   );
 
 
-  $("signal")
-    .className =
-      `signal ${activeTrade.signal}`;
+  $("signal").className =
+    `signal ${activeTrade.signal}`;
 
 
   text(
@@ -3778,7 +4151,7 @@ function renderActive(){
 
   text(
     "state",
-    "Manual trade marked as entered. New strategy analysis is paused until TP1 or SL."
+    `${selectedSymbol} trade marked as entered. New analysis for this market is paused until TP1 or SL.`
   );
 
 
@@ -3824,9 +4197,8 @@ function renderTF(
       );
 
 
-      $(id)
-        .className =
-          value;
+      $(id).className =
+        value;
 
     }
   );
@@ -3838,15 +4210,14 @@ function renderReasons(
   reasons
 ){
 
-  $("reasons")
-    .innerHTML =
-      reasons.length
-        ? reasons.map(
-            reason =>
-              `<div class="reason">◆ <span>${reason}</span></div>`
-          )
-          .join("")
-        : `<div class="reason">No explanation.</div>`;
+  $("reasons").innerHTML =
+    reasons.length
+      ? reasons.map(
+          reason =>
+            `<div class="reason">◆ <span>${reason}</span></div>`
+        )
+        .join("")
+      : `<div class="reason">No explanation.</div>`;
 
 }
 
@@ -3854,6 +4225,8 @@ function renderReasons(
 function renderChips(data){
 
   const values = [
+
+    selectedSymbol,
 
     `REGIME ${data.marketRegime?.type || "—"}`,
 
@@ -3881,13 +4254,12 @@ function renderChips(data){
   ].filter(Boolean);
 
 
-  $("chips")
-    .innerHTML =
-      values.map(
-        value =>
-          `<span class="chip">${value}</span>`
-      )
-      .join("");
+  $("chips").innerHTML =
+    values.map(
+      value =>
+        `<span class="chip">${value}</span>`
+    )
+    .join("");
 
 }
 
@@ -3916,70 +4288,69 @@ function renderModels(data){
   );
 
 
-  $("models")
-    .innerHTML =
-      Object.entries(
-        components
-      )
-      .map(
-        ([name,value]) => {
+  $("models").innerHTML =
+    Object.entries(
+      components
+    )
+    .map(
+      ([name,value]) => {
 
-          const v =
-            finite(value) ??
-            0;
-
-
-          const width =
-            Math.min(
-              50,
-              Math.abs(v) /
-              2
-            );
+        const v =
+          finite(value) ??
+          0;
 
 
-          const bull =
-            v >= 0;
+        const width =
+          Math.min(
+            50,
+            Math.abs(v) /
+            2
+          );
 
 
-          const rel =
-            reliability[name];
+        const bull =
+          v >= 0;
 
 
-          return `
-            <div class="model">
+        const rel =
+          reliability[name];
 
-              <div class="model-head">
 
-                <span>
-                  ${name.toUpperCase()}
-                  ${
-                    rel
-                      ? ` · ${rel.accuracy}%`
-                      : ""
-                  }
-                </span>
+        return `
+          <div class="model">
 
-                <strong class="${bull ? "BUY" : "SELL"}">
-                  ${v > 0 ? "+" : ""}${v.toFixed(1)}
-                </strong>
+            <div class="model-head">
 
-              </div>
+              <span>
+                ${name.toUpperCase()}
+                ${
+                  rel
+                    ? ` · ${rel.accuracy}%`
+                    : ""
+                }
+              </span>
 
-              <div class="track">
-
-                <span
-                  class="fill ${bull ? "bull" : "bear"}"
-                  style="width:${width}%"
-                ></span>
-
-              </div>
+              <strong class="${bull ? "BUY" : "SELL"}">
+                ${v > 0 ? "+" : ""}${v.toFixed(1)}
+              </strong>
 
             </div>
-          `;
 
-        }
-      )
-      .join("");
+            <div class="track">
+
+              <span
+                class="fill ${bull ? "bull" : "bear"}"
+                style="width:${width}%"
+              ></span>
+
+            </div>
+
+          </div>
+        `;
+
+      }
+    )
+    .join("");
 
 }
 
@@ -4011,32 +4382,31 @@ function renderGates(
   );
 
 
-  $("gates")
-    .innerHTML =
-      Object.entries(
-        gates
-      )
-      .map(
-        ([name,pass]) =>
-          `
-            <div class="gate ${pass ? "pass" : "fail"}">
+  $("gates").innerHTML =
+    Object.entries(
+      gates
+    )
+    .map(
+      ([name,pass]) =>
+        `
+          <div class="gate ${pass ? "pass" : "fail"}">
 
-              <div class="gate-icon">
-                ${pass ? "✓" : "×"}
-              </div>
-
-              <div>
-                ${name}
-              </div>
-
-              <strong>
-                ${pass ? "PASS" : "FAIL"}
-              </strong>
-
+            <div class="gate-icon">
+              ${pass ? "✓" : "×"}
             </div>
-          `
-      )
-      .join("");
+
+            <div>
+              ${name}
+            </div>
+
+            <strong>
+              ${pass ? "PASS" : "FAIL"}
+            </strong>
+
+          </div>
+        `
+    )
+    .join("");
 
 }
 
@@ -4059,30 +4429,18 @@ function renderCross(
   };
 
 
-  $("cross")
-    .innerHTML =
-      Object.entries(
-        labels
-      )
-      .map(
-        ([key,label]) => {
+  $("cross").innerHTML =
+    Object.entries(
+      labels
+    )
+    .map(
+      ([key,label]) => {
 
-          const value =
-            detail[key];
+        const value =
+          detail[key];
 
 
-          if(!value){
-
-            return `
-              <div class="market">
-                <strong>${label}</strong>
-                <div class="market-track"></div>
-                <span>OFFLINE</span>
-              </div>
-            `;
-
-          }
-
+        if(!value){
 
           return `
             <div class="market">
@@ -4092,24 +4450,44 @@ function renderCross(
               </strong>
 
               <div class="market-track">
-
-                <span
-                  style="width:${Math.min(100,Math.abs(value.score))}%"
-                ></span>
-
               </div>
 
-              <span class="${value.direction}">
-                ${value.direction}
-                ${value.score}
+              <span>
+                OFFLINE
               </span>
 
             </div>
           `;
 
         }
-      )
-      .join("");
+
+
+        return `
+          <div class="market">
+
+            <strong>
+              ${label}
+            </strong>
+
+            <div class="market-track">
+
+              <span
+                style="width:${Math.min(100,Math.abs(value.score))}%"
+              ></span>
+
+            </div>
+
+            <span class="${value.direction}">
+              ${value.direction}
+              ${value.score}
+            </span>
+
+          </div>
+        `;
+
+      }
+    )
+    .join("");
 
 }
 
@@ -4133,46 +4511,45 @@ function renderMacro(
     [];
 
 
-  $("macro")
-    .innerHTML =
-      events.length
-        ? events.map(
-            event =>
-              `
-                <div class="kv">
+  $("macro").innerHTML =
+    events.length
+      ? events.map(
+          event =>
+            `
+              <div class="kv">
 
-                  <span>
-                    ${event.event}
-                  </span>
+                <span>
+                  ${event.event}
+                </span>
 
-                  <strong>
-                    ${
-                      new Date(
-                        event.date
-                      )
-                      .toLocaleTimeString(
-                        [],
-                        {
-                          hour:"2-digit",
-                          minute:"2-digit"
-                        }
-                      )
-                    }
-                  </strong>
+                <strong>
+                  ${
+                    new Date(
+                      event.date
+                    )
+                    .toLocaleTimeString(
+                      [],
+                      {
+                        hour:"2-digit",
+                        minute:"2-digit"
+                      }
+                    )
+                  }
+                </strong>
 
-                </div>
-              `
-          )
-          .join("")
-        : `
-            <div class="reason">
-              ${
-                macro.available
-                  ? "No nearby high-impact event."
-                  : "Macro calendar not connected."
-              }
-            </div>
-          `;
+              </div>
+            `
+        )
+        .join("")
+      : `
+          <div class="reason">
+            ${
+              macro.available
+                ? "No nearby high-impact event."
+                : "Macro calendar not connected."
+            }
+          </div>
+        `;
 
 }
 
@@ -4197,6 +4574,18 @@ function updateQuality(data){
       "—"
     );
 
+
+    $("qualityBar")
+      .style.width =
+        "0%";
+
+
+    text(
+      "qualityDetail",
+      "No active entry window"
+    );
+
+
     return;
 
   }
@@ -4218,7 +4607,8 @@ function updateQuality(data){
     );
 
 
-  let quality = 100;
+  let quality =
+    100;
 
 
   if(
@@ -4235,7 +4625,8 @@ function updateQuality(data){
             expires -
             now
           ) /
-          (
+          Math.max(
+            1,
             expires -
             fresh
           ) *
@@ -4264,12 +4655,14 @@ function updateQuality(data){
     );
 
 
-  let chase = 0;
+  let chase =
+    0;
 
 
   if(
     price !== null &&
     entry !== null &&
+    atr !== null &&
     atr >
     0
   ){
@@ -4300,7 +4693,10 @@ function updateQuality(data){
               execution.maxChaseAtr -
               chase
             ) /
-            execution.maxChaseAtr *
+            Math.max(
+              execution.maxChaseAtr,
+              .000001
+            ) *
             100
           )
         );
@@ -4356,20 +4752,31 @@ async function checkPrice(){
     true;
 
 
+  const requestSymbol =
+    selectedSymbol;
+
+
   try{
 
     const response =
       await fetch(
-        "/api/price",
+        `/api/price?symbol=${encodeURIComponent(requestSymbol)}`,
         {
-          cache:
-            "no-store"
+          cache:"no-store"
         }
       );
 
 
     const data =
       await response.json();
+
+
+    if(
+      requestSymbol !==
+      selectedSymbol
+    ){
+      return;
+    }
 
 
     if(
@@ -4401,7 +4808,7 @@ async function checkPrice(){
 
     text(
       "lastCheck",
-      `Price ${new Date().toLocaleTimeString()}`
+      `${requestSymbol} ${new Date().toLocaleTimeString()}`
     );
 
 
@@ -4413,8 +4820,8 @@ async function checkPrice(){
         price;
 
 
-      store(
-        KEYS.active,
+      saveState(
+        "active",
         activeTrade
       );
 
@@ -4439,10 +4846,12 @@ async function checkPrice(){
           price >=
           activeTrade.takeProfit
         ){
+
           return closeTrade(
             "TP",
             price
           );
+
         }
 
 
@@ -4450,10 +4859,12 @@ async function checkPrice(){
           price <=
           activeTrade.stopLoss
         ){
+
           return closeTrade(
             "SL",
             price
           );
+
         }
 
       }
@@ -4463,10 +4874,12 @@ async function checkPrice(){
           price <=
           activeTrade.takeProfit
         ){
+
           return closeTrade(
             "TP",
             price
           );
+
         }
 
 
@@ -4474,10 +4887,12 @@ async function checkPrice(){
           price >=
           activeTrade.stopLoss
         ){
+
           return closeTrade(
             "SL",
             price
           );
+
         }
 
       }
@@ -4491,8 +4906,8 @@ async function checkPrice(){
         price;
 
 
-      store(
-        KEYS.pending,
+      saveState(
+        "pending",
         pendingSignal
       );
 
@@ -4509,10 +4924,12 @@ async function checkPrice(){
 
 
       const execution =
-        pendingSignal.execution;
+        pendingSignal.execution ||
+        {};
 
 
       if(
+        execution.expiresAt &&
         Date.now() >=
         Date.parse(
           execution.expiresAt
@@ -4523,6 +4940,7 @@ async function checkPrice(){
           "SIGNAL EXPIRED"
         );
 
+
         return;
 
       }
@@ -4531,6 +4949,12 @@ async function checkPrice(){
       const atr =
         finite(
           execution.referenceAtr
+        );
+
+
+      const maxChase =
+        finite(
+          execution.maxChaseAtr
         );
 
 
@@ -4550,8 +4974,9 @@ async function checkPrice(){
 
 
       if(
+        maxChase !== null &&
         chase >
-        execution.maxChaseAtr
+        maxChase
       ){
 
         invalidateSignal(
@@ -4580,6 +5005,10 @@ async function checkPrice(){
 }
 
 
+/* =========================================================
+   INVALIDATE
+========================================================= */
+
 function invalidateSignal(
   message
 ){
@@ -4588,8 +5017,8 @@ function invalidateSignal(
     null;
 
 
-  store(
-    KEYS.pending,
+  saveState(
+    "pending",
     null
   );
 
@@ -4600,9 +5029,8 @@ function invalidateSignal(
   );
 
 
-  $("signal")
-    .className =
-      "signal WAIT";
+  $("signal").className =
+    "signal WAIT";
 
 
   text(
@@ -4613,7 +5041,7 @@ function invalidateSignal(
 
   text(
     "state",
-    `${message}. Waiting for another setup.`
+    `${message}. Waiting for another ${selectedSymbol} setup.`
   );
 
 
@@ -4656,7 +5084,7 @@ $("enterTrade")
 
       if(
         !confirm(
-          `Mark ${pendingSignal.candidateDirection} trade as entered around ${fmt(price)}?`
+          `Mark ${selectedSymbol} ${pendingSignal.candidateDirection} trade as entered around ${fmt(price)}?`
         )
       ){
         return;
@@ -4665,6 +5093,9 @@ $("enterTrade")
 
       activeTrade = {
         ...pendingSignal,
+
+        symbol:
+          selectedSymbol,
 
         signal:
           pendingSignal.candidateDirection,
@@ -4685,14 +5116,14 @@ $("enterTrade")
         null;
 
 
-      store(
-        KEYS.pending,
+      saveState(
+        "pending",
         null
       );
 
 
-      store(
-        KEYS.active,
+      saveState(
+        "active",
         activeTrade
       );
 
@@ -4761,6 +5192,13 @@ function updateProgress(
     );
 
 
+  if(
+    range <= 0
+  ){
+    return;
+  }
+
+
   let percentage =
     activeTrade.signal ===
     "BUY"
@@ -4800,6 +5238,13 @@ function updateProgress(
     );
 
 
+  if(
+    risk <= 0
+  ){
+    return;
+  }
+
+
   const currentR =
     activeTrade.signal ===
     "BUY"
@@ -4835,8 +5280,18 @@ async function closeTrade(
   price
 ){
 
+  if(
+    !activeTrade
+  ){
+    return;
+  }
+
+
   const trade = {
     ...activeTrade,
+
+    symbol:
+      selectedSymbol,
 
     result,
 
@@ -4864,16 +5319,19 @@ async function closeTrade(
     result ===
     "SL"
       ? -1
-      : Math.abs(
-          trade.takeProfit -
-          entry
-        ) /
-        risk;
+      : risk >
+        0
+        ? Math.abs(
+            trade.takeProfit -
+            entry
+          ) /
+          risk
+        : 0;
 
 
   const history =
-    load(
-      KEYS.history,
+    loadState(
+      "history",
       []
     );
 
@@ -4883,8 +5341,8 @@ async function closeTrade(
   );
 
 
-  store(
-    KEYS.history,
+  saveState(
+    "history",
     history.slice(
       0,
       250
@@ -4896,8 +5354,8 @@ async function closeTrade(
     null;
 
 
-  store(
-    KEYS.active,
+  saveState(
+    "active",
     null
   );
 
@@ -4910,7 +5368,7 @@ async function closeTrade(
 
   text(
     "state",
-    `${result} hit at ${fmt(price)}. Reanalyzing...`
+    `${selectedSymbol} ${result} hit at ${fmt(price)}. Reanalyzing...`
   );
 
 
@@ -4964,8 +5422,10 @@ function startCountdown(
         if(
           remaining <= 0
         ){
+
           remaining =
             seconds;
+
         }
 
 
@@ -4973,8 +5433,8 @@ function startCountdown(
           "nextCheck",
           type ===
           "scan"
-            ? `Next scan ${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2,"0")}`
-            : `Next price ${remaining}s`
+            ? `${selectedSymbol} scan ${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2,"0")}`
+            : `${selectedSymbol} price ${remaining}s`
         );
 
       },
@@ -5061,8 +5521,8 @@ function startScanMonitor(){
 function renderHistory(){
 
   const history =
-    load(
-      KEYS.history,
+    loadState(
+      "history",
       []
     );
 
@@ -5098,11 +5558,13 @@ function renderHistory(){
     );
 
 
-  let streak = 0;
+  let streak =
+    0;
 
 
   const first =
-    history[0]?.result;
+    history[0]
+      ?.result;
 
 
   if(first){
@@ -5116,10 +5578,14 @@ function renderHistory(){
         trade.result ===
         first
       ){
+
         streak++;
+
       }
       else{
+
         break;
+
       }
 
     }
@@ -5159,53 +5625,52 @@ function renderHistory(){
   );
 
 
-  $("history")
-    .innerHTML =
-      history.length
-        ? history
-            .slice(
-              0,
-              50
-            )
-            .map(
-              trade =>
-                `
-                  <div class="history-row">
+  $("history").innerHTML =
+    history.length
+      ? history
+          .slice(
+            0,
+            50
+          )
+          .map(
+            trade =>
+              `
+                <div class="history-row">
 
-                    <span>
-                      ${
-                        new Date(
-                          trade.closedAt
-                        )
-                        .toLocaleTimeString(
-                          [],
-                          {
-                            hour:"2-digit",
-                            minute:"2-digit"
-                          }
-                        )
-                      }
-                    </span>
+                  <span>
+                    ${
+                      new Date(
+                        trade.closedAt
+                      )
+                      .toLocaleTimeString(
+                        [],
+                        {
+                          hour:"2-digit",
+                          minute:"2-digit"
+                        }
+                      )
+                    }
+                  </span>
 
-                    <strong class="${trade.signal}">
-                      ${trade.signal}
-                    </strong>
+                  <strong class="${trade.signal}">
+                    ${trade.signal}
+                  </strong>
 
-                    <span>
-                      ${trade.result}
-                      ·
-                      ${fmt(trade.hitPrice)}
-                    </span>
+                  <span>
+                    ${trade.result}
+                    ·
+                    ${fmt(trade.hitPrice)}
+                  </span>
 
-                    <strong class="${trade.resultR >= 0 ? "BUY" : "SELL"}">
-                      ${trade.resultR >= 0 ? "+" : ""}${fmt(trade.resultR)}R
-                    </strong>
+                  <strong class="${trade.resultR >= 0 ? "BUY" : "SELL"}">
+                    ${trade.resultR >= 0 ? "+" : ""}${fmt(trade.resultR)}R
+                  </strong>
 
-                  </div>
-                `
-            )
-            .join("")
-        : `<div class="reason">No completed trades.</div>`;
+                </div>
+              `
+          )
+          .join("")
+      : `<div class="reason">No completed ${selectedSymbol} trades.</div>`;
 
 
   renderJournalGroup(
@@ -5266,52 +5731,51 @@ function renderJournalGroup(
   }
 
 
-  $(id)
-    .innerHTML =
-      Object.entries(
-        groups
-      )
-      .map(
-        ([key,trades]) => {
+  $(id).innerHTML =
+    Object.entries(
+      groups
+    )
+    .map(
+      ([key,trades]) => {
 
-          const average =
-            trades.reduce(
+        const average =
+          trades.reduce(
+            (
+              sum,
+              trade
+            ) =>
+              sum +
               (
-                sum,
-                trade
-              ) =>
-                sum +
-                (
-                  finite(
-                    trade.resultR
-                  ) ??
-                  0
-                ),
-              0
-            ) /
-            trades.length;
+                finite(
+                  trade.resultR
+                ) ??
+                0
+              ),
+            0
+          ) /
+          trades.length;
 
 
-          return `
-            <div class="kv">
+        return `
+          <div class="kv">
 
-              <span>
-                ${key}
-                ·
-                ${trades.length}
-              </span>
+            <span>
+              ${key}
+              ·
+              ${trades.length}
+            </span>
 
-              <strong class="${average >= 0 ? "BUY" : "SELL"}">
-                ${average >= 0 ? "+" : ""}${average.toFixed(2)}R
-              </strong>
+            <strong class="${average >= 0 ? "BUY" : "SELL"}">
+              ${average >= 0 ? "+" : ""}${average.toFixed(2)}R
+            </strong>
 
-            </div>
-          `;
+          </div>
+        `;
 
-        }
-      )
-      .join("") ||
-      `<div class="reason">No data.</div>`;
+      }
+    )
+    .join("") ||
+    `<div class="reason">No data.</div>`;
 
 }
 
@@ -5328,14 +5792,16 @@ async function runResearch(){
   );
 
 
+  clearError();
+
+
   try{
 
     const response =
       await fetch(
-        "/api/research",
+        `/api/research?symbol=${encodeURIComponent(selectedSymbol)}`,
         {
-          cache:
-            "no-store"
+          cache:"no-store"
         }
       );
 
@@ -5369,11 +5835,13 @@ async function runResearch(){
 
 
       showError(
-        data.error
+        data.error ||
+        "Not enough market memory."
       );
 
 
       return;
+
     }
 
 
@@ -5384,12 +5852,14 @@ async function runResearch(){
 
 
     const test =
-      data.test;
+      data.test ||
+      {};
 
 
     text(
       "researchTrades",
-      test.trades
+      test.trades ??
+      "—"
     );
 
 
@@ -5419,41 +5889,44 @@ async function runResearch(){
 
     text(
       "researchR",
-      `${test.totalR >= 0 ? "+" : ""}${fmt(test.totalR)}R`
+      test.totalR != null
+        ? `${test.totalR >= 0 ? "+" : ""}${fmt(test.totalR)}R`
+        : "—"
     );
 
 
     text(
       "researchDD",
-      `${fmt(test.maxDrawdownR)}R`
+      test.maxDrawdownR != null
+        ? `${fmt(test.maxDrawdownR)}R`
+        : "—"
     );
 
 
-    $("researchRegimes")
-      .innerHTML =
-        Object.entries(
-          data.byRegime ||
-          {}
-        )
-        .map(
-          ([name,result]) =>
-            `
-              <div class="kv">
+    $("researchRegimes").innerHTML =
+      Object.entries(
+        data.byRegime ||
+        {}
+      )
+      .map(
+        ([name,result]) =>
+          `
+            <div class="kv">
 
-                <span>
-                  ${name}
-                  ·
-                  ${result.trades}
-                </span>
+              <span>
+                ${name}
+                ·
+                ${result.trades}
+              </span>
 
-                <strong class="${result.expectancyR >= 0 ? "BUY" : "SELL"}">
-                  ${result.expectancyR >= 0 ? "+" : ""}${fmt(result.expectancyR,3)}R
-                </strong>
+              <strong class="${result.expectancyR >= 0 ? "BUY" : "SELL"}">
+                ${result.expectancyR >= 0 ? "+" : ""}${fmt(result.expectancyR,3)}R
+              </strong>
 
-              </div>
-            `
-        )
-        .join("");
+            </div>
+          `
+      )
+      .join("");
 
   }
   catch(error){
@@ -5492,7 +5965,7 @@ async function backfillMemory(){
 
   const bars =
     prompt(
-      "How many M5 candles?",
+      `How many ${selectedSymbol} M5 candles?`,
       "1800"
     );
 
@@ -5507,7 +5980,7 @@ async function backfillMemory(){
 
     const response =
       await fetch(
-        `/api/memory?mode=backfill&bars=${encodeURIComponent(bars || 1800)}`,
+        `/api/memory?mode=backfill&symbol=${encodeURIComponent(selectedSymbol)}&bars=${encodeURIComponent(bars || 1800)}`,
         {
           method:"POST",
 
@@ -5516,8 +5989,7 @@ async function backfillMemory(){
               `Bearer ${secret}`
           },
 
-          cache:
-            "no-store"
+          cache:"no-store"
         }
       );
 
@@ -5541,7 +6013,7 @@ async function backfillMemory(){
 
 
     alert(
-      `Processed ${data.processed}. Resolved states: ${data.resolved}`
+      `${selectedSymbol}: processed ${data.processed}. Resolved states: ${data.resolved}`
     );
 
 
@@ -5574,8 +6046,8 @@ async function backfillMemory(){
 function exportHistory(){
 
   const history =
-    load(
-      KEYS.history,
+    loadState(
+      "history",
       []
     );
 
@@ -5585,8 +6057,9 @@ function exportHistory(){
   ){
 
     alert(
-      "No completed trades."
+      `No completed ${selectedSymbol} trades.`
     );
+
 
     return;
 
@@ -5595,6 +6068,7 @@ function exportHistory(){
 
   const rows = [
     [
+      "Symbol",
       "Created",
       "Entered",
       "Closed",
@@ -5616,20 +6090,37 @@ function exportHistory(){
     trade => {
 
       rows.push([
+
+        trade.symbol ||
+        selectedSymbol,
+
         trade.createdAt,
+
         trade.enteredAt,
+
         trade.closedAt,
+
         trade.signal,
+
         trade.setupType,
+
         trade.marketRegime
           ?.type,
+
         trade.session,
+
         trade.manualEntryPrice,
+
         trade.stopLoss,
+
         trade.takeProfit,
+
         trade.result,
+
         trade.resultR,
+
         trade.edgeScore
+
       ]);
 
     }
@@ -5674,7 +6165,7 @@ function exportHistory(){
 
 
   link.download =
-    "mkayfx-v11-journal.csv";
+    `mkayfx-v12-${market().storage.toLowerCase()}-journal.csv`;
 
 
   link.click();
@@ -5701,13 +6192,16 @@ function signalText(){
 
   if(!data){
 
-    return "MKAYFX V11 — no signal.";
+    return `MKAYFX V12 ${selectedSymbol} — no signal.`;
 
   }
 
 
   return [
-    "MKAYFX GOLD V11",
+
+    `MKAYFX ${market().name} V12`,
+
+    `Market: ${selectedSymbol}`,
 
     `State: ${
       activeTrade
@@ -5880,21 +6374,43 @@ function drawChart(){
   );
 
 
+  const lows =
+    candles.map(
+      x => x.l
+    );
+
+
+  const highs =
+    candles.map(
+      x => x.h
+    );
+
+
+  if(
+    extra.length
+  ){
+
+    lows.push(
+      ...extra
+    );
+
+
+    highs.push(
+      ...extra
+    );
+
+  }
+
+
   let min =
     Math.min(
-      ...candles.map(
-        x => x.l
-      ),
-      ...extra
+      ...lows
     );
 
 
   let max =
     Math.max(
-      ...candles.map(
-        x => x.h
-      ),
-      ...extra
+      ...highs
     );
 
 
@@ -5916,10 +6432,20 @@ function drawChart(){
     0.08;
 
 
-  const left = 8;
-  const right = 55;
-  const top = 10;
-  const bottom = 18;
+  const left =
+    8;
+
+
+  const right =
+    55;
+
+
+  const top =
+    10;
+
+
+  const bottom =
+    18;
 
 
   const chartWidth =
@@ -5967,16 +6493,19 @@ function drawChart(){
 
     ctx.beginPath();
 
+
     ctx.moveTo(
       left,
       yy
     );
+
 
     ctx.lineTo(
       left +
       chartWidth,
       yy
     );
+
 
     ctx.stroke();
 
@@ -6031,15 +6560,18 @@ function drawChart(){
 
       ctx.beginPath();
 
+
       ctx.moveTo(
         x,
         y(candle.h)
       );
 
+
       ctx.lineTo(
         x,
         y(candle.l)
       );
+
 
       ctx.stroke();
 
@@ -6169,15 +6701,18 @@ function drawLevel(
 
   ctx.beginPath();
 
+
   ctx.moveTo(
     x1,
     y
   );
 
+
   ctx.lineTo(
     x2,
     y
   );
+
 
   ctx.stroke();
 
@@ -6221,7 +6756,7 @@ $("freshAnalysis")
       if(
         activeTrade &&
         !confirm(
-          "Clear current active trade?"
+          `Clear current ${selectedSymbol} active trade?`
         )
       ){
         return;
@@ -6236,14 +6771,14 @@ $("freshAnalysis")
         null;
 
 
-      store(
-        KEYS.active,
+      saveState(
+        "active",
         null
       );
 
 
-      store(
-        KEYS.pending,
+      saveState(
+        "pending",
         null
       );
 
@@ -6259,6 +6794,16 @@ $("clearTrade")
     "click",
     () => {
 
+      if(
+        activeTrade &&
+        !confirm(
+          `Clear ${selectedSymbol} active trade?`
+        )
+      ){
+        return;
+      }
+
+
       activeTrade =
         null;
 
@@ -6267,14 +6812,14 @@ $("clearTrade")
         null;
 
 
-      store(
-        KEYS.active,
+      saveState(
+        "active",
         null
       );
 
 
-      store(
-        KEYS.pending,
+      saveState(
+        "pending",
         null
       );
 
@@ -6287,6 +6832,14 @@ $("clearTrade")
         renderWaiting(
           lastAnalysis
         );
+
+
+        startScanMonitor();
+
+      }
+      else{
+
+        resetDisplay();
 
       }
 
@@ -6322,12 +6875,12 @@ $("clearHistory")
 
       if(
         confirm(
-          "Delete trade history?"
+          `Delete ${selectedSymbol} trade history?`
         )
       ){
 
-        store(
-          KEYS.history,
+        saveState(
+          "history",
           []
         );
 
@@ -6388,7 +6941,9 @@ $("priceInterval")
         activeTrade ||
         pendingSignal
       ){
+
         startPriceMonitor();
+
       }
 
     }
@@ -6404,7 +6959,9 @@ $("scanInterval")
         !activeTrade &&
         !pendingSignal
       ){
+
         startScanMonitor();
+
       }
 
     }
@@ -6430,31 +6987,21 @@ window.addEventListener(
 
 async function start(){
 
+  migrateOldGoldData();
+
+
+  updateMarketChrome();
+
+
+  loadCurrentMarketState();
+
+
   renderHistory();
 
 
-  lastAnalysis =
-    load(
-      KEYS.analysis,
-      null
-    );
-
-
-  pendingSignal =
-    load(
-      KEYS.pending,
-      null
-    );
-
-
-  activeTrade =
-    load(
-      KEYS.active,
-      null
-    );
-
-
-  if(lastAnalysis){
+  if(
+    lastAnalysis
+  ){
 
     renderAnalysis(
       lastAnalysis
@@ -6463,7 +7010,9 @@ async function start(){
   }
 
 
-  if(activeTrade){
+  if(
+    activeTrade
+  ){
 
     renderActive();
 
@@ -6485,7 +7034,9 @@ async function start(){
   }
 
 
-  if(pendingSignal){
+  if(
+    pendingSignal
+  ){
 
     renderPending();
 
