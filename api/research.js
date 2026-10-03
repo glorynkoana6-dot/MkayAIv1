@@ -5,7 +5,6 @@ import {
   evaluatePath
 } from "./core.js";
 
-
 import {
   dbEnabled,
   loadResolvedStates,
@@ -13,42 +12,16 @@ import {
 } from "./db.js";
 
 
-/* =========================================================
-   MKAYFX SIMPLE STRATEGY RESEARCH V14
+const VERSION = "15.0";
 
-   IMPORTANT
-   ---------
-   No ensemble threshold optimization.
-   No similarity matching.
-   No choosing settings from the holdout.
-
-   The research engine tests the exact
-   TREND_PULLBACK_V14 signals stored by memory.js.
-
-========================================================= */
-
-const VERSION =
-  "14.0";
-
-
-const MAX_STATES =
-  5000;
-
-
-const MIN_STATES =
+const MIN_RESOLVED_STATES =
   100;
 
+const MAX_RESOLVED_STATES =
+  5000;
 
-const TRAINING_RATIO =
-  0.70;
-
-
-const STOP_ATR =
-  1;
-
-
-const TARGET_R =
-  2;
+const HOLDOUT_RATIO =
+  0.30;
 
 
 /* =========================================================
@@ -56,49 +29,34 @@ const TARGET_R =
 ========================================================= */
 
 function normalizeSymbol(value) {
-
   const raw =
     String(
-      value ||
-      "XAU/USD"
+      value || "XAU/USD"
     )
       .trim()
       .toUpperCase()
-      .replace(
-        /\s+/g,
-        ""
-      );
-
+      .replace(/\s+/g, "");
 
   if (
-    raw ===
-      "XAU/USD" ||
-    raw ===
-      "XAUUSD" ||
-    raw ===
+    [
+      "XAU/USD",
+      "XAUUSD",
       "GOLD"
+    ].includes(raw)
   ) {
-
     return "XAU/USD";
-
   }
-
 
   if (
-    raw ===
-      "BTC/USD" ||
-    raw ===
-      "BTCUSD" ||
-    raw ===
-      "BTC" ||
-    raw ===
+    [
+      "BTC/USD",
+      "BTCUSD",
+      "BTC",
       "BITCOIN"
+    ].includes(raw)
   ) {
-
     return "BTC/USD";
-
   }
-
 
   return null;
 }
@@ -108,94 +66,12 @@ function queryValue(
   req,
   key
 ) {
-
   const value =
     req.query?.[key];
-
 
   return Array.isArray(value)
     ? value[0]
     : value;
-}
-
-
-function safeNumber(
-  value,
-  fallback = 0
-) {
-
-  const n =
-    finite(
-      value
-    );
-
-
-  return n === null
-    ? fallback
-    : n;
-}
-
-
-/* =========================================================
-   VALID V14 ROW
-========================================================= */
-
-function validRow(
-  row,
-  symbol
-) {
-
-  if (!row) {
-    return false;
-  }
-
-
-  if (
-    row.symbol !==
-    symbol
-  ) {
-    return false;
-  }
-
-
-  if (
-    !row.candle_time
-  ) {
-    return false;
-  }
-
-
-  if (
-    !Number.isFinite(
-      Date.parse(
-        row.candle_time
-      )
-    )
-  ) {
-    return false;
-  }
-
-
-  if (
-    row.features
-      ?.strategyName !==
-    "TREND_PULLBACK_V14"
-  ) {
-    return false;
-  }
-
-
-  if (
-    !Array.isArray(
-      row.future_path
-    ) ||
-    !row.future_path.length
-  ) {
-    return false;
-  }
-
-
-  return true;
 }
 
 
@@ -204,111 +80,60 @@ function validRow(
 ========================================================= */
 
 function metrics(trades) {
-
   if (
     !Array.isArray(trades) ||
     !trades.length
   ) {
-
     return {
-
-      trades:0,
-
-      wins:0,
-
-      losses:0,
-
-      winRate:null,
-
-      expectancyR:null,
-
-      profitFactor:null,
-
-      totalR:0,
-
-      maxDrawdownR:0,
-
-      averageWinR:null,
-
-      averageLossR:null
-
+      trades: 0,
+      wins: 0,
+      losses: 0,
+      winRate: null,
+      expectancyR: null,
+      profitFactor: null,
+      totalR: 0,
+      maxDrawdownR: 0,
+      averageWinR: null,
+      averageLossR: null
     };
-
   }
 
-
-  const winners =
+  const wins =
     trades.filter(
       trade =>
-        safeNumber(
-          trade.r
-        ) >
-        0
+        trade.r > 0
     );
 
-
-  const losers =
+  const losses =
     trades.filter(
       trade =>
-        safeNumber(
-          trade.r
-        ) <
-        0
+        trade.r < 0
     );
-
 
   const grossWin =
-    winners.reduce(
-      (
-        total,
-        trade
-      ) =>
-        total +
-        safeNumber(
-          trade.r
-        ),
+    wins.reduce(
+      (sum, trade) =>
+        sum + trade.r,
       0
     );
 
-
   const grossLoss =
     Math.abs(
-      losers.reduce(
-        (
-          total,
-          trade
-        ) =>
-          total +
-          safeNumber(
-            trade.r
-          ),
+      losses.reduce(
+        (sum, trade) =>
+          sum + trade.r,
         0
       )
     );
 
-
-  let equity =
-    0;
-
-
-  let peak =
-    0;
-
-
-  let maxDrawdown =
-    0;
-
+  let equity = 0;
+  let peak = 0;
+  let maxDrawdown = 0;
 
   for (
-    const trade of
-    trades
+    const trade of trades
   ) {
-
-    equity +=
-      safeNumber(
-        trade.r
-      );
-
+    equity += trade.r;
 
     peak =
       Math.max(
@@ -316,31 +141,26 @@ function metrics(trades) {
         equity
       );
 
-
     maxDrawdown =
       Math.max(
         maxDrawdown,
-        peak -
-        equity
+        peak - equity
       );
-
   }
 
-
   return {
-
     trades:
       trades.length,
 
     wins:
-      winners.length,
+      wins.length,
 
     losses:
-      losers.length,
+      losses.length,
 
     winRate:
       round(
-        winners.length /
+        wins.length /
         trades.length *
         100,
         1
@@ -351,24 +171,20 @@ function metrics(trades) {
         mean(
           trades.map(
             trade =>
-              safeNumber(
-                trade.r
-              )
+              trade.r
           )
         ),
         3
       ),
 
     profitFactor:
-      grossLoss >
-      0
+      grossLoss > 0
         ? round(
             grossWin /
             grossLoss,
             2
           )
-        : grossWin >
-          0
+        : grossWin > 0
           ? null
           : 0,
 
@@ -385,14 +201,12 @@ function metrics(trades) {
       ),
 
     averageWinR:
-      winners.length
+      wins.length
         ? round(
             mean(
-              winners.map(
+              wins.map(
                 trade =>
-                  safeNumber(
-                    trade.r
-                  )
+                  trade.r
               )
             ),
             3
@@ -400,129 +214,200 @@ function metrics(trades) {
         : null,
 
     averageLossR:
-      losers.length
+      losses.length
         ? round(
             mean(
-              losers.map(
+              losses.map(
                 trade =>
-                  safeNumber(
-                    trade.r
-                  )
+                  trade.r
               )
             ),
             3
           )
         : null
-
   };
 }
 
 
 /* =========================================================
-   SIMULATE
+   VALID V15 MEMORY
+========================================================= */
+
+function validRow(
+  row,
+  symbol
+) {
+  if (!row) {
+    return false;
+  }
+
+  if (
+    row.symbol !== symbol
+  ) {
+    return false;
+  }
+
+  if (
+    !row.candle_time
+  ) {
+    return false;
+  }
+
+  if (
+    !Number.isFinite(
+      Date.parse(
+        row.candle_time
+      )
+    )
+  ) {
+    return false;
+  }
+
+  if (
+    !Array.isArray(
+      row.future_path
+    ) ||
+    !row.future_path.length
+  ) {
+    return false;
+  }
+
+  const features =
+    row.features || {};
+
+  /*
+    This intentionally rejects old V13/V14
+    rows.
+
+    Otherwise the V15 report could silently
+    mix old strategy memory with new strategy
+    memory.
+  */
+
+  if (
+    features.engineVersion !==
+    VERSION
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
+
+/* =========================================================
+   CREATE TRADE
+========================================================= */
+
+function tradeFromRow(row) {
+  const features =
+    row.features || {};
+
+  if (
+    !features.strategyQualified
+  ) {
+    return null;
+  }
+
+  const direction =
+    features.strategyDirection;
+
+  if (
+    direction !== "BUY" &&
+    direction !== "SELL"
+  ) {
+    return null;
+  }
+
+  const stopAtr =
+    finite(
+      features.stopAtr
+    );
+
+  const targetR =
+    finite(
+      features.targetR
+    );
+
+  if (
+    stopAtr === null ||
+    targetR === null ||
+    stopAtr <= 0 ||
+    targetR <= 0
+  ) {
+    return null;
+  }
+
+  const outcome =
+    evaluatePath(
+      row.future_path,
+      direction,
+      stopAtr,
+      targetR
+    );
+
+  if (!outcome) {
+    return null;
+  }
+
+  const resultR =
+    finite(
+      outcome.resultR
+    );
+
+  if (
+    resultR === null
+  ) {
+    return null;
+  }
+
+  return {
+    symbol:
+      row.symbol,
+
+    time:
+      row.candle_time,
+
+    direction,
+
+    regime:
+      row.regime ||
+      "UNKNOWN",
+
+    session:
+      row.session ||
+      "UNKNOWN",
+
+    score:
+      finite(
+        features.strategyScore
+      ) ?? 0,
+
+    agreement:
+      features.agreement ||
+      null,
+
+    stopAtr,
+
+    targetR,
+
+    r:
+      resultR,
+
+    outcome:
+      outcome.outcome
+  };
+}
+
+
+/* =========================================================
+   SIMULATION
 ========================================================= */
 
 function simulate(rows) {
-
-  const trades =
-    [];
-
-
-  for (
-    const row of
-    rows
-  ) {
-
-    const signal =
-      row.features
-        ?.strategySignal;
-
-
-    const qualified =
-      row.features
-        ?.strategyQualified ===
-      true;
-
-
-    if (
-      !qualified ||
-      ![
-        "BUY",
-        "SELL"
-      ].includes(
-        signal
-      )
-    ) {
-
-      continue;
-
-    }
-
-
-    const outcome =
-      evaluatePath(
-        row.future_path,
-        signal,
-        STOP_ATR,
-        TARGET_R
-      );
-
-
-    if (!outcome) {
-      continue;
-    }
-
-
-    const resultR =
-      finite(
-        outcome.resultR
-      );
-
-
-    if (
-      resultR ===
-      null
-    ) {
-      continue;
-    }
-
-
-    trades.push({
-
-      symbol:
-        row.symbol,
-
-      time:
-        row.candle_time,
-
-      direction:
-        signal,
-
-      r:
-        resultR,
-
-      outcome:
-        outcome.outcome,
-
-      regime:
-        row.regime ||
-        "UNKNOWN",
-
-      session:
-        row.session ||
-        "UNKNOWN",
-
-      score:
-        row.features
-          ?.strategyScore ??
-        null
-
-    });
-
-  }
-
-
-  return trades;
+  return rows
+    .map(tradeFromRow)
+    .filter(Boolean);
 }
 
 
@@ -534,55 +419,63 @@ function groupedMetrics(
   trades,
   key
 ) {
-
-  const groups =
-    {};
-
+  const groups = {};
 
   for (
-    const trade of
-    trades
+    const trade of trades
   ) {
-
     const name =
       trade[key] ||
       "UNKNOWN";
 
-
-    groups[name] ??=
-      [];
-
+    groups[name] ??= [];
 
     groups[name].push(
       trade
     );
-
   }
 
-
-  const output =
-    {};
-
+  const output = {};
 
   for (
     const [
       name,
-      rows
+      group
     ] of
-    Object.entries(
-      groups
-    )
+    Object.entries(groups)
   ) {
-
     output[name] =
-      metrics(
-        rows
-      );
-
+      metrics(group);
   }
 
-
   return output;
+}
+
+
+/* =========================================================
+   DIRECTION
+========================================================= */
+
+function byDirection(trades) {
+  return {
+    BUY:
+      metrics(
+        trades.filter(
+          trade =>
+            trade.direction ===
+            "BUY"
+        )
+      ),
+
+    SELL:
+      metrics(
+        trades.filter(
+          trade =>
+            trade.direction ===
+            "SELL"
+        )
+      )
+  };
 }
 
 
@@ -591,19 +484,14 @@ function groupedMetrics(
 ========================================================= */
 
 function dateRange(rows) {
-
   if (!rows.length) {
-
     return {
-      from:null,
-      to:null
+      from: null,
+      to: null
     };
-
   }
 
-
   return {
-
     from:
       rows[0]
         ?.candle_time ||
@@ -613,7 +501,6 @@ function dateRange(rows) {
       rows.at(-1)
         ?.candle_time ||
       null
-
   };
 }
 
@@ -626,82 +513,60 @@ export default async function handler(
   req,
   res
 ) {
-
   res.setHeader(
     "Cache-Control",
     "no-store, no-cache, must-revalidate, proxy-revalidate"
   );
-
 
   res.setHeader(
     "Pragma",
     "no-cache"
   );
 
-
   res.setHeader(
     "Expires",
     "0"
   );
-
 
   res.setHeader(
     "Surrogate-Control",
     "no-store"
   );
 
-
   res.setHeader(
     "Access-Control-Allow-Origin",
     "*"
   );
-
 
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, OPTIONS"
   );
 
-
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Content-Type, Authorization"
   );
 
-
   if (
-    req.method ===
-    "OPTIONS"
+    req.method === "OPTIONS"
   ) {
-
     return res
       .status(204)
       .end();
-
   }
 
-
   if (
-    req.method !==
-    "GET"
+    req.method !== "GET"
   ) {
-
     return res
       .status(405)
       .json({
-
-        success:false,
-
-        version:
-          VERSION,
-
-        error:
-          "Use GET."
-
+        success: false,
+        version: VERSION,
+        error: "Use GET."
       });
-
   }
-
 
   const symbol =
     normalizeSymbol(
@@ -712,14 +577,11 @@ export default async function handler(
       "XAU/USD"
     );
 
-
   if (!symbol) {
-
     return res
       .status(400)
       .json({
-
-        success:false,
+        success: false,
 
         version:
           VERSION,
@@ -727,72 +589,46 @@ export default async function handler(
         error:
           "Unsupported symbol.",
 
-        supportedSymbols:[
+        supportedSymbols: [
           "XAU/USD",
           "BTC/USD"
         ]
-
       });
-
   }
 
-
-  if (
-    !dbEnabled()
-  ) {
-
+  if (!dbEnabled()) {
     return res
       .status(200)
       .json({
-
-        success:true,
+        success: true,
 
         version:
           VERSION,
 
         symbol,
 
-        available:false,
+        available: false,
 
         error:
           "DATABASE_URL is not configured."
-
       });
-
   }
 
-
   try {
-
     let rows =
       await loadResolvedStates({
-
         symbol,
 
         limit:
-          MAX_STATES
-
+          MAX_RESOLVED_STATES
       });
 
-
-    if (
-      !Array.isArray(rows)
-    ) {
-
-      rows =
-        [];
-
+    if (!Array.isArray(rows)) {
+      rows = [];
     }
 
-
-    /*
-      IMPORTANT:
-
-      Old V12/V13 memory is ignored.
-
-      Only rows generated by TREND_PULLBACK_V14
-      are accepted.
-    */
+    const allResolvedCount =
+      rows.length;
 
     rows =
       rows
@@ -804,10 +640,7 @@ export default async function handler(
             )
         )
         .sort(
-          (
-            a,
-            b
-          ) =>
+          (a, b) =>
             Date.parse(
               a.candle_time
             ) -
@@ -816,23 +649,17 @@ export default async function handler(
             )
         );
 
-
     const count =
-      await memoryCount(
-        symbol
-      );
-
+      await memoryCount(symbol);
 
     if (
       rows.length <
-      MIN_STATES
+      MIN_RESOLVED_STATES
     ) {
-
       return res
         .status(200)
         .json({
-
-          success:true,
+          success: true,
 
           version:
             VERSION,
@@ -842,104 +669,89 @@ export default async function handler(
 
           symbol,
 
-          available:false,
+          available: false,
 
           memory:
             count,
 
-          resolvedStates:
+          allResolvedStates:
+            allResolvedCount,
+
+          v15ResolvedStates:
             rows.length,
 
           requiredStates:
-            MIN_STATES,
+            MIN_RESOLVED_STATES,
 
           error:
-            `Need V14 ${symbol} memory. Run BACKFILL MEMORY after deploying the new core.js and memory.js.`
-
+            `Need at least ${MIN_RESOLVED_STATES} resolved V15 ${symbol} states. Run a new V15 backfill first.`
         });
-
     }
 
+    /*
+      V15 is already a fixed strategy.
 
-    /* =====================================================
-       CHRONOLOGICAL SPLIT
+      Therefore research does NOT search
+      the holdout for a better threshold.
 
-       We are NOT optimizing anything.
-
-       The split remains useful because it lets us see
-       whether performance persists into later unseen data.
-    ===================================================== */
+      We simply reserve the newest 30%
+      as the untouched report period.
+    */
 
     const split =
       Math.floor(
         rows.length *
-        TRAINING_RATIO
+        (1 - HOLDOUT_RATIO)
       );
 
-
-    const training =
+    const development =
       rows.slice(
         0,
         split
       );
 
-
-    const test =
+    const holdout =
       rows.slice(
         split
       );
 
+    const developmentTrades =
+      simulate(development);
 
-    const trainingTrades =
-      simulate(
-        training
-      );
+    const holdoutTrades =
+      simulate(holdout);
 
-
-    const testTrades =
-      simulate(
-        test
-      );
-
-
-    const trainingMetrics =
+    const developmentMetrics =
       metrics(
-        trainingTrades
+        developmentTrades
       );
 
-
-    const testMetrics =
+    const holdoutMetrics =
       metrics(
-        testTrades
+        holdoutTrades
       );
-
 
     const byRegime =
       groupedMetrics(
-        testTrades,
+        holdoutTrades,
         "regime"
       );
 
-
     const bySession =
       groupedMetrics(
-        testTrades,
+        holdoutTrades,
         "session"
       );
 
-
-    const byDirection =
-      groupedMetrics(
-        testTrades,
-        "direction"
+    const directionMetrics =
+      byDirection(
+        holdoutTrades
       );
-
 
     return res
       .status(200)
       .json({
-
-        success:true,
+        success: true,
 
         version:
           VERSION,
@@ -947,12 +759,12 @@ export default async function handler(
         engineVersion:
           VERSION,
 
+        engine:
+          "MULTI_AGENT_V15",
+
         symbol,
 
-        available:true,
-
-        strategy:
-          "TREND_PULLBACK_V14",
+        available: true,
 
         memory:
           count,
@@ -960,118 +772,97 @@ export default async function handler(
         resolvedStates:
           rows.length,
 
-        methodology:{
+        oldStatesIgnored:
+          Math.max(
+            0,
+            allResolvedCount -
+            rows.length
+          ),
 
+        methodology: {
           split:
             "chronological",
 
-          trainingPercent:
+          developmentPercent:
             70,
 
           holdoutPercent:
             30,
 
-          optimization:
-            "NONE",
+          strategy:
+            "fixed V15 strategy",
+
+          thresholdSelection:
+            "none",
 
           holdoutUsedForSelection:
             false,
 
-          stopAtr:
-            STOP_ATR,
-
-          targetR:
-            TARGET_R,
-
-          strategy:
-            "H1 EMA200 trend + M15 EMA200 confirmation + M5 EMA20 pullback/continuation + RSI"
-
+          note:
+            "Only rows generated by V15 are included."
         },
 
         method:
-          "70/30 chronological fixed-strategy test",
+          "Fixed V15 strategy / 70% development / 30% untouched holdout",
 
         dateRange:
-          dateRange(
-            rows
-          ),
+          dateRange(rows),
 
         trainingRange:
           dateRange(
-            training
+            development
           ),
 
         testRange:
           dateRange(
-            test
+            holdout
           ),
 
         trainRows:
-          training.length,
+          development.length,
 
         testRows:
-          test.length,
+          holdout.length,
 
         /*
-          Keep selectedThreshold so your current
-          frontend does not break.
+          Kept for your existing frontend.
 
-          V14 does NOT use a threshold.
+          Your old frontend expects this
+          property.
         */
 
         selectedThreshold:
           "FIXED",
 
-        viableCandidates:
-          1,
-
         training:
-          trainingMetrics,
+          developmentMetrics,
 
         test:
-          testMetrics,
+          holdoutMetrics,
 
         byRegime,
 
         bySession,
 
-        byDirection,
+        byDirection:
+          directionMetrics,
 
-        candidates:[
-          {
-            strategy:
-              "TREND_PULLBACK_V14",
-
-            stopAtr:
-              STOP_ATR,
-
-            targetR:
-              TARGET_R,
-
-            metrics:
-              trainingMetrics
-          }
-        ],
+        candidates: [],
 
         note:
-          "V14 uses fixed strategy rules. No threshold was optimized against the holdout. Historical results do not guarantee future performance."
-
+          "V15 holdout performance is descriptive, not a guarantee of future results. The holdout is not used to modify the strategy."
       });
-
   }
-  catch(error) {
-
+  catch (error) {
     console.error(
-      `RESEARCH V14 ${symbol}:`,
+      `RESEARCH V15 ${symbol}:`,
       error
     );
-
 
     return res
       .status(500)
       .json({
-
-        success:false,
+        success: false,
 
         version:
           VERSION,
@@ -1083,9 +874,7 @@ export default async function handler(
 
         error:
           error?.message ||
-          `${symbol} V14 research failed.`
-
+          `${symbol} V15 research failed.`
       });
-
   }
 }
