@@ -24,70 +24,47 @@ const TF_CHAIN = {
   "1D": ["1D"]
 };
 
-const S = {
+const CFG = {
+  outputSize: 500,
+
   atrLen: 14,
   effortLen: 50,
   pivotLen: 4,
   trendLen: 80,
   extremeLen: 30,
 
-  climaxEffortMult: 1.8,
-  climaxSpreadMult: 1.5,
+  climaxEffortMult: 1.55,
+  climaxSpreadMult: 1.25,
 
   absorptionMinBars: 3,
-  absorptionMaxBars: 8,
-  absorptionExtremeATR: 0.5,
-  absorptionReboundATR: 0.35,
+  absorptionMaxBars: 10,
 
-  minARATR: 2.0,
-  maxARBars: 30,
+  minArAtr: 1.6,
+  maxArBars: 35,
 
-  boundaryTolATR: 0.75,
+  boundaryTolAtr: 0.9,
 
-  stMaxEffortRatio: 0.9,
-  stMaxSpreadRatio: 0.9,
+  minPhaseBBars: 18,
+  minPhaseBTests: 1,
+  minOppTests: 1,
 
-  minPhaseBBars: 30,
-  minPhaseBTests: 2,
-  minOppositeTests: 1,
-  minTraversals: 2,
+  phaseBZoneFrac: 0.28,
 
-  phaseBZoneFrac: 0.25,
+  springMinAtr: 0.12,
+  springMaxAtr: 2.8,
 
-  phaseBRangeMinATR: 1.5,
-  phaseBRangeMaxATR: 8.0,
+  testTolAtr: 1.35,
 
-  springMinPenATR: 0.15,
-  springMaxPenATR: 2.5,
-  springCloseMin: 0.55,
-  utadCloseMax: 0.45,
-  springEffortMax: 1.5,
+  strengthEffortMult: 1.05,
+  strengthSpreadAtr: 0.9,
 
-  testTolATR: 1.25,
-  testMaxEffortRatio: 0.8,
-  testMaxSpreadRatio: 0.8,
+  breakAtr: 0.12,
 
-  breakATR: 0.15,
-
-  strengthEffortMult: 1.15,
-  strengthSpreadATR: 1.15,
-
-  sosCloseMin: 0.65,
-  sowCloseMax: 0.35,
-
-  phaseDDominanceFrac: 0.65,
-
-  lpsBoundaryATR: 1.5,
-
-  confirmBars: 3,
-
-  minConfidence: 60,
-  minValidation: 50,
+  minConfidence: 55,
+  minValidation: 45,
 
   rr1: 1.5,
-  rr2: 2.5,
-
-  outputSize: 500
+  rr2: 2.5
 };
 
 
@@ -95,51 +72,86 @@ const S = {
    BASIC HELPERS
 ========================================================= */
 
-function clamp(v, lo, hi) {
-  return Math.max(
-    lo,
-    Math.min(
-      hi,
-      v
-    )
-  );
-}
+function finite(value) {
 
+  const n =
+    Number(value);
 
-function round(v, digits = 2) {
-
-  return Number.isFinite(v)
-    ? Number(
-        v.toFixed(digits)
-      )
+  return Number.isFinite(n)
+    ? n
     : null;
 
 }
 
 
-function mean(values) {
+function round(
+  value,
+  digits = 2
+) {
 
-  const usable =
+  const n =
+    finite(value);
+
+  return n === null
+    ? null
+    : Number(
+        n.toFixed(digits)
+      );
+
+}
+
+
+function clamp(
+  value,
+  min,
+  max
+) {
+
+  return Math.max(
+    min,
+    Math.min(
+      max,
+      value
+    )
+  );
+
+}
+
+
+function mean(
+  values
+) {
+
+  const clean =
     values.filter(
       Number.isFinite
     );
 
-  return usable.length
-    ? usable.reduce(
-        (sum, v) =>
-          sum + v,
-        0
-      ) / usable.length
-    : NaN;
+  return clean.length
+
+    ?
+
+    clean.reduce(
+      (a, b) =>
+        a + b,
+      0
+    ) / clean.length
+
+    :
+
+    null;
 
 }
 
 
 /* =========================================================
-   SAFE ERROR HANDLING
+   SAFE ERROR TEXT
+
+   This prevents:
+   [object Object]
 ========================================================= */
 
-function stringifySafe(
+function safeText(
   value
 ) {
 
@@ -163,6 +175,18 @@ function stringifySafe(
 
 
   if (
+    value instanceof Error
+  ) {
+
+    return (
+      value.message ||
+      String(value)
+    );
+
+  }
+
+
+  if (
     typeof value ===
       "number"
 
@@ -172,58 +196,12 @@ function stringifySafe(
       "boolean"
   ) {
 
-    return String(
-      value
-    );
-
-  }
-
-
-  try {
-
-    return JSON.stringify(
-      value
-    );
-
-  }
-
-  catch {
-
-    return String(
-      value
-    );
-
-  }
-
-}
-
-
-function errorMessage(
-  value
-) {
-
-  if (
-    value instanceof Error &&
-    value.message
-  ) {
-
-    return value.message;
+    return String(value);
 
   }
 
 
   if (
-    typeof value ===
-    "string"
-  ) {
-
-    return value;
-
-  }
-
-
-  if (
-    value &&
     typeof value ===
     "object"
   ) {
@@ -242,23 +220,18 @@ function errorMessage(
 
       ??
 
-      value.description
-
-      ??
-
-      value.code;
+      value.description;
 
 
     if (
-      nested !==
-      undefined
+      nested !== undefined &&
+      nested !== value
     ) {
 
       const text =
-        stringifySafe(
+        safeText(
           nested
         );
-
 
       if (
         text
@@ -271,23 +244,27 @@ function errorMessage(
     }
 
 
-    return (
-      stringifySafe(
+    try {
+
+      return JSON.stringify(
         value
-      )
-      ||
-      "Unknown object error"
-    );
+      );
+
+    }
+
+    catch {
+
+      return String(
+        value
+      );
+
+    }
 
   }
 
 
-  return (
-    stringifySafe(
-      value
-    )
-    ||
-    "Unknown error"
+  return String(
+    value
   );
 
 }
@@ -331,10 +308,89 @@ function normalizeSymbol(
 
 
   return (
-    aliases[symbol]
-    ||
+    aliases[symbol] ||
     symbol
   );
+
+}
+
+
+/* =========================================================
+   TIME
+========================================================= */
+
+function parseTime(
+  value
+) {
+
+  if (
+    !value
+  ) {
+
+    return NaN;
+
+  }
+
+
+  const clean =
+    String(value)
+      .trim()
+      .replace(
+        " ",
+        "T"
+      );
+
+
+  return new Date(
+
+    /Z$|[+-]\d\d:\d\d$/.test(
+      clean
+    )
+
+      ?
+
+      clean
+
+      :
+
+      `${clean}Z`
+
+  ).getTime();
+
+}
+
+
+function queryValue(
+  value,
+  fallback
+) {
+
+  if (
+    Array.isArray(
+      value
+    )
+  ) {
+
+    return (
+      value[0] ??
+      fallback
+    );
+
+  }
+
+
+  if (
+    value === undefined ||
+    value === null ||
+    value === ""
+  ) {
+
+    return fallback;
+
+  }
+
+
+  return value;
 
 }
 
@@ -343,7 +399,7 @@ function normalizeSymbol(
    HTTP
 ========================================================= */
 
-async function fetchJSON(
+async function fetchJson(
   url,
   timeoutMs = 18000
 ) {
@@ -382,7 +438,7 @@ async function fetchJSON(
 
 
     let data =
-      {};
+      null;
 
 
     if (
@@ -402,7 +458,7 @@ async function fetchJSON(
 
         throw new Error(
 
-          `Twelve Data returned non-JSON data (HTTP ${response.status}): ${raw.slice(0, 220)}`
+          `Provider returned non-JSON HTTP ${response.status}: ${raw.slice(0, 220)}`
 
         );
 
@@ -420,55 +476,69 @@ async function fetchJSON(
       "error"
     ) {
 
-      throw new Error(
+      const providerMessage =
 
-        errorMessage(
-
+        safeText(
           data?.message
-
-          ??
-
-          data?.error
-
-          ??
-
-          data
-
         )
 
         ||
 
-        `Twelve Data HTTP ${response.status}`
+        safeText(
+          data?.error
+        )
 
+        ||
+
+        safeText(
+          data
+        )
+
+        ||
+
+        `HTTP ${response.status}`;
+
+
+      throw new Error(
+        providerMessage
       );
 
     }
 
 
-    return data;
+    return (
+      data ||
+      {}
+    );
 
   }
 
   catch (
-    err
+    error
   ) {
 
     if (
-      err?.name ===
+      error?.name ===
       "AbortError"
     ) {
 
       throw new Error(
-        "Twelve Data request timed out."
+        "Market-data request timed out."
       );
 
     }
 
 
     throw new Error(
-      errorMessage(
-        err
+
+      safeText(
+        error
       )
+
+      ||
+
+      "Unknown market-data error."
+
     );
 
   }
@@ -503,7 +573,7 @@ async function fetchSeries(
   ) {
 
     throw new Error(
-      "TWELVE_DATA_API_KEY is missing in Vercel Environment Variables."
+      "TWELVE_DATA_API_KEY is missing in Vercel."
     );
 
   }
@@ -518,71 +588,40 @@ async function fetchSeries(
   ) {
 
     throw new Error(
-      `Unsupported timeframe: ${tf}`
+      `Unsupported timeframe ${tf}.`
     );
 
   }
 
 
-  const params =
-    new URLSearchParams();
+  const query =
+    new URLSearchParams({
 
+      symbol,
 
-  params.set(
-    "symbol",
-    symbol
-  );
+      interval,
 
+      outputsize:
+        String(
+          CFG.outputSize
+        ),
 
-  params.set(
-    "interval",
-    interval
-  );
+      timezone:
+        "UTC",
 
+      format:
+        "JSON",
 
-  params.set(
-    "outputsize",
-    String(
-      S.outputSize
-    )
-  );
+      apikey:
+        apiKey
 
-
-  params.set(
-    "order",
-    "asc"
-  );
-
-
-  params.set(
-    "format",
-    "JSON"
-  );
-
-
-  params.set(
-    "apikey",
-    apiKey
-  );
-
-
-  if (
-    tf !==
-    "1D"
-  ) {
-
-    params.set(
-      "timezone",
-      "UTC"
-    );
-
-  }
+    });
 
 
   const data =
-    await fetchJSON(
+    await fetchJson(
 
-      `${BASE_URL}/time_series?${params.toString()}`
+      `${BASE_URL}/time_series?${query.toString()}`
 
     );
 
@@ -594,7 +633,9 @@ async function fetchSeries(
   ) {
 
     throw new Error(
-      `${tf}: provider returned no values array for ${symbol}.`
+
+      `${tf}: no candle values were returned for ${symbol}.`
+
     );
 
   }
@@ -605,39 +646,37 @@ async function fetchSeries(
     data.values
 
       .map(
-        (
-          v
-        ) => ({
+        item => ({
 
           time:
             String(
-              v.datetime ||
+              item.datetime ||
               ""
             ),
 
           open:
             Number(
-              v.open
+              item.open
             ),
 
           high:
             Number(
-              v.high
+              item.high
             ),
 
           low:
             Number(
-              v.low
+              item.low
             ),
 
           close:
             Number(
-              v.close
+              item.close
             ),
 
           volume:
             Number(
-              v.volume ||
+              item.volume ||
               0
             )
 
@@ -645,28 +684,32 @@ async function fetchSeries(
       )
 
       .filter(
-        (
-          b
-        ) =>
+        bar =>
           [
-            b.open,
-            b.high,
-            b.low,
-            b.close
+            bar.open,
+            bar.high,
+            bar.low,
+            bar.close
           ].every(
             Number.isFinite
           )
+      )
+
+      .sort(
+        (a, b) =>
+          parseTime(a.time) -
+          parseTime(b.time)
       );
 
 
   if (
     bars.length <
-    80
+    100
   ) {
 
     throw new Error(
 
-      `${tf}: only ${bars.length} usable candles were returned for ${symbol}.`
+      `${tf}: only ${bars.length} usable candles were returned.`
 
     );
 
@@ -723,7 +766,7 @@ function trueRange(
 function atrAt(
   bars,
   i,
-  len = S.atrLen
+  len = CFG.atrLen
 ) {
 
   if (
@@ -731,7 +774,7 @@ function atrAt(
     len
   ) {
 
-    return NaN;
+    return null;
 
   }
 
@@ -751,10 +794,12 @@ function atrAt(
   ) {
 
     values.push(
+
       trueRange(
         bars,
         k
       )
+
     );
 
   }
@@ -784,29 +829,28 @@ function spreadAt(
 }
 
 
-function hasRealVolume(
+function hasVolume(
   bars
 ) {
 
   return bars
 
     .slice(
-      -Math.min(
-        120,
-        bars.length
-      )
+      -120
     )
 
     .some(
-      (
-        b
-      ) =>
+      bar =>
+
         Number.isFinite(
-          b.volume
+          bar.volume
         )
+
         &&
-        b.volume >
+
+        bar.volume >
         0
+
     );
 
 }
@@ -823,9 +867,8 @@ function effortAt(
     ?
 
     Math.max(
-      Number(
-        bars[i].volume
-      ) || 0,
+      bars[i].volume ||
+      0,
       0
     )
 
@@ -843,7 +886,7 @@ function avgEffortAt(
   bars,
   i,
   useVolume,
-  len = S.effortLen
+  len = CFG.effortLen
 ) {
 
   if (
@@ -851,7 +894,7 @@ function avgEffortAt(
     len - 1
   ) {
 
-    return NaN;
+    return null;
 
   }
 
@@ -897,7 +940,7 @@ function avgEffortAt(
 function isPivotLow(
   bars,
   i,
-  len = S.pivotLen
+  len = CFG.pivotLen
 ) {
 
   if (
@@ -914,7 +957,7 @@ function isPivotLow(
   }
 
 
-  const price =
+  const p =
     bars[i].low;
 
 
@@ -934,7 +977,7 @@ function isPivotLow(
       &&
 
       bars[k].low <
-      price
+      p
     ) {
 
       return false;
@@ -952,7 +995,7 @@ function isPivotLow(
 function isPivotHigh(
   bars,
   i,
-  len = S.pivotLen
+  len = CFG.pivotLen
 ) {
 
   if (
@@ -969,7 +1012,7 @@ function isPivotHigh(
   }
 
 
-  const price =
+  const p =
     bars[i].high;
 
 
@@ -989,7 +1032,7 @@ function isPivotHigh(
       &&
 
       bars[k].high >
-      price
+      p
     ) {
 
       return false;
@@ -1011,7 +1054,7 @@ function isPivotHigh(
 function priorTrendScore(
   bars,
   i,
-  len = S.trendLen
+  len = CFG.trendLen
 ) {
 
   const start =
@@ -1044,14 +1087,16 @@ function priorTrendScore(
       bars,
       i
     )
+
     ||
+
     spreadAt(
       bars,
       i
     );
 
 
-  let path =
+  let travel =
     0;
 
 
@@ -1065,7 +1110,7 @@ function priorTrendScore(
     k++
   ) {
 
-    path +=
+    travel +=
       Math.abs(
 
         bars[k].close -
@@ -1082,11 +1127,17 @@ function priorTrendScore(
 
 
   const efficiency =
-    path > 0
+
+    travel >
+    0
+
       ?
+
       Math.abs(net) /
-      path
+      travel
+
       :
+
       0;
 
 
@@ -1124,10 +1175,15 @@ function priorTrendScore(
   const directional =
 
     (
-      net >= 0
+      net >=
+      0
+
         ?
+
         1
+
         :
+
         -1
     )
 
@@ -1155,11 +1211,49 @@ function priorTrendScore(
 
 
 /* =========================================================
-   NAMES
+   EVENTS / NAMES
 ========================================================= */
 
+function event(
+  label,
+  index,
+  price,
+  score,
+  bars
+) {
+
+  return {
+
+    label,
+
+    index,
+
+    time:
+      bars[index]?.time ||
+      null,
+
+    price:
+      round(
+        price,
+        4
+      ),
+
+    score:
+      Number.isFinite(
+        score
+      )
+        ?
+        score
+        :
+        null
+
+  };
+
+}
+
+
 function phaseName(
-  p
+  phase
 ) {
 
   return ({
@@ -1182,7 +1276,7 @@ function phaseName(
     5:
       "E - Trend out of range"
 
-  })[p]
+  })[phase]
 
   ||
 
@@ -1229,39 +1323,70 @@ function structureName(
 }
 
 
-function makeEvent(
-  label,
-  index,
-  price,
-  score,
-  bars
+function emptyAnalysis(
+  reason,
+  useVolume = null
 ) {
 
   return {
 
-    label,
+    phase:
+      0,
 
-    index,
+    phaseName:
+      "None",
 
-    time:
-      bars[index]?.time
-      ||
+    structure:
+      "SEARCHING",
+
+    direction:
+      "WAIT",
+
+    confidence:
+      0,
+
+    validation:
+      0,
+
+    trendScore:
+      0,
+
+    range:
       null,
 
-    price:
-      round(
-        price,
-        4
-      ),
+    stats:
+      {},
 
-    score:
-      Number.isFinite(
-        score
-      )
+    volumeMode:
+
+      useVolume ===
+      null
+
         ?
-        score
-        :
+
         null
+
+        :
+
+        useVolume
+
+          ?
+
+          "VOLUME"
+
+          :
+
+          "SPREAD_PROXY",
+
+    events:
+      [],
+
+    entry:
+      null,
+
+    reasons: [
+      reason
+    ]
 
   };
 
@@ -1284,8 +1409,8 @@ function findClimaxes(
   const start =
     Math.max(
 
-      S.effortLen +
-      S.extremeLen +
+      CFG.effortLen +
+      CFG.extremeLen +
       10,
 
       bars.length -
@@ -1300,7 +1425,7 @@ function findClimaxes(
 
     i <
       bars.length -
-      S.pivotLen;
+      CFG.pivotLen;
 
     i++
   ) {
@@ -1348,7 +1473,7 @@ function findClimaxes(
     }
 
 
-    const candle =
+    const bar =
       bars[i];
 
 
@@ -1361,8 +1486,8 @@ function findClimaxes(
 
     const closePos =
       (
-        candle.close -
-        candle.low
+        bar.close -
+        bar.low
       )
       /
       spread;
@@ -1381,7 +1506,7 @@ function findClimaxes(
         Math.max(
           0,
           i -
-          S.extremeLen
+          CFG.extremeLen
         ),
 
         i
@@ -1401,10 +1526,8 @@ function findClimaxes(
     const priorLow =
       Math.min(
         ...prior.map(
-          (
-            b
-          ) =>
-            b.low
+          x =>
+            x.low
         )
       );
 
@@ -1412,10 +1535,8 @@ function findClimaxes(
     const priorHigh =
       Math.max(
         ...prior.map(
-          (
-            b
-          ) =>
-            b.high
+          x =>
+            x.high
         )
       );
 
@@ -1431,20 +1552,20 @@ function findClimaxes(
     const effortHit =
       effort >=
       avgEffort *
-      S.climaxEffortMult;
+      CFG.climaxEffortMult;
 
 
     const spreadHit =
       spread >=
       atr *
-      S.climaxSpreadMult;
+      CFG.climaxSpreadMult;
 
 
     const scScore =
 
       (
         trend <=
-        -15
+        -12
           ?
           1
           :
@@ -1454,7 +1575,7 @@ function findClimaxes(
       +
 
       (
-        candle.low <=
+        bar.low <=
         priorLow
           ?
           1
@@ -1496,8 +1617,8 @@ function findClimaxes(
       +
 
       (
-        candle.close >
-        candle.open
+        bar.close >
+        bar.open
           ?
           1
           :
@@ -1509,7 +1630,7 @@ function findClimaxes(
 
       (
         trend >=
-        15
+        12
           ?
           1
           :
@@ -1519,7 +1640,7 @@ function findClimaxes(
       +
 
       (
-        candle.high >=
+        bar.high >=
         priorHigh
           ?
           1
@@ -1561,8 +1682,8 @@ function findClimaxes(
       +
 
       (
-        candle.close <
-        candle.open
+        bar.close <
+        bar.open
           ?
           1
           :
@@ -1572,7 +1693,7 @@ function findClimaxes(
 
     if (
       scScore >=
-      5
+      4
     ) {
 
       out.push({
@@ -1597,7 +1718,7 @@ function findClimaxes(
 
     if (
       bcScore >=
-      5
+      4
     ) {
 
       out.push({
@@ -1628,65 +1749,7 @@ function findClimaxes(
 
 
 /* =========================================================
-   EMPTY ANALYSIS
-========================================================= */
-
-function emptyAnalysis(
-  reason,
-  useVolume = null
-) {
-
-  return {
-
-    phase:
-      0,
-
-    phaseName:
-      "None",
-
-    structure:
-      "SEARCHING",
-
-    direction:
-      "WAIT",
-
-    confidence:
-      0,
-
-    validation:
-      0,
-
-    range:
-      null,
-
-    volumeMode:
-      useVolume == null
-        ?
-        null
-        :
-        useVolume
-          ?
-          "VOLUME"
-          :
-          "SPREAD_PROXY",
-
-    events:
-      [],
-
-    entry:
-      null,
-
-    reasons: [
-      reason
-    ]
-
-  };
-
-}
-
-
-/* =========================================================
-   BUILD CAMPAIGN
+   BUILD WYCKOFF CAMPAIGN
 ========================================================= */
 
 function buildCampaign(
@@ -1705,7 +1768,7 @@ function buildCampaign(
     "ACCUM";
 
 
-  const climax =
+  const climaxBar =
     bars[
       candidate.index
     ];
@@ -1714,9 +1777,9 @@ function buildCampaign(
   const climaxPrice =
     bullStop
       ?
-      climax.low
+      climaxBar.low
       :
-      climax.high;
+      climaxBar.high;
 
 
   const climaxEffort =
@@ -1736,7 +1799,7 @@ function buildCampaign(
 
   const events = [
 
-    makeEvent(
+    event(
 
       bullStop
         ?
@@ -1769,12 +1832,12 @@ function buildCampaign(
 
     let i =
       candidate.index +
-      S.absorptionMinBars;
+      CFG.absorptionMinBars;
 
     i <=
       Math.min(
         candidate.index +
-        S.absorptionMaxBars,
+        CFG.absorptionMaxBars,
         last
       );
 
@@ -1796,24 +1859,20 @@ function buildCampaign(
       );
 
 
-    const recentLow =
+    const low =
       Math.min(
         ...recent.map(
-          (
-            b
-          ) =>
-            b.low
+          x =>
+            x.low
         )
       );
 
 
-    const recentHigh =
+    const high =
       Math.max(
         ...recent.map(
-          (
-            b
-          ) =>
-            b.high
+          x =>
+            x.high
         )
       );
 
@@ -1824,17 +1883,17 @@ function buildCampaign(
 
       &&
 
-      recentLow >=
+      low >=
       climaxPrice -
       candidate.atr *
-      S.absorptionExtremeATR
+      0.6
 
       &&
 
       bars[i].close >=
       climaxPrice +
       candidate.atr *
-      S.absorptionReboundATR
+      0.25
 
     ) {
 
@@ -1852,17 +1911,17 @@ function buildCampaign(
 
       &&
 
-      recentHigh <=
+      high <=
       climaxPrice +
       candidate.atr *
-      S.absorptionExtremeATR
+      0.6
 
       &&
 
       bars[i].close <=
       climaxPrice -
       candidate.atr *
-      S.absorptionReboundATR
+      0.25
 
     ) {
 
@@ -1896,7 +1955,7 @@ function buildCampaign(
     Math.min(
 
       candidate.index +
-      S.maxARBars,
+      CFG.maxArBars,
 
       last
 
@@ -1929,13 +1988,13 @@ function buildCampaign(
       arPrice =
         bars[i].high;
 
-
       arIndex =
         i;
 
     }
 
-    else if (
+
+    if (
 
       !bullStop
 
@@ -1949,7 +2008,6 @@ function buildCampaign(
       arPrice =
         bars[i].low;
 
-
       arIndex =
         i;
 
@@ -1958,7 +2016,7 @@ function buildCampaign(
   }
 
 
-  const arMoveATR =
+  const arMoveAtr =
 
     arIndex >=
     0
@@ -1982,9 +2040,9 @@ function buildCampaign(
       0;
 
 
-  const arOK =
-    arMoveATR >=
-    S.minARATR;
+  const arOk =
+    arMoveAtr >=
+    CFG.minArAtr;
 
 
   let phase =
@@ -2021,12 +2079,14 @@ function buildCampaign(
 
   ) {
 
-
     return {
 
       ...emptyAnalysis(
-        "Climax detected, but the automatic rally/reaction is not valid yet.",
+
+        "Climax detected, but an Automatic Rally/Reaction is not established yet.",
+
         useVolume
+
       ),
 
       phase:
@@ -2047,6 +2107,12 @@ function buildCampaign(
       confidence:
         10,
 
+      trendScore:
+        round(
+          candidate.trend,
+          1
+        ),
+
       events
 
     };
@@ -2055,7 +2121,7 @@ function buildCampaign(
 
 
   /* =======================================================
-     PHASE B
+     PHASE B / SECONDARY TESTS
   ======================================================= */
 
   let stIndex =
@@ -2063,14 +2129,14 @@ function buildCampaign(
 
 
   let stPrice =
-    NaN;
+    null;
 
 
   let stCount =
     0;
 
 
-  let oppCount =
+  let oppositeTests =
     0;
 
 
@@ -2088,7 +2154,7 @@ function buildCampaign(
 
     &&
 
-    arOK
+    arOk
 
     &&
 
@@ -2106,7 +2172,7 @@ function buildCampaign(
 
       i <
         last -
-        S.pivotLen;
+        CFG.pivotLen;
 
       i++
 
@@ -2118,7 +2184,9 @@ function buildCampaign(
           bars,
           i
         )
+
         ||
+
         candidate.atr;
 
 
@@ -2170,21 +2238,21 @@ function buildCampaign(
           )
           <=
           atr *
-          S.boundaryTolATR
+          CFG.boundaryTolAtr
 
           ||
 
           bars[i].low <=
           rangeLow +
           height *
-          S.phaseBZoneFrac;
+          CFG.phaseBZoneFrac;
 
 
         const holds =
           bars[i].low >=
           climaxPrice -
           atr *
-          S.boundaryTolATR;
+          CFG.boundaryTolAtr;
 
 
         if (
@@ -2199,22 +2267,20 @@ function buildCampaign(
 
           effort <=
           climaxEffort *
-          S.stMaxEffortRatio
+          1.05
 
           &&
 
           spread <=
           climaxSpread *
-          S.stMaxSpreadRatio
+          1.05
 
         ) {
 
           stCount++;
 
-
           stIndex =
             i;
-
 
           stPrice =
             bars[i].low;
@@ -2246,21 +2312,21 @@ function buildCampaign(
           )
           <=
           atr *
-          S.boundaryTolATR
+          CFG.boundaryTolAtr
 
           ||
 
           bars[i].high >=
           rangeHigh -
           height *
-          S.phaseBZoneFrac;
+          CFG.phaseBZoneFrac;
 
 
         const holds =
           bars[i].high <=
           climaxPrice +
           atr *
-          S.boundaryTolATR;
+          CFG.boundaryTolAtr;
 
 
         if (
@@ -2275,22 +2341,20 @@ function buildCampaign(
 
           effort <=
           climaxEffort *
-          S.stMaxEffortRatio
+          1.05
 
           &&
 
           spread <=
           climaxSpread *
-          S.stMaxSpreadRatio
+          1.05
 
         ) {
 
           stCount++;
 
-
           stIndex =
             i;
-
 
           stPrice =
             bars[i].high;
@@ -2322,11 +2386,11 @@ function buildCampaign(
           bars[i].high >=
           rangeHigh -
           atr *
-          S.boundaryTolATR
+          CFG.boundaryTolAtr
 
         ) {
 
-          oppCount++;
+          oppositeTests++;
 
         }
 
@@ -2347,11 +2411,11 @@ function buildCampaign(
           bars[i].low <=
           rangeLow +
           atr *
-          S.boundaryTolATR
+          CFG.boundaryTolAtr
 
         ) {
 
-          oppCount++;
+          oppositeTests++;
 
         }
 
@@ -2374,7 +2438,7 @@ function buildCampaign(
         bars[i].low <=
         rangeLow +
         height *
-        S.phaseBZoneFrac
+        CFG.phaseBZoneFrac
 
       ) {
 
@@ -2396,7 +2460,7 @@ function buildCampaign(
         bars[i].high >=
         rangeHigh -
         height *
-        S.phaseBZoneFrac
+        CFG.phaseBZoneFrac
 
       ) {
 
@@ -2451,7 +2515,7 @@ function buildCampaign(
 
     events.push(
 
-      makeEvent(
+      event(
         "AR",
         arIndex,
         arPrice,
@@ -2464,7 +2528,7 @@ function buildCampaign(
 
     events.push(
 
-      makeEvent(
+      event(
 
         "ST",
 
@@ -2488,6 +2552,7 @@ function buildCampaign(
 
 
   const bAge =
+
     stIndex >=
     0
 
@@ -2501,7 +2566,7 @@ function buildCampaign(
       0;
 
 
-  const rangeATR =
+  const rangeAtr =
 
     (
       rangeHigh -
@@ -2524,36 +2589,34 @@ function buildCampaign(
     &&
 
     stCount >=
-    S.minPhaseBTests
+    CFG.minPhaseBTests
 
     &&
 
     bAge >=
-    S.minPhaseBBars
+    CFG.minPhaseBBars
 
     &&
 
     (
-      oppCount >=
-      S.minOppositeTests
+      oppositeTests >=
+      CFG.minOppTests
 
       ||
 
       traversals >=
-      S.minTraversals
+      1
     )
 
     &&
 
-    rangeATR >=
-    S.phaseBRangeMinATR *
-    0.75
+    rangeAtr >=
+    0.8
 
     &&
 
-    rangeATR <=
-    S.phaseBRangeMaxATR *
-    2;
+    rangeAtr <=
+    14;
 
 
   /* =======================================================
@@ -2577,22 +2640,26 @@ function buildCampaign(
   ) {
 
 
+    const start =
+      Math.max(
+
+        stIndex +
+        1,
+
+        candidate.index +
+        8
+
+      );
+
+
     for (
-
       let i =
-        Math.max(
-          stIndex +
-          1,
-
-          candidate.index +
-          10
-        );
+        start;
 
       i <=
-      last;
+        last;
 
       i++
-
     ) {
 
 
@@ -2601,7 +2668,9 @@ function buildCampaign(
           bars,
           i
         )
+
         ||
+
         candidate.atr;
 
 
@@ -2627,7 +2696,9 @@ function buildCampaign(
           i,
           useVolume
         )
+
         ||
+
         effortAt(
           bars,
           i,
@@ -2657,13 +2728,13 @@ function buildCampaign(
 
         lowerPen >=
         atr *
-        S.springMinPenATR
+        CFG.springMinAtr
 
         &&
 
         lowerPen <=
         atr *
-        S.springMaxPenATR
+        CFG.springMaxAtr
 
         &&
 
@@ -2673,26 +2744,26 @@ function buildCampaign(
         &&
 
         closePos >=
-        S.springCloseMin
+        0.5
 
         &&
 
         effort <=
         avgEffort *
-        S.springEffortMax;
+        1.65;
 
 
       const utad =
 
         upperPen >=
         atr *
-        S.springMinPenATR
+        CFG.springMinAtr
 
         &&
 
         upperPen <=
         atr *
-        S.springMaxPenATR
+        CFG.springMaxAtr
 
         &&
 
@@ -2702,22 +2773,21 @@ function buildCampaign(
         &&
 
         closePos <=
-        S.utadCloseMax
+        0.5
 
         &&
 
         effort <=
         avgEffort *
-        S.springEffortMax;
+        1.65;
 
 
       if (
         spring
       ) {
 
-
         excursion =
-          makeEvent(
+          event(
 
             "Spring",
 
@@ -2749,9 +2819,8 @@ function buildCampaign(
         utad
       ) {
 
-
         excursion =
-          makeEvent(
+          event(
 
             "UTAD",
 
@@ -2784,20 +2853,19 @@ function buildCampaign(
 
 
   /* =======================================================
-     TEST AFTER SPRING / UTAD
+     TEST
   ======================================================= */
 
   if (
     excursion
   ) {
 
-
     events.push(
       excursion
     );
 
 
-    const excursionEffort =
+    const exEffort =
       effortAt(
         bars,
         excursion.index,
@@ -2805,7 +2873,7 @@ function buildCampaign(
       );
 
 
-    const excursionSpread =
+    const exSpread =
       spreadAt(
         bars,
         excursion.index
@@ -2820,7 +2888,7 @@ function buildCampaign(
 
       i <
         last -
-        S.pivotLen;
+        CFG.pivotLen;
 
       i++
 
@@ -2832,8 +2900,18 @@ function buildCampaign(
           bars,
           i
         )
+
         ||
+
         candidate.atr;
+
+
+      const effort =
+        effortAt(
+          bars,
+          i,
+          useVolume
+        );
 
 
       const spread =
@@ -2850,14 +2928,6 @@ function buildCampaign(
         )
         /
         spread;
-
-
-      const effort =
-        effortAt(
-          bars,
-          i,
-          useVolume
-        );
 
 
       if (
@@ -2877,37 +2947,36 @@ function buildCampaign(
         bars[i].low <=
         rangeLow +
         atr *
-        S.testTolATR
+        CFG.testTolAtr
 
         &&
 
         bars[i].low >=
         excursion.price -
         atr *
-        0.15
+        0.2
 
         &&
 
         effort <=
-        excursionEffort *
-        S.testMaxEffortRatio
+        exEffort *
+        0.95
 
         &&
 
         spread <=
-        excursionSpread *
-        S.testMaxSpreadRatio
+        exSpread *
+        0.95
 
         &&
 
         closePos >=
-        0.5
+        0.45
 
       ) {
 
-
         test =
-          makeEvent(
+          event(
 
             "Test",
 
@@ -2944,37 +3013,36 @@ function buildCampaign(
         bars[i].high >=
         rangeHigh -
         atr *
-        S.testTolATR
+        CFG.testTolAtr
 
         &&
 
         bars[i].high <=
         excursion.price +
         atr *
-        0.15
+        0.2
 
         &&
 
         effort <=
-        excursionEffort *
-        S.testMaxEffortRatio
+        exEffort *
+        0.95
 
         &&
 
         spread <=
-        excursionSpread *
-        S.testMaxSpreadRatio
+        exSpread *
+        0.95
 
         &&
 
         closePos <=
-        0.5
+        0.55
 
       ) {
 
-
         test =
-          makeEvent(
+          event(
 
             "Test",
 
@@ -2999,7 +3067,7 @@ function buildCampaign(
 
 
   /* =======================================================
-     TERMINAL C TEST
+     NO-SPRING / NO-UTAD C TEST
   ======================================================= */
 
   if (
@@ -3008,24 +3076,26 @@ function buildCampaign(
   ) {
 
 
-    const scanFrom =
+    const start =
       Math.max(
+
         stIndex +
         3,
 
         last -
-        80
+        90
+
       );
 
 
     for (
 
       let i =
-        scanFrom;
+        start;
 
       i <
         last -
-        S.pivotLen;
+        CFG.pivotLen;
 
       i++
 
@@ -3037,7 +3107,9 @@ function buildCampaign(
           bars,
           i
         )
+
         ||
+
         candidate.atr;
 
 
@@ -3080,30 +3152,29 @@ function buildCampaign(
         bars[i].low <=
         rangeLow +
         atr *
-        S.testTolATR
+        CFG.testTolAtr
 
         &&
 
         bars[i].low >=
         rangeLow -
         atr *
-        0.15
+        0.25
 
         &&
 
         effort <=
         avgEffort *
-        0.9
+        0.95
 
       ) {
-
 
         outcome =
           "BULL";
 
 
         test =
-          makeEvent(
+          event(
 
             "C-Test",
 
@@ -3139,30 +3210,29 @@ function buildCampaign(
         bars[i].high >=
         rangeHigh -
         atr *
-        S.testTolATR
+        CFG.testTolAtr
 
         &&
 
         bars[i].high <=
         rangeHigh +
         atr *
-        0.15
+        0.25
 
         &&
 
         effort <=
         avgEffort *
-        0.9
+        0.95
 
       ) {
-
 
         outcome =
           "BEAR";
 
 
         test =
-          makeEvent(
+          event(
 
             "C-Test",
 
@@ -3202,7 +3272,7 @@ function buildCampaign(
 
 
   /* =======================================================
-     PHASE D - SOS / SOW
+     PHASE D
   ======================================================= */
 
   let strength =
@@ -3239,16 +3309,14 @@ function buildCampaign(
 
 
     for (
-
       let i =
         anchor +
         1;
 
       i <=
-      last;
+        last;
 
       i++
-
     ) {
 
 
@@ -3257,7 +3325,9 @@ function buildCampaign(
           bars,
           i
         )
+
         ||
+
         candidate.atr;
 
 
@@ -3283,7 +3353,9 @@ function buildCampaign(
           i,
           useVolume
         )
+
         ||
+
         effortAt(
           bars,
           i,
@@ -3302,13 +3374,13 @@ function buildCampaign(
       const domUp =
         rangeLow +
         rangeHeight *
-        S.phaseDDominanceFrac;
+        0.62;
 
 
       const domDown =
         rangeHigh -
         rangeHeight *
-        S.phaseDDominanceFrac;
+        0.62;
 
 
       const sos =
@@ -3322,7 +3394,7 @@ function buildCampaign(
           bars[i].close >
           rangeHigh +
           atr *
-          S.breakATR
+          CFG.breakAtr
 
           ||
 
@@ -3334,18 +3406,18 @@ function buildCampaign(
 
         effort >=
         avgEffort *
-        S.strengthEffortMult
+        CFG.strengthEffortMult
 
         &&
 
         spread >=
         atr *
-        S.strengthSpreadATR
+        CFG.strengthSpreadAtr
 
         &&
 
         closePos >=
-        S.sosCloseMin;
+        0.6;
 
 
       const sow =
@@ -3359,7 +3431,7 @@ function buildCampaign(
           bars[i].close <
           rangeLow -
           atr *
-          S.breakATR
+          CFG.breakAtr
 
           ||
 
@@ -3371,27 +3443,26 @@ function buildCampaign(
 
         effort >=
         avgEffort *
-        S.strengthEffortMult
+        CFG.strengthEffortMult
 
         &&
 
         spread >=
         atr *
-        S.strengthSpreadATR
+        CFG.strengthSpreadAtr
 
         &&
 
         closePos <=
-        S.sowCloseMax;
+        0.4;
 
 
       if (
         sos
       ) {
 
-
         strength =
-          makeEvent(
+          event(
 
             "SOS",
 
@@ -3419,9 +3490,8 @@ function buildCampaign(
         sow
       ) {
 
-
         strength =
-          makeEvent(
+          event(
 
             "SOW",
 
@@ -3481,7 +3551,7 @@ function buildCampaign(
 
       i <
         last -
-        S.pivotLen;
+        CFG.pivotLen;
 
       i++
 
@@ -3493,7 +3563,9 @@ function buildCampaign(
           bars,
           i
         )
+
         ||
+
         candidate.atr;
 
 
@@ -3503,7 +3575,9 @@ function buildCampaign(
           i,
           useVolume
         )
+
         ||
+
         effortAt(
           bars,
           i,
@@ -3552,28 +3626,29 @@ function buildCampaign(
         bars[i].low >=
         rangeHigh -
         atr *
-        S.lpsBoundaryATR
+        1.8
 
         &&
 
         effort <=
-        avgEffort
+        avgEffort *
+        1.05
 
         &&
 
         spread <=
-        atr
+        atr *
+        1.1
 
         &&
 
         closePos >=
-        0.45
+        0.4
 
       ) {
 
-
         lps =
-          makeEvent(
+          event(
 
             "LPS",
 
@@ -3610,28 +3685,29 @@ function buildCampaign(
         bars[i].high <=
         rangeLow +
         atr *
-        S.lpsBoundaryATR
+        1.8
 
         &&
 
         effort <=
-        avgEffort
+        avgEffort *
+        1.05
 
         &&
 
         spread <=
-        atr
+        atr *
+        1.1
 
         &&
 
         closePos <=
-        0.55
+        0.6
 
       ) {
 
-
         lps =
-          makeEvent(
+          event(
 
             "LPSY",
 
@@ -3696,7 +3772,7 @@ function buildCampaign(
         0,
 
         last -
-        30
+        40
 
       );
 
@@ -3706,7 +3782,7 @@ function buildCampaign(
         start;
 
       i <=
-      last;
+        last;
 
       i++
     ) {
@@ -3716,7 +3792,6 @@ function buildCampaign(
         outcome ===
         "BULL"
       ) {
-
 
         count =
 
@@ -3735,7 +3810,6 @@ function buildCampaign(
       }
 
       else {
-
 
         count =
 
@@ -3756,9 +3830,8 @@ function buildCampaign(
 
       if (
         count >=
-        S.confirmBars
+        3
       ) {
-
 
         phase =
           5;
@@ -3782,10 +3855,9 @@ function buildCampaign(
     0
   ) {
 
-
     events.push(
 
-      makeEvent(
+      event(
 
         "Phase E",
 
@@ -3814,63 +3886,77 @@ function buildCampaign(
     10;
 
 
-  confidence +=
+  if (
     absorbed
-      ?
-      15
-      :
-      0;
+  ) {
+
+    confidence +=
+      15;
+
+  }
 
 
-  confidence +=
-    arOK
-      ?
-      10
-      :
-      0;
+  if (
+    arOk
+  ) {
+
+    confidence +=
+      10;
+
+  }
 
 
-  confidence +=
+  if (
     stIndex >=
     0
-      ?
-      15
-      :
-      0;
+  ) {
+
+    confidence +=
+      15;
+
+  }
 
 
-  confidence +=
+  if (
     phase >=
     3
-      ?
-      15
-      :
-      0;
+  ) {
+
+    confidence +=
+      15;
+
+  }
 
 
-  confidence +=
+  if (
     strength
-      ?
-      15
-      :
-      0;
+  ) {
+
+    confidence +=
+      15;
+
+  }
 
 
-  confidence +=
+  if (
     lps
-      ?
-      10
-      :
-      0;
+  ) {
+
+    confidence +=
+      10;
+
+  }
 
 
-  confidence +=
+  if (
     phase >=
     5
-      ?
-      10
-      :
-      0;
+  ) {
+
+    confidence +=
+      10;
+
+  }
 
 
   confidence =
@@ -3907,7 +3993,7 @@ function buildCampaign(
       :
 
       absTrend >=
-      15
+      12
 
         ?
 
@@ -3928,13 +4014,13 @@ function buildCampaign(
 
   validation +=
 
-    rangeATR >=
-    S.phaseBRangeMinATR
+    rangeAtr >=
+    1.0
 
     &&
 
-    rangeATR <=
-    S.phaseBRangeMaxATR
+    rangeAtr <=
+    10
 
       ?
 
@@ -3942,23 +4028,7 @@ function buildCampaign(
 
       :
 
-      rangeATR >=
-      S.phaseBRangeMinATR *
-      0.75
-
-      &&
-
-      rangeATR <=
-      S.phaseBRangeMaxATR *
-      1.5
-
-        ?
-
-        5
-
-        :
-
-        0;
+      5;
 
 
   validation +=
@@ -3986,35 +4056,21 @@ function buildCampaign(
 
   validation +=
 
-    oppCount >=
+    oppositeTests >=
     1
 
-    &&
+    ||
 
     traversals >=
-    2
+    1
 
       ?
 
-      15
+      10
 
       :
 
-      oppCount >=
-      1
-
-      ||
-
-      traversals >=
-      1
-
-        ?
-
-        8
-
-        :
-
-        0;
+      0;
 
 
   validation +=
@@ -4054,7 +4110,7 @@ function buildCampaign(
     phase >=
     5
       ?
-      10
+      5
       :
       0;
 
@@ -4078,12 +4134,12 @@ function buildCampaign(
       ?
 
       candidate.trend >
-      15
+      12
 
       :
 
       candidate.trend <
-      -15;
+      -12;
 
 
   const structuralDirection =
@@ -4103,8 +4159,11 @@ function buildCampaign(
 
   const structure =
     structureName(
+
       structuralDirection,
+
       continuation
+
     );
 
 
@@ -4145,7 +4204,7 @@ function buildCampaign(
 
 
   /* =======================================================
-     ENTRY
+     ENTRY / SL / TP
   ======================================================= */
 
   let entry =
@@ -4153,10 +4212,15 @@ function buildCampaign(
 
 
   const trigger =
+
     lps
+
     ||
+
     test
+
     ||
+
     strength;
 
 
@@ -4172,18 +4236,14 @@ function buildCampaign(
     &&
 
     confidence >=
-    S.minConfidence
+    CFG.minConfidence
 
     &&
 
     validation >=
-    S.minValidation
+    CFG.minValidation
 
   ) {
-
-
-    const current =
-      bars[last];
 
 
     const atr =
@@ -4191,12 +4251,14 @@ function buildCampaign(
         bars,
         last
       )
+
       ||
+
       candidate.atr;
 
 
     const entryPrice =
-      current.close;
+      bars[last].close;
 
 
     let stop;
@@ -4229,7 +4291,7 @@ function buildCampaign(
 
           entryPrice -
           atr *
-          1.15
+          1.1
 
         );
 
@@ -4259,7 +4321,7 @@ function buildCampaign(
 
           entryPrice +
           atr *
-          1.15
+          1.1
 
         );
 
@@ -4316,7 +4378,7 @@ function buildCampaign(
 
           sign *
           risk *
-          S.rr1,
+          CFG.rr1,
 
           4
 
@@ -4329,7 +4391,7 @@ function buildCampaign(
 
           sign *
           risk *
-          S.rr2,
+          CFG.rr2,
 
           4
 
@@ -4342,10 +4404,10 @@ function buildCampaign(
         ),
 
       rr1:
-        S.rr1,
+        CFG.rr1,
 
       rr2:
-        S.rr2
+        CFG.rr2
 
     };
 
@@ -4356,11 +4418,7 @@ function buildCampaign(
      REASONS
   ======================================================= */
 
-  const reasons =
-    [];
-
-
-  reasons.push(
+  const reasons = [
 
     bullStop
 
@@ -4370,12 +4428,8 @@ function buildCampaign(
 
       :
 
-      "Buying climax candidate detected after bullish pressure."
+      "Buying climax candidate detected after bullish pressure.",
 
-  );
-
-
-  reasons.push(
 
     absorbed
 
@@ -4387,16 +4441,16 @@ function buildCampaign(
 
       "Post-climax absorption is not fully confirmed."
 
-  );
+  ];
 
 
   if (
-    arOK
+    arOk
   ) {
 
     reasons.push(
 
-      `Automatic ${bullStop ? "rally" : "reaction"} moved ${round(arMoveATR, 2)} ATR.`
+      `Automatic ${bullStop ? "rally" : "reaction"} moved ${round(arMoveAtr, 2)} ATR.`
 
     );
 
@@ -4409,7 +4463,7 @@ function buildCampaign(
 
     reasons.push(
 
-      `${stCount} climax-side secondary test${stCount === 1 ? "" : "s"} detected.`
+      `${stCount} climax-side Secondary Test${stCount === 1 ? "" : "s"} detected.`
 
     );
 
@@ -4417,14 +4471,13 @@ function buildCampaign(
 
 
   if (
-    oppCount
-    ||
+    oppositeTests ||
     traversals
   ) {
 
     reasons.push(
 
-      `Phase B contains ${oppCount} opposite-edge test${oppCount === 1 ? "" : "s"} and ${traversals} traversal${traversals === 1 ? "" : "s"}.`
+      `Phase B: ${oppositeTests} opposite-edge test(s), ${traversals} traversal(s).`
 
     );
 
@@ -4437,7 +4490,7 @@ function buildCampaign(
 
     reasons.push(
 
-      `${excursion.label} broke the range and reclaimed it.`
+      `${excursion.label} briefly broke the range and recovered.`
 
     );
 
@@ -4463,7 +4516,7 @@ function buildCampaign(
 
     reasons.push(
 
-      `${strength.label} confirmed Phase D directional strength.`
+      `${strength.label} confirmed Phase D strength/weakness.`
 
     );
 
@@ -4476,7 +4529,7 @@ function buildCampaign(
 
     reasons.push(
 
-      `${lps.label} confirmed a low-effort pullback after strength.`
+      `${lps.label} confirmed the post-break pullback.`
 
     );
 
@@ -4489,7 +4542,9 @@ function buildCampaign(
   ) {
 
     reasons.push(
+
       "Price achieved multi-bar acceptance outside the trading range."
+
     );
 
   }
@@ -4500,7 +4555,9 @@ function buildCampaign(
   ) {
 
     reasons.push(
-      "No usable volume was returned, so candle spread is being used as the Wyckoff effort proxy."
+
+      "No usable volume is available, so spread is used as Wyckoff effort."
+
     );
 
   }
@@ -4523,6 +4580,12 @@ function buildCampaign(
 
     validation,
 
+    trendScore:
+      round(
+        candidate.trend,
+        1
+      ),
+
     range: {
 
       low:
@@ -4539,27 +4602,11 @@ function buildCampaign(
 
       heightATR:
         round(
-          rangeATR,
+          rangeAtr,
           2
         )
 
     },
-
-    trendScore:
-      round(
-        candidate.trend,
-        2
-      ),
-
-    climaxSide:
-      candidate.side,
-
-    volumeMode:
-      useVolume
-        ?
-        "VOLUME"
-        :
-        "SPREAD_PROXY",
 
     stats: {
 
@@ -4567,14 +4614,13 @@ function buildCampaign(
 
       arMoveATR:
         round(
-          arMoveATR,
+          arMoveAtr,
           2
         ),
 
       stCount,
 
-      oppositeTests:
-        oppCount,
+      oppositeTests,
 
       traversals,
 
@@ -4585,6 +4631,13 @@ function buildCampaign(
         matureB
 
     },
+
+    volumeMode:
+      useVolume
+        ?
+        "VOLUME"
+        :
+        "SPREAD_PROXY",
 
     events,
 
@@ -4598,7 +4651,7 @@ function buildCampaign(
 
 
 /* =========================================================
-   ANALYZE TIMEFRAME
+   ANALYZE ONE TIMEFRAME
 ========================================================= */
 
 function analyzeBars(
@@ -4619,14 +4672,16 @@ function analyzeBars(
   ) {
 
     return emptyAnalysis(
+
       "Not enough candles to build a Wyckoff campaign."
+
     );
 
   }
 
 
   const useVolume =
-    hasRealVolume(
+    hasVolume(
       bars
     );
 
@@ -4642,11 +4697,10 @@ function analyzeBars(
     !climaxes.length
   ) {
 
-
-    const output =
+    const result =
       emptyAnalysis(
 
-        "No valid selling or buying climax was detected in the active lookback.",
+        "No qualifying Selling Climax or Buying Climax was found in the current lookback.",
 
         useVolume
 
@@ -4657,16 +4711,16 @@ function analyzeBars(
       !useVolume
     ) {
 
-      output.reasons.push(
+      result.reasons.push(
 
-        "No usable volume was returned, so candle spread is being used as the Wyckoff effort proxy."
+        "The feed has no usable volume, so spread is used as effort."
 
       );
 
     }
 
 
-    return output;
+    return result;
 
   }
 
@@ -4678,16 +4732,20 @@ function analyzeBars(
   for (
     const candidate
     of climaxes.slice(
-      -20
+      -24
     )
   ) {
 
 
     const campaign =
       buildCampaign(
+
         bars,
+
         candidate,
+
         useVolume
+
       );
 
 
@@ -4698,17 +4756,24 @@ function analyzeBars(
 
       +
 
-      campaign.validation
+      (
+        campaign.validation ||
+        0
+      )
 
       +
 
-      campaign.confidence *
+      (
+        campaign.confidence ||
+        0
+      )
+      *
       0.25
 
       +
 
       candidate.index *
-      0.0001;
+      0.001;
 
 
     if (
@@ -4763,23 +4828,21 @@ function utility(
   requestedTf
 ) {
 
-  const analysis =
+  const a =
     row.analysis;
 
 
   let score =
 
     (
-      analysis.validation
-      ||
+      a.validation ||
       0
     )
 
     +
 
     (
-      analysis.confidence
-      ||
+      a.confidence ||
       0
     )
     *
@@ -4788,8 +4851,7 @@ function utility(
     +
 
     (
-      analysis.phase
-      ||
+      a.phase ||
       0
     )
     *
@@ -4808,23 +4870,23 @@ function utility(
 
 
   if (
-    analysis.phase ===
+    a.phase ===
     5
   ) {
 
     score -=
-      5;
+      4;
 
   }
 
 
   if (
-    analysis.direction ===
+    a.direction ===
     "WAIT"
   ) {
 
     score -=
-      5;
+      3;
 
   }
 
@@ -4907,7 +4969,6 @@ export default async function handler(
   res
 ) {
 
-
   res.setHeader(
     "Cache-Control",
     "no-store, no-cache, must-revalidate"
@@ -4950,11 +5011,21 @@ export default async function handler(
     const symbol =
       normalizeSymbol(
 
-        req.query?.symbol
+        queryValue(
+          req.query?.symbol,
+          "XAU/USD"
+        )
 
-        ||
+      );
 
-        "XAU/USD"
+
+    const requestedTfRaw =
+      String(
+
+        queryValue(
+          req.query?.tf,
+          "5m"
+        )
 
       );
 
@@ -4962,12 +5033,12 @@ export default async function handler(
     const requestedTf =
 
       TF_CHAIN[
-        req.query?.tf
+        requestedTfRaw
       ]
 
         ?
 
-        req.query.tf
+        requestedTfRaw
 
         :
 
@@ -4980,14 +5051,6 @@ export default async function handler(
       ];
 
 
-    /*
-      IMPORTANT:
-      Fetch sequentially instead of Promise.all.
-
-      This reduces burst requests and lets one failed
-      timeframe fail without killing all other analysis.
-    */
-
     const rows =
       [];
 
@@ -4995,6 +5058,12 @@ export default async function handler(
     const timeframeErrors =
       [];
 
+
+    /* =====================================================
+       FETCH TFs SEQUENTIALLY
+
+       One failure will NOT kill every other timeframe.
+    ===================================================== */
 
     for (
       const tf
@@ -5029,7 +5098,7 @@ export default async function handler(
       }
 
       catch (
-        err
+        error
       ) {
 
 
@@ -5038,21 +5107,25 @@ export default async function handler(
           tf,
 
           error:
-            errorMessage(
-              err
+
+            safeText(
+              error
             )
 
-        });
+            ||
 
+            "Unknown error"
+
+        });
 
       }
 
     }
 
 
-    /*
-      Only fail the whole API if EVERY timeframe failed.
-    */
+    /* =====================================================
+       EVERYTHING FAILED
+    ===================================================== */
 
     if (
       !rows.length
@@ -5065,9 +5138,7 @@ export default async function handler(
 
           .map(
 
-            (
-              item
-            ) =>
+            item =>
               `${item.tf}: ${item.error}`
 
           )
@@ -5077,35 +5148,40 @@ export default async function handler(
           );
 
 
-      throw new Error(
+      return res
+        .status(502)
+        .json({
 
-        detail
+          ok:
+            false,
 
-        ||
+          engine:
+            "MKAYFX WYCKOFF V3.0",
 
-        "All timeframe requests failed."
+          error:
 
-      );
+            detail
+
+            ||
+
+            "All timeframe data requests failed.",
+
+          timeframeErrors
+
+        });
 
     }
 
+
+    /* =====================================================
+       CHOOSE BEST STRUCTURE
+    ===================================================== */
 
     const selected =
       chooseEffective(
         rows,
         requestedTf
       );
-
-
-    if (
-      !selected
-    ) {
-
-      throw new Error(
-        "No timeframe analysis was available."
-      );
-
-    }
 
 
     const current =
@@ -5123,7 +5199,7 @@ export default async function handler(
           true,
 
         engine:
-          "MKAYFX WYCKOFF V2.2",
+          "MKAYFX WYCKOFF V3.0",
 
         generatedAt:
           new Date()
@@ -5142,7 +5218,7 @@ export default async function handler(
 
         price:
           round(
-            current?.close,
+            current.close,
             4
           ),
 
@@ -5153,9 +5229,7 @@ export default async function handler(
 
           rows.map(
 
-            (
-              row
-            ) => ({
+            row => ({
 
               tf:
                 row.tf,
@@ -5173,28 +5247,20 @@ export default async function handler(
                 row.analysis.direction,
 
               confidence:
-                row.analysis.confidence
-                ||
+                row.analysis.confidence ||
                 0,
 
               validation:
-                row.analysis.validation
-                ||
+                row.analysis.validation ||
                 0,
 
               volumeMode:
-                row.analysis.volumeMode
-                ||
+                row.analysis.volumeMode ||
                 null
 
             })
 
           ),
-
-        /*
-          Shows us exactly which individual TF failed
-          without crashing the successful analysis.
-        */
 
         timeframeErrors,
 
@@ -5208,9 +5274,7 @@ export default async function handler(
 
             .map(
 
-              (
-                bar
-              ) => ({
+              bar => ({
 
                 time:
                   bar.time,
@@ -5263,18 +5327,23 @@ export default async function handler(
   }
 
   catch (
-    err
+    error
   ) {
 
 
     const message =
-      errorMessage(
-        err
-      );
+
+      safeText(
+        error
+      )
+
+      ||
+
+      "Unknown Wyckoff API error.";
 
 
     console.error(
-      "WYCKOFF ERROR:",
+      "WYCKOFF V3 ERROR:",
       message
     );
 
@@ -5287,7 +5356,7 @@ export default async function handler(
           false,
 
         engine:
-          "MKAYFX WYCKOFF V2.2",
+          "MKAYFX WYCKOFF V3.0",
 
         error:
           message
