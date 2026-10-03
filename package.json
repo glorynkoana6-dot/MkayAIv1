@@ -1,6 +1,9 @@
 {
-  "name": "mkayfx-ai-market-dashboard",
-  "version": "2.0.0",
+  "name": "mkayfx-gold-v11",
+  "version": "11.0.0",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@neondatabase/serverless": "^1.2.0"
+  }
 }
