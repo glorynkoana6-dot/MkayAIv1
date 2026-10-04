@@ -184,7 +184,7 @@ const MAX_CHASE_RANGE_MULTIPLIER =
 
 
 const RISK_REWARD =
-  3;
+  1;
 
 
 /* =========================================================
