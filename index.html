@@ -1,625 +1,431 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#030507">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="MKAYFX BTC">
 
-<title>MKAYFX BTC SNIPER</title>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"
+>
+
+<meta
+  name="theme-color"
+  content="#020407"
+>
+
+<meta
+  name="apple-mobile-web-app-capable"
+  content="yes"
+>
+
+<meta
+  name="apple-mobile-web-app-status-bar-style"
+  content="black-translucent"
+>
+
+<meta
+  name="apple-mobile-web-app-title"
+  content="MKAYFX GOLD"
+>
+
+<title>
+  MKAYFX GOLD INTELLIGENCE
+</title>
+
 
 <style>
 
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
-
 :root{
-  --bg:#030609;
-  --card:#09121c;
-  --card2:#060d14;
-  --border:rgba(255,255,255,.075);
-  --border2:rgba(255,255,255,.14);
 
-  --text:#f7f9fc;
-  --muted:#7d8a9c;
+  --bg:#020407;
+  --panel:#071019;
+  --panel2:#091521;
 
-  --green:#38e7a2;
-  --red:#ff647c;
-  --gold:#f5ca63;
-  --blue:#7995ff;
-  --orange:#f7931a;
-  --purple:#ad91ff;
+  --line:
+    rgba(
+      255,
+      255,
+      255,
+      .08
+    );
+
+  --text:#f4f7fb;
+  --muted:#7f8b9b;
+
+  --green:#38e6a5;
+  --red:#ff6178;
+  --gold:#f3c969;
+  --blue:#7d98ff;
+  --orange:#ffac5b;
+  --cyan:#57d9ff;
 
   --shadow:
-    0 22px 65px
-    rgba(0,0,0,.22);
+    0 20px 60px
+    rgba(
+      0,
+      0,
+      0,
+      .3
+    );
+
 }
 
 
-html,
+
+*{
+
+  box-sizing:
+    border-box;
+
+  -webkit-tap-highlight-color:
+    transparent;
+
+}
+
+
+
+html{
+
+  background:
+    var(--bg);
+
+}
+
+
+
 body{
 
   margin:0;
 
-  min-height:100%;
+  min-height:
+    100vh;
 
   background:
-    radial-gradient(
-      circle at 50% -150px,
-      #183151 0%,
-      #091321 30%,
-      #030609 63%
-    );
 
-  color:var(--text);
+    radial-gradient(
+      circle at 50% -10%,
+      rgba(
+        243,
+        201,
+        105,
+        .10
+      ),
+      transparent 30%
+    ),
+
+    radial-gradient(
+      circle at 100% 15%,
+      rgba(
+        125,
+        152,
+        255,
+        .07
+      ),
+      transparent 26%
+    ),
+
+    var(--bg);
+
+  color:
+    var(--text);
 
   font-family:
+    Inter,
+    ui-sans-serif,
     -apple-system,
     BlinkMacSystemFont,
-    "SF Pro Display",
-    "SF Pro Text",
     "Segoe UI",
     sans-serif;
 
 }
 
 
-body{
-
-  padding:
-    calc(env(safe-area-inset-top) + 10px)
-    10px
-    calc(env(safe-area-inset-bottom) + 88px);
-
-}
-
-
-body.amoled{
-
-  --bg:#000;
-  --card:#020202;
-  --card2:#010101;
-
-  background:#000;
-
-}
-
 
 button,
-select{
-  font:inherit;
+a{
+
+  font:
+    inherit;
+
 }
 
 
-button{
-  cursor:pointer;
+
+a{
+
+  color:
+    inherit;
+
+  text-decoration:
+    none;
+
 }
+
 
 
 .app{
 
-  width:100%;
+  width:
+    min(
+      100%,
+      980px
+    );
 
-  max-width:1180px;
+  margin:
+    auto;
 
-  margin:auto;
+  padding:
+
+    env(
+      safe-area-inset-top
+    )
+
+    14px
+
+    calc(
+      28px +
+      env(
+        safe-area-inset-bottom
+      )
+    );
 
 }
 
-
-.green{
-  color:var(--green);
-}
-
-.red{
-  color:var(--red);
-}
-
-.gold{
-  color:var(--gold);
-}
-
-.blue{
-  color:var(--blue);
-}
-
-.muted{
-  color:var(--muted);
-}
 
 
 /* =========================================================
    TOP BAR
 ========================================================= */
 
-.topbar{
+.top{
 
-  display:flex;
+  position:
+    sticky;
 
-  align-items:center;
+  top:0;
 
-  justify-content:space-between;
+  z-index:
+    20;
 
-  gap:10px;
+  margin:
+    0 -14px;
 
-  margin-bottom:12px;
+  padding:
+    12px 14px;
+
+  background:
+    rgba(
+      2,
+      4,
+      7,
+      .84
+    );
+
+  backdrop-filter:
+    blur(
+      20px
+    );
+
+  border-bottom:
+    1px solid
+    var(--line);
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    12px;
 
 }
+
 
 
 .brand{
 
-  font-size:27px;
+  display:
+    flex;
 
-  font-weight:1000;
+  align-items:
+    center;
 
-  letter-spacing:-1.4px;
-
-}
-
-
-.brand span{
-  color:var(--orange);
-}
-
-
-.subtitle{
-
-  margin-top:5px;
-
-  color:var(--muted);
-
-  font-size:8px;
+  gap:
+    10px;
 
 }
 
 
-.status{
 
-  display:flex;
+.logo{
 
-  align-items:center;
+  width:
+    36px;
 
-  gap:7px;
+  height:
+    36px;
 
-}
+  border-radius:
+    11px;
 
+  display:
+    grid;
 
-.dot{
+  place-items:
+    center;
 
-  width:9px;
+  font-weight:
+    900;
 
-  height:9px;
-
-  border-radius:50%;
-
-  background:var(--muted);
-
-  box-shadow:
-    0 0 14px
-    currentColor;
-
-}
-
-
-.badge{
-
-  padding:7px 10px;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:999px;
-
-  background:
-    rgba(5,10,16,.88);
-
-  color:var(--muted);
-
-  font-size:7px;
-
-  font-weight:900;
-
-}
-
-
-/* =========================================================
-   ASSET
-========================================================= */
-
-.asset{
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:space-between;
-
-  gap:10px;
-
-  margin-bottom:9px;
-
-  padding:10px 12px;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:19px;
+  color:
+    #151006;
 
   background:
     linear-gradient(
       135deg,
-      rgba(28,42,62,.95),
-      rgba(8,15,24,.98)
+      #ffe49a,
+      #c79537
+    );
+
+  box-shadow:
+    0 8px 30px
+    rgba(
+      243,
+      201,
+      105,
+      .18
     );
 
 }
 
 
-.assetL{
 
-  display:flex;
+.brand h1{
 
-  align-items:center;
+  font-size:
+    14px;
 
-  gap:10px;
+  letter-spacing:
+    .08em;
 
-}
-
-
-.btc{
-
-  width:45px;
-
-  height:45px;
-
-  display:grid;
-
-  place-items:center;
-
-  border-radius:14px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #ffb34d,
-      #f7931a
-    );
-
-  font-size:22px;
-
-  font-weight:1000;
+  margin:
+    0;
 
 }
 
 
-.assetName{
 
-  font-size:13px;
+.brand small{
 
-  font-weight:950;
+  display:
+    block;
 
-}
+  color:
+    var(--muted);
 
+  font-size:
+    10px;
 
-.assetSub,
-.tiny{
-
-  margin-top:4px;
-
-  color:var(--muted);
-
-  font-size:7px;
+  margin-top:
+    2px;
 
 }
 
 
-.assetPrice{
-
-  text-align:right;
-
-  font-size:19px;
-
-  font-weight:1000;
-
-}
-
-
-/* =========================================================
-   ACTIONS
-========================================================= */
 
 .actions{
 
-  display:grid;
+  display:
+    flex;
 
-  grid-template-columns:
-    minmax(0,1fr)
-    auto
-    auto
-    auto;
-
-  gap:7px;
-
-  margin-bottom:10px;
+  gap:
+    8px;
 
 }
 
 
-.primary{
 
-  min-height:52px;
+.btn{
 
   border:
     1px solid
-    rgba(121,149,255,.32);
-
-  border-radius:17px;
+    var(--line);
 
   background:
-    linear-gradient(
-      135deg,
-      #2c4877,
-      #14243d
-    );
+    #09111a;
 
-  color:white;
+  color:
+    var(--text);
 
-  font-size:11px;
-
-  font-weight:950;
-
-}
-
-
-.icon{
-
-  width:52px;
-
-  min-height:52px;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:17px;
-
-  background:var(--card);
-
-  color:white;
-
-  font-size:17px;
-
-}
-
-
-.danger{
-
-  color:var(--red) !important;
-
-  border-color:
-    rgba(255,100,124,.22) !important;
-
-}
-
-
-/* =========================================================
-   ERROR / OFFLINE
-========================================================= */
-
-.error,
-.offline{
-
-  display:none;
-
-  margin-bottom:10px;
-
-  padding:12px;
-
-  border-radius:15px;
-
-  font-size:8px;
-
-  line-height:1.55;
-
-  white-space:pre-wrap;
-
-}
-
-
-.error{
-
-  border:
-    1px solid
-    rgba(255,100,124,.35);
-
-  background:
-    rgba(255,100,124,.07);
-
-  color:#ffcbd3;
-
-}
-
-
-.offline{
-
-  border:
-    1px solid
-    rgba(245,202,99,.3);
-
-  background:
-    rgba(245,202,99,.07);
-
-  color:var(--gold);
-
-}
-
-
-.show{
-  display:block !important;
-}
-
-
-/* =========================================================
-   NAVIGATION
-========================================================= */
-
-.tabs{
-
-  display:flex;
-
-  gap:5px;
-
-  overflow-x:auto;
-
-  margin-bottom:10px;
-
-  padding:5px;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:17px;
-
-  background:
-    rgba(4,9,14,.9);
-
-  position:sticky;
-
-  top:
-    calc(env(safe-area-inset-top) + 4px);
-
-  z-index:40;
-
-}
-
-
-.tab{
-
-  flex:0 0 auto;
-
-  min-height:34px;
+  border-radius:
+    12px;
 
   padding:
-    0 12px;
+    9px 11px;
 
-  border:0;
+  font-weight:
+    800;
 
-  border-radius:11px;
-
-  background:transparent;
-
-  color:var(--muted);
-
-  font-size:7px;
-
-  font-weight:900;
+  font-size:
+    11px;
 
 }
 
 
-.tab.active{
 
-  color:white;
+.btn:active{
 
-  background:
-    rgba(121,149,255,.12);
-
-}
-
-
-/* =========================================================
-   VIEWS
-========================================================= */
-
-.view{
-  display:none;
-}
-
-
-.view.active{
-  display:block;
-}
-
-
-.layout{
-
-  display:grid;
-
-  grid-template-columns:
-    minmax(0,1.5fr)
-    minmax(300px,.82fr);
-
-  gap:10px;
-
-}
-
-
-.stack{
-
-  display:flex;
-
-  flex-direction:column;
-
-  gap:10px;
-
-}
-
-
-/* =========================================================
-   CARDS
-========================================================= */
-
-.card{
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:22px;
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(11,20,31,.98),
-      rgba(5,11,18,.99)
+  transform:
+    scale(
+      .98
     );
 
+}
+
+
+
+.statusdot{
+
+  width:
+    7px;
+
+  height:
+    7px;
+
+  border-radius:
+    50%;
+
+  display:
+    inline-block;
+
+  background:
+    var(--muted);
+
+  margin-right:
+    6px;
+
+}
+
+
+
+.statusdot.live{
+
+  background:
+    var(--green);
+
   box-shadow:
-    var(--shadow);
-
-  overflow:hidden;
-
-}
-
-
-.pad{
-  padding:15px;
-}
-
-
-.section{
-
-  margin-bottom:11px;
-
-  color:var(--muted);
-
-  font-size:7px;
-
-  font-weight:900;
-
-  letter-spacing:1.3px;
-
-  text-transform:uppercase;
+    0 0 12px
+    var(--green);
 
 }
+
 
 
 /* =========================================================
@@ -628,3297 +434,2225 @@ button{
 
 .hero{
 
-  display:flex;
-
-  align-items:flex-start;
-
-  justify-content:space-between;
-
-  gap:12px;
+  padding:
+    24px 2px 8px;
 
 }
+
 
 
 .eyebrow{
 
-  color:var(--muted);
+  font-size:
+    11px;
 
-  font-size:7px;
+  letter-spacing:
+    .14em;
 
-  font-weight:850;
+  color:
+    var(--gold);
 
-  letter-spacing:1px;
-
-}
-
-
-.signal{
-
-  margin-top:7px;
-
-  font-size:62px;
-
-  line-height:.9;
-
-  font-weight:1000;
-
-  letter-spacing:-3px;
+  font-weight:
+    900;
 
 }
 
 
-.signal.BUY{
-  color:var(--green);
-}
 
-.signal.SELL{
-  color:var(--red);
-}
+.priceRow{
 
-.signal.WAIT{
-  color:var(--gold);
-}
+  display:
+    flex;
 
+  align-items:
+    end;
 
-.desc{
+  justify-content:
+    space-between;
 
-  max-width:440px;
+  gap:
+    14px;
 
-  margin-top:10px;
-
-  color:var(--muted);
-
-  font-size:9px;
-
-  line-height:1.5;
+  margin-top:
+    8px;
 
 }
 
-
-.lock{
-
-  display:inline-flex;
-
-  margin-top:10px;
-
-  padding:6px 10px;
-
-  border:
-    1px solid
-    rgba(245,202,99,.3);
-
-  border-radius:999px;
-
-  background:
-    rgba(245,202,99,.06);
-
-  color:var(--gold);
-
-  font-size:7px;
-
-  font-weight:950;
-
-}
 
 
 .price{
 
-  font-size:31px;
+  font-size:
+    clamp(
+      38px,
+      11vw,
+      64px
+    );
 
-  font-weight:1000;
+  line-height:
+    .95;
 
-  text-align:right;
+  font-weight:
+    900;
 
-}
-
-
-.priceMeta{
-
-  margin-top:6px;
-
-  color:var(--muted);
-
-  font-size:6px;
-
-  text-align:right;
+  letter-spacing:
+    -.055em;
 
 }
 
 
-/* =========================================================
-   GRIDS
-========================================================= */
 
-.grid2,
-.grid3,
-.grid4,
-.grid5{
+.priceChange{
 
-  display:grid;
+  text-align:
+    right;
 
-  gap:7px;
+  font-size:
+    14px;
 
-}
-
-
-.grid2{
-  grid-template-columns:repeat(2,1fr);
-}
-
-.grid3{
-  grid-template-columns:repeat(3,1fr);
-}
-
-.grid4{
-  grid-template-columns:repeat(4,1fr);
-}
-
-.grid5{
-  grid-template-columns:repeat(5,1fr);
-}
-
-
-.metric{
-
-  min-height:68px;
-
-  padding:10px;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:14px;
-
-  background:var(--card2);
+  font-weight:
+    900;
 
 }
 
-
-.metric small{
-
-  display:block;
-
-  color:var(--muted);
-
-  font-size:6px;
-
-  text-transform:uppercase;
-
-}
-
-
-.metric b{
-
-  display:block;
-
-  margin-top:6px;
-
-  font-size:12px;
-
-}
 
 
 .sub{
 
-  margin-top:4px;
+  color:
+    var(--muted);
 
-  color:var(--muted);
+  font-size:
+    11px;
 
-  font-size:6.5px;
-
-  line-height:1.4;
+  margin-top:
+    8px;
 
 }
 
 
+
+.up{
+
+  color:
+    var(--green)
+    !important;
+
+}
+
+
+
+.down{
+
+  color:
+    var(--red)
+    !important;
+
+}
+
+
+
+.neutral{
+
+  color:
+    var(--muted)
+    !important;
+
+}
+
+
+
+.gold{
+
+  color:
+    var(--gold)
+    !important;
+
+}
+
+
+
+.blue{
+
+  color:
+    var(--blue)
+    !important;
+
+}
+
+
+
+.orange{
+
+  color:
+    var(--orange)
+    !important;
+
+}
+
+
+
 /* =========================================================
-   SCORE
+   QUICK CARDS
 ========================================================= */
 
-.score{
+.quick{
 
-  display:grid;
+  display:
+    grid;
 
   grid-template-columns:
-    auto
-    1fr;
-
-  align-items:center;
-
-  gap:13px;
-
-  margin-top:10px;
-
-  padding:12px;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:16px;
-
-  background:var(--card2);
-
-}
-
-
-.scoreCircle{
-
-  position:relative;
-
-  width:72px;
-
-  height:72px;
-
-  display:grid;
-
-  place-items:center;
-
-  border-radius:50%;
-
-  background:
-    conic-gradient(
-      var(--blue) 0deg,
-      #151d27 0deg
+    repeat(
+      4,
+      1fr
     );
 
-}
+  gap:
+    8px;
 
-
-.scoreCircle:after{
-
-  content:"";
-
-  position:absolute;
-
-  width:57px;
-
-  height:57px;
-
-  border-radius:50%;
-
-  background:var(--card2);
+  margin:
+    16px 0;
 
 }
 
 
-.scoreCircle strong{
 
-  position:relative;
+.q{
 
-  z-index:2;
-
-  font-size:17px;
-
-}
-
-
-.scoreText small{
-
-  display:block;
-
-  color:var(--muted);
-
-  font-size:6px;
-
-}
-
-
-.scoreText b{
-
-  display:block;
-
-  margin-top:5px;
-
-  font-size:13px;
-
-}
-
-
-.scoreText span{
-
-  display:block;
-
-  margin-top:5px;
-
-  color:var(--muted);
-
-  font-size:7px;
-
-}
-
-
-/* =========================================================
-   BIAS
-========================================================= */
-
-.bias{
-
-  margin-top:8px;
-
-  padding:11px;
+  padding:
+    11px;
 
   border:
     1px solid
-    var(--border);
+    var(--line);
 
-  border-radius:15px;
+  border-radius:
+    14px;
 
-  background:var(--card2);
+  background:
+    rgba(
+      8,
+      16,
+      25,
+      .82
+    );
 
-}
-
-
-.biasTop{
-
-  display:flex;
-
-  justify-content:space-between;
-
-  margin-bottom:8px;
-
-  color:var(--muted);
-
-  font-size:6px;
+  min-width:
+    0;
 
 }
 
 
-.biasBar{
 
-  display:flex;
+.q .k{
 
-  height:10px;
+  font-size:
+    9px;
 
-  overflow:hidden;
+  color:
+    var(--muted);
 
-  border-radius:999px;
+  font-weight:
+    800;
 
-  background:#101822;
+  text-transform:
+    uppercase;
+
+  letter-spacing:
+    .08em;
 
 }
 
 
-.buyBar{
-  background:var(--green);
+
+.q .v{
+
+  font-size:
+    13px;
+
+  font-weight:
+    900;
+
+  margin-top:
+    5px;
+
+  white-space:
+    nowrap;
+
+  overflow:
+    hidden;
+
+  text-overflow:
+    ellipsis;
+
 }
 
-
-.sellBar{
-  background:var(--red);
-}
 
 
 /* =========================================================
-   COMPONENT SCORE
+   MAIN CARDS
 ========================================================= */
 
-.componentBar{
+.card{
 
-  height:5px;
+  border:
+    1px solid
+    var(--line);
 
-  margin-top:8px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(
+        10,
+        20,
+        31,
+        .95
+      ),
+      rgba(
+        5,
+        11,
+        18,
+        .96
+      )
+    );
 
-  border-radius:999px;
+  border-radius:
+    20px;
 
-  background:#121c27;
+  margin-top:
+    12px;
 
-  overflow:hidden;
+  overflow:
+    hidden;
+
+  box-shadow:
+    var(--shadow);
 
 }
+
+
+
+.cardHead{
+
+  padding:
+    14px 15px 10px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    10px;
+
+}
+
+
+
+.title{
+
+  font-size:
+    12px;
+
+  font-weight:
+    900;
+
+  letter-spacing:
+    .08em;
+
+  text-transform:
+    uppercase;
+
+}
+
+
+
+.hint{
+
+  font-size:
+    9px;
+
+  color:
+    var(--muted);
+
+  text-align:
+    right;
+
+}
+
+
+
+.body{
+
+  padding:
+    4px 15px 15px;
+
+}
+
+
+
+/* =========================================================
+   PRESSURE
+========================================================= */
+
+.pressureGrid{
+
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      1fr
+    );
+
+  gap:
+    8px;
+
+}
+
+
+
+.meter{
+
+  padding:
+    12px 10px;
+
+  border:
+    1px solid
+    var(--line);
+
+  border-radius:
+    14px;
+
+  background:
+    #07111a;
+
+}
+
+
+
+.meter .label{
+
+  font-size:
+    9px;
+
+  color:
+    var(--muted);
+
+  text-transform:
+    uppercase;
+
+  font-weight:
+    800;
+
+}
+
+
+
+.meter .n{
+
+  font-size:
+    22px;
+
+  font-weight:
+    900;
+
+  margin-top:
+    6px;
+
+}
+
+
+
+.bar{
+
+  height:
+    5px;
+
+  border-radius:
+    999px;
+
+  background:
+    #131d28;
+
+  margin-top:
+    8px;
+
+  overflow:
+    hidden;
+
+}
+
 
 
 .fill{
 
-  height:100%;
+  height:
+    100%;
 
-  background:var(--blue);
+  width:
+    50%;
+
+  border-radius:
+    999px;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--red),
+      #7e8793,
+      var(--green)
+    );
 
 }
+
 
 
 /* =========================================================
    TIMEFRAMES
 ========================================================= */
 
+.tfgrid{
+
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      1fr
+    );
+
+  gap:
+    8px;
+
+}
+
+
+
 .tf{
-
-  font-size:18px !important;
-
-  font-weight:1000;
-
-}
-
-
-.tf.BUY{
-  color:var(--green);
-}
-
-.tf.SELL{
-  color:var(--red);
-}
-
-.tf.NEUTRAL{
-  color:var(--gold);
-}
-
-
-/* =========================================================
-   TEXT ROWS
-========================================================= */
-
-.reason,
-.history{
-
-  padding:9px 0;
-
-  border-bottom:
-    1px solid
-    rgba(255,255,255,.05);
-
-  font-size:8px;
-
-  line-height:1.55;
-
-}
-
-
-.reason:last-child,
-.history:last-child{
-  border-bottom:0;
-}
-
-
-.good{
-  color:#d9fff0;
-}
-
-.bad{
-  color:#ffc2cc;
-}
-
-
-.historyTop{
-
-  display:flex;
-
-  justify-content:space-between;
-
-  gap:8px;
-
-}
-
-
-.historyBody{
-
-  margin-top:5px;
-
-  color:var(--muted);
-
-  font-size:7px;
-
-  line-height:1.55;
-
-}
-
-
-.levelList{
-
-  display:flex;
-
-  flex-wrap:wrap;
-
-  gap:6px;
-
-}
-
-
-.chip{
-
-  padding:5px 7px;
 
   border:
     1px solid
-    var(--border);
+    var(--line);
 
-  border-radius:999px;
+  border-radius:
+    14px;
+
+  padding:
+    11px;
 
   background:
-    rgba(4,9,14,.9);
-
-  font-size:6px;
+    #07111a;
 
 }
 
 
+
+.tf .t{
+
+  font-weight:
+    900;
+
+  font-size:
+    12px;
+
+}
+
+
+
+.tf .dir{
+
+  font-size:
+    18px;
+
+  font-weight:
+    900;
+
+  margin:
+    5px 0;
+
+}
+
+
+
+.mini{
+
+  font-size:
+    9px;
+
+  color:
+    var(--muted);
+
+  line-height:
+    1.5;
+
+}
+
+
+
+.mini b{
+
+  color:
+    #cfd7e3;
+
+}
+
+
+
 /* =========================================================
-   TRADE PROGRESS
+   ROWS
 ========================================================= */
 
-.tradeTrack{
+.rows{
 
-  position:relative;
+  display:
+    grid;
 
-  height:10px;
+  gap:
+    7px;
 
-  margin-top:9px;
+}
 
-  border-radius:999px;
 
-  background:
-    linear-gradient(
-      90deg,
-      rgba(255,100,124,.48),
-      rgba(121,149,255,.35) 25%,
-      rgba(56,231,162,.45)
+
+.row{
+
+  display:
+    grid;
+
+  grid-template-columns:
+    1fr auto;
+
+  align-items:
+    center;
+
+  gap:
+    12px;
+
+  padding:
+    10px 0;
+
+  border-bottom:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      .055
     );
 
 }
 
 
-.marker{
 
-  position:absolute;
+.row:last-child{
 
-  left:25%;
+  border-bottom:
+    0;
 
-  top:50%;
+}
 
-  width:18px;
 
-  height:18px;
 
-  transform:
-    translate(-50%,-50%);
+.row .name{
+
+  font-size:
+    11px;
+
+  font-weight:
+    800;
+
+}
+
+
+
+.row .desc{
+
+  font-size:
+    9px;
+
+  color:
+    var(--muted);
+
+  margin-top:
+    3px;
+
+}
+
+
+
+.row .val{
+
+  text-align:
+    right;
+
+  font-size:
+    12px;
+
+  font-weight:
+    900;
+
+}
+
+
+
+/* =========================================================
+   PILL
+========================================================= */
+
+.pill{
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
 
   border:
-    3px solid
-    #05080d;
+    1px solid
+    var(--line);
 
-  border-radius:50%;
+  border-radius:
+    999px;
 
-  background:white;
+  padding:
+    4px 7px;
+
+  font-size:
+    8px;
+
+  font-weight:
+    900;
+
+  letter-spacing:
+    .04em;
+
+  background:
+    #08131d;
 
 }
 
 
-.labels{
 
-  display:flex;
+/* =========================================================
+   BOXES
+========================================================= */
 
-  justify-content:space-between;
+.split{
 
-  margin-top:7px;
+  display:
+    grid;
 
-  color:var(--muted);
+  grid-template-columns:
+    1fr 1fr;
 
-  font-size:6px;
+  gap:
+    10px;
 
 }
+
+
+
+.box{
+
+  border:
+    1px solid
+    var(--line);
+
+  border-radius:
+    15px;
+
+  padding:
+    12px;
+
+  background:
+    #07111a;
+
+}
+
+
+
+.box h3{
+
+  font-size:
+    9px;
+
+  text-transform:
+    uppercase;
+
+  color:
+    var(--muted);
+
+  margin:
+    0 0 8px;
+
+  letter-spacing:
+    .08em;
+
+}
+
+
+
+.big{
+
+  font-size:
+    22px;
+
+  font-weight:
+    900;
+
+}
+
+
+
+.tiny{
+
+  font-size:
+    9px;
+
+  color:
+    var(--muted);
+
+  line-height:
+    1.5;
+
+  margin-top:
+    5px;
+
+}
+
 
 
 /* =========================================================
    CHART
 ========================================================= */
 
-.canvasWrap{
+.chartWrap{
 
-  position:relative;
+  height:
+    150px;
 
-  height:320px;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:16px;
-
-  background:#03080d;
-
-  overflow:hidden;
+  padding:
+    4px 0 0;
 
 }
 
 
-.canvasWrap.small{
-  height:220px;
-}
 
+.chartWrap svg{
 
-canvas{
+  width:
+    100%;
 
-  display:block;
+  height:
+    100%;
 
-  width:100%;
-
-  height:100%;
-
-}
-
-
-/* =========================================================
-   BACKTEST
-========================================================= */
-
-.periods{
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(4,1fr);
-
-  gap:6px;
-
-  margin-bottom:9px;
+  overflow:
+    visible;
 
 }
 
 
-.period{
 
-  min-height:38px;
+.chartLine{
 
-  border:
-    1px solid
-    var(--border);
+  fill:
+    none;
 
-  border-radius:12px;
+  stroke:
+    var(--gold);
 
-  background:var(--card2);
-
-  color:var(--muted);
-
-  font-size:7px;
-
-  font-weight:900;
+  stroke-width:
+    2;
 
 }
 
 
-.period.active{
 
-  color:white;
+.chartArea{
 
-  border-color:
-    rgba(121,149,255,.35);
-
-  background:
-    rgba(121,149,255,.12);
-
-}
-
-
-.runBT{
-
-  width:100%;
-
-  min-height:48px;
-
-  margin-bottom:9px;
-
-  border:
-    1px solid
-    rgba(247,147,26,.38);
-
-  border-radius:14px;
-
-  background:
-    linear-gradient(
-      135deg,
-      rgba(247,147,26,.9),
-      rgba(183,94,7,.95)
+  fill:
+    url(
+      #areaGradient
     );
 
-  color:white;
-
-  font-size:9px;
-
-  font-weight:950;
-
 }
 
 
-.filters{
 
-  display:grid;
+/* =========================================================
+   LEVELS
+========================================================= */
+
+.levels{
+
+  display:
+    grid;
 
   grid-template-columns:
-    repeat(3,1fr);
+    1fr 1fr;
 
-  gap:6px;
-
-  margin-bottom:9px;
-
-}
-
-
-.select{
-
-  width:100%;
-
-  min-height:35px;
-
-  padding:0 9px;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:10px;
-
-  background:var(--card2);
-
-  color:white;
-
-  font-size:7px;
+  gap:
+    8px;
 
 }
 
 
-/* =========================================================
-   FLOATING TRADE
-========================================================= */
 
-.floating{
-
-  display:none;
-
-  position:fixed;
-
-  left:10px;
-
-  right:10px;
-
-  bottom:
-    calc(env(safe-area-inset-bottom) + 70px);
-
-  z-index:90;
-
-  max-width:600px;
-
-  margin:auto;
-
-  padding:10px 12px;
+.level{
 
   border:
     1px solid
-    rgba(121,149,255,.26);
+    var(--line);
 
-  border-radius:16px;
+  border-radius:
+    13px;
+
+  padding:
+    10px;
 
   background:
-    rgba(5,11,18,.95);
-
-  backdrop-filter:
-    blur(20px);
+    #07111a;
 
 }
 
 
-.floating.active{
 
-  display:flex;
+.level .l{
 
-  align-items:center;
+  font-size:
+    8px;
 
-  justify-content:space-between;
+  color:
+    var(--muted);
 
-  gap:8px;
+  font-weight:
+    900;
+
+}
+
+
+
+.level .p{
+
+  font-size:
+    14px;
+
+  font-weight:
+    900;
+
+  margin-top:
+    4px;
 
 }
 
 
-.floatR{
 
-  font-size:15px;
+.level .d{
 
-  font-weight:1000;
+  font-size:
+    9px;
+
+  margin-top:
+    3px;
+
+  color:
+    var(--muted);
 
 }
+
 
 
 /* =========================================================
-   TOAST
+   ANALOG
 ========================================================= */
 
-.toast{
+.analog{
 
-  display:none;
-
-  position:fixed;
-
-  z-index:1200;
-
-  top:
-    calc(env(safe-area-inset-top) + 12px);
-
-  left:12px;
-
-  right:12px;
-
-  max-width:500px;
-
-  margin:auto;
-
-  padding:13px;
-
-  border:
-    1px solid
-    var(--border2);
-
-  border-radius:17px;
-
-  background:
-    rgba(5,11,18,.97);
-
-}
-
-
-.toast.active{
-  display:block;
-}
-
-
-/* =========================================================
-   MOBILE NAV
-========================================================= */
-
-.bottom{
-
-  display:none;
-
-  position:fixed;
-
-  z-index:80;
-
-  left:8px;
-
-  right:8px;
-
-  bottom:
-    calc(env(safe-area-inset-bottom) + 6px);
+  display:
+    grid;
 
   grid-template-columns:
-    repeat(6,1fr);
+    repeat(
+      3,
+      1fr
+    );
 
-  gap:3px;
+  gap:
+    8px;
 
-  padding:5px;
+}
+
+
+
+.analogBox{
 
   border:
     1px solid
-    var(--border2);
+    var(--line);
 
-  border-radius:20px;
+  border-radius:
+    14px;
 
-  background:
-    rgba(4,9,14,.95);
-
-}
-
-
-.bottom button{
-
-  min-height:47px;
-
-  border:0;
-
-  border-radius:14px;
-
-  background:transparent;
-
-  color:var(--muted);
-
-  font-size:5px;
-
-  font-weight:850;
-
-}
-
-
-.bottom button.active{
-
-  color:white;
+  padding:
+    10px;
 
   background:
-    rgba(121,149,255,.12);
+    #07111a;
+
+  text-align:
+    center;
 
 }
+
+
+
+.analogBox .h{
+
+  font-size:
+    9px;
+
+  color:
+    var(--muted);
+
+  font-weight:
+    900;
+
+}
+
+
+
+.analogBox .pct{
+
+  font-size:
+    20px;
+
+  font-weight:
+    900;
+
+  margin-top:
+    5px;
+
+}
+
+
+
+.analogBox .ret{
+
+  font-size:
+    9px;
+
+  color:
+    var(--muted);
+
+  margin-top:
+    3px;
+
+}
+
 
 
 /* =========================================================
-   RESPONSIVE
+   HEALTH
 ========================================================= */
 
-@media(max-width:850px){
+.health{
 
-  .layout{
-    grid-template-columns:1fr;
-  }
+  display:
+    flex;
 
-  .tabs{
-    display:none;
-  }
+  flex-wrap:
+    wrap;
 
-  .bottom{
-    display:grid;
-  }
-
-  .grid5{
-    grid-template-columns:repeat(3,1fr);
-  }
-
-  .grid4{
-    grid-template-columns:repeat(2,1fr);
-  }
+  gap:
+    6px;
 
 }
 
 
-@media(max-width:560px){
 
-  .signal{
-    font-size:50px;
+.healthItem{
+
+  border:
+    1px solid
+    var(--line);
+
+  border-radius:
+    999px;
+
+  padding:
+    5px 8px;
+
+  font-size:
+    8px;
+
+  font-weight:
+    900;
+
+}
+
+
+
+/* =========================================================
+   NEWS
+========================================================= */
+
+.news{
+
+  display:
+    grid;
+
+  gap:
+    8px;
+
+}
+
+
+
+.newsItem{
+
+  display:
+    block;
+
+  border:
+    1px solid
+    var(--line);
+
+  border-radius:
+    14px;
+
+  padding:
+    11px;
+
+  background:
+    #07111a;
+
+}
+
+
+
+.newsItem .nt{
+
+  font-size:
+    11px;
+
+  font-weight:
+    850;
+
+  line-height:
+    1.35;
+
+}
+
+
+
+.newsItem .nm{
+
+  font-size:
+    8px;
+
+  color:
+    var(--muted);
+
+  margin-top:
+    5px;
+
+}
+
+
+
+/* =========================================================
+   EVENTS
+========================================================= */
+
+.event{
+
+  display:
+    grid;
+
+  grid-template-columns:
+    72px 1fr auto;
+
+  gap:
+    10px;
+
+  align-items:
+    center;
+
+  border-bottom:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      .055
+    );
+
+  padding:
+    10px 0;
+
+}
+
+
+
+.event:last-child{
+
+  border-bottom:
+    0;
+
+}
+
+
+
+.date{
+
+  font-size:
+    10px;
+
+  font-weight:
+    900;
+
+}
+
+
+
+.eventName{
+
+  font-size:
+    10px;
+
+  font-weight:
+    800;
+
+}
+
+
+
+.footer{
+
+  padding:
+    18px 2px 8px;
+
+  color:
+    var(--muted);
+
+  font-size:
+    9px;
+
+  line-height:
+    1.65;
+
+}
+
+
+
+.loading{
+
+  padding:
+    30px;
+
+  text-align:
+    center;
+
+  color:
+    var(--muted);
+
+  font-size:
+    11px;
+
+}
+
+
+
+.error{
+
+  color:
+    var(--red);
+
+  font-size:
+    10px;
+
+  padding:
+    10px 0;
+
+}
+
+
+
+.sep{
+
+  height:
+    1px;
+
+  background:
+    var(--line);
+
+  margin:
+    12px 0;
+
+}
+
+
+
+@media(
+  max-width:
+  640px
+){
+
+  .quick{
+
+    grid-template-columns:
+      repeat(
+        2,
+        1fr
+      );
+
   }
 
-  .grid5{
-    grid-template-columns:repeat(2,1fr);
+
+  .pressureGrid{
+
+    grid-template-columns:
+      repeat(
+        2,
+        1fr
+      );
+
   }
 
-  .grid3{
-    grid-template-columns:repeat(2,1fr);
+
+  .tfgrid{
+
+    grid-template-columns:
+      repeat(
+        2,
+        1fr
+      );
+
   }
 
-  .filters{
-    grid-template-columns:1fr;
+
+  .split{
+
+    grid-template-columns:
+      1fr;
+
   }
 
-  .canvasWrap{
-    height:280px;
-  }
 
-  .canvasWrap.small{
-    height:190px;
+  .levels{
+
+    grid-template-columns:
+      1fr 1fr;
+
   }
 
 }
 
 </style>
+
 </head>
 
 
 <body>
 
-
-<div
-  class="offline"
-  id="offline"
->
-STALE DATA — showing cached analysis.
-</div>
+<div class="app">
 
 
-<div
-  class="app"
-  id="app"
->
+<header class="top">
 
+  <div class="brand">
 
-<!-- ======================================================
-     TOP BAR
-======================================================= -->
-
-<div class="topbar">
-
-  <div>
-
-    <div class="brand">
-      MKAYFX
-      <span>BTC SNIPER</span>
-    </div>
-
-    <div class="subtitle">
-      4H regime · 1H liquidity · 15M setup · 5M precision · historical replay
-    </div>
-
-  </div>
-
-  <div class="status">
-
-    <div
-      class="dot"
-      id="dot"
-    ></div>
-
-    <div
-      class="badge"
-      id="engine"
-    >
-      CONNECTING
-    </div>
-
-  </div>
-
-</div>
-
-
-<!-- ======================================================
-     ASSET
-======================================================= -->
-
-<div class="asset">
-
-  <div class="assetL">
-
-    <div class="btc">
-      ₿
+    <div class="logo">
+      M
     </div>
 
     <div>
 
-      <div class="assetName">
-        BITCOIN / U.S. DOLLAR
-      </div>
+      <h1>
+        MKAYFX GOLD
+      </h1>
 
-      <div class="assetSub">
-        BTC/USD · LIQUIDITY SNIPER
-      </div>
+      <small>
+        INTELLIGENCE TERMINAL
+      </small>
 
     </div>
 
   </div>
 
-  <div>
+
+  <div class="actions">
+
+    <button
+      class="btn"
+      id="refreshBtn"
+    >
+      REFRESH
+    </button>
+
+  </div>
+
+</header>
+
+
+
+<section class="hero">
+
+  <div class="eyebrow">
+
+    <span
+      id="liveDot"
+      class="statusdot"
+    ></span>
+
+    XAU/USD
+
+  </div>
+
+
+  <div class="priceRow">
+
+    <div>
+
+      <div
+        class="price"
+        id="livePrice"
+      >
+        —
+      </div>
+
+      <div
+        class="sub"
+        id="lastUpdate"
+      >
+        Connecting…
+      </div>
+
+    </div>
+
 
     <div
-      class="assetPrice"
-      id="topPrice"
+      class="priceChange"
+      id="dayChange"
     >
       —
     </div>
 
-    <div
-      class="tiny"
-      id="spread"
-    >
-      BID — · ASK —
-    </div>
-
   </div>
 
-</div>
+</section>
 
 
-<!-- ======================================================
-     ACTIONS
-======================================================= -->
 
-<div class="actions">
+<div class="quick">
 
-  <button
-    class="primary"
-    id="run"
-  >
-    RUN BTC ANALYSIS
-  </button>
+  <div class="q">
 
-  <button
-    class="icon"
-    id="copy"
-  >
-    ⧉
-  </button>
-
-  <button
-    class="icon"
-    id="share"
-  >
-    ↗
-  </button>
-
-  <button
-    class="icon danger"
-    id="clear"
-  >
-    ✕
-  </button>
-
-</div>
-
-
-<div
-  class="error"
-  id="error"
-></div>
-
-
-<!-- ======================================================
-     NAVIGATION
-======================================================= -->
-
-<div class="tabs">
-
-  <button
-    class="tab active"
-    data-view="home"
-  >
-    COMMAND
-  </button>
-
-  <button
-    class="tab"
-    data-view="structure"
-  >
-    STRUCTURE
-  </button>
-
-  <button
-    class="tab"
-    data-view="liquidity"
-  >
-    LIQUIDITY
-  </button>
-
-  <button
-    class="tab"
-    data-view="monitor"
-  >
-    MONITOR
-  </button>
-
-  <button
-    class="tab"
-    data-view="backtest"
-  >
-    BACKTEST
-  </button>
-
-  <button
-    class="tab"
-    data-view="journal"
-  >
-    JOURNAL
-  </button>
-
-</div>
-
-
-<!-- ======================================================
-     COMMAND VIEW
-======================================================= -->
-
-<section
-  class="view active"
-  id="home"
->
-
-<div class="layout">
-
-
-<div class="stack">
-
-
-<div class="card">
-
-<div class="pad">
-
-
-<div class="hero">
-
-  <div>
-
-    <div class="eyebrow">
-      BTC/USD · LIQUIDITY SNIPER
-    </div>
-
-    <div
-      class="signal WAIT"
-      id="signal"
-    >
-      WAIT
-    </div>
-
-    <div
-      class="desc"
-      id="desc"
-    >
-      Waiting for liquidity sweep + BOS + displacement.
-    </div>
-
-    <div
-      class="lock"
-      id="lockBadge"
-    >
-      UNLOCKED
-    </div>
-
-  </div>
-
-
-  <div>
-
-    <div
-      class="price"
-      id="price"
-    >
-      —
-    </div>
-
-    <div
-      class="priceMeta"
-      id="priceMeta"
-    >
-      Coinbase BTC-USD
-    </div>
-
-  </div>
-
-</div>
-
-
-<div
-  class="grid5"
-  style="margin-top:15px"
->
-
-  <div class="metric">
-
-    <small>
-      Score
-    </small>
-
-    <b id="score">
-      0/100
-    </b>
-
-  </div>
-
-
-  <div class="metric">
-
-    <small>
-      Confidence
-    </small>
-
-    <b id="confidence">
-      0%
-    </b>
-
-  </div>
-
-
-  <div class="metric">
-
-    <small>
+    <div class="k">
       Session
-    </small>
-
-    <b id="session">
-      —
-    </b>
-
-  </div>
-
-
-  <div class="metric">
-
-    <small>
-      Trigger
-    </small>
-
-    <b id="trigger">
-      —
-    </b>
-
-  </div>
-
-
-  <div class="metric">
-
-    <small>
-      State
-    </small>
-
-    <b id="sniper">
-      WAIT
-    </b>
-
-  </div>
-
-</div>
-
-
-<div class="score">
-
-  <div
-    class="scoreCircle"
-    id="scoreCircle"
-  >
-
-    <strong id="scoreN">
-      0
-    </strong>
-
-  </div>
-
-
-  <div class="scoreText">
-
-    <small>
-      SETUP QUALITY
-    </small>
-
-    <b id="scoreLabel">
-      WAITING
-    </b>
-
-    <span id="scoreInfo">
-      Minimum 70 · Sniper 80
-    </span>
-
-  </div>
-
-</div>
-
-
-<div class="bias">
-
-  <div class="biasTop">
-
-    <span>
-      BUY VS SELL
-    </span>
-
-    <span>
-
-      <b
-        class="green"
-        id="buyScore"
-      >
-        0
-      </b>
-
-      /
-
-      <b
-        class="red"
-        id="sellScore"
-      >
-        0
-      </b>
-
-    </span>
-
-  </div>
-
-
-  <div class="biasBar">
+    </div>
 
     <div
-      class="buyBar"
-      id="buyBar"
+      class="v"
+      id="qSession"
+    >
+      —
+    </div>
+
+  </div>
+
+
+  <div class="q">
+
+    <div class="k">
+      Volatility
+    </div>
+
+    <div
+      class="v"
+      id="qVol"
+    >
+      —
+    </div>
+
+  </div>
+
+
+  <div class="q">
+
+    <div class="k">
+      Macro pressure
+    </div>
+
+    <div
+      class="v"
+      id="qMacro"
+    >
+      —
+    </div>
+
+  </div>
+
+
+  <div class="q">
+
+    <div class="k">
+      COT state
+    </div>
+
+    <div
+      class="v"
+      id="qCot"
+    >
+      —
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<section class="card">
+
+  <div class="cardHead">
+
+    <div class="title">
+      Gold price context
+    </div>
+
+    <div class="hint">
+      Daily history
+    </div>
+
+  </div>
+
+
+  <div class="body">
+
+    <div
+      class="chartWrap"
+      id="chart"
     ></div>
 
+
     <div
-      class="sellBar"
-      id="sellBar"
+      class="quick"
+      style="margin-bottom:0"
+    >
+
+      <div class="q">
+
+        <div class="k">
+          From day open
+        </div>
+
+        <div
+          class="v"
+          id="dayOpenPct"
+        >
+          —
+        </div>
+
+      </div>
+
+
+      <div class="q">
+
+        <div class="k">
+          From week open
+        </div>
+
+        <div
+          class="v"
+          id="weekOpenPct"
+        >
+          —
+        </div>
+
+      </div>
+
+
+      <div class="q">
+
+        <div class="k">
+          From month open
+        </div>
+
+        <div
+          class="v"
+          id="monthOpenPct"
+        >
+          —
+        </div>
+
+      </div>
+
+
+      <div class="q">
+
+        <div class="k">
+          Day range / ADR
+        </div>
+
+        <div
+          class="v"
+          id="rangeAdr"
+        >
+          —
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<section class="card">
+
+  <div class="cardHead">
+
+    <div class="title">
+      Independent pressure map
+    </div>
+
+    <div class="hint">
+      Not combined into a trade signal
+    </div>
+
+  </div>
+
+
+  <div class="body">
+
+    <div
+      class="pressureGrid"
+      id="pressureGrid"
     ></div>
-
-  </div>
-
-</div>
-
-
-<div
-  class="section"
-  style="margin-top:15px"
->
-
-  HARD-LOCKED TRADE
-
-  <span
-    id="currentR"
-    style="float:right"
-  >
-    —
-  </span>
-
-</div>
-
-
-<div class="grid5">
-
-
-<div class="metric">
-
-  <small>
-    Entry
-  </small>
-
-  <b
-    class="blue"
-    id="entry"
-  >
-    —
-  </b>
-
-</div>
-
-
-<div class="metric">
-
-  <small>
-    Stop
-  </small>
-
-  <b
-    class="red"
-    id="sl"
-  >
-    —
-  </b>
-
-</div>
-
-
-<div class="metric">
-
-  <small>
-    TP1
-  </small>
-
-  <b
-    class="green"
-    id="tp1"
-  >
-    —
-  </b>
-
-</div>
-
-
-<div class="metric">
-
-  <small>
-    TP 3R
-  </small>
-
-  <b
-    class="green"
-    id="tp"
-  >
-    —
-  </b>
-
-</div>
-
-
-<div class="metric">
-
-  <small>
-    TP2
-  </small>
-
-  <b
-    class="green"
-    id="tp2"
-  >
-    —
-  </b>
-
-</div>
-
-
-</div>
-
-
-<div class="tradeTrack">
-
-  <div
-    class="marker"
-    id="tradeMarker"
-  ></div>
-
-</div>
-
-
-<div class="labels">
-
-  <span>
-    SL
-  </span>
-
-  <span>
-    ENTRY
-  </span>
-
-  <span>
-    TP
-  </span>
-
-</div>
-
-
-</div>
-
-</div>
-
-
-<!-- SCORE BREAKDOWN -->
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    SCORE BREAKDOWN
-  </div>
-
-  <div
-    class="grid4"
-    id="components"
-  ></div>
-
-</div>
-
-</div>
-
-
-</div>
-
-
-<!-- RIGHT SIDE -->
-
-<div class="stack">
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    TIMEFRAME BIAS
-  </div>
-
-  <div class="grid4">
-
-
-    <div class="metric">
-
-      <small>
-        4H
-      </small>
-
-      <b
-        class="tf NEUTRAL"
-        id="bH4"
-      >
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        1H
-      </small>
-
-      <b
-        class="tf NEUTRAL"
-        id="bH1"
-      >
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        15M
-      </small>
-
-      <b
-        class="tf NEUTRAL"
-        id="bM15"
-      >
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        5M
-      </small>
-
-      <b
-        class="tf NEUTRAL"
-        id="bM5"
-      >
-        —
-      </b>
-
-    </div>
-
-
-  </div>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    CONFIRMATIONS
-  </div>
-
-  <div id="reasons">
-
-    <div class="reason muted">
-      Waiting.
-    </div>
-
-  </div>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    BLOCKERS
-  </div>
-
-  <div id="blockers">
-
-    <div class="reason muted">
-      Waiting.
-    </div>
-
-  </div>
-
-</div>
-
-</div>
-
-
-</div>
-
-
-</div>
-
-</section>
-
-
-<!-- ======================================================
-     STRUCTURE VIEW
-======================================================= -->
-
-<section
-  class="view"
-  id="structure"
->
-
-<div class="layout">
-
-
-<div class="stack">
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    HIGHER TIMEFRAME
-  </div>
-
-
-  <div class="grid2">
-
-
-    <div class="metric">
-
-      <small>
-        4H Bias / Structure
-      </small>
-
-      <b id="h4State">
-        —
-      </b>
-
-      <div
-        class="sub"
-        id="h4Ema"
-      >
-        —
-      </div>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        1H Bias / Structure
-      </small>
-
-      <b id="h1State">
-        —
-      </b>
-
-      <div
-        class="sub"
-        id="h1Ema"
-      >
-        —
-      </div>
-
-    </div>
-
-
-  </div>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    15M SETUP
-  </div>
-
-
-  <div class="grid2">
-
-
-    <div class="metric">
-
-      <small>
-        BOS
-      </small>
-
-      <b id="bos">
-        —
-      </b>
-
-      <div
-        class="sub"
-        id="bosLevel"
-      >
-        —
-      </div>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Displacement
-      </small>
-
-      <b id="disp">
-        —
-      </b>
-
-      <div
-        class="sub"
-        id="dispInfo"
-      >
-        —
-      </div>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Volume Ratio
-      </small>
-
-      <b id="volRatio">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Entry Extension
-      </small>
-
-      <b id="extension">
-        —
-      </b>
-
-    </div>
-
-
-  </div>
-
-</div>
-
-</div>
-
-
-</div>
-
-
-<div class="stack">
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    5M PRECISION
-  </div>
-
-
-  <div class="grid2">
-
-
-    <div class="metric">
-
-      <small>
-        Bias
-      </small>
-
-      <b id="pBias">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Retest
-      </small>
-
-      <b id="pRetest">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Rejection
-      </small>
-
-      <b id="pReject">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        FVG
-      </small>
-
-      <b id="pFvg">
-        —
-      </b>
-
-    </div>
-
-
-  </div>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    VOLATILITY
-  </div>
-
-
-  <div class="grid2">
-
-
-    <div class="metric">
-
-      <small>
-        15M ATR
-      </small>
-
-      <b id="atr15">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        1H ATR
-      </small>
-
-      <b id="atr1h">
-        —
-      </b>
-
-    </div>
-
-
-  </div>
-
-</div>
-
-</div>
-
-
-</div>
-
-
-</div>
-
-</section>
-
-
-<!-- ======================================================
-     LIQUIDITY VIEW
-======================================================= -->
-
-<section
-  class="view"
-  id="liquidity"
->
-
-<div class="layout">
-
-
-<div class="stack">
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    ACTIVE SWEEP
-  </div>
-
-
-  <div class="metric">
-
-    <small>
-      Swept Level
-    </small>
-
-    <b id="sweepName">
-      NONE
-    </b>
-
-    <div
-      class="sub"
-      id="sweepInfo"
-    >
-      Waiting for sweep.
-    </div>
-
-  </div>
-
-
-  <div
-    class="grid3"
-    style="margin-top:8px"
-  >
-
-
-    <div class="metric">
-
-      <small>
-        PDH
-      </small>
-
-      <b id="pdh">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        PDL
-      </small>
-
-      <b id="pdl">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Weekly Open
-      </small>
-
-      <b id="wo">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Prev 4H High
-      </small>
-
-      <b id="h4h">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Prev 4H Low
-      </small>
-
-      <b id="h4l">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Asian High
-      </small>
-
-      <b id="ah">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Asian Low
-      </small>
-
-      <b id="al">
-        —
-      </b>
-
-    </div>
-
-
-  </div>
-
-</div>
-
-</div>
-
-
-</div>
-
-
-<div class="stack">
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    SWING HIGHS
-  </div>
-
-  <div
-    class="levelList"
-    id="swingHighs"
-  ></div>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    SWING LOWS
-  </div>
-
-  <div
-    class="levelList"
-    id="swingLows"
-  ></div>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    EQUAL LEVELS
-  </div>
-
-  <div id="equals"></div>
-
-</div>
-
-</div>
-
-
-</div>
-
-
-</div>
-
-</section>
-
-
-<!-- ======================================================
-     MONITOR VIEW
-======================================================= -->
-
-<section
-  class="view"
-  id="monitor"
->
-
-<div class="layout">
-
-
-<div class="stack">
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    LIVE PRICE MONITOR
-  </div>
-
-
-  <div class="canvasWrap">
-
-    <canvas id="priceChart"></canvas>
-
-  </div>
-
-
-  <div
-    class="grid4"
-    style="margin-top:8px"
-  >
-
-
-    <div class="metric">
-
-      <small>
-        Current
-      </small>
-
-      <b id="mPrice">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Current R
-      </small>
-
-      <b id="mR">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Best R
-      </small>
-
-      <b id="mBest">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Worst R
-      </small>
-
-      <b id="mWorst">
-        —
-      </b>
-
-    </div>
-
-
-  </div>
-
-</div>
-
-</div>
-
-
-</div>
-
-
-<div class="stack">
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    ACTIVE TRADE
-  </div>
-
-  <div id="monitorTrade">
-
-    <div class="reason muted">
-      No hard lock.
-    </div>
-
-  </div>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    MONITOR RULES
-  </div>
-
-  <div class="reason">
-    Live price checks do not recalculate the strategy.
-  </div>
-
-  <div class="reason">
-    The hard lock stays until SL, main 3R TP, or manual clear.
-  </div>
-
-  <div class="reason">
-    The journal records closed trades locally on your device.
-  </div>
-
-</div>
-
-</div>
-
-
-</div>
-
-
-</div>
-
-</section>
-
-
-<!-- ======================================================
-     BACKTEST VIEW
-======================================================= -->
-
-<section
-  class="view"
-  id="backtest"
->
-
-<div class="layout">
-
-
-<div class="stack">
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    BTC HISTORICAL REPLAY
-  </div>
-
-
-  <div class="periods">
-
-
-    <button
-      class="period"
-      data-days="3"
-    >
-      3 DAYS
-    </button>
-
-
-    <button
-      class="period active"
-      data-days="7"
-    >
-      7 DAYS
-    </button>
-
-
-    <button
-      class="period"
-      data-days="14"
-    >
-      14 DAYS
-    </button>
-
-
-    <button
-      class="period"
-      data-days="30"
-    >
-      30 DAYS
-    </button>
-
-
-  </div>
-
-
-  <button
-    class="runBT"
-    id="runBT"
-  >
-    RUN 7-DAY BTC BACKTEST
-  </button>
-
-
-  <div
-    class="tiny"
-    id="btStatus"
-  >
-    Uses next 5M open. Same-candle TP/SL = stop first.
-  </div>
-
-
-  <div
-    class="grid2"
-    style="margin-top:10px"
-  >
-
-
-    <div class="metric">
-
-      <small>
-        Net Result
-      </small>
-
-      <b id="btNet">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Win Rate
-      </small>
-
-      <b id="btWR">
-        —
-      </b>
-
-    </div>
-
-
-  </div>
-
-
-  <div
-    class="grid4"
-    style="margin-top:8px"
-  >
-
-
-    <div class="metric">
-
-      <small>
-        Trades
-      </small>
-
-      <b id="btTrades">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Wins
-      </small>
-
-      <b
-        class="green"
-        id="btWins"
-      >
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Losses
-      </small>
-
-      <b
-        class="red"
-        id="btLosses"
-      >
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Open
-      </small>
-
-      <b id="btOpen">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Profit Factor
-      </small>
-
-      <b id="btPF">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Expectancy
-      </small>
-
-      <b id="btExp">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Max DD
-      </small>
-
-      <b
-        class="red"
-        id="btDD"
-      >
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Loss Streak
-      </small>
-
-      <b id="btLS">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Avg Hold
-      </small>
-
-      <b id="btHold">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Break-even WR
-      </small>
-
-      <b id="btBE">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        WR Edge
-      </small>
-
-      <b id="btEdge">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Sniper Trades
-      </small>
-
-      <b id="btSnipers">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Avg Score
-      </small>
-
-      <b id="btAvgScore">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Best Score
-      </small>
-
-      <b id="btBestScore">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        TP1 Hit Rate
-      </small>
-
-      <b id="btTp1">
-        —
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Ambiguous
-      </small>
-
-      <b id="btAmb">
-        —
-      </b>
-
-    </div>
-
-
-  </div>
-
-
-  <div
-    class="tiny"
-    id="btInfo"
-    style="margin-top:9px"
-  >
-    No backtest loaded.
-  </div>
-
-
-</div>
-
-</div>
-
-
-<!-- EQUITY -->
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    EQUITY CURVE
-  </div>
-
-  <div class="canvasWrap small">
-
-    <canvas id="equity"></canvas>
-
-  </div>
-
-</div>
-
-</div>
-
-
-<!-- DRAWDOWN -->
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    DRAWDOWN CURVE
-  </div>
-
-  <div class="canvasWrap small">
-
-    <canvas id="drawdown"></canvas>
-
-  </div>
-
-</div>
-
-</div>
-
-
-</div>
-
-
-<div class="stack">
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    BUY VS SELL
-  </div>
-
-  <div id="sideStats">
-
-    <div class="reason muted">
-      Run backtest.
-    </div>
-
-  </div>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    SESSION PERFORMANCE
-  </div>
-
-  <div id="sessionStats">
-
-    <div class="reason muted">
-      Run backtest.
-    </div>
-
-  </div>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    SCORE BUCKETS
-  </div>
-
-  <div id="scoreBuckets">
-
-    <div class="reason muted">
-      Run backtest.
-    </div>
-
-  </div>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    RECENT BACKTEST TRADES
-  </div>
-
-
-  <div class="filters">
-
-
-    <select
-      class="select"
-      id="fDir"
-    >
-
-      <option value="ALL">
-        All Directions
-      </option>
-
-      <option value="BUY">
-        BUY
-      </option>
-
-      <option value="SELL">
-        SELL
-      </option>
-
-    </select>
-
-
-    <select
-      class="select"
-      id="fResult"
-    >
-
-      <option value="ALL">
-        All Results
-      </option>
-
-      <option value="WIN">
-        WIN
-      </option>
-
-      <option value="LOSS">
-        LOSS
-      </option>
-
-      <option value="OPEN">
-        OPEN
-      </option>
-
-    </select>
-
-
-    <select
-      class="select"
-      id="fSession"
-    >
-
-      <option value="ALL">
-        All Sessions
-      </option>
-
-      <option value="ASIA">
-        Asia
-      </option>
-
-      <option value="LONDON">
-        London
-      </option>
-
-      <option value="LONDON_NY_OVERLAP">
-        Overlap
-      </option>
-
-      <option value="NEW_YORK">
-        New York
-      </option>
-
-      <option value="OFF_HOURS">
-        Off-hours
-      </option>
-
-    </select>
-
-
-  </div>
-
-
-  <div id="btHistory">
-
-    <div class="reason muted">
-      Run backtest.
-    </div>
-
-  </div>
-
-</div>
-
-</div>
-
-
-</div>
-
-
-</div>
-
-</section>
-
-
-<!-- ======================================================
-     JOURNAL
-======================================================= -->
-
-<section
-  class="view"
-  id="journal"
->
-
-<div class="layout">
-
-
-<div class="stack">
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    LIVE BTC JOURNAL
-  </div>
-
-
-  <div class="grid3">
-
-
-    <div class="metric">
-
-      <small>
-        Trades
-      </small>
-
-      <b id="jTrades">
-        0
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Win Rate
-      </small>
-
-      <b id="jWR">
-        0%
-      </b>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Net R
-      </small>
-
-      <b id="jNet">
-        0R
-      </b>
-
-    </div>
-
-
-  </div>
-
-
-  <div
-    id="journalList"
-    style="margin-top:10px"
-  >
-
-    <div class="reason muted">
-      No completed trades.
-    </div>
-
-  </div>
-
-
-  <div
-    class="actions"
-    style="
-      grid-template-columns:1fr 1fr;
-      margin-top:9px;
-    "
-  >
-
-    <button
-      class="primary"
-      id="export"
-    >
-      EXPORT CSV
-    </button>
-
-    <button
-      class="primary danger"
-      id="clearJournal"
-    >
-      CLEAR JOURNAL
-    </button>
-
-  </div>
-
-
-</div>
-
-</div>
-
-
-</div>
-
-
-<div class="stack">
-
-
-<div class="card">
-
-<div class="pad">
-
-  <div class="section">
-    APP SETTINGS
-  </div>
-
-
-  <div class="grid2">
-
-
-    <div class="metric">
-
-      <small>
-        Analysis refresh
-      </small>
-
-      <select
-        class="select"
-        id="analysisRefresh"
-      >
-
-        <option value="30">
-          30 sec
-        </option>
-
-        <option value="60">
-          1 min
-        </option>
-
-        <option value="120">
-          2 min
-        </option>
-
-        <option value="300">
-          5 min
-        </option>
-
-        <option value="0">
-          Manual
-        </option>
-
-      </select>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Price refresh
-      </small>
-
-      <select
-        class="select"
-        id="priceRefresh"
-      >
-
-        <option value="10">
-          10 sec
-        </option>
-
-        <option value="15">
-          15 sec
-        </option>
-
-        <option value="30">
-          30 sec
-        </option>
-
-        <option value="60">
-          1 min
-        </option>
-
-      </select>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        Alerts
-      </small>
-
-      <button
-        class="primary"
-        id="alerts"
-      >
-        TOGGLE
-      </button>
-
-    </div>
-
-
-    <div class="metric">
-
-      <small>
-        AMOLED
-      </small>
-
-      <button
-        class="primary"
-        id="amoled"
-      >
-        TOGGLE
-      </button>
-
-    </div>
-
-
-  </div>
-
-</div>
-
-</div>
-
-
-</div>
-
-
-</div>
-
-</section>
-
-
-</div>
-
-
-<!-- ======================================================
-     FLOATING TRADE
-======================================================= -->
-
-<div
-  class="floating"
-  id="floating"
->
-
-  <div>
-
-    <b id="floatTitle">
-      🔒 BTC/USD
-    </b>
 
     <div
       class="tiny"
-      id="floatSub"
-    >
-      —
+      id="pressureNote"
+    ></div>
+
+  </div>
+
+</section>
+
+
+
+<section class="card">
+
+  <div class="cardHead">
+
+    <div class="title">
+      Multi-timeframe state
+    </div>
+
+    <div class="hint">
+      Trend • momentum • structure • RSI • ATR
     </div>
 
   </div>
 
-  <div
-    class="floatR"
-    id="floatR"
-  >
-    —
+
+  <div class="body">
+
+    <div
+      class="tfgrid"
+      id="tfGrid"
+    ></div>
+
   </div>
 
-</div>
+</section>
 
 
-<!-- ======================================================
-     TOAST
-======================================================= -->
 
-<div
-  class="toast"
-  id="toast"
->
+<section class="card">
 
-  <b id="toastTitle">
-    MKAYFX
-  </b>
+  <div class="cardHead">
 
-  <div
-    class="tiny"
-    id="toastBody"
-  >
-    —
+    <div class="title">
+      Liquidity map
+    </div>
+
+    <div class="hint">
+      Major opens, highs/lows, swings, FVGs
+    </div>
+
   </div>
 
+
+  <div class="body">
+
+    <div
+      class="levels"
+      id="majorLevels"
+    ></div>
+
+
+    <div class="sep"></div>
+
+
+    <div class="split">
+
+      <div class="box">
+
+        <h3>
+          Nearest liquidity above
+        </h3>
+
+        <div
+          id="liqAbove"
+          class="rows"
+        ></div>
+
+      </div>
+
+
+      <div class="box">
+
+        <h3>
+          Nearest liquidity below
+        </h3>
+
+        <div
+          id="liqBelow"
+          class="rows"
+        ></div>
+
+      </div>
+
+    </div>
+
+
+    <div class="sep"></div>
+
+
+    <div class="box">
+
+      <h3>
+        Active fair-value gaps
+      </h3>
+
+      <div
+        id="fvgs"
+        class="rows"
+      ></div>
+
+    </div>
+
+
+    <div class="sep"></div>
+
+
+    <div class="box">
+
+      <h3>
+        Equal highs / lows
+      </h3>
+
+      <div
+        id="equals"
+        class="rows"
+      ></div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<section class="card">
+
+  <div class="cardHead">
+
+    <div class="title">
+      Volatility & range regime
+    </div>
+
+    <div class="hint">
+      Daily volatility context
+    </div>
+
+  </div>
+
+
+  <div class="body">
+
+    <div
+      class="quick"
+      id="volGrid"
+      style="margin:0"
+    ></div>
+
+  </div>
+
+</section>
+
+
+
+<section class="card">
+
+  <div class="cardHead">
+
+    <div class="title">
+      Macro drivers
+    </div>
+
+    <div class="hint">
+      FRED • recent changes mapped to gold
+    </div>
+
+  </div>
+
+
+  <div class="body">
+
+    <div
+      id="macroRows"
+      class="rows"
+    ></div>
+
+
+    <div class="tiny">
+
+      Impact labels describe the usual
+      directional pressure from the latest
+      change. Relationships can break down.
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<section class="card">
+
+  <div class="cardHead">
+
+    <div class="title">
+      Macro fair-value model
+    </div>
+
+    <div class="hint">
+      Experimental • descriptive
+    </div>
+
+  </div>
+
+
+  <div class="body">
+
+    <div class="split">
+
+      <div class="box">
+
+        <h3>
+          Model fair value
+        </h3>
+
+        <div
+          class="big"
+          id="fairValue"
+        >
+          —
+        </div>
+
+        <div
+          class="tiny"
+          id="fairNote"
+        >
+          —
+        </div>
+
+      </div>
+
+
+      <div class="box">
+
+        <h3>
+          Model residual
+        </h3>
+
+        <div
+          class="big"
+          id="fairResidual"
+        >
+          —
+        </div>
+
+        <div
+          class="tiny"
+          id="fairPremium"
+        >
+          —
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<section class="card">
+
+  <div class="cardHead">
+
+    <div class="title">
+      Gold / macro correlations
+    </div>
+
+    <div class="hint">
+      Rolling daily relationships
+    </div>
+
+  </div>
+
+
+  <div class="body">
+
+    <div
+      id="corrRows"
+      class="rows"
+    ></div>
+
+  </div>
+
+</section>
+
+
+
+<section class="card">
+
+  <div class="cardHead">
+
+    <div class="title">
+      CFTC positioning
+    </div>
+
+    <div class="hint">
+      COMEX Gold futures • weekly
+    </div>
+
+  </div>
+
+
+  <div class="body">
+
+    <div class="split">
+
+      <div class="box">
+
+        <h3>
+          Managed money net
+        </h3>
+
+        <div
+          class="big"
+          id="cotNet"
+        >
+          —
+        </div>
+
+        <div
+          class="tiny"
+          id="cotMeta"
+        >
+          —
+        </div>
+
+      </div>
+
+
+      <div class="box">
+
+        <h3>
+          3-year COT index
+        </h3>
+
+        <div
+          class="big"
+          id="cotIndex"
+        >
+          —
+        </div>
+
+        <div
+          class="tiny"
+          id="cotState"
+        >
+          —
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div
+      class="quick"
+      style="margin-bottom:0"
+    >
+
+      <div class="q">
+
+        <div class="k">
+          Long
+        </div>
+
+        <div
+          class="v"
+          id="cotLong"
+        >
+          —
+        </div>
+
+      </div>
+
+
+      <div class="q">
+
+        <div class="k">
+          Short
+        </div>
+
+        <div
+          class="v"
+          id="cotShort"
+        >
+          —
+        </div>
+
+      </div>
+
+
+      <div class="q">
+
+        <div class="k">
+          Producer net
+        </div>
+
+        <div
+          class="v"
+          id="prodNet"
+        >
+          —
+        </div>
+
+      </div>
+
+
+      <div class="q">
+
+        <div class="k">
+          Swap net
+        </div>
+
+        <div
+          class="v"
+          id="swapNet"
+        >
+          —
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<section class="card">
+
+  <div class="cardHead">
+
+    <div class="title">
+      Historical analog engine
+    </div>
+
+    <div class="hint">
+      Closest daily XAU states
+    </div>
+
+  </div>
+
+
+  <div class="body">
+
+    <div
+      class="analog"
+      id="analogGrid"
+    ></div>
+
+    <div
+      class="tiny"
+      id="analogNote"
+    ></div>
+
+  </div>
+
+</section>
+
+
+
+<section class="card">
+
+  <div class="cardHead">
+
+    <div class="title">
+      Latest macro data
+    </div>
+
+    <div class="hint">
+      Inflation • labour • growth
+    </div>
+
+  </div>
+
+
+  <div class="body">
+
+    <div
+      id="fundRows"
+      class="rows"
+    ></div>
+
+  </div>
+
+</section>
+
+
+
+<section class="card">
+
+  <div class="cardHead">
+
+    <div class="title">
+      Upcoming US data releases
+    </div>
+
+    <div class="hint">
+      Next 21 days • FRED release calendar
+    </div>
+
+  </div>
+
+
+  <div class="body">
+
+    <div id="events"></div>
+
+  </div>
+
+</section>
+
+
+
+<section class="card">
+
+  <div class="cardHead">
+
+    <div class="title">
+      Gold-moving headlines
+    </div>
+
+    <div class="hint">
+      External news feed
+    </div>
+
+  </div>
+
+
+  <div class="body">
+
+    <div
+      id="news"
+      class="news"
+    ></div>
+
+  </div>
+
+</section>
+
+
+
+<section class="card">
+
+  <div class="cardHead">
+
+    <div class="title">
+      Data health
+    </div>
+
+    <div class="hint">
+      No silent failures
+    </div>
+
+  </div>
+
+
+  <div class="body">
+
+    <div
+      class="health"
+      id="health"
+    ></div>
+
+    <div
+      class="tiny"
+      id="marketNotes"
+    ></div>
+
+  </div>
+
+</section>
+
+
+
+<div class="footer">
+
+  MKAYFX GOLD INTELLIGENCE is an analytical
+  dashboard, not an execution system and not
+  financial advice.
+
+  Historical analogs, correlations,
+  pressure gauges and fair-value estimates
+  are descriptive statistical tools.
+
+  CFTC data is weekly futures positioning;
+  FRED series update at their source frequency;
+  spot XAU/USD has no single centralized
+  volume feed.
+
 </div>
 
 
-<!-- ======================================================
-     MOBILE NAV
-======================================================= -->
-
-<div class="bottom">
-
-  <button
-    class="active"
-    data-view="home"
-  >
-    ⌂
-    <br>
-    HOME
-  </button>
-
-  <button
-    data-view="structure"
-  >
-    ⌁
-    <br>
-    STRUCT
-  </button>
-
-  <button
-    data-view="liquidity"
-  >
-    ◎
-    <br>
-    LIQUID
-  </button>
-
-  <button
-    data-view="monitor"
-  >
-    ↗
-    <br>
-    LIVE
-  </button>
-
-  <button
-    data-view="backtest"
-  >
-    ▥
-    <br>
-    TEST
-  </button>
-
-  <button
-    data-view="journal"
-  >
-    ☷
-    <br>
-    JOURNAL
-  </button>
-
 </div>
+
 
 
 <script>
@@ -3934,241 +2668,83 @@ const $ =
     );
 
 
-const $$ =
-  selector =>
-    Array.from(
-      document.querySelectorAll(
-        selector
+const fmt = (
+  n,
+  decimals = 2
+) =>
+
+  Number.isFinite(
+    Number(
+      n
+    )
+  )
+
+    ? Number(
+        n
       )
-    );
+      .toLocaleString(
+        undefined,
+        {
+          minimumFractionDigits:
+            decimals,
+
+          maximumFractionDigits:
+            decimals
+        }
+      )
+
+    : "—";
 
 
-const SYMBOL =
-  "BTC/USD";
 
+const signed = (
+  n,
+  decimals = 2,
+  suffix = ""
+) =>
 
-const API =
-  "/api/sr";
-
-
-const BTAPI =
-  "/api/backtest";
-
-
-const K = {
-
-  lock:
-    "mkayfx_btc_lock_v2",
-
-  history:
-    "mkayfx_btc_history_v2",
-
-  cache:
-    "mkayfx_btc_cache_v2",
-
-  prices:
-    "mkayfx_btc_prices_v2",
-
-  bt:
-    "mkayfx_btc_backtest_v2",
-
-  analysis:
-    "mkayfx_btc_analysis_refresh_v2",
-
-  price:
-    "mkayfx_btc_price_refresh_v2",
-
-  alerts:
-    "mkayfx_btc_alerts_v2",
-
-  amoled:
-    "mkayfx_btc_amoled_v2",
-
-  pause:
-    "mkayfx_btc_pause_v2"
-
-};
-
-
-/* =========================================================
-   STATE
-========================================================= */
-
-let lastData =
-  null;
-
-
-let lastBT =
-  null;
-
-
-let currentPrice =
-  null;
-
-
-let analysing =
-  false;
-
-
-let priceLoading =
-  false;
-
-
-let currentView =
-  "home";
-
-
-let lastAnalysisAt =
-  0;
-
-
-let lastPriceAt =
-  0;
-
-
-let btDays =
-  7;
-
-
-let analysisRefresh =
-
-  Number(
-
-    localStorage.getItem(
-      K.analysis
+  Number.isFinite(
+    Number(
+      n
     )
-
-    ||
-
-    60
-
-  );
-
-
-let priceRefresh =
-
-  Number(
-
-    localStorage.getItem(
-      K.price
-    )
-
-    ||
-
-    15
-
-  );
-
-
-let alertsEnabled =
-
-  localStorage.getItem(
-    K.alerts
   )
 
-  ===
+    ? `${
+        Number(
+          n
+        ) > 0
 
-  "true";
+          ? "+"
 
+          : ""
+      }${fmt(
+        Number(
+          n
+        ),
+        decimals
+      )}${suffix}`
 
-let amoledEnabled =
-
-  localStorage.getItem(
-    K.amoled
-  )
-
-  ===
-
-  "true";
-
-
-/* =========================================================
-   BASIC HELPERS
-========================================================= */
-
-const n =
-  value => {
-
-    const number =
-      Number(
-        value
-      );
+    : "—";
 
 
-    return Number.isFinite(
-      number
-    )
 
-      ? number
+const klass =
+  n =>
 
-      : null;
+    Number(
+      n
+    ) > 0
 
-  };
+      ? "up"
 
+      : Number(
+          n
+        ) < 0
 
-const fmt =
-  (
-    value,
-    digits = 2
-  ) => {
+        ? "down"
 
-    const number =
-      n(
-        value
-      );
+        : "neutral";
 
-
-    if (
-      number ===
-      null
-    ) {
-
-      return "—";
-
-    }
-
-
-    return number.toLocaleString(
-
-      undefined,
-
-      {
-
-        minimumFractionDigits:
-          digits,
-
-        maximumFractionDigits:
-          digits
-
-      }
-
-    );
-
-  };
-
-
-const rfmt =
-  value => {
-
-    const number =
-      n(
-        value
-      );
-
-
-    if (
-      number ===
-      null
-    ) {
-
-      return "—";
-
-    }
-
-
-    return `${number >= 0 ? "+" : ""}${number.toFixed(2)}R`;
-
-  };
 
 
 const esc =
@@ -4178,1098 +2754,2172 @@ const esc =
       value ??
       ""
     )
+    .replace(
+      /[&<>"']/g,
+      character =>
+        ({
+          "&":
+            "&amp;",
 
-      .replace(
-        /&/g,
-        "&amp;"
+          "<":
+            "&lt;",
+
+          ">":
+            "&gt;",
+
+          "\"":
+            "&quot;",
+
+          "'":
+            "&#039;"
+        })[
+          character
+        ]
+    );
+
+
+
+let model =
+  null;
+
+
+let lastPrice =
+  null;
+
+
+let heavyTimer =
+  null;
+
+
+let priceTimer =
+  null;
+
+
+
+function setText(
+  id,
+  value,
+  className
+) {
+
+  const element =
+    $(
+      id
+    );
+
+
+  if (
+    !element
+  ) {
+
+    return;
+
+  }
+
+
+  element.textContent =
+    value;
+
+
+  if (
+    className
+  ) {
+
+    element.className =
+      className;
+
+  }
+
+}
+
+
+
+function tag(
+  text,
+  className = ""
+) {
+
+  return `
+    <span class="pill ${className}">
+      ${esc(text)}
+    </span>
+  `;
+
+}
+
+
+
+function impactClass(
+  state
+) {
+
+  state =
+    String(
+      state ||
+      ""
+    );
+
+
+  if (
+    state.includes(
+      "SUPPORT"
+    )
+  ) {
+
+    return "up";
+
+  }
+
+
+  if (
+    state.includes(
+      "NEGATIVE"
+    )
+  ) {
+
+    return "down";
+
+  }
+
+
+  return "neutral";
+
+}
+
+
+
+function tfClass(
+  timeframe
+) {
+
+  return (
+
+    timeframe?.trend ===
+    "UP"
+
+      ? "up"
+
+      : timeframe?.trend ===
+        "DOWN"
+
+        ? "down"
+
+        : "neutral"
+
+  );
+
+}
+
+
+
+function tfArrow(
+  timeframe
+) {
+
+  return (
+
+    timeframe?.trend ===
+    "UP"
+
+      ? "↑"
+
+      : timeframe?.trend ===
+        "DOWN"
+
+        ? "↓"
+
+        : "→"
+
+  );
+
+}
+
+
+
+/* =========================================================
+   CHART
+========================================================= */
+
+function renderChart(
+  points
+) {
+
+  if (
+    !points?.length
+  ) {
+
+    $("chart").innerHTML =
+      `<div class="loading">
+        No chart data.
+      </div>`;
+
+    return;
+
+  }
+
+
+  const values =
+    points
+      .map(
+        point =>
+          point.close
       )
-
-      .replace(
-        /</g,
-        "&lt;"
-      )
-
-      .replace(
-        />/g,
-        "&gt;"
-      )
-
-      .replace(
-        /"/g,
-        "&quot;"
-      )
-
-      .replace(
-        /'/g,
-        "&#039;"
+      .filter(
+        Number.isFinite
       );
 
 
-const time =
-  value => {
-
-    if (
-      !value
-    ) {
-
-      return "—";
-
-    }
+  const min =
+    Math.min(
+      ...values
+    );
 
 
-    const date =
-      new Date(
-        value
+  const max =
+    Math.max(
+      ...values
+    );
+
+
+  const width =
+    800;
+
+
+  const height =
+    145;
+
+
+  const padding =
+    5;
+
+
+  const range =
+    max -
+    min ||
+    1;
+
+
+  const xy =
+    points
+      .map(
+        (
+          point,
+          index
+        ) => {
+
+          const x =
+            padding +
+            index *
+            (
+              width -
+              2 *
+              padding
+            ) /
+            (
+              points.length -
+              1
+            );
+
+
+          const y =
+            padding +
+            (
+              max -
+              point.close
+            ) *
+            (
+              height -
+              2 *
+              padding
+            ) /
+            range;
+
+
+          return `${x},${y}`;
+
+        }
+      )
+      .join(
+        " "
       );
 
 
-    if (
-      Number.isNaN(
-        date.getTime()
-      )
-    ) {
-
-      return "—";
-
-    }
+  const area =
+    `${padding},${height - padding} ${xy} ${width - padding},${height - padding}`;
 
 
-    return date.toLocaleString(
+  $("chart").innerHTML =
+    `
+      <svg
+        viewBox="0 0 ${width} ${height}"
+        preserveAspectRatio="none"
+      >
 
-      undefined,
+        <defs>
 
-      {
+          <linearGradient
+            id="areaGradient"
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="1"
+          >
 
-        month:
-          "short",
+            <stop
+              offset="0"
+              stop-color="#f3c969"
+              stop-opacity=".18"
+            />
 
-        day:
-          "numeric",
+            <stop
+              offset="1"
+              stop-color="#f3c969"
+              stop-opacity="0"
+            />
 
-        hour:
-          "2-digit",
+          </linearGradient>
 
-        minute:
-          "2-digit"
+        </defs>
 
+
+        <polygon
+          points="${area}"
+          class="chartArea"
+        />
+
+
+        <polyline
+          points="${xy}"
+          class="chartLine"
+        />
+
+      </svg>
+    `;
+
+}
+
+
+
+/* =========================================================
+   PRESSURE METER
+========================================================= */
+
+function meter(
+  name,
+  value,
+  type = "score"
+) {
+
+  const display =
+
+    value == null
+
+      ? "—"
+
+      : type ===
+        "text"
+
+        ? value
+
+        : signed(
+            value,
+            0
+          );
+
+
+  const className =
+
+    type ===
+    "text"
+
+      ? "gold"
+
+      : klass(
+          value
+        );
+
+
+  const width =
+
+    value == null
+
+      ? 50
+
+      : type ===
+        "text"
+
+        ? 50
+
+        : Math.max(
+
+            0,
+
+            Math.min(
+
+              100,
+
+              (
+                Number(
+                  value
+                ) +
+                100
+              ) /
+              2
+
+            )
+
+          );
+
+
+  return `
+
+    <div class="meter">
+
+      <div class="label">
+        ${esc(name)}
+      </div>
+
+
+      <div class="n ${className}">
+        ${esc(display)}
+      </div>
+
+
+      ${
+        type ===
+        "text"
+
+          ? ""
+
+          : `
+            <div class="bar">
+
+              <div
+                class="fill"
+                style="width:${width}%"
+              ></div>
+
+            </div>
+          `
       }
 
-    );
+    </div>
 
-  };
+  `;
+
+}
+
 
 
 /* =========================================================
-   JSON STORAGE
+   MAIN RENDER
 ========================================================= */
 
-function getJSON(
-  key,
-  fallback
-) {
-
-  try {
-
-    return JSON.parse(
-
-      localStorage.getItem(
-        key
-      )
-
-      ||
-
-      JSON.stringify(
-        fallback
-      )
-
-    );
-
-  }
-
-  catch {
-
-    return fallback;
-
-  }
-
-}
-
-
-/* =========================================================
-   LOCK STORAGE
-========================================================= */
-
-function getLock() {
-
-  return getJSON(
-    K.lock,
-    null
-  );
-
-}
-
-
-function saveLock(
-  trade
-) {
-
-  localStorage.setItem(
-
-    K.lock,
-
-    JSON.stringify(
-      trade
-    )
-
-  );
-
-}
-
-
-function clearLock() {
-
-  localStorage.removeItem(
-    K.lock
-  );
-
-}
-
-
-/* =========================================================
-   HISTORY
-========================================================= */
-
-function getHistory() {
-
-  const history =
-    getJSON(
-      K.history,
-      []
-    );
-
-
-  return Array.isArray(
-    history
-  )
-
-    ? history
-
-    : [];
-
-}
-
-
-function saveHistory(
-  trade
-) {
-
-  const history =
-    getHistory();
-
-
-  history.unshift(
-    trade
-  );
-
-
-  localStorage.setItem(
-
-    K.history,
-
-    JSON.stringify(
-
-      history.slice(
-        0,
-        300
-      )
-
-    )
-
-  );
-
-}
-
-
-/* =========================================================
-   PRICE SAMPLES
-========================================================= */
-
-function getPrices() {
-
-  const prices =
-    getJSON(
-      K.prices,
-      []
-    );
-
-
-  return Array.isArray(
-    prices
-  )
-
-    ? prices
-
-    : [];
-
-}
-
-
-function addPrice(
-  price
-) {
-
-  price =
-    n(
-      price
-    );
-
-
-  if (
-    price ===
-    null
-  ) {
-
-    return;
-
-  }
-
-
-  const prices =
-    getPrices();
-
-
-  const previous =
-    prices[
-      prices.length -
-      1
-    ];
-
-
-  if (
-
-    previous
-
-    &&
-
-    Date.now() -
-    previous.t <
-    5000
-
-  ) {
-
-    return;
-
-  }
-
-
-  prices.push({
-
-    t:
-      Date.now(),
-
-    p:
-      price
-
-  });
-
-
-  localStorage.setItem(
-
-    K.prices,
-
-    JSON.stringify(
-
-      prices.slice(
-        -240
-      )
-
-    )
-
-  );
-
-}
-
-
-/* =========================================================
-   CURRENT R
-========================================================= */
-
-function currentR(
-  lock,
-  price
-) {
-
-  if (
-    !lock
-  ) {
-
-    return null;
-
-  }
-
-
-  price =
-    n(
-      price
-    );
-
-
-  const risk =
-    n(
-      lock.risk
-    );
-
-
-  if (
-
-    price ===
-    null
-
-    ||
-
-    risk ===
-    null
-
-    ||
-
-    risk <=
-    0
-
-  ) {
-
-    return null;
-
-  }
-
-
-  return lock.signal ===
-    "BUY"
-
-    ?
-
-    (
-      price -
-      lock.entry
-    )
-
-    /
-    risk
-
-    :
-
-    (
-      lock.entry -
-      price
-    )
-
-    /
-    risk;
-
-}
-
-
-/* =========================================================
-   CREATE HARD LOCK
-========================================================= */
-
-function maybeLock(
+function render(
   data
 ) {
 
-  if (
-    getLock()
-  ) {
-
-    return;
-
-  }
+  model =
+    data;
 
 
-  if (
-
-    data.signal !==
-    "BUY"
-
-    &&
-
-    data.signal !==
-    "SELL"
-
-  ) {
-
-    return;
-
-  }
+  const snapshot =
+    data.snapshot ||
+    {};
 
 
-  const pauseUntil =
-
-    Number(
-
-      localStorage.getItem(
-        K.pause
-      )
-
-      ||
-
-      0
-
-    );
+  lastPrice =
+    snapshot.price;
 
 
-  if (
-    Date.now() <
-    pauseUntil
-  ) {
-
-    return;
-
-  }
-
-
-  const values = [
-
-    data.entry,
-
-    data.stopLoss,
-
-    data.takeProfit,
-
-    data.risk
-
-  ]
-    .map(
-      n
-    );
-
-
-  if (
-
-    values.some(
-      value =>
-        value ===
-        null
-    )
-
-    ||
-
-    values[3] <=
-    0
-
-  ) {
-
-    return;
-
-  }
-
-
-  const trade = {
-
-    id:
-      data.signalId
-      ||
-      `BTC-${Date.now()}`,
-
-    symbol:
-      SYMBOL,
-
-    signal:
-      data.signal,
-
-    entry:
-      values[0],
-
-    stopLoss:
-      values[1],
-
-    takeProfit:
-      n(
-        data.takeProfit
-      ),
-
-    takeProfit1:
-      n(
-        data.takeProfit1
-      ),
-
-    takeProfit2:
-      n(
-        data.takeProfit2
-      ),
-
-    risk:
-      values[3],
-
-    rr:
-      n(
-        data.rr
-      )
-      ||
-      3,
-
-    score:
-      n(
-        data.signalScore
-      ),
-
-    confidence:
-      n(
-        data.confidence
-      ),
-
-    createdAt:
-      data.createdAt
-      ||
-      new Date()
-        .toISOString(),
-
-    bestR:
-      0,
-
-    worstR:
-      0,
-
-    status:
-      "ACTIVE"
-
-  };
-
-
-  saveLock(
-    trade
+  setText(
+    "livePrice",
+    `$${fmt(
+      snapshot.price,
+      2
+    )}`
   );
 
 
-  notify(
+  setText(
 
-    `${trade.signal} HARD LOCK`,
+    "dayChange",
 
-    `Entry ${fmt(trade.entry)} · SL ${fmt(trade.stopLoss)} · TP ${fmt(trade.takeProfit)}`,
+    signed(
+      snapshot.dayChangePct,
+      2,
+      "%"
+    ),
 
-    trade.signal
+    `priceChange ${
+      klass(
+        snapshot.dayChangePct
+      )
+    }`
 
   );
 
-}
+
+  setText(
+
+    "lastUpdate",
+
+    `Intelligence updated ${
+      new Date(
+        data.generatedAt
+      )
+      .toLocaleTimeString()
+    } • live price refreshes separately`
+
+  );
 
 
-/* =========================================================
-   UPDATE LOCK PERFORMANCE
-========================================================= */
-
-function updateLock(
-  price
-) {
-
-  const lock =
-    getLock();
-
-
-  if (
-    !lock
-  ) {
-
-    return null;
-
-  }
-
-
-  const current =
-    currentR(
-      lock,
-      price
+  $("liveDot")
+    .classList
+    .add(
+      "live"
     );
 
 
-  if (
-    Number.isFinite(
-      current
-    )
-  ) {
-
-    lock.bestR =
-      Math.max(
-
-        Number(
-          lock.bestR
-          ||
-          0
-        ),
-
-        current
-
-      );
+  setText(
+    "qSession",
+    data.liquidity
+      ?.session
+      ?.name ||
+    "—"
+  );
 
 
-    lock.worstR =
-      Math.min(
+  setText(
 
-        Number(
-          lock.worstR
-          ||
-          0
-        ),
+    "qVol",
 
-        current
+    data.volatility
+      ?.regime ||
+    "—",
 
-      );
+    `v ${
+      data.volatility?.regime ===
+      "EXTREME"
 
+        ? "down"
 
-    saveLock(
-      lock
-    );
+        : data.volatility?.regime ===
+          "ELEVATED"
 
-  }
+          ? "orange"
 
+          : ""
+    }`
 
-  return lock;
-
-}
-
-
-/* =========================================================
-   EXIT CHECK
-========================================================= */
-
-function checkExit(
-  price
-) {
-
-  let lock =
-    getLock();
+  );
 
 
-  if (
-    !lock
-  ) {
+  setText(
 
-    return;
+    "qMacro",
 
-  }
-
-
-  price =
-    n(
-      price
-    );
-
-
-  if (
-    price ===
+    data.macro?.score ==
     null
-  ) {
 
-    return;
+      ? "—"
 
-  }
+      : signed(
+          data.macro.score,
+          0
+        ),
+
+    `v ${
+      klass(
+        data.macro?.score
+      )
+    }`
+
+  );
 
 
-  let status =
-    null;
+  setText(
+    "qCot",
+    data.cot?.state ||
+    "—"
+  );
+
+
+  setText(
+
+    "dayOpenPct",
+
+    signed(
+      snapshot.fromDayOpenPct,
+      2,
+      "%"
+    ),
+
+    `v ${
+      klass(
+        snapshot.fromDayOpenPct
+      )
+    }`
+
+  );
+
+
+  setText(
+
+    "weekOpenPct",
+
+    signed(
+      snapshot.fromWeekOpenPct,
+      2,
+      "%"
+    ),
+
+    `v ${
+      klass(
+        snapshot.fromWeekOpenPct
+      )
+    }`
+
+  );
+
+
+  setText(
+
+    "monthOpenPct",
+
+    signed(
+      snapshot.fromMonthOpenPct,
+      2,
+      "%"
+    ),
+
+    `v ${
+      klass(
+        snapshot.fromMonthOpenPct
+      )
+    }`
+
+  );
+
+
+  setText(
+
+    "rangeAdr",
+
+    `${
+      fmt(
+        data.volatility
+          ?.todayRangeVsAdrPct,
+        0
+      )
+    }%`
+
+  );
+
+
+  renderChart(
+    data.chart ||
+    []
+  );
+
+
+
+  /* =======================================================
+     PRESSURE MAP
+  ======================================================= */
+
+  const pressure =
+    data.pressure ||
+    {};
+
+
+  $("pressureGrid").innerHTML =
+    [
+
+      meter(
+        "Trend",
+        pressure.trend
+      ),
+
+      meter(
+        "Momentum",
+        pressure.momentum
+      ),
+
+      meter(
+        "Structure",
+        pressure.structure
+      ),
+
+      meter(
+        "Macro",
+        pressure.macro
+      ),
+
+      meter(
+        "Liquidity skew",
+        pressure.liquiditySkew
+      ),
+
+      meter(
+        "Positioning",
+        pressure.positioning
+      ),
+
+      meter(
+        "Volatility",
+        pressure.volatility,
+        "text"
+      )
+
+    ]
+    .join(
+      ""
+    );
+
+
+  $("pressureNote").textContent =
+    pressure.note ||
+    "";
+
+
+
+  /* =======================================================
+     TIMEFRAMES
+  ======================================================= */
+
+  $("tfGrid").innerHTML =
+
+    Object
+      .values(
+        data.timeframes ||
+        {}
+      )
+
+      .map(
+        timeframe => `
+
+          <div class="tf">
+
+            <div class="t">
+              ${esc(
+                timeframe.label
+              )}
+            </div>
+
+
+            <div
+              class="dir ${
+                tfClass(
+                  timeframe
+                )
+              }"
+            >
+
+              ${
+                tfArrow(
+                  timeframe
+                )
+              }
+
+              ${
+                esc(
+                  timeframe.trend ||
+                  "—"
+                )
+              }
+
+            </div>
+
+
+            <div class="mini">
+
+              <b>
+                ${
+                  esc(
+                    timeframe.structure ||
+                    "—"
+                  )
+                }
+              </b>
+
+              <br>
+
+              Momentum
+              ${
+                esc(
+                  timeframe.momentum ||
+                  "—"
+                )
+              }
+
+              <br>
+
+              RSI
+              ${
+                fmt(
+                  timeframe.rsi14,
+                  1
+                )
+              }
+
+              • ATR
+              ${
+                fmt(
+                  timeframe.atr14,
+                  2
+                )
+              }
+
+              <br>
+
+              20-bar position
+              ${
+                fmt(
+                  timeframe.rangePosition20,
+                  0
+                )
+              }%
+
+            </div>
+
+          </div>
+
+        `
+      )
+
+      .join(
+        ""
+      );
+
+
+
+  /* =======================================================
+     LIQUIDITY
+  ======================================================= */
+
+  const liquidity =
+    data.liquidity ||
+    {};
+
+
+  const major =
+    [
+
+      [
+        "Day open",
+        liquidity.dayOpen
+      ],
+
+      [
+        "PDH",
+        liquidity.previousDayHigh
+      ],
+
+      [
+        "PDL",
+        liquidity.previousDayLow
+      ],
+
+      [
+        "Week open",
+        liquidity.weekOpen
+      ],
+
+      [
+        "PWH",
+        liquidity.previousWeekHigh
+      ],
+
+      [
+        "PWL",
+        liquidity.previousWeekLow
+      ],
+
+      [
+        "Month open",
+        liquidity.monthOpen
+      ],
+
+      [
+        "Session high",
+        liquidity.session?.high
+      ],
+
+      [
+        "Session low",
+        liquidity.session?.low
+      ]
+
+    ];
+
+
+  $("majorLevels").innerHTML =
+
+    major
+      .map(
+        (
+          [
+            name,
+            value
+          ]
+        ) => `
+
+          <div class="level">
+
+            <div class="l">
+              ${name}
+            </div>
+
+            <div class="p">
+
+              ${
+                value == null
+
+                  ? "—"
+
+                  : `$${fmt(
+                      value,
+                      2
+                    )}`
+              }
+
+            </div>
+
+            ${
+              Number.isFinite(
+                value
+              ) &&
+              Number.isFinite(
+                snapshot.price
+              )
+
+                ? `
+                  <div
+                    class="d ${
+                      klass(
+                        value -
+                        snapshot.price
+                      )
+                    }"
+                  >
+
+                    ${
+                      signed(
+                        value -
+                        snapshot.price,
+                        2
+                      )
+                    }
+
+                    from price
+
+                  </div>
+                `
+
+                : ""
+            }
+
+          </div>
+
+        `
+      )
+
+      .join(
+        ""
+      );
+
+
+  const liquidityRows = (
+    array,
+    above
+  ) =>
+
+    array?.length
+
+      ? array
+          .map(
+            level => `
+
+              <div class="row">
+
+                <div>
+
+                  <div class="name">
+                    ${
+                      esc(
+                        level.type
+                      )
+                    }
+                  </div>
+
+                  <div class="desc">
+
+                    ${
+                      new Date(
+                        level.time
+                      )
+                      .toLocaleString()
+                    }
+
+                  </div>
+
+                </div>
+
+
+                <div class="val">
+
+                  $${fmt(
+                    level.price,
+                    2
+                  )}
+
+                  <div class="desc">
+
+                    ${
+                      above
+                        ? "+"
+                        : "-"
+                    }
+
+                    $${fmt(
+                      level.distance,
+                      2
+                    )}
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            `
+          )
+          .join(
+            ""
+          )
+
+      : `
+          <div class="tiny">
+            No recent confirmed swing levels.
+          </div>
+        `;
+
+
+  $("liqAbove").innerHTML =
+    liquidityRows(
+      liquidity.nearestAbove,
+      true
+    );
+
+
+  $("liqBelow").innerHTML =
+    liquidityRows(
+      liquidity.nearestBelow,
+      false
+    );
+
+
+  $("fvgs").innerHTML =
+
+    liquidity
+      .fairValueGaps
+      ?.length
+
+      ? liquidity
+          .fairValueGaps
+          .map(
+            gap => `
+
+              <div class="row">
+
+                <div>
+
+                  <div class="name">
+                    ${esc(
+                      gap.type
+                    )}
+                  </div>
+
+                  <div class="desc">
+                    Active imbalance zone
+                  </div>
+
+                </div>
+
+
+                <div class="val">
+
+                  $${fmt(
+                    gap.low,
+                    2
+                  )}
+
+                  –
+
+                  $${fmt(
+                    gap.high,
+                    2
+                  )}
+
+                  <div class="desc">
+
+                    $${fmt(
+                      gap.distance,
+                      2
+                    )}
+                    away
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            `
+          )
+          .join(
+            ""
+          )
+
+      : `
+          <div class="tiny">
+            No nearby unfilled M5 FVG detected.
+          </div>
+        `;
+
+
+  $("equals").innerHTML =
+
+    liquidity
+      .equalLevels
+      ?.length
+
+      ? liquidity
+          .equalLevels
+          .map(
+            level => `
+
+              <div class="row">
+
+                <div>
+
+                  <div class="name">
+                    ${esc(
+                      level.type
+                    )}
+                  </div>
+
+                  <div class="desc">
+                    Recent repeated pivot area
+                  </div>
+
+                </div>
+
+                <div class="val">
+
+                  $${fmt(
+                    level.price,
+                    2
+                  )}
+
+                </div>
+
+              </div>
+
+            `
+          )
+          .join(
+            ""
+          )
+
+      : `
+          <div class="tiny">
+            No recent equal-high/low cluster detected.
+          </div>
+        `;
+
+
+
+  /* =======================================================
+     VOLATILITY
+  ======================================================= */
+
+  const volatility =
+    data.volatility ||
+    {};
+
+
+  $("volGrid").innerHTML =
+
+    [
+
+      [
+        "ATR 14D",
+        `$${fmt(
+          volatility.atr14Daily,
+          2
+        )}`
+      ],
+
+      [
+        "ATR percentile",
+        `${
+          fmt(
+            volatility.atrPercentile252d,
+            0
+          )
+        }%`
+      ],
+
+      [
+        "ADR 20",
+        `$${fmt(
+          volatility.adr20,
+          2
+        )}`
+      ],
+
+      [
+        "Today range",
+        `$${fmt(
+          volatility.todayRange,
+          2
+        )}`
+      ],
+
+      [
+        "Range / ADR",
+        `${
+          fmt(
+            volatility.todayRangeVsAdrPct,
+            0
+          )
+        }%`
+      ],
+
+      [
+        "Realized vol 20D",
+        `${
+          fmt(
+            volatility.realizedVol20AnnualizedPct,
+            1
+          )
+        }%`
+      ]
+
+    ]
+
+    .map(
+      (
+        [
+          key,
+          value
+        ]
+      ) => `
+
+        <div class="q">
+
+          <div class="k">
+            ${key}
+          </div>
+
+          <div class="v">
+            ${value}
+          </div>
+
+        </div>
+
+      `
+    )
+
+    .join(
+      ""
+    );
+
+
+
+  /* =======================================================
+     MACRO
+  ======================================================= */
+
+  $("macroRows").innerHTML =
+
+    data.macro
+      ?.drivers
+      ?.length
+
+      ? data.macro
+          .drivers
+          .map(
+            driver => `
+
+              <div class="row">
+
+                <div>
+
+                  <div class="name">
+                    ${esc(
+                      driver.label
+                    )}
+                  </div>
+
+                  <div class="desc">
+
+                    ${esc(
+                      driver.date
+                    )}
+
+                    • 5-observation change
+
+                    ${
+                      signed(
+                        driver.change5,
+                        3
+                      )
+                    }
+
+                  </div>
+
+                </div>
+
+
+                <div class="val">
+
+                  ${
+                    fmt(
+                      driver.value,
+                      3
+                    )
+                  }
+
+                  ${
+                    esc(
+                      driver.unit
+                    )
+                  }
+
+                  <div
+                    class="desc ${
+                      impactClass(
+                        driver.impact
+                      )
+                    }"
+                  >
+
+                    ${
+                      esc(
+                        driver.impact
+                      )
+                    }
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            `
+          )
+          .join(
+            ""
+          )
+
+      : `
+          <div class="error">
+
+            Add FRED_API_KEY in Vercel
+            to activate macro intelligence.
+
+          </div>
+        `;
+
+
+
+  /* =======================================================
+     FAIR VALUE
+  ======================================================= */
+
+  const fair =
+    data.fairValue ||
+    {};
+
+
+  setText(
+
+    "fairValue",
+
+    fair.available
+
+      ? `$${fmt(
+          fair.fairValue,
+          2
+        )}`
+
+      : "UNAVAILABLE"
+
+  );
+
+
+  setText(
+
+    "fairResidual",
+
+    fair.available
+
+      ? `${
+          signed(
+            fair.residualZ,
+            2
+          )
+        }σ`
+
+      : "—",
+
+    `big ${
+      klass(
+        fair.residualZ
+      )
+    }`
+
+  );
+
+
+  setText(
+
+    "fairPremium",
+
+    fair.available
+
+      ? `${
+          signed(
+            fair.premiumDiscountPct,
+            2,
+            "%"
+          )
+        } versus model`
+
+      : "Needs FRED data."
+
+  );
+
+
+  setText(
+
+    "fairNote",
+
+    fair.note ||
+    "Needs FRED data."
+
+  );
+
+
+
+  /* =======================================================
+     CORRELATIONS
+  ======================================================= */
+
+  $("corrRows").innerHTML =
+
+    data.correlations
+      ?.length
+
+      ? data.correlations
+          .map(
+            correlation => `
+
+              <div class="row">
+
+                <div>
+
+                  <div class="name">
+                    ${
+                      esc(
+                        correlation.label
+                      )
+                    }
+                  </div>
+
+                  <div class="desc">
+
+                    Gold daily return
+                    vs driver daily change
+
+                  </div>
+
+                </div>
+
+
+                <div class="val">
+
+                  20D
+
+                  ${
+                    signed(
+                      correlation.correlation20d,
+                      2
+                    )
+                  }
+
+                  <div class="desc">
+
+                    60D
+
+                    ${
+                      signed(
+                        correlation.correlation60d,
+                        2
+                      )
+                    }
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            `
+          )
+          .join(
+            ""
+          )
+
+      : `
+          <div class="tiny">
+            Correlation data unavailable.
+          </div>
+        `;
+
+
+
+  /* =======================================================
+     COT
+  ======================================================= */
+
+  const cot =
+    data.cot;
 
 
   if (
-    lock.signal ===
-    "BUY"
+    cot
   ) {
 
-    if (
-      price >=
-      lock.takeProfit
-    ) {
+    setText(
+      "cotNet",
+      signed(
+        cot.managedMoneyNet,
+        0
+      )
+    );
 
-      status =
-        "WIN";
 
-    }
+    setText(
 
-    else if (
-      price <=
-      lock.stopLoss
-    ) {
+      "cotMeta",
 
-      status =
-        "LOSS";
+      `Weekly change ${
+        signed(
+          cot.managedMoneyWeeklyChange,
+          0
+        )
+      } • report ${
+        cot.reportDate
+      }`
 
-    }
+    );
+
+
+    setText(
+
+      "cotIndex",
+
+      `${
+        fmt(
+          cot.cotIndex3y,
+          1
+        )
+      }/100`
+
+    );
+
+
+    setText(
+      "cotState",
+      cot.state
+    );
+
+
+    setText(
+      "cotLong",
+      fmt(
+        cot.managedMoneyLong,
+        0
+      )
+    );
+
+
+    setText(
+      "cotShort",
+      fmt(
+        cot.managedMoneyShort,
+        0
+      )
+    );
+
+
+    setText(
+      "prodNet",
+      signed(
+        cot.producerNet,
+        0
+      )
+    );
+
+
+    setText(
+      "swapNet",
+      signed(
+        cot.swapDealerNet,
+        0
+      )
+    );
 
   }
 
   else {
 
-    if (
-      price <=
-      lock.takeProfit
-    ) {
-
-      status =
-        "WIN";
-
-    }
-
-    else if (
-      price >=
-      lock.stopLoss
-    ) {
-
-      status =
-        "LOSS";
-
-    }
-
-  }
-
-
-  if (
-    !status
-  ) {
-
-    updateLock(
-      price
+    setText(
+      "cotNet",
+      "UNAVAILABLE"
     );
 
-    return;
+
+    setText(
+      "cotState",
+      "CFTC feed unavailable"
+    );
 
   }
 
 
-  const completed = {
 
-    ...lock,
+  /* =======================================================
+     ANALOG
+  ======================================================= */
 
-    status,
+  const analog =
+    data.analog ||
+    {};
 
-    resultR:
-
-      status ===
-      "WIN"
-
-        ? lock.rr
-
-        : -1,
-
-    exitPrice:
-      price,
-
-    exitTime:
-      new Date()
-        .toISOString()
-
-  };
-
-
-  saveHistory(
-    completed
-  );
-
-
-  clearLock();
-
-
-  notify(
-
-    `BTC TRADE ${status}`,
-
-    `${lock.signal} · ${rfmt(completed.resultR)} · Exit ${fmt(price)}`,
-
-    status ===
-    "WIN"
-
-      ? "BUY"
-
-      : "SELL"
-
-  );
-
-
-  renderJournal();
-
-}
-
-
-/* =========================================================
-   URLS
-========================================================= */
-
-function analysisURL() {
-
-  return `${API}?symbol=${encodeURIComponent(SYMBOL)}&t=${Date.now()}`;
-
-}
-
-
-function priceURL() {
-
-  return `${API}?mode=price&symbol=${encodeURIComponent(SYMBOL)}&t=${Date.now()}`;
-
-}
-
-
-/* =========================================================
-   LIVE ANALYSIS
-========================================================= */
-
-async function runAnalysis() {
 
   if (
-    analysing
+    analog.available
   ) {
 
-    return;
+    const horizons =
+      [
 
-  }
+        [
+          "1 DAY",
+          analog.oneDay
+        ],
 
+        [
+          "3 DAYS",
+          analog.threeDay
+        ],
 
-  analysing =
-    true;
+        [
+          "5 DAYS",
+          analog.fiveDay
+        ]
 
-
-  $("app").style.opacity =
-    .6;
-
-
-  $("run").textContent =
-    "ANALYSING BTC...";
-
-
-  $("error").style.display =
-    "none";
-
-
-  try {
-
-    const response =
-      await fetch(
-
-        analysisURL(),
-
-        {
-          cache:
-            "no-store"
-        }
-
-      );
+      ];
 
 
-    const raw =
-      await response.text();
+    $("analogGrid").innerHTML =
+
+      horizons
+        .map(
+          (
+            [
+              name,
+              result
+            ]
+          ) => `
+
+            <div class="analogBox">
+
+              <div class="h">
+                ${name}
+              </div>
 
 
-    let data;
+              <div
+                class="pct ${
+                  Number(
+                    result.positivePct
+                  ) >= 50
+
+                    ? "up"
+
+                    : "down"
+                }"
+              >
+
+                ${
+                  fmt(
+                    result.positivePct,
+                    1
+                  )
+                }%
+
+              </div>
 
 
-    try {
+              <div class="ret">
 
-      data =
-        JSON.parse(
-          raw
+                positive
+
+                • median
+
+                ${
+                  signed(
+                    result.medianReturnPct,
+                    2,
+                    "%"
+                  )
+                }
+
+                <br>
+
+                MFE
+
+                ${
+                  signed(
+                    result.medianMfePct,
+                    2,
+                    "%"
+                  )
+                }
+
+                • MAE
+
+                ${
+                  signed(
+                    result.medianMaePct,
+                    2,
+                    "%"
+                  )
+                }
+
+              </div>
+
+            </div>
+
+          `
+        )
+
+        .join(
+          ""
         );
 
-    }
 
-    catch {
+    $("analogNote").textContent =
+      `${analog.sampleSize} closest historical states • ${analog.note}`;
 
-      throw new Error(
+  }
 
-        `Server returned non-JSON:\n${raw.slice(0,500)}`
+  else {
 
+    $("analogGrid").innerHTML =
+      `
+        <div class="tiny">
+          Not enough history.
+        </div>
+      `;
+
+  }
+
+
+
+  /* =======================================================
+     FUNDAMENTALS
+  ======================================================= */
+
+  $("fundRows").innerHTML =
+
+    data.fundamentals
+      ?.length
+
+      ? data.fundamentals
+          .map(
+            fundamental => `
+
+              <div class="row">
+
+                <div>
+
+                  <div class="name">
+
+                    ${
+                      esc(
+                        fundamental.label
+                      )
+                    }
+
+                  </div>
+
+                  <div class="desc">
+
+                    ${
+                      esc(
+                        fundamental.frequency
+                      )
+                    }
+
+                    •
+
+                    ${
+                      esc(
+                        fundamental.date
+                      )
+                    }
+
+                  </div>
+
+                </div>
+
+
+                <div class="val">
+
+                  ${
+                    fmt(
+                      fundamental.value,
+                      2
+                    )
+                  }
+
+                  <div class="desc">
+
+                    Previous
+
+                    ${
+                      fmt(
+                        fundamental.previous,
+                        2
+                      )
+                    }
+
+                    ${
+                      fundamental.yoyPct !=
+                      null
+
+                        ? ` • YoY ${
+                            signed(
+                              fundamental.yoyPct,
+                              2,
+                              "%"
+                            )
+                          }`
+
+                        : ""
+                    }
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            `
+          )
+          .join(
+            ""
+          )
+
+      : `
+          <div class="tiny">
+
+            Latest macro releases
+            need FRED_API_KEY.
+
+          </div>
+        `;
+
+
+
+  /* =======================================================
+     EVENTS
+  ======================================================= */
+
+  $("events").innerHTML =
+
+    data.events
+      ?.length
+
+      ? data.events
+          .map(
+            event => `
+
+              <div class="event">
+
+                <div class="date">
+
+                  ${
+                    new Date(
+                      event.date +
+                      "T12:00:00"
+                    )
+                    .toLocaleDateString(
+                      undefined,
+                      {
+                        month:
+                          "short",
+                        day:
+                          "numeric"
+                      }
+                    )
+                  }
+
+                </div>
+
+
+                <div class="eventName">
+
+                  ${
+                    esc(
+                      event.name
+                    )
+                  }
+
+                </div>
+
+
+                <div>
+
+                  ${
+                    tag(
+
+                      event.impact,
+
+                      event.impact ===
+                      "HIGH"
+
+                        ? "down"
+
+                        : "orange"
+
+                    )
+                  }
+
+                </div>
+
+              </div>
+
+            `
+          )
+          .join(
+            ""
+          )
+
+      : `
+          <div class="tiny">
+
+            No event calendar available.
+            Add FRED_API_KEY if it is
+            not configured.
+
+          </div>
+        `;
+
+
+
+  /* =======================================================
+     NEWS
+  ======================================================= */
+
+  $("news").innerHTML =
+
+    data.news
+      ?.length
+
+      ? data.news
+          .map(
+            article => `
+
+              <a
+                class="newsItem"
+                href="${esc(
+                  article.url ||
+                  "#"
+                )}"
+                target="_blank"
+                rel="noopener"
+              >
+
+                <div class="nt">
+
+                  ${
+                    esc(
+                      article.title
+                    )
+                  }
+
+                </div>
+
+
+                <div class="nm">
+
+                  ${
+                    esc(
+                      article.domain ||
+                      "Source"
+                    )
+                  }
+
+                  ${
+                    article.sourceCountry
+
+                      ? `• ${
+                          esc(
+                            article.sourceCountry
+                          )
+                        }`
+
+                      : ""
+                  }
+
+                </div>
+
+              </a>
+
+            `
+          )
+          .join(
+            ""
+          )
+
+      : `
+          <div class="tiny">
+
+            Headline feed unavailable
+            right now.
+
+          </div>
+        `;
+
+
+
+  /* =======================================================
+     HEALTH
+  ======================================================= */
+
+  $("health").innerHTML =
+
+    Object
+      .entries(
+        data.health ||
+        {}
+      )
+
+      .map(
+        (
+          [
+            key,
+            value
+          ]
+        ) => `
+
+          <span
+            class="healthItem ${
+              value === "OK"
+
+                ? "up"
+
+                : value ===
+                  "ERROR"
+
+                  ? "down"
+
+                  : "orange"
+            }"
+          >
+
+            ${
+              esc(
+                key.toUpperCase()
+              )
+            }:
+
+            ${
+              esc(
+                value
+              )
+            }
+
+          </span>
+
+        `
+      )
+
+      .join(
+        ""
       );
 
-    }
 
+  $("marketNotes").innerHTML =
 
-    if (
+    [
 
-      !response.ok
-
-      ||
-
-      data.success !==
-      true
-
-    ) {
-
-      throw new Error(
-
-        data.error
-
-        ||
-
-        `HTTP ${response.status}`
-
-      );
-
-    }
-
-
-    data.stale =
-      false;
-
-
-    lastData =
-      data;
-
-
-    currentPrice =
-      n(
-        data.price
-      );
-
-
-    lastAnalysisAt =
-      Date.now();
-
-
-    addPrice(
-      currentPrice
-    );
-
-
-    checkExit(
-      currentPrice
-    );
-
-
-    maybeLock(
       data
+        .marketDataNotes
+        ?.volumeMessage,
+
+      data
+        .marketDataNotes
+        ?.sessionMessage,
+
+      data
+        .marketDataNotes
+        ?.cotMessage
+
+    ]
+
+    .filter(
+      Boolean
+    )
+
+    .map(
+      esc
+    )
+
+    .join(
+      "<br>"
     );
-
-
-    localStorage.setItem(
-
-      K.cache,
-
-      JSON.stringify({
-
-        savedAt:
-          new Date()
-            .toISOString(),
-
-        data
-
-      })
-
-    );
-
-
-    renderAll();
-
-
-    $("offline")
-      .classList
-      .remove(
-        "show"
-      );
-
-
-    $("engine").textContent =
-      "ENGINE LIVE";
-
-
-    $("dot").style.background =
-      "var(--green)";
-
-  }
-
-  catch (
-    error
-  ) {
-
-    const cache =
-      getJSON(
-        K.cache,
-        null
-      );
-
-
-    if (
-      cache?.data
-    ) {
-
-      lastData = {
-
-        ...cache.data,
-
-        stale:
-          true
-
-      };
-
-
-      currentPrice =
-        n(
-          lastData.price
-        );
-
-
-      renderAll();
-
-
-      $("offline")
-        .classList
-        .add(
-          "show"
-        );
-
-    }
-
-
-    $("engine").textContent =
-      "ENGINE ERROR";
-
-
-    $("dot").style.background =
-      "var(--red)";
-
-
-    $("error").textContent =
-      error.message
-      ||
-      String(
-        error
-      );
-
-
-    $("error").style.display =
-      "block";
-
-  }
-
-  finally {
-
-    analysing =
-      false;
-
-
-    $("app").style.opacity =
-      1;
-
-
-    $("run").textContent =
-      "RUN BTC ANALYSIS";
-
-  }
 
 }
 
 
+
 /* =========================================================
-   LIVE PRICE
+   LOAD FULL INTELLIGENCE
 ========================================================= */
 
-async function updatePrice() {
+async function loadHeavy(
+  force = false
+) {
 
-  if (
-    priceLoading
-  ) {
-
-    return;
-
-  }
+  const button =
+    $("refreshBtn");
 
 
-  priceLoading =
+  button.disabled =
     true;
+
+
+  button.textContent =
+    "LOADING…";
 
 
   try {
@@ -5277,11 +4927,22 @@ async function updatePrice() {
     const response =
       await fetch(
 
-        priceURL(),
+        `/api/gold${
+          force
+
+            ? "?t=" +
+              Date.now()
+
+            : ""
+        }`,
 
         {
           cache:
-            "no-store"
+            force
+
+              ? "no-store"
+
+              : "default"
         }
 
       );
@@ -5292,53 +4953,23 @@ async function updatePrice() {
 
 
     if (
-
-      !response.ok
-
-      ||
-
-      data.success !==
-      true
-
+      !response.ok ||
+      !data.ok
     ) {
 
       throw new Error(
 
-        data.error
-
-        ||
-
-        "Price feed failed"
+        data.error ||
+        "Intelligence request failed"
 
       );
 
     }
 
 
-    currentPrice =
-      n(
-        data.price
-      );
-
-
-    lastPriceAt =
-      Date.now();
-
-
-    addPrice(
-      currentPrice
+    render(
+      data
     );
-
-
-    checkExit(
-      currentPrice
-    );
-
-
-    renderLive();
-
-
-    drawPrice();
 
   }
 
@@ -5346,1930 +4977,22 @@ async function updatePrice() {
     error
   ) {
 
-    console.error(
-      error
-    );
+    setText(
 
-  }
+      "lastUpdate",
 
-  finally {
+      error.message,
 
-    priceLoading =
-      false;
-
-  }
-
-}
-
-
-/* =========================================================
-   BIAS
-========================================================= */
-
-function setBias(
-  id,
-  value
-) {
-
-  value =
-    value
-    ||
-    "NEUTRAL";
-
-
-  $(id).textContent =
-    value;
-
-
-  $(id).className =
-    `tf ${value}`;
-
-}
-
-
-/* =========================================================
-   FULL RENDER
-========================================================= */
-
-function renderAll() {
-
-  if (
-    !lastData
-  ) {
-
-    return;
-
-  }
-
-
-  const data =
-    lastData;
-
-
-  const lock =
-    getLock();
-
-
-  const shownSignal =
-    lock?.signal
-    ||
-    data.signal
-    ||
-    "WAIT";
-
-
-  $("signal").textContent =
-    shownSignal;
-
-
-  $("signal").className =
-    `signal ${shownSignal}`;
-
-
-  $("price").textContent =
-    fmt(
-      currentPrice
-      ??
-      data.price
-    );
-
-
-  $("topPrice").textContent =
-    `$${fmt(currentPrice ?? data.price)}`;
-
-
-  $("spread").textContent =
-    `BID ${fmt(data.bid)} · ASK ${fmt(data.ask)}`;
-
-
-  $("priceMeta").textContent =
-
-    data.stale
-
-      ? "STALE CACHE"
-
-      : `${time(data.createdAt)} · Coinbase BTC-USD`;
-
-
-  $("desc").textContent =
-
-    lock
-
-      ? `${lock.signal} is hard locked until SL or main TP.`
-
-      : data.signal ===
-        "BUY"
-
-        ? "Bullish sweep + BOS + displacement confirmed."
-
-        : data.signal ===
-          "SELL"
-
-          ? "Bearish sweep + BOS + displacement confirmed."
-
-          : "Waiting for liquidity sweep + BOS + displacement.";
-
-
-  $("lockBadge").textContent =
-
-    lock
-
-      ? `🔒 HARD LOCK · ${lock.signal}`
-
-      : "UNLOCKED · SCANNING";
-
-
-  $("score").textContent =
-    `${data.signalScore ?? 0}/100`;
-
-
-  $("confidence").textContent =
-    `${data.confidence ?? 0}%`;
-
-
-  $("session").textContent =
-    data.session?.label
-    ||
-    "—";
-
-
-  $("trigger").textContent =
-    String(
-      data.trigger
-      ||
-      "NONE"
-    )
-      .replaceAll(
-        "_",
-        " "
-      );
-
-
-  $("sniper").textContent =
-
-    data.sniper
-
-      ? "SNIPER"
-
-      : data.signal ===
-        "WAIT"
-
-        ? "WAIT"
-
-        : "VALID";
-
-
-  const score =
-
-    Math.max(
-
-      0,
-
-      Math.min(
-
-        100,
-
-        Number(
-          data.signalScore
-          ||
-          0
-        )
-
-      )
+      "sub down"
 
     );
 
 
-  const scoreColor =
-
-    score >=
-    80
-
-      ? "var(--green)"
-
-      : score >=
-        70
-
-        ? "var(--blue)"
-
-        : score >=
-          50
-
-          ? "var(--gold)"
-
-          : "var(--red)";
-
-
-  $("scoreN").textContent =
-    score;
-
-
-  $("scoreCircle").style.background =
-
-    `conic-gradient(
-      ${scoreColor}
-      ${score * 3.6}deg,
-      #151d27
-      0deg
-    )`;
-
-
-  $("scoreLabel").textContent =
-
-    score >=
-    80
-
-      ? "SNIPER SETUP"
-
-      : score >=
-        70
-
-        ? "VALID SETUP"
-
-        : score >=
-          50
-
-          ? "DEVELOPING"
-
-          : "NO EDGE";
-
-
-  $("scoreInfo").textContent =
-
-    `Minimum ${data.scores?.threshold ?? 70} · Sniper ${data.scores?.sniperThreshold ?? 80} · Gap ${data.scores?.gap ?? 0}`;
-
-
-  const buyScore =
-    Number(
-      data.scores?.buy
-      ||
-      0
-    );
-
-
-  const sellScore =
-    Number(
-      data.scores?.sell
-      ||
-      0
-    );
-
-
-  const total =
-    Math.max(
-
-      1,
-
-      buyScore +
-      sellScore
-
-    );
-
-
-  $("buyScore").textContent =
-    buyScore;
-
-
-  $("sellScore").textContent =
-    sellScore;
-
-
-  $("buyBar").style.width =
-    `${buyScore / total * 100}%`;
-
-
-  $("sellBar").style.width =
-    `${sellScore / total * 100}%`;
-
-
-  renderComponents(
-    data.components
-    ||
-    {}
-  );
-
-
-  const bias =
-    data.timeframeBias
-    ||
-    {};
-
-
-  setBias(
-    "bH4",
-    bias.H4
-  );
-
-
-  setBias(
-    "bH1",
-    bias.H1
-  );
-
-
-  setBias(
-    "bM15",
-    bias.M15
-  );
-
-
-  setBias(
-    "bM5",
-    bias.M5
-  );
-
-
-  renderTrade();
-
-  renderStructure();
-
-  renderLiquidity();
-
-  renderReasons();
-
-  renderLive();
-
-  renderJournal();
-
-
-  if (
-    currentView ===
-    "monitor"
-  ) {
-
-    drawPrice();
-
-  }
-
-}
-
-
-/* =========================================================
-   SCORE BREAKDOWN
-========================================================= */
-
-function renderComponents(
-  components
-) {
-
-  const items = [
-
-    [
-      "4H Trend",
-      "h4Trend",
-      15
-    ],
-
-    [
-      "1H Trend",
-      "h1Trend",
-      15
-    ],
-
-    [
-      "Liquidity Sweep",
-      "liquiditySweep",
-      20
-    ],
-
-    [
-      "15M BOS",
-      "bos15m",
-      15
-    ],
-
-    [
-      "Displacement",
-      "displacement",
-      10
-    ],
-
-    [
-      "Volume",
-      "volumeExpansion",
-      10
-    ],
-
-    [
-      "5M Precision",
-      "precision5m",
-      10
-    ],
-
-    [
-      "Session",
-      "session",
-      5
-    ]
-
-  ];
-
-
-  $("components").innerHTML =
-
-    items
-      .map(
-        (
-          [
-            label,
-            key,
-            maximum
-          ]
-        ) => {
-
-          const value =
-            Number(
-              components[key]
-              ||
-              0
-            );
-
-
-          const percentage =
-
-            Math.min(
-
-              100,
-
-              value /
-              maximum *
-              100
-
-            );
-
-
-          const color =
-
-            value >=
-            maximum
-
-              ? "var(--green)"
-
-              : value >=
-                maximum *
-                .5
-
-                ? "var(--blue)"
-
-                : "var(--red)";
-
-
-          return `
-
-            <div class="metric">
-
-              <small>
-                ${label}
-              </small>
-
-              <b>
-                ${value} / ${maximum}
-              </b>
-
-              <div class="componentBar">
-
-                <div
-                  class="fill"
-                  style="
-                    width:${percentage}%;
-                    background:${color};
-                  "
-                ></div>
-
-              </div>
-
-            </div>
-
-          `;
-
-        }
-      )
-      .join("");
-
-}
-
-
-/* =========================================================
-   TRADE RENDER
-========================================================= */
-
-function renderTrade() {
-
-  const lock =
-    getLock();
-
-
-  if (
-    !lock
-  ) {
-
-    $("entry").textContent =
-
-      lastData?.signal ===
-      "WAIT"
-
-        ? "WAIT"
-
-        : fmt(
-            lastData?.entry
-          );
-
-
-    $("sl").textContent =
-      fmt(
-        lastData?.stopLoss
-      );
-
-
-    $("tp1").textContent =
-      fmt(
-        lastData?.takeProfit1
-      );
-
-
-    $("tp").textContent =
-      fmt(
-        lastData?.takeProfit
-      );
-
-
-    $("tp2").textContent =
-      fmt(
-        lastData?.takeProfit2
-      );
-
-
-    $("currentR").textContent =
-      "—";
-
-
-    $("tradeMarker").style.left =
-      "25%";
-
-
-    $("floating")
+    $("liveDot")
       .classList
       .remove(
-        "active"
+        "live"
       );
-
-
-    return;
-
-  }
-
-
-  const current =
-    currentR(
-      lock,
-      currentPrice
-    );
-
-
-  $("entry").textContent =
-    fmt(
-      lock.entry
-    );
-
-
-  $("sl").textContent =
-    fmt(
-      lock.stopLoss
-    );
-
-
-  $("tp1").textContent =
-    fmt(
-      lock.takeProfit1
-    );
-
-
-  $("tp").textContent =
-    fmt(
-      lock.takeProfit
-    );
-
-
-  $("tp2").textContent =
-    fmt(
-      lock.takeProfit2
-    );
-
-
-  $("currentR").textContent =
-    rfmt(
-      current
-    );
-
-
-  let progress;
-
-
-  if (
-    lock.signal ===
-    "BUY"
-  ) {
-
-    progress =
-
-      (
-        currentPrice -
-        lock.stopLoss
-      )
-
-      /
-
-      (
-        lock.takeProfit -
-        lock.stopLoss
-      )
-
-      *
-      100;
-
-  }
-
-  else {
-
-    progress =
-
-      (
-        lock.stopLoss -
-        currentPrice
-      )
-
-      /
-
-      (
-        lock.stopLoss -
-        lock.takeProfit
-      )
-
-      *
-      100;
-
-  }
-
-
-  progress =
-
-    Math.max(
-
-      0,
-
-      Math.min(
-
-        100,
-
-        progress
-
-      )
-
-    );
-
-
-  $("tradeMarker").style.left =
-    `${progress}%`;
-
-
-  $("floating")
-    .classList
-    .add(
-      "active"
-    );
-
-
-  $("floatTitle").textContent =
-    `🔒 BTC/USD ${lock.signal}`;
-
-
-  $("floatSub").textContent =
-    `SL ${fmt(lock.stopLoss)} · TP ${fmt(lock.takeProfit)}`;
-
-
-  $("floatR").textContent =
-    rfmt(
-      current
-    );
-
-}
-
-
-/* =========================================================
-   STRUCTURE
-========================================================= */
-
-function renderStructure() {
-
-  const data =
-    lastData;
-
-
-  const h4 =
-    data.structure?.H4
-    ||
-    {};
-
-
-  const h1 =
-    data.structure?.H1
-    ||
-    {};
-
-
-  const technical =
-    data.technical
-    ||
-    {};
-
-
-  $("h4State").textContent =
-    `${h4.bias || "—"} · ${h4.structure || "—"}`;
-
-
-  $("h4Ema").textContent =
-    `EMA20 ${fmt(h4.ema20)} · EMA50 ${fmt(h4.ema50)}`;
-
-
-  $("h1State").textContent =
-    `${h1.bias || "—"} · ${h1.structure || "—"}`;
-
-
-  $("h1Ema").textContent =
-    `EMA20 ${fmt(h1.ema20)} · EMA50 ${fmt(h1.ema50)}`;
-
-
-  $("bos").textContent =
-
-    technical.bos?.confirmed
-
-      ? "CONFIRMED"
-
-      : technical.bos?.soft
-
-        ? "NEAR BOS"
-
-        : "NO BOS";
-
-
-  $("bosLevel").textContent =
-    `Level ${fmt(technical.bos?.level)}`;
-
-
-  $("disp").textContent =
-
-    technical.displacement?.confirmed
-
-      ? "CONFIRMED"
-
-      : technical.displacement?.partial
-
-        ? "PARTIAL"
-
-        : "NONE";
-
-
-  $("dispInfo").textContent =
-
-    `${fmt(technical.displacement?.bodyAtr,2)} ATR · Efficiency ${fmt(technical.displacement?.efficiency,2)}`;
-
-
-  $("volRatio").textContent =
-    `${fmt(technical.volumeRatio,2)}×`;
-
-
-  $("extension").textContent =
-    `${fmt(technical.extensionAtr,2)} ATR`;
-
-
-  $("pBias").textContent =
-    data.timeframeBias?.M5
-    ||
-    "—";
-
-
-  $("pRetest").textContent =
-    technical.retest
-
-      ? "YES"
-
-      : "NO";
-
-
-  $("pReject").textContent =
-    technical.rejection
-
-      ? "YES"
-
-      : "NO";
-
-
-  $("pFvg").textContent =
-
-    technical.fvg
-
-      ? `${fmt(technical.fvg.low)} → ${fmt(technical.fvg.high)}`
-
-      : "NONE";
-
-
-  $("atr15").textContent =
-    fmt(
-      technical.atr15
-    );
-
-
-  $("atr1h").textContent =
-    fmt(
-      technical.atr1h
-    );
-
-}
-
-
-/* =========================================================
-   LIQUIDITY
-========================================================= */
-
-function chips(
-  id,
-  values
-) {
-
-  values =
-    Array.isArray(
-      values
-    )
-
-      ? values
-
-      : [];
-
-
-  $(id).innerHTML =
-
-    values.length
-
-      ? values
-          .map(
-            value =>
-
-              `<span class="chip">${fmt(value)}</span>`
-
-          )
-          .join("")
-
-      : `<span class="muted">None</span>`;
-
-}
-
-
-function renderLiquidity() {
-
-  const liquidity =
-    lastData.liquidity
-    ||
-    {};
-
-
-  const sweep =
-    liquidity.sweptLevel;
-
-
-  $("sweepName").textContent =
-    sweep?.name
-    ||
-    "NONE";
-
-
-  $("sweepInfo").textContent =
-
-    sweep
-
-      ? `Level ${fmt(sweep.levelPrice)} · Extreme ${fmt(sweep.sweepExtreme)} · Reclaimed ${sweep.reclaimed ? "YES" : "NO"}`
-
-      : "No recent valid sweep.";
-
-
-  $("pdh").textContent =
-    fmt(
-      liquidity.previousDayHigh
-    );
-
-
-  $("pdl").textContent =
-    fmt(
-      liquidity.previousDayLow
-    );
-
-
-  $("wo").textContent =
-    fmt(
-      liquidity.weeklyOpen
-    );
-
-
-  $("h4h").textContent =
-    fmt(
-      liquidity.previous4hHigh
-    );
-
-
-  $("h4l").textContent =
-    fmt(
-      liquidity.previous4hLow
-    );
-
-
-  $("ah").textContent =
-    fmt(
-      liquidity.asianHigh
-    );
-
-
-  $("al").textContent =
-    fmt(
-      liquidity.asianLow
-    );
-
-
-  chips(
-    "swingHighs",
-    liquidity.recentSwingHighs
-  );
-
-
-  chips(
-    "swingLows",
-    liquidity.recentSwingLows
-  );
-
-
-  $("equals").innerHTML = `
-
-    <div class="reason">
-
-      <b class="red">
-        Equal Highs
-      </b>
-
-      <div class="levelList">
-
-        ${
-          (
-            liquidity.equalHighs
-            ||
-            []
-          )
-            .map(
-              value =>
-                `<span class="chip">${fmt(value)}</span>`
-            )
-            .join("")
-
-          ||
-
-          `<span class="muted">None</span>`
-        }
-
-      </div>
-
-    </div>
-
-
-    <div class="reason">
-
-      <b class="green">
-        Equal Lows
-      </b>
-
-      <div class="levelList">
-
-        ${
-          (
-            liquidity.equalLows
-            ||
-            []
-          )
-            .map(
-              value =>
-                `<span class="chip">${fmt(value)}</span>`
-            )
-            .join("")
-
-          ||
-
-          `<span class="muted">None</span>`
-        }
-
-      </div>
-
-    </div>
-
-  `;
-
-}
-
-
-/* =========================================================
-   REASONS
-========================================================= */
-
-function renderReasons() {
-
-  const reasons =
-
-    Array.isArray(
-      lastData.reasons
-    )
-
-      ? lastData.reasons
-
-      : [];
-
-
-  const blockers =
-
-    Array.isArray(
-      lastData.blockers
-    )
-
-      ? lastData.blockers
-
-      : [];
-
-
-  $("reasons").innerHTML =
-
-    reasons.length
-
-      ? reasons
-          .map(
-            reason =>
-
-              `<div class="reason good">✓ ${esc(reason)}</div>`
-
-          )
-          .join("")
-
-      : `<div class="reason muted">No confirmations yet.</div>`;
-
-
-  $("blockers").innerHTML =
-
-    blockers.length
-
-      ? blockers
-          .map(
-            blocker =>
-
-              `<div class="reason bad">• ${esc(blocker)}</div>`
-
-          )
-          .join("")
-
-      : `<div class="reason green">No major blockers.</div>`;
-
-}
-
-
-/* =========================================================
-   LIVE MONITOR
-========================================================= */
-
-function renderLive() {
-
-  if (
-    currentPrice ===
-    null
-  ) {
-
-    return;
-
-  }
-
-
-  $("price").textContent =
-    fmt(
-      currentPrice
-    );
-
-
-  $("topPrice").textContent =
-    `$${fmt(currentPrice)}`;
-
-
-  $("mPrice").textContent =
-    fmt(
-      currentPrice
-    );
-
-
-  const lock =
-    getLock();
-
-
-  if (
-    !lock
-  ) {
-
-    $("mR").textContent =
-      "—";
-
-
-    $("mBest").textContent =
-      "—";
-
-
-    $("mWorst").textContent =
-      "—";
-
-
-    $("monitorTrade").innerHTML =
-      `<div class="reason muted">No hard lock.</div>`;
-
-
-    return;
-
-  }
-
-
-  updateLock(
-    currentPrice
-  );
-
-
-  const updated =
-    getLock()
-    ||
-    lock;
-
-
-  const current =
-    currentR(
-      updated,
-      currentPrice
-    );
-
-
-  $("mR").textContent =
-    rfmt(
-      current
-    );
-
-
-  $("mBest").textContent =
-    rfmt(
-      updated.bestR
-    );
-
-
-  $("mWorst").textContent =
-    rfmt(
-      updated.worstR
-    );
-
-
-  $("monitorTrade").innerHTML = `
-
-    <div class="reason">
-
-      <b class="${updated.signal === "BUY" ? "green" : "red"}">
-
-        ${updated.signal} HARD LOCK
-
-      </b>
-
-    </div>
-
-    <div class="reason">
-
-      Entry ${fmt(updated.entry)}
-
-    </div>
-
-    <div class="reason red">
-
-      SL ${fmt(updated.stopLoss)}
-
-    </div>
-
-    <div class="reason green">
-
-      TP ${fmt(updated.takeProfit)}
-
-    </div>
-
-    <div class="reason">
-
-      Current ${fmt(currentPrice)}
-      ·
-      ${rfmt(current)}
-
-    </div>
-
-  `;
-
-
-  renderTrade();
-
-}
-
-
-/* =========================================================
-   CANVAS
-========================================================= */
-
-function prep(
-  canvas
-) {
-
-  const rect =
-    canvas.getBoundingClientRect();
-
-
-  if (
-
-    rect.width <=
-    0
-
-    ||
-
-    rect.height <=
-    0
-
-  ) {
-
-    return null;
-
-  }
-
-
-  const ratio =
-    devicePixelRatio
-    ||
-    1;
-
-
-  canvas.width =
-    Math.round(
-      rect.width *
-      ratio
-    );
-
-
-  canvas.height =
-    Math.round(
-      rect.height *
-      ratio
-    );
-
-
-  const context =
-    canvas.getContext(
-      "2d"
-    );
-
-
-  context.setTransform(
-
-    ratio,
-    0,
-    0,
-    ratio,
-    0,
-    0
-
-  );
-
-
-  context.clearRect(
-
-    0,
-    0,
-    rect.width,
-    rect.height
-
-  );
-
-
-  return {
-
-    c:
-      context,
-
-    w:
-      rect.width,
-
-    h:
-      rect.height
-
-  };
-
-}
-
-
-/* =========================================================
-   LIVE PRICE CHART
-========================================================= */
-
-function drawPrice() {
-
-  const prepared =
-    prep(
-      $("priceChart")
-    );
-
-
-  if (
-    !prepared
-  ) {
-
-    return;
-
-  }
-
-
-  const prices =
-    getPrices()
-      .slice(
-        -120
-      );
-
-
-  if (
-    prices.length <
-    2
-  ) {
-
-    prepared.c.fillStyle =
-      "rgba(255,255,255,.35)";
-
-
-    prepared.c.fillText(
-
-      "Collecting price samples...",
-
-      15,
-
-      30
-
-    );
-
-
-    return;
-
-  }
-
-
-  const lock =
-    getLock();
-
-
-  const values =
-    prices.map(
-      item =>
-        item.p
-    );
-
-
-  if (
-    lock
-  ) {
-
-    values.push(
-
-      lock.entry,
-
-      lock.stopLoss,
-
-      lock.takeProfit
-
-    );
-
-  }
-
-
-  let min =
-    Math.min(
-      ...values
-    );
-
-
-  let max =
-    Math.max(
-      ...values
-    );
-
-
-  const range =
-    max -
-    min
-    ||
-    1;
-
-
-  min -=
-    range *
-    .1;
-
-
-  max +=
-    range *
-    .1;
-
-
-  const x =
-    index =>
-
-      10
-
-      +
-
-      index /
-      Math.max(
-        1,
-        prices.length -
-        1
-      )
-
-      *
-      (
-        prepared.w -
-        65
-      );
-
-
-  const y =
-    value =>
-
-      prepared.h -
-      20
-
-      -
-
-      (
-        value -
-        min
-      )
-
-      /
-
-      (
-        max -
-        min
-      )
-
-      *
-      (
-        prepared.h -
-        40
-      );
-
-
-  prepared.c.strokeStyle =
-    "#7995ff";
-
-
-  prepared.c.lineWidth =
-    2;
-
-
-  prepared.c.beginPath();
-
-
-  prices.forEach(
-    (
-      item,
-      index
-    ) => {
-
-      if (
-        index
-      ) {
-
-        prepared.c.lineTo(
-
-          x(index),
-
-          y(item.p)
-
-        );
-
-      }
-
-      else {
-
-        prepared.c.moveTo(
-
-          x(index),
-
-          y(item.p)
-
-        );
-
-      }
-
-    }
-  );
-
-
-  prepared.c.stroke();
-
-
-  function horizontal(
-    value,
-    label,
-    color
-  ) {
-
-    value =
-      n(
-        value
-      );
-
-
-    if (
-      value ===
-      null
-    ) {
-
-      return;
-
-    }
-
-
-    const yy =
-      y(
-        value
-      );
-
-
-    prepared.c.strokeStyle =
-      color;
-
-
-    prepared.c.setLineDash(
-      [
-        4,
-        4
-      ]
-    );
-
-
-    prepared.c.beginPath();
-
-
-    prepared.c.moveTo(
-      0,
-      yy
-    );
-
-
-    prepared.c.lineTo(
-      prepared.w,
-      yy
-    );
-
-
-    prepared.c.stroke();
-
-
-    prepared.c.setLineDash(
-      []
-    );
-
-
-    prepared.c.fillStyle =
-      color;
-
-
-    prepared.c.font =
-      "7px -apple-system";
-
-
-    prepared.c.fillText(
-
-      `${label} ${fmt(value)}`,
-
-      Math.max(
-        4,
-        prepared.w -
-        110
-      ),
-
-      Math.max(
-        10,
-        yy -
-        4
-      )
-
-    );
-
-  }
-
-
-  if (
-    lock
-  ) {
-
-    horizontal(
-
-      lock.entry,
-
-      "ENTRY",
-
-      "#7995ff"
-
-    );
-
-
-    horizontal(
-
-      lock.stopLoss,
-
-      "SL",
-
-      "#ff647c"
-
-    );
-
-
-    horizontal(
-
-      lock.takeProfit,
-
-      "TP",
-
-      "#38e7a2"
-
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   JOURNAL
-========================================================= */
-
-function renderJournal() {
-
-  const history =
-    getHistory();
-
-
-  const wins =
-    history.filter(
-      trade =>
-        trade.status ===
-        "WIN"
-    );
-
-
-  const losses =
-    history.filter(
-      trade =>
-        trade.status ===
-        "LOSS"
-    );
-
-
-  const closed =
-    wins.length +
-    losses.length;
-
-
-  const net =
-
-    history.reduce(
-
-      (
-        sum,
-        trade
-      ) =>
-
-        sum +
-        Number(
-          trade.resultR
-          ||
-          0
-        ),
-
-      0
-
-    );
-
-
-  $("jTrades").textContent =
-    closed;
-
-
-  $("jWR").textContent =
-
-    `${closed ? (wins.length / closed * 100).toFixed(1) : "0.0"}%`;
-
-
-  $("jNet").textContent =
-    rfmt(
-      net
-    );
-
-
-  $("journalList").innerHTML =
-
-    history.length
-
-      ? history
-          .map(
-            trade => `
-
-              <div class="history">
-
-                <div class="historyTop">
-
-                  <b class="${trade.signal === "BUY" ? "green" : "red"}">
-
-                    ${trade.signal}
-
-                  </b>
-
-                  <b class="${trade.status === "WIN" ? "green" : "red"}">
-
-                    ${trade.status}
-                    ·
-                    ${rfmt(trade.resultR)}
-
-                  </b>
-
-                </div>
-
-                <div class="historyBody">
-
-                  Entry ${fmt(trade.entry)}
-                  ·
-                  SL ${fmt(trade.stopLoss)}
-                  ·
-                  TP ${fmt(trade.takeProfit)}
-
-                  <br>
-
-                  Score ${trade.score ?? "—"}
-                  ·
-                  Confidence ${trade.confidence ?? "—"}%
-
-                  <br>
-
-                  ${time(trade.createdAt)}
-                  →
-                  ${time(trade.exitTime)}
-
-                  <br>
-
-                  Best ${rfmt(trade.bestR)}
-                  ·
-                  Worst ${rfmt(trade.worstR)}
-
-                </div>
-
-              </div>
-
-            `
-          )
-          .join("")
-
-      : `<div class="reason muted">No completed trades.</div>`;
-
-}
-
-
-/* =========================================================
-   RUN BACKTEST
-========================================================= */
-
-async function runBacktest() {
-
-  const button =
-    $("runBT");
-
-
-  button.disabled =
-    true;
-
-
-  button.textContent =
-    `RUNNING ${btDays}-DAY BACKTEST...`;
-
-
-  $("btStatus").textContent =
-    "Downloading candles and replaying strategy...";
-
-
-  try {
-
-    const response =
-      await fetch(
-
-        `${BTAPI}?days=${btDays}&t=${Date.now()}`,
-
-        {
-          cache:
-            "no-store"
-        }
-
-      );
-
-
-    const raw =
-      await response.text();
-
-
-    let data;
-
-
-    try {
-
-      data =
-        JSON.parse(
-          raw
-        );
-
-    }
-
-    catch {
-
-      throw new Error(
-
-        `Backtester returned non-JSON:\n${raw.slice(0,400)}`
-
-      );
-
-    }
-
-
-    if (
-
-      !response.ok
-
-      ||
-
-      data.success !==
-      true
-
-    ) {
-
-      throw new Error(
-
-        data.error
-
-        ||
-
-        `HTTP ${response.status}`
-
-      );
-
-    }
-
-
-    lastBT =
-      data;
-
-
-    localStorage.setItem(
-
-      K.bt,
-
-      JSON.stringify(
-        data
-      )
-
-    );
-
-
-    renderBT();
-
-  }
-
-  catch (
-    error
-  ) {
-
-    $("btStatus").textContent =
-      `ERROR: ${error.message || error}`;
-
-
-    showToast(
-
-      "Backtest error",
-
-      error.message
-      ||
-      String(
-        error
-      )
-
-    );
 
   }
 
@@ -7280,1505 +5003,19 @@ async function runBacktest() {
 
 
     button.textContent =
-      `RUN ${btDays}-DAY BTC BACKTEST`;
+      "REFRESH";
 
   }
 
 }
 
 
-/* =========================================================
-   GROUP STATS ROW
-========================================================= */
-
-function groupRow(
-  name,
-  stats
-) {
-
-  return `
-
-    <div class="reason">
-
-      <b>
-        ${esc(name)}
-      </b>
-
-      ·
-      ${stats?.trades ?? 0} trades
-
-      ·
-      WR ${fmt(stats?.winRate,1)}%
-
-      ·
-
-      <span class="${Number(stats?.netR) >= 0 ? "green" : "red"}">
-
-        ${rfmt(stats?.netR)}
-
-      </span>
-
-      ·
-      Exp ${rfmt(stats?.expectancyR)}
-
-    </div>
-
-  `;
-
-}
-
 
 /* =========================================================
-   BACKTEST RENDER
+   LIVE PRICE
 ========================================================= */
 
-function renderBT() {
-
-  const data =
-    lastBT;
-
-
-  if (
-    !data
-  ) {
-
-    return;
-
-  }
-
-
-  $("btNet").textContent =
-    rfmt(
-      data.netR
-    );
-
-
-  $("btNet").className =
-
-    Number(
-      data.netR
-    ) >=
-    0
-
-      ? "green"
-
-      : "red";
-
-
-  $("btWR").textContent =
-    `${fmt(data.winRate,1)}%`;
-
-
-  $("btTrades").textContent =
-    data.trades
-    ??
-    0;
-
-
-  $("btWins").textContent =
-    data.wins
-    ??
-    0;
-
-
-  $("btLosses").textContent =
-    data.losses
-    ??
-    0;
-
-
-  $("btOpen").textContent =
-    data.openTrades
-    ??
-    0;
-
-
-  $("btPF").textContent =
-
-    data.profitFactor ===
-    999
-
-      ? "∞"
-
-      : fmt(
-          data.profitFactor,
-          2
-        );
-
-
-  $("btExp").textContent =
-    rfmt(
-      data.expectancyR
-    );
-
-
-  $("btDD").textContent =
-    rfmt(
-      data.maxDrawdownR
-    );
-
-
-  $("btLS").textContent =
-    data.maxLossStreak
-    ??
-    0;
-
-
-  $("btHold").textContent =
-    `${fmt(data.averageHoldMinutes,1)}m`;
-
-
-  $("btBE").textContent =
-    `${fmt(data.breakEvenWinRate,1)}%`;
-
-
-  $("btEdge").textContent =
-
-    `${Number(data.winRateEdge) >= 0 ? "+" : ""}${fmt(data.winRateEdge,1)}%`;
-
-
-  $("btSnipers").textContent =
-    data.sniperTrades
-    ??
-    0;
-
-
-  $("btAvgScore").textContent =
-    fmt(
-      data.averageScore,
-      1
-    );
-
-
-  $("btBestScore").textContent =
-    fmt(
-      data.bestScore,
-      0
-    );
-
-
-  $("btTp1").textContent =
-    `${fmt(data.tp1HitRate,1)}%`;
-
-
-  $("btAmb").textContent =
-    data.ambiguousCandles
-    ??
-    0;
-
-
-  $("btInfo").textContent =
-
-    `${time(data.period?.start)} → ${time(data.period?.end)} · ${data.candleCounts?.M5 ?? 0} M5 candles · ${data.signalCandidates ?? 0} evaluated states · next-5M-open entry · stop-first ambiguity rule.`;
-
-
-  $("sideStats").innerHTML =
-
-    groupRow(
-      "BUY",
-      data.buy
-    )
-
-    +
-
-    groupRow(
-      "SELL",
-      data.sell
-    );
-
-
-  const sessions =
-    data.sessions
-    ||
-    {};
-
-
-  $("sessionStats").innerHTML =
-
-    [
-
-      "ASIA",
-
-      "LONDON",
-
-      "LONDON_NY_OVERLAP",
-
-      "NEW_YORK",
-
-      "OFF_HOURS"
-
-    ]
-      .map(
-        key =>
-
-          groupRow(
-
-            key.replaceAll(
-              "_",
-              " "
-            ),
-
-            sessions[key]
-
-          )
-
-      )
-      .join("");
-
-
-  const buckets =
-    data.scoreBuckets
-    ||
-    {};
-
-
-  $("scoreBuckets").innerHTML =
-
-    [
-
-      "70-79",
-
-      "80-89",
-
-      "90-100"
-
-    ]
-      .map(
-        key =>
-
-          groupRow(
-
-            `SCORE ${key}`,
-
-            buckets[key]
-
-          )
-
-      )
-      .join("");
-
-
-  renderBTHistory();
-
-
-  setTimeout(
-
-    () => {
-
-      drawCurve(
-
-        $("equity"),
-
-        data.equityCurve
-        ||
-        [],
-
-        "equityR",
-
-        "#38e7a2"
-
-      );
-
-
-      drawCurve(
-
-        $("drawdown"),
-
-        data.drawdownCurve
-        ||
-        [],
-
-        "drawdownR",
-
-        "#ff647c"
-
-      );
-
-    },
-
-    30
-
-  );
-
-}
-
-
-/* =========================================================
-   FILTERED BACKTEST HISTORY
-========================================================= */
-
-function renderBTHistory() {
-
-  const trades =
-
-    Array.isArray(
-      lastBT?.recentTrades
-    )
-
-      ? lastBT.recentTrades
-
-      : [];
-
-
-  const direction =
-    $("fDir").value;
-
-
-  const result =
-    $("fResult").value;
-
-
-  const session =
-    $("fSession").value;
-
-
-  const filtered =
-
-    trades.filter(
-      trade =>
-
-        (
-          direction ===
-          "ALL"
-
-          ||
-
-          trade.signal ===
-          direction
-        )
-
-        &&
-
-        (
-          result ===
-          "ALL"
-
-          ||
-
-          trade.result ===
-          result
-        )
-
-        &&
-
-        (
-          session ===
-          "ALL"
-
-          ||
-
-          trade.session ===
-          session
-        )
-
-    );
-
-
-  $("btHistory").innerHTML =
-
-    filtered.length
-
-      ? filtered
-          .map(
-            trade => `
-
-              <div class="history">
-
-                <div class="historyTop">
-
-                  <b class="${trade.signal === "BUY" ? "green" : "red"}">
-
-                    ${trade.signal}
-                    ·
-                    SCORE ${trade.score}
-
-                  </b>
-
-                  <b class="${
-                    trade.result ===
-                    "WIN"
-
-                      ? "green"
-
-                      : trade.result ===
-                        "LOSS"
-
-                        ? "red"
-
-                        : "gold"
-                  }">
-
-                    ${trade.result}
-
-                    ${
-                      trade.resultR ==
-                      null
-
-                        ? ""
-
-                        : ` · ${rfmt(trade.resultR)}`
-                    }
-
-                  </b>
-
-                </div>
-
-
-                <div class="historyBody">
-
-                  Entry ${fmt(trade.entry)}
-                  ·
-                  SL ${fmt(trade.stopLoss)}
-                  ·
-                  TP ${fmt(trade.takeProfit)}
-
-                  <br>
-
-                  ${esc(trade.sweptLevel || "Liquidity")}
-                  @
-                  ${fmt(trade.sweptPrice)}
-
-                  ·
-                  ${esc(trade.trigger || "")}
-
-                  <br>
-
-                  ${esc(trade.session || "—")}
-
-                  ·
-                  Hold ${fmt(trade.holdMinutes,1)}m
-
-                  ·
-                  Best ${rfmt(trade.bestR)}
-
-                  ·
-                  Worst ${rfmt(trade.worstR)}
-
-                  <br>
-
-                  ${time(trade.entryTime)}
-
-                </div>
-
-              </div>
-
-            `
-          )
-          .join("")
-
-      : `<div class="reason muted">No trades match filters.</div>`;
-
-}
-
-
-/* =========================================================
-   CURVE CHART
-========================================================= */
-
-function drawCurve(
-  canvas,
-  points,
-  key,
-  color
-) {
-
-  const prepared =
-    prep(
-      canvas
-    );
-
-
-  if (
-    !prepared
-  ) {
-
-    return;
-
-  }
-
-
-  const values =
-
-    points
-      .map(
-        point =>
-          Number(
-            point[key]
-          )
-      )
-      .filter(
-        Number.isFinite
-      );
-
-
-  if (
-    values.length <
-    2
-  ) {
-
-    prepared.c.fillStyle =
-      "rgba(255,255,255,.35)";
-
-
-    prepared.c.fillText(
-
-      "No closed trades",
-
-      15,
-
-      30
-
-    );
-
-
-    return;
-
-  }
-
-
-  let min =
-    Math.min(
-      ...values
-    );
-
-
-  let max =
-    Math.max(
-      ...values
-    );
-
-
-  if (
-    min ===
-    max
-  ) {
-
-    min -=
-      1;
-
-
-    max +=
-      1;
-
-  }
-
-
-  const x =
-    index =>
-
-      14
-
-      +
-
-      index /
-      Math.max(
-        1,
-        values.length -
-        1
-      )
-
-      *
-      (
-        prepared.w -
-        28
-      );
-
-
-  const y =
-    value =>
-
-      prepared.h -
-      14
-
-      -
-
-      (
-        value -
-        min
-      )
-
-      /
-
-      (
-        max -
-        min
-      )
-
-      *
-      (
-        prepared.h -
-        28
-      );
-
-
-  prepared.c.strokeStyle =
-    color;
-
-
-  prepared.c.lineWidth =
-    2;
-
-
-  prepared.c.beginPath();
-
-
-  values.forEach(
-    (
-      value,
-      index
-    ) => {
-
-      if (
-        index
-      ) {
-
-        prepared.c.lineTo(
-
-          x(index),
-
-          y(value)
-
-        );
-
-      }
-
-      else {
-
-        prepared.c.moveTo(
-
-          x(index),
-
-          y(value)
-
-        );
-
-      }
-
-    }
-  );
-
-
-  prepared.c.stroke();
-
-}
-
-
-/* =========================================================
-   COPY / SHARE
-========================================================= */
-
-function signalText() {
-
-  if (
-    !lastData
-  ) {
-
-    return "";
-
-  }
-
-
-  const lock =
-    getLock();
-
-
-  if (
-    lock
-  ) {
-
-    return `MKAYFX BTC/USD
-
-${lock.signal} HARD LOCK
-
-Entry ${fmt(lock.entry)}
-SL ${fmt(lock.stopLoss)}
-TP ${fmt(lock.takeProfit)}
-
-Score ${lock.score}/100
-Current ${fmt(currentPrice)}
-R ${rfmt(currentR(lock,currentPrice))}`;
-
-  }
-
-
-  return `MKAYFX BTC/USD
-
-Signal ${lastData.signal}
-Score ${lastData.signalScore}/100
-Confidence ${lastData.confidence}%
-
-Price ${fmt(currentPrice ?? lastData.price)}
-
-4H ${lastData.timeframeBias?.H4 ?? "—"}
-1H ${lastData.timeframeBias?.H1 ?? "—"}
-15M ${lastData.timeframeBias?.M15 ?? "—"}
-5M ${lastData.timeframeBias?.M5 ?? "—"}`;
-
-}
-
-
-async function copySignal() {
-
-  try {
-
-    await navigator
-      .clipboard
-      .writeText(
-        signalText()
-      );
-
-
-    showToast(
-
-      "Copied",
-
-      "BTC signal copied."
-
-    );
-
-  }
-
-  catch {}
-
-}
-
-
-async function shareSignal() {
-
-  const text =
-    signalText();
-
-
-  if (
-    navigator.share
-  ) {
-
-    try {
-
-      await navigator.share({
-
-        title:
-          "MKAYFX BTC Signal",
-
-        text
-
-      });
-
-
-      return;
-
-    }
-
-    catch {}
-
-  }
-
-
-  copySignal();
-
-}
-
-
-/* =========================================================
-   EXPORT JOURNAL
-========================================================= */
-
-function exportCSV() {
-
-  const history =
-    getHistory();
-
-
-  if (
-    !history.length
-  ) {
-
-    showToast(
-
-      "No trades",
-
-      "Journal empty."
-
-    );
-
-
-    return;
-
-  }
-
-
-  const rows = [
-
-    [
-      "Symbol",
-      "Signal",
-      "Status",
-      "ResultR",
-      "Entry",
-      "StopLoss",
-      "TakeProfit",
-      "Score",
-      "Confidence",
-      "CreatedAt",
-      "ExitTime",
-      "ExitPrice",
-      "BestR",
-      "WorstR"
-    ],
-
-    ...history.map(
-      trade => [
-
-        trade.symbol,
-
-        trade.signal,
-
-        trade.status,
-
-        trade.resultR,
-
-        trade.entry,
-
-        trade.stopLoss,
-
-        trade.takeProfit,
-
-        trade.score,
-
-        trade.confidence,
-
-        trade.createdAt,
-
-        trade.exitTime,
-
-        trade.exitPrice,
-
-        trade.bestR,
-
-        trade.worstR
-
-      ]
-    )
-
-  ];
-
-
-  const csv =
-
-    rows
-      .map(
-        row =>
-
-          row
-            .map(
-              value =>
-
-                `"${String(value ?? "").replace(/"/g,'""')}"`
-
-            )
-            .join(",")
-
-      )
-      .join("\n");
-
-
-  const blob =
-    new Blob(
-
-      [
-        csv
-      ],
-
-      {
-        type:
-          "text/csv"
-      }
-
-    );
-
-
-  const url =
-    URL.createObjectURL(
-      blob
-    );
-
-
-  const anchor =
-    document.createElement(
-      "a"
-    );
-
-
-  anchor.href =
-    url;
-
-
-  anchor.download =
-    "mkayfx-btc-journal.csv";
-
-
-  anchor.click();
-
-
-  URL.revokeObjectURL(
-    url
-  );
-
-}
-
-
-/* =========================================================
-   TOAST / ALERT
-========================================================= */
-
-function showToast(
-  title,
-  body
-) {
-
-  $("toastTitle").textContent =
-    title;
-
-
-  $("toastBody").textContent =
-    body;
-
-
-  $("toast")
-    .classList
-    .add(
-      "active"
-    );
-
-
-  setTimeout(
-
-    () =>
-      $("toast")
-        .classList
-        .remove(
-          "active"
-        ),
-
-    4000
-
-  );
-
-}
-
-
-function notify(
-  title,
-  body,
-  type
-) {
-
-  showToast(
-    title,
-    body
-  );
-
-
-  if (
-    !alertsEnabled
-  ) {
-
-    return;
-
-  }
-
-
-  if (
-    navigator.vibrate
-  ) {
-
-    navigator.vibrate(
-      [
-        100,
-        60,
-        100
-      ]
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   NAVIGATION
-========================================================= */
-
-function showView(
-  id
-) {
-
-  currentView =
-    id;
-
-
-  $$(".view")
-    .forEach(
-      view =>
-
-        view.classList.toggle(
-
-          "active",
-
-          view.id ===
-          id
-
-        )
-
-    );
-
-
-  $$("[data-view]")
-    .forEach(
-      button =>
-
-        button.classList.toggle(
-
-          "active",
-
-          button.dataset.view ===
-          id
-
-        )
-
-    );
-
-
-  if (
-    id ===
-    "monitor"
-  ) {
-
-    setTimeout(
-
-      drawPrice,
-
-      30
-
-    );
-
-  }
-
-
-  if (
-
-    id ===
-    "backtest"
-
-    &&
-
-    lastBT
-
-  ) {
-
-    setTimeout(
-
-      () => {
-
-        drawCurve(
-
-          $("equity"),
-
-          lastBT.equityCurve
-          ||
-          [],
-
-          "equityR",
-
-          "#38e7a2"
-
-        );
-
-
-        drawCurve(
-
-          $("drawdown"),
-
-          lastBT.drawdownCurve
-          ||
-          [],
-
-          "drawdownR",
-
-          "#ff647c"
-
-        );
-
-      },
-
-      30
-
-    );
-
-  }
-
-}
-
-
-$$("[data-view]")
-  .forEach(
-    button =>
-
-      button.addEventListener(
-
-        "click",
-
-        () =>
-          showView(
-            button.dataset.view
-          )
-
-      )
-
-  );
-
-
-/* =========================================================
-   BACKTEST PERIOD BUTTONS
-========================================================= */
-
-$$("[data-days]")
-  .forEach(
-    button =>
-
-      button.addEventListener(
-
-        "click",
-
-        () => {
-
-          btDays =
-            Number(
-              button.dataset.days
-            );
-
-
-          $$("[data-days]")
-            .forEach(
-              item =>
-
-                item.classList.toggle(
-
-                  "active",
-
-                  item ===
-                  button
-
-                )
-
-            );
-
-
-          $("runBT").textContent =
-            `RUN ${btDays}-DAY BTC BACKTEST`;
-
-        }
-
-      )
-
-  );
-
-
-/* =========================================================
-   BUTTON EVENTS
-========================================================= */
-
-$("run").onclick =
-  runAnalysis;
-
-
-$("copy").onclick =
-  copySignal;
-
-
-$("share").onclick =
-  shareSignal;
-
-
-$("clear").onclick =
-  () => {
-
-    if (
-      !getLock()
-    ) {
-
-      showToast(
-
-        "No active trade",
-
-        "No lock to clear."
-
-      );
-
-
-      return;
-
-    }
-
-
-    clearLock();
-
-
-    localStorage.setItem(
-
-      K.pause,
-
-      String(
-
-        Date.now()
-
-        +
-
-        15 *
-        60 *
-        1000
-
-      )
-
-    );
-
-
-    renderAll();
-
-
-    showToast(
-
-      "Lock cleared",
-
-      "New locks paused for 15 minutes."
-
-    );
-
-  };
-
-
-$("runBT").onclick =
-  runBacktest;
-
-
-$("export").onclick =
-  exportCSV;
-
-
-$("clearJournal").onclick =
-  () => {
-
-    localStorage.removeItem(
-      K.history
-    );
-
-
-    renderJournal();
-
-  };
-
-
-[
-  "fDir",
-  "fResult",
-  "fSession"
-]
-  .forEach(
-    id =>
-
-      $(id).onchange =
-        renderBTHistory
-
-  );
-
-
-$("analysisRefresh").onchange =
-  () => {
-
-    analysisRefresh =
-      Number(
-        $("analysisRefresh").value
-      );
-
-
-    localStorage.setItem(
-
-      K.analysis,
-
-      String(
-        analysisRefresh
-      )
-
-    );
-
-  };
-
-
-$("priceRefresh").onchange =
-  () => {
-
-    priceRefresh =
-      Number(
-        $("priceRefresh").value
-      );
-
-
-    localStorage.setItem(
-
-      K.price,
-
-      String(
-        priceRefresh
-      )
-
-    );
-
-  };
-
-
-$("alerts").onclick =
-  () => {
-
-    alertsEnabled =
-      !alertsEnabled;
-
-
-    localStorage.setItem(
-
-      K.alerts,
-
-      String(
-        alertsEnabled
-      )
-
-    );
-
-
-    showToast(
-
-      "Alerts",
-
-      alertsEnabled
-
-        ? "Enabled"
-
-        : "Disabled"
-
-    );
-
-  };
-
-
-$("amoled").onclick =
-  () => {
-
-    amoledEnabled =
-      !amoledEnabled;
-
-
-    localStorage.setItem(
-
-      K.amoled,
-
-      String(
-        amoledEnabled
-      )
-
-    );
-
-
-    document.body
-      .classList
-      .toggle(
-
-        "amoled",
-
-        amoledEnabled
-
-      );
-
-  };
-
-
-/* =========================================================
-   NETWORK
-========================================================= */
-
-window.addEventListener(
-
-  "online",
-
-  runAnalysis
-
-);
-
-
-window.addEventListener(
-
-  "offline",
-
-  () => {
-
-    $("offline")
-      .classList
-      .add(
-        "show"
-      );
-
-
-    $("dot").style.background =
-      "var(--red)";
-
-  }
-
-);
-
-
-/* =========================================================
-   RESIZE
-========================================================= */
-
-window.addEventListener(
-
-  "resize",
-
-  () => {
-
-    if (
-      currentView ===
-      "monitor"
-    ) {
-
-      drawPrice();
-
-    }
-
-
-    if (
-
-      currentView ===
-      "backtest"
-
-      &&
-
-      lastBT
-
-    ) {
-
-      renderBT();
-
-    }
-
-  }
-
-);
-
-
-/* =========================================================
-   TIMER LOOP
-========================================================= */
-
-function tick() {
+async function loadPrice() {
 
   if (
     document.hidden
@@ -8789,188 +5026,174 @@ function tick() {
   }
 
 
-  const now =
-    Date.now();
+  try {
+
+    const response =
+      await fetch(
+        "/api/price",
+        {
+          cache:
+            "no-store"
+        }
+      );
 
 
-  if (
+    const data =
+      await response.json();
 
-    priceRefresh >
-    0
 
-    &&
+    if (
+      !response.ok ||
+      !data.ok
+    ) {
 
-    now -
-    lastPriceAt >=
-    priceRefresh *
-    1000
+      return;
 
-  ) {
+    }
 
-    updatePrice();
+
+    lastPrice =
+      data.price;
+
+
+    setText(
+
+      "livePrice",
+
+      `$${fmt(
+        data.price,
+        2
+      )}`
+
+    );
+
+
+    $("liveDot")
+      .classList
+      .add(
+        "live"
+      );
+
+
+    if (
+      model
+        ?.snapshot
+        ?.price
+    ) {
+
+      const difference =
+
+        100 *
+        (
+          data.price /
+          model.snapshot.price -
+          1
+        );
+
+
+      const base =
+        model
+          .snapshot
+          .dayChangePct ??
+        0;
+
+
+      setText(
+
+        "dayChange",
+
+        signed(
+          base +
+          difference,
+          2,
+          "%"
+        ),
+
+        `priceChange ${
+          klass(
+            base +
+            difference
+          )
+        }`
+
+      );
+
+    }
 
   }
 
-
-  if (
-
-    analysisRefresh >
-    0
-
-    &&
-
-    now -
-    lastAnalysisAt >=
-    analysisRefresh *
-    1000
-
-  ) {
-
-    runAnalysis();
-
-  }
+  catch {}
 
 }
+
+
+
+/* =========================================================
+   EVENTS
+========================================================= */
+
+$("refreshBtn")
+  .addEventListener(
+    "click",
+    () =>
+      loadHeavy(
+        true
+      )
+  );
+
+
+document
+  .addEventListener(
+    "visibilitychange",
+    () => {
+
+      if (
+        !document.hidden
+      ) {
+
+        loadPrice();
+
+      }
+
+    }
+  );
+
 
 
 /* =========================================================
    START
 ========================================================= */
 
-function start() {
+loadHeavy();
 
-  document.body
-    .classList
-    .toggle(
-
-      "amoled",
-
-      amoledEnabled
-
-    );
+loadPrice();
 
 
-  $("analysisRefresh").value =
-    String(
-      analysisRefresh
-    );
+heavyTimer =
+  setInterval(
+
+    () =>
+      loadHeavy(
+        false
+      ),
+
+    300000
+
+  );
 
 
-  $("priceRefresh").value =
-    String(
-      priceRefresh
-    );
+priceTimer =
+  setInterval(
 
+    loadPrice,
 
-  renderJournal();
+    30000
 
-
-  const cache =
-    getJSON(
-      K.cache,
-      null
-    );
-
-
-  if (
-    cache?.data
-  ) {
-
-    lastData = {
-
-      ...cache.data,
-
-      stale:
-        true
-
-    };
-
-
-    currentPrice =
-      n(
-        lastData.price
-      );
-
-
-    renderAll();
-
-  }
-
-
-  const savedBacktest =
-    getJSON(
-      K.bt,
-      null
-    );
-
-
-  if (
-    savedBacktest?.success
-  ) {
-
-    lastBT =
-      savedBacktest;
-
-
-    btDays =
-      Number(
-        savedBacktest.days
-      )
-      ||
-      7;
-
-
-    $$("[data-days]")
-      .forEach(
-        button =>
-
-          button.classList.toggle(
-
-            "active",
-
-            Number(
-              button.dataset.days
-            )
-
-            ===
-
-            btDays
-
-          )
-
-      );
-
-
-    $("runBT").textContent =
-      `RUN ${btDays}-DAY BTC BACKTEST`;
-
-
-    renderBT();
-
-  }
-
-
-  runAnalysis();
-
-
-  updatePrice();
-
-}
-
-
-setInterval(
-
-  tick,
-
-  1000
-
-);
-
-
-start();
+  );
 
 </script>
 
 
 </body>
+
 </html>
