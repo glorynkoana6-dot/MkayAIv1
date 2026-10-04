@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
@@ -8,7 +7,7 @@
 
 <meta
   name="viewport"
-  content="width=device-width,initial-scale=1,viewport-fit=cover"
+  content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"
 >
 
 <meta
@@ -26,34 +25,60 @@
   content="black-translucent"
 >
 
-<title>
-MKAYFX Volume Imbalance
-</title>
+<title>MKAYFX VOLUME PRO</title>
 
 
 <style>
 
+/* =========================================================
+   RESET / ROOT
+========================================================= */
+
 *{
   box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
 }
 
 :root{
 
   --bg:#05070b;
-  --panel:#0a1119;
-  --card:#070d14;
-  --line:rgba(255,255,255,.085);
+  --bg2:#08101a;
 
-  --text:#f6f8fb;
-  --muted:#788698;
+  --panel:#0a121c;
+  --panel2:#0c1622;
+  --panel3:#070d14;
 
-  --gold:#f4c85d;
-  --green:#37e6a1;
-  --red:#ff6279;
-  --blue:#7994ff;
-  --purple:#9d83ff;
+  --border:rgba(255,255,255,.075);
+  --border2:rgba(255,255,255,.12);
+
+  --text:#f7f9fc;
+  --muted:#7a899c;
+  --muted2:#536173;
+
+  --green:#38e7a2;
+  --greenSoft:rgba(56,231,162,.12);
+
+  --red:#ff647c;
+  --redSoft:rgba(255,100,124,.12);
+
+  --gold:#f5ca63;
+  --goldSoft:rgba(245,202,99,.12);
+
+  --blue:#7996ff;
+  --blueSoft:rgba(121,150,255,.13);
+
+  --purple:#a087ff;
+  --purpleSoft:rgba(160,135,255,.12);
+
+  --radius:22px;
+  --radiusSm:15px;
 
 }
+
+
+/* =========================================================
+   PAGE
+========================================================= */
 
 html,
 body{
@@ -64,18 +89,19 @@ body{
 
   background:
     radial-gradient(
-      circle at top,
-      #101b2e 0%,
-      #05070b 42%
+      circle at 50% -100px,
+      #162945 0%,
+      #09111c 28%,
+      #05070b 62%
     );
 
-  color:
-    var(--text);
+  color:var(--text);
 
   font-family:
     -apple-system,
     BlinkMacSystemFont,
     "SF Pro Display",
+    "SF Pro Text",
     "Segoe UI",
     sans-serif;
 
@@ -84,38 +110,49 @@ body{
 body{
 
   padding:
-    calc(env(safe-area-inset-top) + 14px)
-    14px
-    calc(env(safe-area-inset-bottom) + 30px);
+    calc(env(safe-area-inset-top) + 10px)
+    11px
+    calc(env(safe-area-inset-bottom) + 92px);
 
 }
 
-button{
+button,
+select{
   font:inherit;
+}
+
+button{
+  cursor:pointer;
 }
 
 .app{
 
-  max-width:1080px;
+  width:100%;
 
-  margin:auto;
+  max-width:1120px;
+
+  margin:0 auto;
 
 }
 
 
-/* HEADER */
+/* =========================================================
+   TOP BAR
+========================================================= */
 
-.header{
+.topbar{
 
   display:flex;
 
-  align-items:center;
-
   justify-content:space-between;
+
+  align-items:center;
 
   gap:12px;
 
-  margin-bottom:16px;
+  padding:4px 2px;
+
+  margin-bottom:13px;
 
 }
 
@@ -123,110 +160,167 @@ button{
 
   font-size:27px;
 
-  font-weight:950;
+  line-height:1;
+
+  font-weight:1000;
+
+  letter-spacing:-1.2px;
 
 }
 
 .brand span{
-
   color:var(--blue);
-
 }
 
 .subtitle{
 
-  margin-top:5px;
+  margin-top:6px;
 
   color:var(--muted);
-
-  font-size:11px;
-
-}
-
-.badge{
-
-  padding:10px 13px;
-
-  border-radius:999px;
-
-  border:
-    1px solid
-    var(--line);
-
-  background:
-    var(--panel);
 
   font-size:9px;
 
-  color:var(--muted);
-
-  text-transform:uppercase;
-
-  letter-spacing:.8px;
+  line-height:1.4;
 
 }
 
-
-/* ASSETS */
-
-.assets{
-
-  display:grid;
-
-  grid-template-columns:
-    1fr 1fr;
-
-  gap:9px;
-
-  margin-bottom:10px;
-
-}
-
-.asset{
-
-  border:
-    1px solid
-    var(--line);
-
-  background:#080e15;
-
-  border-radius:17px;
-
-  min-height:76px;
-
-  color:white;
-
-  text-align:left;
-
-  padding:12px;
+.topRight{
 
   display:flex;
 
-  gap:10px;
-
   align-items:center;
+
+  gap:6px;
 
 }
 
-.asset.active{
+.engineBadge{
 
-  border-color:
-    rgba(121,148,255,.65);
+  min-height:32px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  padding:8px 10px;
+
+  border-radius:999px;
+
+  border:1px solid var(--border);
+
+  background:
+    rgba(8,15,24,.86);
+
+  color:var(--muted);
+
+  font-size:7px;
+
+  font-weight:900;
+
+  text-transform:uppercase;
+
+  letter-spacing:.7px;
+
+  backdrop-filter:blur(14px);
+
+}
+
+.healthDot{
+
+  width:8px;
+
+  height:8px;
+
+  border-radius:50%;
+
+  background:var(--muted);
+
+  box-shadow:
+    0 0 12px
+    currentColor;
+
+}
+
+
+/* =========================================================
+   ASSET SWITCHER
+========================================================= */
+
+.assetSwitcher{
+
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:6px;
+
+  padding:5px;
+
+  border-radius:21px;
+
+  border:1px solid var(--border);
+
+  background:
+    rgba(8,15,24,.82);
+
+  margin-bottom:9px;
+
+}
+
+.assetButton{
+
+  border:0;
+
+  min-height:66px;
+
+  border-radius:17px;
+
+  background:transparent;
+
+  color:var(--text);
+
+  display:flex;
+
+  align-items:center;
+
+  gap:10px;
+
+  padding:9px 10px;
+
+  text-align:left;
+
+  transition:
+    background .18s ease,
+    transform .18s ease;
+
+}
+
+.assetButton:active{
+  transform:scale(.985);
+}
+
+.assetButton.active{
 
   background:
     linear-gradient(
       135deg,
-      rgba(33,52,86,.95),
-      rgba(11,18,31,.98)
+      rgba(38,58,94,.97),
+      rgba(15,27,44,.98)
     );
+
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(121,150,255,.28);
 
 }
 
 .assetIcon{
 
-  width:48px;
+  width:43px;
 
-  height:48px;
+  height:43px;
 
   border-radius:13px;
 
@@ -234,221 +328,420 @@ button{
 
   place-items:center;
 
-  font-size:19px;
-
-  font-weight:950;
-
   flex-shrink:0;
+
+  font-size:17px;
+
+  font-weight:1000;
 
 }
 
 .goldIcon{
 
+  color:#17120a;
+
   background:
     linear-gradient(
-      135deg,
-      #ffe789,
-      #c4921c
+      145deg,
+      #ffeb9a,
+      #d49e25
     );
-
-  color:#16130a;
 
 }
 
 .btcIcon{
 
+  color:#fff;
+
   background:
     linear-gradient(
-      135deg,
-      #ffb34d,
+      145deg,
+      #ffb95c,
       #f7931a
     );
-
-  color:white;
 
 }
 
 .assetName{
 
-  font-size:14px;
+  font-size:12px;
 
-  font-weight:900;
+  font-weight:950;
 
 }
 
 .assetSymbol{
 
+  margin-top:3px;
+
   color:var(--muted);
 
-  font-size:8px;
-
-  margin-top:3px;
+  font-size:7.5px;
 
 }
 
 
-/* BUTTONS */
+/* =========================================================
+   ACTION BAR
+========================================================= */
 
-.run{
+.actionBar{
 
-  width:100%;
+  display:grid;
 
-  min-height:60px;
+  grid-template-columns:
+    minmax(0,1fr)
+    auto
+    auto;
 
-  border-radius:18px;
+  gap:7px;
+
+  margin-bottom:11px;
+
+}
+
+.primaryButton{
+
+  min-height:53px;
+
+  border-radius:17px;
 
   border:
     1px solid
-    rgba(121,148,255,.45);
+    rgba(121,150,255,.35);
 
   background:
     linear-gradient(
       135deg,
-      #263b61,
-      #121e32
+      #29436e,
+      #15243d
     );
 
-  color:white;
+  color:#fff;
 
-  font-size:16px;
+  font-size:12px;
 
   font-weight:950;
 
 }
 
-.clear{
+.iconButton{
 
-  width:100%;
+  width:53px;
 
-  min-height:44px;
+  min-height:53px;
 
-  margin-top:8px;
+  border-radius:17px;
 
-  border-radius:15px;
+  border:1px solid var(--border);
 
-  border:
-    1px solid
-    rgba(255,98,121,.25);
+  background:#0a121c;
+
+  color:#dce3ed;
+
+  font-size:17px;
+
+}
+
+.iconButton.active{
+
+  border-color:
+    rgba(56,231,162,.36);
+
+  color:var(--green);
 
   background:
-    rgba(255,98,121,.06);
+    rgba(56,231,162,.07);
 
-  color:#ffa9b5;
+}
 
-  font-size:10px;
+.iconButton.danger{
 
-  font-weight:900;
+  color:var(--red);
+
+  border-color:
+    rgba(255,100,124,.23);
+
+  background:
+    rgba(255,100,124,.06);
 
 }
 
 
-/* ERROR */
+/* =========================================================
+   ERROR
+========================================================= */
 
-.error{
+.errorBox{
 
   display:none;
 
-  margin-top:12px;
+  margin-bottom:11px;
+
+  padding:13px;
+
+  border-radius:16px;
 
   border:
     1px solid
-    rgba(255,98,121,.5);
+    rgba(255,100,124,.4);
 
   background:
-    rgba(255,98,121,.08);
+    rgba(255,100,124,.08);
 
-  color:#ffc2cc;
+  color:#ffc5cf;
 
-  padding:14px;
+  font-size:9px;
 
-  border-radius:16px;
+  line-height:1.55;
 
   white-space:pre-wrap;
 
   word-break:break-word;
 
-  font-size:11px;
+}
+
+
+/* =========================================================
+   TAB NAV
+========================================================= */
+
+.tabBar{
+
+  position:sticky;
+
+  top:
+    calc(env(safe-area-inset-top) + 4px);
+
+  z-index:30;
+
+  display:flex;
+
+  gap:5px;
+
+  overflow-x:auto;
+
+  padding:5px;
+
+  margin-bottom:11px;
+
+  border-radius:17px;
+
+  border:1px solid var(--border);
+
+  background:
+    rgba(6,12,19,.9);
+
+  backdrop-filter:
+    blur(18px);
+
+  scrollbar-width:none;
+
+}
+
+.tabBar::-webkit-scrollbar{
+  display:none;
+}
+
+.tabButton{
+
+  flex:0 0 auto;
+
+  min-height:34px;
+
+  padding:0 11px;
+
+  border:0;
+
+  border-radius:12px;
+
+  background:transparent;
+
+  color:var(--muted);
+
+  font-size:8px;
+
+  font-weight:900;
+
+  text-transform:uppercase;
+
+  letter-spacing:.6px;
+
+}
+
+.tabButton.active{
+
+  color:#fff;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(121,150,255,.22),
+      rgba(121,150,255,.09)
+    );
+
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(121,150,255,.22);
 
 }
 
 
-/* GRID */
+/* =========================================================
+   VIEWS
+========================================================= */
 
-.grid{
+.view{
+  display:none;
+}
+
+.view.active{
+  display:block;
+}
+
+.layoutGrid{
 
   display:grid;
 
   grid-template-columns:
-    minmax(0,1.42fr)
+    minmax(0,1.45fr)
     minmax(300px,.8fr);
 
-  gap:12px;
-
-  margin-top:12px;
+  gap:11px;
 
 }
 
+.stack{
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:11px;
+
+}
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
 .card{
+
+  border:1px solid var(--border);
+
+  border-radius:var(--radius);
 
   background:
     linear-gradient(
       180deg,
-      rgba(12,19,28,.98),
-      rgba(5,10,15,.98)
+      rgba(11,20,31,.98),
+      rgba(6,12,19,.99)
     );
 
-  border:
-    1px solid
-    var(--line);
-
-  border-radius:20px;
-
   overflow:hidden;
+
+  box-shadow:
+    0 18px 55px
+    rgba(0,0,0,.13);
 
 }
 
 .pad{
-
-  padding:16px;
-
+  padding:15px;
 }
 
-.label{
+.sectionTitle{
+
+  margin-bottom:11px;
 
   color:var(--muted);
 
-  font-size:9px;
+  font-size:8px;
+
+  font-weight:900;
 
   text-transform:uppercase;
 
-  letter-spacing:1.2px;
+  letter-spacing:1.35px;
 
 }
 
 
-/* SIGNAL */
+/* =========================================================
+   HERO
+========================================================= */
 
-.signalTop{
+.hero{
+
+  position:relative;
+
+}
+
+.heroGlow{
+
+  position:absolute;
+
+  top:-130px;
+
+  right:-80px;
+
+  width:270px;
+
+  height:270px;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(121,150,255,.18),
+      rgba(121,150,255,0) 70%
+    );
+
+  pointer-events:none;
+
+}
+
+.heroTop{
+
+  position:relative;
 
   display:flex;
 
+  align-items:flex-start;
+
   justify-content:space-between;
 
-  align-items:flex-end;
-
   gap:12px;
+
+}
+
+.eyebrow{
+
+  color:var(--muted);
+
+  font-size:7.5px;
+
+  font-weight:850;
+
+  letter-spacing:1.1px;
+
+  text-transform:uppercase;
 
 }
 
 .signal{
 
-  margin-top:7px;
+  margin-top:6px;
 
-  font-size:58px;
+  font-size:62px;
 
-  font-weight:950;
+  line-height:.92;
 
-  line-height:.95;
+  font-weight:1000;
+
+  letter-spacing:-2.6px;
 
 }
 
@@ -464,23 +757,17 @@ button{
   color:var(--red);
 }
 
-.price{
+.signalSub{
 
-  font-size:30px;
+  max-width:330px;
 
-  font-weight:950;
-
-  text-align:right;
-
-}
-
-.status{
+  margin-top:9px;
 
   color:var(--muted);
 
-  font-size:10px;
+  font-size:9px;
 
-  margin-top:6px;
+  line-height:1.45;
 
 }
 
@@ -488,73 +775,1112 @@ button{
 
   display:inline-flex;
 
-  margin-top:9px;
+  align-items:center;
 
-  padding:6px 9px;
+  margin-top:10px;
+
+  padding:6px 10px;
+
+  min-height:28px;
 
   border-radius:999px;
 
   border:
     1px solid
-    rgba(244,200,93,.35);
+    rgba(245,202,99,.38);
 
   background:
-    rgba(244,200,93,.07);
+    rgba(245,202,99,.07);
 
   color:var(--gold);
 
-  font-size:8px;
+  font-size:7px;
 
-  font-weight:900;
+  font-weight:950;
+
+  letter-spacing:.55px;
+
+}
+
+.heroPrice{
+
+  text-align:right;
+
+  flex-shrink:0;
+
+}
+
+.price{
+
+  font-size:34px;
+
+  line-height:1;
+
+  font-weight:1000;
+
+  letter-spacing:-1.2px;
+
+}
+
+.priceMeta{
+
+  margin-top:7px;
+
+  color:var(--muted);
+
+  font-size:7.5px;
+
+  line-height:1.45;
 
 }
 
 
-/* METRICS */
+/* =========================================================
+   META STRIP
+========================================================= */
 
-.metrics{
+.metaStrip{
 
   display:grid;
 
   grid-template-columns:
     repeat(4,1fr);
 
-  gap:8px;
+  gap:7px;
 
-  margin-top:18px;
+  margin-top:16px;
 
 }
 
-.metric,
-.level,
-.setting,
-.bt{
+.metaItem{
 
-  padding:11px;
+  min-height:55px;
 
-  border:
-    1px solid
-    var(--line);
+  padding:9px;
+
+  border-radius:13px;
+
+  border:1px solid var(--border);
+
+  background:#070e16;
+
+}
+
+.metaItem small{
+
+  display:block;
+
+  color:var(--muted);
+
+  font-size:6px;
+
+  text-transform:uppercase;
+
+}
+
+.metaItem b{
+
+  display:block;
+
+  margin-top:6px;
+
+  font-size:11px;
+
+}
+
+
+/* =========================================================
+   PRESSURE GAUGE
+========================================================= */
+
+.pressurePanel{
+
+  margin-top:9px;
+
+  padding:12px;
+
+  border-radius:16px;
+
+  border:1px solid var(--border);
+
+  background:#070e16;
+
+}
+
+.pressureTop{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  gap:8px;
+
+  margin-bottom:9px;
+
+}
+
+.pressureLabel{
+
+  color:var(--muted);
+
+  font-size:7px;
+
+  text-transform:uppercase;
+
+  letter-spacing:.7px;
+
+}
+
+.pressureCount{
+
+  display:flex;
+
+  gap:9px;
+
+  font-size:8px;
+
+  font-weight:950;
+
+}
+
+.pressureBar{
+
+  position:relative;
+
+  display:flex;
+
+  height:11px;
+
+  overflow:hidden;
+
+  border-radius:999px;
+
+  background:#111923;
+
+}
+
+.bullPressure{
+
+  height:100%;
+
+  width:50%;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(56,231,162,.45),
+      var(--green)
+    );
+
+  transition:width .3s ease;
+
+}
+
+.bearPressure{
+
+  height:100%;
+
+  width:50%;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--red),
+      rgba(255,100,124,.45)
+    );
+
+  transition:width .3s ease;
+
+}
+
+
+/* =========================================================
+   SNAPSHOT GRID
+========================================================= */
+
+.snapshotGrid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:7px;
+
+  margin-top:9px;
+
+}
+
+.snapshot{
+
+  min-height:78px;
+
+  padding:10px;
 
   border-radius:14px;
 
-  background:
-    var(--card);
+  border:1px solid var(--border);
+
+  background:#070e16;
 
 }
 
-.metric{
-
-  min-height:84px;
-
-}
-
-.metric small,
-.level small,
-.setting small,
-.bt small{
+.snapshot small{
 
   display:block;
+
+  color:var(--muted);
+
+  font-size:6.5px;
+
+  text-transform:uppercase;
+
+}
+
+.snapshot strong{
+
+  display:block;
+
+  margin-top:7px;
+
+  font-size:14px;
+
+}
+
+.snapshot .sub{
+
+  margin-top:4px;
+
+  color:var(--muted);
+
+  font-size:6.5px;
+
+}
+
+
+/* =========================================================
+   HARD LOCK PANEL
+========================================================= */
+
+.tradeHeader{
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:8px;
+
+  margin-top:14px;
+
+  margin-bottom:7px;
+
+}
+
+.tradeHeader span:first-child{
+
+  color:var(--muted);
+
+  font-size:7px;
+
+  text-transform:uppercase;
+
+  letter-spacing:1px;
+
+}
+
+.currentR{
+
+  font-size:9px;
+
+  font-weight:950;
+
+}
+
+.tradeGrid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:7px;
+
+}
+
+.tradeMetric{
+
+  min-height:79px;
+
+  padding:10px;
+
+  border-radius:14px;
+
+  border:1px solid var(--border);
+
+  background:#070e16;
+
+}
+
+.tradeMetric small{
+
+  display:block;
+
+  color:var(--muted);
+
+  font-size:6.5px;
+
+  text-transform:uppercase;
+
+}
+
+.tradeMetric b{
+
+  display:block;
+
+  margin-top:8px;
+
+  font-size:15px;
+
+}
+
+
+/* =========================================================
+   TRADE DISTANCE GRID
+========================================================= */
+
+.distanceGrid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:7px;
+
+  margin-top:7px;
+
+}
+
+.distanceItem{
+
+  padding:9px;
+
+  border-radius:13px;
+
+  border:1px solid var(--border);
+
+  background:
+    rgba(5,11,18,.6);
+
+}
+
+.distanceItem small{
+
+  display:block;
+
+  color:var(--muted);
+
+  font-size:6px;
+
+  text-transform:uppercase;
+
+}
+
+.distanceItem b{
+
+  display:block;
+
+  margin-top:5px;
+
+  font-size:10px;
+
+}
+
+
+/* =========================================================
+   TRADE PROGRESS
+========================================================= */
+
+.progressPanel{
+
+  margin-top:8px;
+
+  padding:11px;
+
+  border-radius:15px;
+
+  border:1px solid var(--border);
+
+  background:#070e16;
+
+}
+
+.progressHeader{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  gap:8px;
+
+  margin-bottom:9px;
+
+  color:var(--muted);
+
+  font-size:6.5px;
+
+  text-transform:uppercase;
+
+}
+
+.tradeTrack{
+
+  position:relative;
+
+  height:10px;
+
+  border-radius:999px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,100,124,.42),
+      rgba(121,150,255,.36) 25%,
+      rgba(56,231,162,.42)
+    );
+
+}
+
+.tradeMarker{
+
+  position:absolute;
+
+  left:25%;
+
+  top:50%;
+
+  width:18px;
+
+  height:18px;
+
+  border-radius:50%;
+
+  transform:
+    translate(-50%,-50%);
+
+  border:3px solid #05070b;
+
+  background:#fff;
+
+  box-shadow:
+    0 0 0 1px
+    rgba(255,255,255,.15);
+
+  transition:left .3s ease;
+
+}
+
+.progressLabels{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  margin-top:8px;
+
+  color:var(--muted);
+
+  font-size:6px;
+
+  text-transform:uppercase;
+
+}
+
+
+/* =========================================================
+   ANCHOR RANGE
+========================================================= */
+
+.anchorGrid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(2,1fr);
+
+  gap:7px;
+
+}
+
+.anchorMetric{
+
+  min-height:74px;
+
+  padding:10px;
+
+  border-radius:14px;
+
+  border:1px solid var(--border);
+
+  background:#070e16;
+
+}
+
+.anchorMetric small{
+
+  display:block;
+
+  color:var(--muted);
+
+  font-size:6.5px;
+
+  text-transform:uppercase;
+
+}
+
+.anchorMetric strong{
+
+  display:block;
+
+  margin-top:7px;
+
+  font-size:15px;
+
+}
+
+.rangePanel{
+
+  margin-top:9px;
+
+  padding:11px;
+
+  border-radius:14px;
+
+  border:1px solid var(--border);
+
+  background:#070e16;
+
+}
+
+.rangeHeader{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  gap:8px;
+
+  margin-bottom:9px;
+
+  color:var(--muted);
+
+  font-size:7px;
+
+}
+
+.rangeTrack{
+
+  position:relative;
+
+  height:8px;
+
+  border-radius:999px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,100,124,.32),
+      rgba(245,202,99,.20),
+      rgba(56,231,162,.32)
+    );
+
+}
+
+.rangeMarker{
+
+  position:absolute;
+
+  top:50%;
+
+  left:50%;
+
+  width:15px;
+
+  height:15px;
+
+  border-radius:50%;
+
+  transform:
+    translate(-50%,-50%);
+
+  background:var(--blue);
+
+  border:3px solid #070d14;
+
+  transition:left .3s ease;
+
+}
+
+
+/* =========================================================
+   REASONS
+========================================================= */
+
+.reason{
+
+  padding:9px 0;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.05);
+
+  color:#c9d2dd;
+
+  font-size:9px;
+
+  line-height:1.5;
+
+}
+
+.reason:last-child{
+  border-bottom:0;
+}
+
+
+/* =========================================================
+   CHART
+========================================================= */
+
+.chartCard{
+
+  min-height:520px;
+
+}
+
+.chartToolbar{
+
+  display:flex;
+
+  flex-wrap:wrap;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:8px;
+
+  padding:12px 13px;
+
+  border-bottom:1px solid var(--border);
+
+}
+
+.chartTitle{
+
+  font-size:10px;
+
+  font-weight:950;
+
+}
+
+.chartSub{
+
+  margin-top:3px;
+
+  color:var(--muted);
+
+  font-size:7px;
+
+}
+
+.chartToggles{
+
+  display:flex;
+
+  flex-wrap:wrap;
+
+  gap:5px;
+
+}
+
+.chartToggle{
+
+  min-height:29px;
+
+  padding:0 8px;
+
+  border-radius:10px;
+
+  border:1px solid var(--border);
+
+  background:#070e16;
+
+  color:var(--muted);
+
+  font-size:6.5px;
+
+  font-weight:850;
+
+  text-transform:uppercase;
+
+}
+
+.chartToggle.active{
+
+  color:#fff;
+
+  border-color:
+    rgba(121,150,255,.3);
+
+  background:
+    rgba(121,150,255,.12);
+
+}
+
+.chart{
+
+  position:relative;
+
+  height:455px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #050c13,
+      #04090e
+    );
+
+}
+
+canvas{
+
+  display:block;
+
+  width:100%;
+
+  height:100%;
+
+}
+
+.chartLegend{
+
+  position:absolute;
+
+  top:9px;
+
+  left:9px;
+
+  display:flex;
+
+  gap:4px;
+
+  flex-wrap:wrap;
+
+  pointer-events:none;
+
+}
+
+.chip{
+
+  padding:4px 6px;
+
+  border-radius:999px;
+
+  border:1px solid var(--border);
+
+  background:
+    rgba(4,9,14,.88);
+
+  color:#cad2dd;
+
+  font-size:6px;
+
+}
+
+
+/* =========================================================
+   ZONES
+========================================================= */
+
+.zoneSummary{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:7px;
+
+  margin-bottom:10px;
+
+}
+
+.zoneSummaryCard{
+
+  padding:10px;
+
+  border-radius:14px;
+
+  border:1px solid var(--border);
+
+  background:#070e16;
+
+}
+
+.zoneSummaryCard small{
+
+  display:block;
+
+  color:var(--muted);
+
+  font-size:6px;
+
+  text-transform:uppercase;
+
+}
+
+.zoneSummaryCard b{
+
+  display:block;
+
+  margin-top:6px;
+
+  font-size:14px;
+
+}
+
+.zones{
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:8px;
+
+}
+
+.zone{
+
+  padding:11px;
+
+  border-radius:15px;
+
+  border:1px solid var(--border);
+
+  background:#070e16;
+
+}
+
+.zoneBull{
+  box-shadow:
+    inset 3px 0 0
+    var(--green);
+}
+
+.zoneBear{
+  box-shadow:
+    inset 3px 0 0
+    var(--red);
+}
+
+.zoneTop{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  gap:8px;
+
+  align-items:center;
+
+}
+
+.zoneType{
+
+  font-size:8px;
+
+  font-weight:950;
+
+}
+
+.zonePrice{
+
+  margin-top:7px;
+
+  font-size:15px;
+
+  font-weight:950;
+
+}
+
+.zoneStats{
+
+  margin-top:5px;
+
+  color:var(--muted);
+
+  font-size:7px;
+
+}
+
+.zoneStrengthTrack{
+
+  height:5px;
+
+  margin-top:9px;
+
+  border-radius:999px;
+
+  overflow:hidden;
+
+  background:#131c27;
+
+}
+
+.zoneStrengthFill{
+
+  height:100%;
+
+  border-radius:999px;
+
+}
+
+
+/* =========================================================
+   BACKTEST
+========================================================= */
+
+.backtestHero{
+
+  display:grid;
+
+  grid-template-columns:
+    1.15fr .85fr;
+
+  gap:8px;
+
+}
+
+.bigMetric{
+
+  min-height:104px;
+
+  padding:13px;
+
+  border-radius:17px;
+
+  border:1px solid var(--border);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(25,40,64,.8),
+      rgba(7,14,22,.95)
+    );
+
+}
+
+.bigMetric small{
+
+  color:var(--muted);
+
+  font-size:6.5px;
+
+  text-transform:uppercase;
+
+}
+
+.bigMetric strong{
+
+  display:block;
+
+  margin-top:8px;
+
+  font-size:29px;
+
+  letter-spacing:-1px;
+
+}
+
+.btGrid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:7px;
+
+  margin-top:8px;
+
+}
+
+.btMetric{
+
+  min-height:72px;
+
+  padding:9px;
+
+  border-radius:13px;
+
+  border:1px solid var(--border);
+
+  background:#070e16;
+
+}
+
+.btMetric small{
+
+  display:block;
+
+  color:var(--muted);
+
+  font-size:6px;
+
+  text-transform:uppercase;
+
+}
+
+.btMetric b{
+
+  display:block;
+
+  margin-top:6px;
+
+  font-size:13px;
+
+}
+
+
+/* =========================================================
+   EQUITY CHART
+========================================================= */
+
+.equityWrap{
+
+  margin-top:10px;
+
+  border-radius:15px;
+
+  overflow:hidden;
+
+  border:1px solid var(--border);
+
+  background:#050b11;
+
+}
+
+.equityHeader{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  padding:10px;
 
   color:var(--muted);
 
@@ -564,53 +1890,434 @@ button{
 
 }
 
-.metric strong,
-.level b,
-.setting b,
-.bt strong{
+.equityCanvasWrap{
 
-  display:block;
+  height:180px;
 
-  margin-top:7px;
+}
 
-  font-size:16px;
+#equityChart{
+
+  width:100%;
+
+  height:100%;
 
 }
 
 
-/* TRADE */
+/* =========================================================
+   BACKTEST INSIGHTS
+========================================================= */
 
-.tradeGrid{
+.insightGrid{
 
   display:grid;
 
   grid-template-columns:
     repeat(2,1fr);
 
-  gap:8px;
+  gap:7px;
 
-  margin-top:14px;
+}
+
+.insight{
+
+  padding:10px;
+
+  border-radius:14px;
+
+  border:1px solid var(--border);
+
+  background:#070e16;
+
+}
+
+.insight small{
+
+  display:block;
+
+  color:var(--muted);
+
+  font-size:6px;
+
+  text-transform:uppercase;
+
+}
+
+.insight b{
+
+  display:block;
+
+  margin-top:6px;
+
+  font-size:13px;
 
 }
 
 
-/* SETTINGS */
+/* =========================================================
+   HISTORY
+========================================================= */
 
-.settings{
+.historyRow{
+
+  padding:10px 0;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.05);
+
+}
+
+.historyRow:last-child{
+  border-bottom:0;
+}
+
+.historyTop{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  gap:8px;
+
+}
+
+.historyDirection{
+
+  font-size:8px;
+
+  font-weight:950;
+
+}
+
+.historyResult{
+
+  font-size:8px;
+
+  font-weight:950;
+
+}
+
+.historyBody{
+
+  margin-top:5px;
+
+  color:var(--muted);
+
+  font-size:7.5px;
+
+  line-height:1.55;
+
+}
+
+
+/* =========================================================
+   DATA / DIAGNOSTICS
+========================================================= */
+
+.source{
+
+  padding:10px 0;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.05);
+
+}
+
+.source:last-child{
+  border-bottom:0;
+}
+
+.source small{
+
+  display:block;
+
+  color:var(--muted);
+
+  font-size:6px;
+
+  text-transform:uppercase;
+
+  margin-bottom:4px;
+
+}
+
+.source div{
+
+  color:#dce3ed;
+
+  font-size:8.5px;
+
+  line-height:1.5;
+
+}
+
+.healthPanel{
 
   display:grid;
 
   grid-template-columns:
-    repeat(4,1fr);
+    repeat(2,1fr);
 
-  gap:8px;
+  gap:7px;
 
-  margin-top:14px;
+}
+
+.healthCard{
+
+  padding:11px;
+
+  border-radius:14px;
+
+  border:1px solid var(--border);
+
+  background:#070e16;
+
+}
+
+.healthCard small{
+
+  display:block;
+
+  color:var(--muted);
+
+  font-size:6px;
+
+  text-transform:uppercase;
+
+}
+
+.healthCard b{
+
+  display:block;
+
+  margin-top:7px;
+
+  font-size:13px;
+
+}
+
+.settingsTable{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(2,1fr);
+
+  gap:7px;
+
+}
+
+.settingCell{
+
+  padding:10px;
+
+  border-radius:13px;
+
+  border:1px solid var(--border);
+
+  background:#070e16;
+
+}
+
+.settingCell small{
+
+  display:block;
+
+  color:var(--muted);
+
+  font-size:6px;
+
+  text-transform:uppercase;
+
+}
+
+.settingCell b{
+
+  display:block;
+
+  margin-top:6px;
+
+  font-size:12px;
 
 }
 
 
-/* COLORS */
+/* =========================================================
+   CONTROL ROW
+========================================================= */
+
+.controlRow{
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:space-between;
+
+  gap:10px;
+
+  padding:10px 0;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.05);
+
+}
+
+.controlRow:last-child{
+  border-bottom:0;
+}
+
+.controlText strong{
+
+  display:block;
+
+  font-size:9px;
+
+}
+
+.controlText small{
+
+  display:block;
+
+  margin-top:3px;
+
+  color:var(--muted);
+
+  font-size:7px;
+
+}
+
+.miniSelect{
+
+  min-height:34px;
+
+  border-radius:10px;
+
+  border:1px solid var(--border);
+
+  background:#070e16;
+
+  color:var(--text);
+
+  padding:0 8px;
+
+  font-size:8px;
+
+}
+
+.switch{
+
+  position:relative;
+
+  width:42px;
+
+  height:24px;
+
+  border-radius:999px;
+
+  background:#151d27;
+
+  border:1px solid var(--border);
+
+  cursor:pointer;
+
+}
+
+.switchKnob{
+
+  position:absolute;
+
+  top:3px;
+
+  left:3px;
+
+  width:16px;
+
+  height:16px;
+
+  border-radius:50%;
+
+  background:#8995a5;
+
+  transition:
+    left .2s ease,
+    background .2s ease;
+
+}
+
+.switch.on{
+
+  background:
+    rgba(56,231,162,.13);
+
+  border-color:
+    rgba(56,231,162,.35);
+
+}
+
+.switch.on .switchKnob{
+
+  left:21px;
+
+  background:var(--green);
+
+}
+
+
+/* =========================================================
+   BUTTON ROW
+========================================================= */
+
+.smallButtons{
+
+  display:grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap:7px;
+
+  margin-top:9px;
+
+}
+
+.smallButton{
+
+  min-height:42px;
+
+  border-radius:13px;
+
+  border:1px solid var(--border);
+
+  background:#070e16;
+
+  color:#dce3ec;
+
+  font-size:8px;
+
+  font-weight:850;
+
+}
+
+.smallButton.danger{
+
+  color:var(--red);
+
+  border-color:
+    rgba(255,100,124,.2);
+
+}
+
+
+/* =========================================================
+   UTILS
+========================================================= */
 
 .green{
   color:var(--green);
@@ -632,285 +2339,178 @@ button{
   color:var(--purple);
 }
 
-
-/* CHART */
-
-.chart{
-
-  position:relative;
-
-  height:410px;
-
-  border-top:
-    1px solid
-    var(--line);
-
-  background:#050b11;
-
-}
-
-canvas{
-
-  display:block;
-
-  width:100%;
-
-  height:100%;
-
-}
-
-.legend{
-
-  position:absolute;
-
-  left:10px;
-
-  top:10px;
-
-  display:flex;
-
-  flex-wrap:wrap;
-
-  gap:5px;
-
-  pointer-events:none;
-
-}
-
-.chip{
-
-  padding:5px 7px;
-
-  font-size:8px;
-
-  border-radius:999px;
-
-  border:
-    1px solid
-    var(--line);
-
-  background:
-    rgba(5,7,11,.88);
-
-  color:#c6cfdb;
-
-}
-
-
-/* SIDE PANELS */
-
-.sectionTitle{
-
+.muted{
   color:var(--muted);
-
-  text-transform:uppercase;
-
-  letter-spacing:1px;
-
-  font-size:9px;
-
-  margin-bottom:10px;
-
 }
-
-.reason,
-.tradeRow,
-.zoneRow{
-
-  padding:10px 0;
-
-  border-bottom:
-    1px solid
-    rgba(255,255,255,.05);
-
-  color:#c9d2dd;
-
-  font-size:10px;
-
-  line-height:1.5;
-
-}
-
-.reason:last-child,
-.tradeRow:last-child,
-.zoneRow:last-child{
-
-  border-bottom:0;
-
-}
-
-
-/* BACKTEST */
-
-.btGrid{
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(2,1fr);
-
-  gap:7px;
-
-}
-
-.tradeTime{
-
-  color:var(--muted);
-
-  font-size:8px;
-
-  line-height:1.55;
-
-}
-
-.note{
-
-  margin-top:12px;
-
-  color:var(--muted);
-
-  font-size:8px;
-
-  line-height:1.6;
-
-}
-
-
-/* ZONES */
-
-.zonePill{
-
-  display:inline-block;
-
-  padding:3px 6px;
-
-  border-radius:999px;
-
-  font-size:7px;
-
-  margin-right:5px;
-
-}
-
-.bullPill{
-
-  background:
-    rgba(55,230,161,.1);
-
-  color:
-    var(--green);
-
-  border:
-    1px solid
-    rgba(55,230,161,.25);
-
-}
-
-.bearPill{
-
-  background:
-    rgba(255,98,121,.1);
-
-  color:
-    var(--red);
-
-  border:
-    1px solid
-    rgba(255,98,121,.25);
-
-}
-
-
-/* SOURCES */
-
-.sourceRow{
-
-  padding:9px 0;
-
-  border-bottom:
-    1px solid
-    rgba(255,255,255,.05);
-
-  font-size:9px;
-
-  line-height:1.5;
-
-}
-
-.sourceRow:last-child{
-
-  border-bottom:0;
-
-}
-
-.sourceRow small{
-
-  display:block;
-
-  color:var(--muted);
-
-  font-size:7px;
-
-  text-transform:uppercase;
-
-  margin-bottom:4px;
-
-}
-
-
-/* LOADING */
 
 .loading{
 
-  opacity:.55;
+  opacity:.58;
 
   pointer-events:none;
 
 }
 
+.empty{
 
-/* MOBILE */
+  padding:12px 0;
+
+  color:var(--muted);
+
+  font-size:8px;
+
+  line-height:1.5;
+
+}
+
+
+/* =========================================================
+   MOBILE BOTTOM NAV
+========================================================= */
+
+.bottomNav{
+
+  position:fixed;
+
+  left:9px;
+
+  right:9px;
+
+  bottom:
+    calc(env(safe-area-inset-bottom) + 7px);
+
+  z-index:50;
+
+  display:none;
+
+  grid-template-columns:
+    repeat(5,1fr);
+
+  padding:5px;
+
+  border-radius:20px;
+
+  border:1px solid var(--border2);
+
+  background:
+    rgba(5,10,16,.92);
+
+  backdrop-filter:
+    blur(22px);
+
+  box-shadow:
+    0 15px 50px
+    rgba(0,0,0,.35);
+
+}
+
+.bottomButton{
+
+  min-height:48px;
+
+  border:0;
+
+  border-radius:15px;
+
+  background:transparent;
+
+  color:var(--muted);
+
+  font-size:7px;
+
+  font-weight:850;
+
+}
+
+.bottomButton span{
+
+  display:block;
+
+  margin-bottom:3px;
+
+  font-size:16px;
+
+}
+
+.bottomButton.active{
+
+  color:#fff;
+
+  background:
+    rgba(121,150,255,.12);
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
 
 @media(max-width:820px){
 
-  .grid{
-
+  .layoutGrid{
     grid-template-columns:1fr;
-
   }
 
-
-  .metrics{
-
-    grid-template-columns:
-      repeat(2,1fr);
-
+  .tabBar{
+    display:none;
   }
 
-
-  .signal{
-
-    font-size:48px;
-
+  .bottomNav{
+    display:grid;
   }
-
 
   .chart{
-
-    height:360px;
-
+    height:400px;
   }
 
 }
 
 
-@media(max-width:430px){
+@media(max-width:560px){
 
-  .settings{
+  .signal{
+    font-size:52px;
+  }
 
+  .price{
+    font-size:29px;
+  }
+
+  .metaStrip{
     grid-template-columns:
       repeat(2,1fr);
+  }
 
+  .snapshotGrid{
+    grid-template-columns:
+      repeat(2,1fr);
+  }
+
+  .btGrid{
+    grid-template-columns:
+      repeat(2,1fr);
+  }
+
+  .chart{
+    height:370px;
+  }
+
+}
+
+
+@media(max-width:390px){
+
+  .brand{
+    font-size:24px;
+  }
+
+  .signal{
+    font-size:47px;
+  }
+
+  .price{
+    font-size:26px;
   }
 
 }
@@ -929,9 +2529,11 @@ canvas{
 >
 
 
-<!-- HEADER -->
+<!-- ======================================================
+     TOP BAR
+======================================================= -->
 
-<div class="header">
+<div class="topbar">
 
 
 <div>
@@ -942,7 +2544,7 @@ canvas{
 MKAYFX
 
 <span>
-VOLUME
+VOLUME PRO
 </span>
 
 </div>
@@ -950,20 +2552,30 @@ VOLUME
 
 <div class="subtitle">
 
-5M · 1H Anchor · 1M Real/Proxy Volume Imbalance Engine
+5M execution · 1H anchor · 1M volume-spike intelligence
 
 </div>
 
 
+</div>
+
+
+<div class="topRight">
+
+
+<div
+  class="healthDot"
+  id="healthDot"
+>
 </div>
 
 
 <div
-  class="badge"
+  class="engineBadge"
   id="engineBadge"
 >
 
-CHECKING
+CONNECTING
 
 </div>
 
@@ -971,13 +2583,18 @@ CHECKING
 </div>
 
 
-<!-- ASSETS -->
+</div>
 
-<div class="assets">
+
+<!-- ======================================================
+     ASSET SWITCHER
+======================================================= -->
+
+<div class="assetSwitcher">
 
 
 <button
-  class="asset active"
+  class="assetButton active"
   data-symbol="XAU/USD"
 >
 
@@ -1013,7 +2630,7 @@ XAU/USD · 5M
 
 
 <button
-  class="asset"
+  class="assetButton"
   data-symbol="BTC/USD"
 >
 
@@ -1051,10 +2668,15 @@ BTC/USD · 5M
 </div>
 
 
-<!-- BUTTONS -->
+<!-- ======================================================
+     ACTIONS
+======================================================= -->
+
+<div class="actionBar">
+
 
 <button
-  class="run"
+  class="primaryButton"
   id="runButton"
 >
 
@@ -1064,43 +2686,131 @@ RUN GOLD ANALYSIS
 
 
 <button
-  class="clear"
-  id="clearButton"
+  class="iconButton"
+  id="copyButton"
+  title="Copy current signal"
 >
 
-CLEAR LOCKED TRADE
+⧉
 
 </button>
 
 
+<button
+  class="iconButton danger"
+  id="clearButton"
+  title="Clear locked trade"
+>
+
+✕
+
+</button>
+
+
+</div>
+
+
 <div
-  class="error"
+  class="errorBox"
   id="errorBox"
 >
 </div>
 
 
-<!-- MAIN GRID -->
+<!-- ======================================================
+     DESKTOP TABS
+======================================================= -->
 
-<div class="grid">
+<div class="tabBar">
+
+
+<button
+  class="tabButton active"
+  data-view="overview"
+>
+Overview
+</button>
+
+
+<button
+  class="tabButton"
+  data-view="chartView"
+>
+Chart
+</button>
+
+
+<button
+  class="tabButton"
+  data-view="zonesView"
+>
+Zones
+</button>
+
+
+<button
+  class="tabButton"
+  data-view="backtestView"
+>
+Backtest
+</button>
+
+
+<button
+  class="tabButton"
+  data-view="activityView"
+>
+Activity
+</button>
+
+
+<button
+  class="tabButton"
+  data-view="dataView"
+>
+Data
+</button>
+
+
+</div>
+
+
+<!-- ======================================================
+     OVERVIEW VIEW
+======================================================= -->
+
+<section
+  class="view active"
+  id="overview"
+>
+
+
+<div class="layoutGrid">
 
 
 <!-- LEFT -->
 
-<div class="card">
+<div class="stack">
+
+
+<div class="card hero">
+
+
+<div class="heroGlow">
+</div>
 
 
 <div class="pad">
 
 
-<div class="signalTop">
+<div class="heroTop">
 
 
 <div>
 
 
 <div
-  class="label"
+  class="eyebrow"
   id="decisionTitle"
 >
 
@@ -1120,11 +2830,11 @@ WAIT
 
 
 <div
-  class="status"
+  class="signalSub"
   id="signalDescription"
 >
 
-Waiting for a stacked imbalance breakout
+Waiting for volume imbalance analysis.
 
 </div>
 
@@ -1142,7 +2852,7 @@ UNLOCKED · WAITING
 </div>
 
 
-<div>
+<div class="heroPrice">
 
 
 <div
@@ -1156,11 +2866,11 @@ UNLOCKED · WAITING
 
 
 <div
-  class="status"
+  class="priceMeta"
   id="candleTime"
 >
 
-Latest completed 5M candle
+Latest 5M candle
 
 </div>
 
@@ -1171,63 +2881,161 @@ Latest completed 5M candle
 </div>
 
 
-<!-- VOLUME METRICS -->
+<!-- META -->
 
-<div class="metrics">
+<div class="metaStrip">
 
 
-<div class="metric">
+<div class="metaItem">
 
 <small>
-1H Bull Spikes
+Next 5M Close
 </small>
 
-<strong
-  class="green"
-  id="bullSpikes"
->
-
+<b id="nextCandle">
 —
-
-</strong>
+</b>
 
 </div>
 
 
-<div class="metric">
+<div class="metaItem">
 
 <small>
-1H Bear Spikes
+Session
 </small>
 
-<strong
-  class="red"
-  id="bearSpikes"
->
-
+<b id="session">
 —
-
-</strong>
+</b>
 
 </div>
 
 
-<div class="metric">
+<div class="metaItem">
+
+<small>
+API Latency
+</small>
+
+<b id="apiLatency">
+—
+</b>
+
+</div>
+
+
+<div class="metaItem">
+
+<small>
+Data Health
+</small>
+
+<b id="dataHealth">
+—
+</b>
+
+</div>
+
+
+</div>
+
+
+<!-- PRESSURE -->
+
+<div class="pressurePanel">
+
+
+<div class="pressureTop">
+
+
+<div class="pressureLabel">
+
+1H volume-spike pressure
+
+</div>
+
+
+<div class="pressureCount">
+
+
+<span class="green">
+
+BULL
+
+<b id="bullSpikes">
+0
+</b>
+
+</span>
+
+
+<span class="red">
+
+BEAR
+
+<b id="bearSpikes">
+0
+</b>
+
+</span>
+
+
+</div>
+
+
+</div>
+
+
+<div class="pressureBar">
+
+
+<div
+  class="bullPressure"
+  id="bullPressure"
+>
+</div>
+
+
+<div
+  class="bearPressure"
+  id="bearPressure"
+>
+</div>
+
+
+</div>
+
+
+</div>
+
+
+<!-- SNAPSHOT -->
+
+<div class="snapshotGrid">
+
+
+<div class="snapshot">
 
 <small>
 Dominance
 </small>
 
 <strong id="dominance">
-
 —
-
 </strong>
+
+<div
+  class="sub"
+  id="dominanceSub"
+>
+—
+</div>
 
 </div>
 
 
-<div class="metric">
+<div class="snapshot">
 
 <small>
 Volume POC
@@ -1237,10 +3045,89 @@ Volume POC
   class="purple"
   id="poc"
 >
-
 —
-
 </strong>
+
+<div
+  class="sub"
+  id="pocState"
+>
+—
+</div>
+
+</div>
+
+
+<div class="snapshot">
+
+<small>
+1H Position
+</small>
+
+<strong id="rangePosition">
+—
+</strong>
+
+<div class="sub">
+Low → High
+</div>
+
+</div>
+
+
+<div class="snapshot">
+
+<small>
+Active Zones
+</small>
+
+<strong id="zoneCount">
+0
+</strong>
+
+<div
+  class="sub"
+  id="zoneSplit"
+>
+—
+</div>
+
+</div>
+
+
+<div class="snapshot">
+
+<small>
+Nearest Zone
+</small>
+
+<strong id="nearestZone">
+—
+</strong>
+
+<div
+  class="sub"
+  id="nearestZoneDistance"
+>
+—
+</div>
+
+</div>
+
+
+<div class="snapshot">
+
+<small>
+Total Spikes
+</small>
+
+<strong id="totalSpikes">
+0
+</strong>
+
+<div class="sub">
+Current 1H anchor
+</div>
 
 </div>
 
@@ -1250,28 +3137,45 @@ Volume POC
 
 <!-- TRADE -->
 
+<div class="tradeHeader">
+
+
+<span>
+Hard-Locked Trade
+</span>
+
+
+<span
+  class="currentR"
+  id="currentR"
+>
+—
+</span>
+
+
+</div>
+
+
 <div class="tradeGrid">
 
 
-<div class="level">
+<div class="tradeMetric">
 
 <small>
-Locked Entry
+Entry
 </small>
 
 <b
   class="blue"
   id="entry"
 >
-
-—
-
+WAIT
 </b>
 
 </div>
 
 
-<div class="level">
+<div class="tradeMetric">
 
 <small>
 Stop Loss
@@ -1281,162 +3185,74 @@ Stop Loss
   class="red"
   id="sl"
 >
-
 —
-
 </b>
 
 </div>
 
 
-<div class="level">
+<div class="tradeMetric">
 
 <small>
-Stretched TP · 3R
+Take Profit · 3R
 </small>
 
 <b
   class="green"
   id="tp"
 >
-
 —
-
 </b>
 
 </div>
 
 
-<div class="level">
+</div>
+
+
+<div class="distanceGrid">
+
+
+<div class="distanceItem">
 
 <small>
-Current R
+Risk
 </small>
 
-<b id="currentR">
-
+<b id="riskDistance">
 —
-
 </b>
 
 </div>
 
 
-</div>
-
-
-<!-- SETTINGS -->
-
-<div class="settings">
-
-
-<div class="setting">
+<div class="distanceItem">
 
 <small>
-Execution
+To SL
 </small>
 
-<b>
-5M
+<b
+  class="red"
+  id="distanceToSL"
+>
+—
 </b>
 
 </div>
 
 
-<div class="setting">
+<div class="distanceItem">
 
 <small>
-HTF Anchor
+To TP
 </small>
 
-<b>
-1H
-</b>
-
-</div>
-
-
-<div class="setting">
-
-<small>
-Spike LTF
-</small>
-
-<b>
-1M
-</b>
-
-</div>
-
-
-<div class="setting">
-
-<small>
-Target
-</small>
-
-<b>
-1:3
-</b>
-
-</div>
-
-
-<div class="setting">
-
-<small>
-Spike Mult
-</small>
-
-<b id="spikeMult">
-
-1.2×
-
-</b>
-
-</div>
-
-
-<div class="setting">
-
-<small>
-Volume MA
-</small>
-
-<b id="volMa">
-
-20
-
-</b>
-
-</div>
-
-
-<div class="setting">
-
-<small>
-VP Rows
-</small>
-
-<b id="vpRows">
-
-40
-
-</b>
-
-</div>
-
-
-<div class="setting">
-
-<small>
-Stack Min
-</small>
-
-<b id="stackMin">
-
-3
-
+<b
+  class="green"
+  id="distanceToTP"
+>
+—
 </b>
 
 </div>
@@ -1445,22 +3261,62 @@ Stack Min
 </div>
 
 
+<div class="progressPanel">
+
+
+<div class="progressHeader">
+
+
+<span>
+SL → Entry → TP
+</span>
+
+
+<span id="progressStatus">
+NO ACTIVE TRADE
+</span>
+
+
 </div>
 
 
-<!-- CHART -->
-
-<div class="chart">
-
-
-<canvas id="chart">
-</canvas>
+<div class="tradeTrack">
 
 
 <div
-  class="legend"
-  id="chartLegend"
+  class="tradeMarker"
+  id="tradeMarker"
 >
+</div>
+
+
+</div>
+
+
+<div class="progressLabels">
+
+
+<span>
+SL
+</span>
+
+
+<span>
+ENTRY
+</span>
+
+
+<span>
+TP
+</span>
+
+
+</div>
+
+
+</div>
+
+
 </div>
 
 
@@ -1472,85 +3328,10 @@ Stack Min
 
 <!-- RIGHT -->
 
-<div>
+<div class="stack">
 
-
-<!-- DATA SOURCES -->
 
 <div class="card pad">
-
-
-<div class="sectionTitle">
-
-Data Sources
-
-</div>
-
-
-<div class="sourceRow">
-
-<small>
-Price
-</small>
-
-<div id="priceSource">
-
-—
-
-</div>
-
-</div>
-
-
-<div class="sourceRow">
-
-<small>
-Volume
-</small>
-
-<div id="volumeSource">
-
-—
-
-</div>
-
-</div>
-
-
-<div class="sourceRow">
-
-<small>
-Volume Mode
-</small>
-
-<div id="volumeMode">
-
-—
-
-</div>
-
-</div>
-
-
-<div
-  class="note"
-  id="volumeStatus"
->
-
-Waiting for volume data.
-
-</div>
-
-
-</div>
-
-
-<!-- 1H ANCHOR -->
-
-<div
-  class="card pad"
-  style="margin-top:12px"
->
 
 
 <div class="sectionTitle">
@@ -1560,25 +3341,23 @@ Current 1H Anchor
 </div>
 
 
-<div class="btGrid">
+<div class="anchorGrid">
 
 
-<div class="bt">
+<div class="anchorMetric">
 
 <small>
 Open
 </small>
 
 <strong id="aOpen">
-
 —
-
 </strong>
 
 </div>
 
 
-<div class="bt">
+<div class="anchorMetric">
 
 <small>
 High
@@ -1588,15 +3367,13 @@ High
   class="green"
   id="aHigh"
 >
-
 —
-
 </strong>
 
 </div>
 
 
-<div class="bt">
+<div class="anchorMetric">
 
 <small>
 Low
@@ -1606,24 +3383,20 @@ Low
   class="red"
   id="aLow"
 >
-
 —
-
 </strong>
 
 </div>
 
 
-<div class="bt">
+<div class="anchorMetric">
 
 <small>
 Close
 </small>
 
 <strong id="aClose">
-
 —
-
 </strong>
 
 </div>
@@ -1632,28 +3405,58 @@ Close
 </div>
 
 
+<div class="rangePanel">
+
+
+<div class="rangeHeader">
+
+
+<span>
+Price position in 1H range
+</span>
+
+
+<b id="rangePercent">
+—
+</b>
+
+
 </div>
 
 
-<!-- ZONES -->
+<div class="rangeTrack">
+
 
 <div
-  class="card pad"
-  style="margin-top:12px"
+  class="rangeMarker"
+  id="rangeMarker"
 >
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+<div class="card pad">
 
 
 <div class="sectionTitle">
 
-Stacked Imbalance Zones
+Strongest Zones
 
 </div>
 
 
-<div id="zones">
+<div id="strongestZones">
 
 
-<div class="reason">
+<div class="empty">
 
 Waiting for zones.
 
@@ -1666,17 +3469,12 @@ Waiting for zones.
 </div>
 
 
-<!-- LOCK STATUS -->
-
-<div
-  class="card pad"
-  style="margin-top:12px"
->
+<div class="card pad">
 
 
 <div class="sectionTitle">
 
-Hard-Lock Status
+Engine Status
 
 </div>
 
@@ -1697,17 +3495,392 @@ Waiting for analysis.
 </div>
 
 
-<!-- BACKTEST -->
+</div>
+
+
+</div>
+
+
+</section>
+
+
+<!-- ======================================================
+     CHART VIEW
+======================================================= -->
+
+<section
+  class="view"
+  id="chartView"
+>
+
+
+<div class="card chartCard">
+
+
+<div class="chartToolbar">
+
+
+<div>
+
+
+<div class="chartTitle">
+
+5M Price + Volume-Imbalance Map
+
+</div>
+
 
 <div
-  class="card pad"
-  style="margin-top:12px"
+  class="chartSub"
+  id="chartSubtitle"
 >
+
+Candles · spike bubbles · imbalance zones · volume profile
+
+</div>
+
+
+</div>
+
+
+<div class="chartToggles">
+
+
+<button
+  class="chartToggle active"
+  data-chart-toggle="zones"
+>
+
+Zones
+
+</button>
+
+
+<button
+  class="chartToggle active"
+  data-chart-toggle="spikes"
+>
+
+Spikes
+
+</button>
+
+
+<button
+  class="chartToggle active"
+  data-chart-toggle="profile"
+>
+
+Profile
+
+</button>
+
+
+<button
+  class="chartToggle active"
+  data-chart-toggle="poc"
+>
+
+POC
+
+</button>
+
+
+<button
+  class="chartToggle active"
+  data-chart-toggle="lock"
+>
+
+Trade
+
+</button>
+
+
+</div>
+
+
+</div>
+
+
+<div class="chart">
+
+
+<canvas id="chart">
+</canvas>
+
+
+<div
+  class="chartLegend"
+  id="chartLegend"
+>
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+<!-- ======================================================
+     ZONES VIEW
+======================================================= -->
+
+<section
+  class="view"
+  id="zonesView"
+>
+
+
+<div class="layoutGrid">
+
+
+<div class="stack">
+
+
+<div class="card pad">
 
 
 <div class="sectionTitle">
 
-Hard-Lock Backtest
+Imbalance Overview
+
+</div>
+
+
+<div class="zoneSummary">
+
+
+<div class="zoneSummaryCard">
+
+<small>
+All Zones
+</small>
+
+<b id="zonesTotal">
+0
+</b>
+
+</div>
+
+
+<div class="zoneSummaryCard">
+
+<small>
+Bullish
+</small>
+
+<b
+  class="green"
+  id="zonesBull"
+>
+0
+</b>
+
+</div>
+
+
+<div class="zoneSummaryCard">
+
+<small>
+Bearish
+</small>
+
+<b
+  class="red"
+  id="zonesBear"
+>
+0
+</b>
+
+</div>
+
+
+</div>
+
+
+<div
+  class="zones"
+  id="zones"
+>
+
+
+<div class="empty">
+
+Waiting for zones.
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+<div class="stack">
+
+
+<div class="card pad">
+
+
+<div class="sectionTitle">
+
+Strongest Bullish Zone
+
+</div>
+
+
+<div id="bestBullZone">
+
+<div class="empty">
+None.
+</div>
+
+</div>
+
+
+</div>
+
+
+<div class="card pad">
+
+
+<div class="sectionTitle">
+
+Strongest Bearish Zone
+
+</div>
+
+
+<div id="bestBearZone">
+
+<div class="empty">
+None.
+</div>
+
+</div>
+
+
+</div>
+
+
+<div class="card pad">
+
+
+<div class="sectionTitle">
+
+Zone Logic
+
+</div>
+
+
+<div class="reason">
+
+A stacked zone requires at least 3 same-side volume spikes inside one of the 40 price rows.
+
+</div>
+
+
+<div class="reason">
+
+BUY waits for a completed 5M close above a bullish zone.
+
+</div>
+
+
+<div class="reason">
+
+SELL waits for a completed 5M close below a bearish zone.
+
+</div>
+
+
+<div class="reason">
+
+When a trade triggers, the signal hard-locks until its SL or 3R TP is reached.
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+<!-- ======================================================
+     BACKTEST VIEW
+======================================================= -->
+
+<section
+  class="view"
+  id="backtestView"
+>
+
+
+<div class="layoutGrid">
+
+
+<div class="stack">
+
+
+<div class="card pad">
+
+
+<div class="sectionTitle">
+
+Performance
+
+</div>
+
+
+<div class="backtestHero">
+
+
+<div class="bigMetric">
+
+
+<small>
+Net Result
+</small>
+
+
+<strong id="btNet">
+—
+</strong>
+
+
+</div>
+
+
+<div class="bigMetric">
+
+
+<small>
+Win Rate
+</small>
+
+
+<strong id="btWin">
+—
+</strong>
+
+
+</div>
+
 
 </div>
 
@@ -1715,122 +3888,128 @@ Hard-Lock Backtest
 <div class="btGrid">
 
 
-<div class="bt">
+<div class="btMetric">
 
 <small>
 Trades
 </small>
 
-<strong id="btTrades">
-
+<b id="btTrades">
 —
-
-</strong>
+</b>
 
 </div>
 
 
-<div class="bt">
+<div class="btMetric">
 
 <small>
-Win Rate
+Wins
 </small>
 
-<strong id="btWin">
-
+<b
+  class="green"
+  id="btWins"
+>
 —
-
-</strong>
+</b>
 
 </div>
 
 
-<div class="bt">
+<div class="btMetric">
+
+<small>
+Losses
+</small>
+
+<b
+  class="red"
+  id="btLosses"
+>
+—
+</b>
+
+</div>
+
+
+<div class="btMetric">
 
 <small>
 Profit Factor
 </small>
 
-<strong id="btPF">
-
+<b id="btPF">
 —
-
-</strong>
+</b>
 
 </div>
 
 
-<div class="bt">
-
-<small>
-Net Result
-</small>
-
-<strong id="btNet">
-
-—
-
-</strong>
-
-</div>
-
-
-<div class="bt">
+<div class="btMetric">
 
 <small>
 Expectancy
 </small>
 
-<strong id="btExpectancy">
-
+<b id="btExpectancy">
 —
-
-</strong>
+</b>
 
 </div>
 
 
-<div class="bt">
+<div class="btMetric">
 
 <small>
 Max Drawdown
 </small>
 
-<strong id="btDD">
-
+<b
+  class="red"
+  id="btDD"
+>
 —
-
-</strong>
+</b>
 
 </div>
 
 
-<div class="bt">
+<div class="btMetric">
 
 <small>
-Loss Streak
+Max Loss Streak
 </small>
 
-<strong id="btLossStreak">
-
+<b id="btLossStreak">
 —
-
-</strong>
+</b>
 
 </div>
 
 
-<div class="bt">
+<div class="btMetric">
 
 <small>
 Avg Hold
 </small>
 
-<strong id="btHold">
-
+<b id="btHold">
 —
+</b>
 
-</strong>
+</div>
+
+
+<div class="btMetric">
+
+<small>
+Open Trades
+</small>
+
+<b id="btOpen">
+—
+</b>
 
 </div>
 
@@ -1851,12 +4030,129 @@ Waiting for backtest.
 </div>
 
 
-<!-- RECENT BACKTEST -->
+<div class="card pad">
 
-<div
-  class="card pad"
-  style="margin-top:12px"
->
+
+<div class="sectionTitle">
+
+Recent Equity Curve
+
+</div>
+
+
+<div class="equityWrap">
+
+
+<div class="equityHeader">
+
+
+<span>
+Cumulative R
+</span>
+
+
+<span id="equityEnd">
+—
+</span>
+
+
+</div>
+
+
+<div class="equityCanvasWrap">
+
+
+<canvas id="equityChart">
+</canvas>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+<div class="stack">
+
+
+<div class="card pad">
+
+
+<div class="sectionTitle">
+
+Backtest Insights
+
+</div>
+
+
+<div class="insightGrid">
+
+
+<div class="insight">
+
+<small>
+Break-Even WR
+</small>
+
+<b id="breakEvenWR">
+—
+</b>
+
+</div>
+
+
+<div class="insight">
+
+<small>
+WR Edge
+</small>
+
+<b id="winRateEdge">
+—
+</b>
+
+</div>
+
+
+<div class="insight">
+
+<small>
+Target
+</small>
+
+<b id="targetRR">
+1:3
+</b>
+
+</div>
+
+
+<div class="insight">
+
+<small>
+Expectancy Status
+</small>
+
+<b id="expectancyStatus">
+—
+</b>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+<div class="card pad">
 
 
 <div class="sectionTitle">
@@ -1869,7 +4165,7 @@ Recent Backtest Trades
 <div id="backtestTrades">
 
 
-<div class="reason">
+<div class="empty">
 
 Waiting for backtest.
 
@@ -1882,17 +4178,37 @@ Waiting for backtest.
 </div>
 
 
-<!-- RECENT SIGNALS -->
+</div>
 
-<div
-  class="card pad"
-  style="margin-top:12px"
+
+</div>
+
+
+</section>
+
+
+<!-- ======================================================
+     ACTIVITY VIEW
+======================================================= -->
+
+<section
+  class="view"
+  id="activityView"
 >
+
+
+<div class="layoutGrid">
+
+
+<div class="stack">
+
+
+<div class="card pad">
 
 
 <div class="sectionTitle">
 
-Recent Signals
+Recent Strategy Signals
 
 </div>
 
@@ -1900,7 +4216,7 @@ Recent Signals
 <div id="recentSignals">
 
 
-<div class="reason">
+<div class="empty">
 
 Waiting for signals.
 
@@ -1910,13 +4226,60 @@ Waiting for signals.
 </div>
 
 
-<div class="note">
+</div>
 
-BTC uses Coinbase BTC-USD traded volume.
 
-Gold keeps XAU/USD spot price but uses GC=F gold-futures volume as a time-aligned proxy.
+</div>
 
-Signals hard-lock until SL or 3R TP.
+
+<div class="stack">
+
+
+<div class="card pad">
+
+
+<div class="sectionTitle">
+
+Completed Live Trades
+
+</div>
+
+
+<div id="liveHistory">
+
+
+<div class="empty">
+
+No completed live trades stored on this device.
+
+</div>
+
+
+</div>
+
+
+<div class="smallButtons">
+
+
+<button
+  class="smallButton"
+  id="copyHistoryButton"
+>
+
+COPY JOURNAL
+
+</button>
+
+
+<button
+  class="smallButton danger"
+  id="clearHistoryButton"
+>
+
+CLEAR JOURNAL
+
+</button>
+
 
 </div>
 
@@ -1928,6 +4291,486 @@ Signals hard-lock until SL or 3R TP.
 
 
 </div>
+
+
+</section>
+
+
+<!-- ======================================================
+     DATA VIEW
+======================================================= -->
+
+<section
+  class="view"
+  id="dataView"
+>
+
+
+<div class="layoutGrid">
+
+
+<div class="stack">
+
+
+<div class="card pad">
+
+
+<div class="sectionTitle">
+
+Data Sources
+
+</div>
+
+
+<div class="source">
+
+
+<small>
+Price Feed
+</small>
+
+
+<div id="priceSource">
+—
+</div>
+
+
+</div>
+
+
+<div class="source">
+
+
+<small>
+Volume Feed
+</small>
+
+
+<div id="volumeSource">
+—
+</div>
+
+
+</div>
+
+
+<div class="source">
+
+
+<small>
+Volume Mode
+</small>
+
+
+<div id="volumeMode">
+—
+</div>
+
+
+</div>
+
+
+<div
+  class="note"
+  id="volumeStatus"
+>
+
+Waiting for data.
+
+</div>
+
+
+</div>
+
+
+<div class="card pad">
+
+
+<div class="sectionTitle">
+
+Feed Health
+
+</div>
+
+
+<div class="healthPanel">
+
+
+<div class="healthCard">
+
+<small>
+Volume Available
+</small>
+
+<b id="volumeAvailable">
+—
+</b>
+
+</div>
+
+
+<div class="healthCard">
+
+<small>
+Usable 1M Bars
+</small>
+
+<b id="usableBars">
+—
+</b>
+
+</div>
+
+
+<div class="healthCard">
+
+<small>
+Total 1M Bars
+</small>
+
+<b id="totalBars">
+—
+</b>
+
+</div>
+
+
+<div class="healthCard">
+
+<small>
+Last API Update
+</small>
+
+<b id="lastUpdated">
+—
+</b>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+<div class="stack">
+
+
+<div class="card pad">
+
+
+<div class="sectionTitle">
+
+Engine Settings
+
+</div>
+
+
+<div class="settingsTable">
+
+
+<div class="settingCell">
+
+<small>
+Execution
+</small>
+
+<b id="setExecution">
+5min
+</b>
+
+</div>
+
+
+<div class="settingCell">
+
+<small>
+HTF Anchor
+</small>
+
+<b id="setHTF">
+60min
+</b>
+
+</div>
+
+
+<div class="settingCell">
+
+<small>
+Spike LTF
+</small>
+
+<b id="setLTF">
+1min
+</b>
+
+</div>
+
+
+<div class="settingCell">
+
+<small>
+Spike Multiplier
+</small>
+
+<b id="setSpikeMult">
+1.2×
+</b>
+
+</div>
+
+
+<div class="settingCell">
+
+<small>
+Volume MA
+</small>
+
+<b id="setVolMA">
+20
+</b>
+
+</div>
+
+
+<div class="settingCell">
+
+<small>
+VP Rows
+</small>
+
+<b id="setVPRows">
+40
+</b>
+
+</div>
+
+
+<div class="settingCell">
+
+<small>
+Min Stack
+</small>
+
+<b id="setMinStack">
+3
+</b>
+
+</div>
+
+
+<div class="settingCell">
+
+<small>
+Risk : Reward
+</small>
+
+<b id="setRR">
+1:3
+</b>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+<div class="card pad">
+
+
+<div class="sectionTitle">
+
+App Controls
+
+</div>
+
+
+<div class="controlRow">
+
+
+<div class="controlText">
+
+<strong>
+Auto Refresh
+</strong>
+
+<small>
+How often the dashboard re-analyses.
+</small>
+
+</div>
+
+
+<select
+  class="miniSelect"
+  id="refreshSelect"
+>
+
+
+<option value="30">
+30 sec
+</option>
+
+
+<option
+  value="60"
+  selected
+>
+60 sec
+</option>
+
+
+<option value="120">
+2 min
+</option>
+
+
+<option value="300">
+5 min
+</option>
+
+
+<option value="0">
+Off
+</option>
+
+
+</select>
+
+
+</div>
+
+
+<div class="controlRow">
+
+
+<div class="controlText">
+
+<strong>
+Signal Alerts
+</strong>
+
+<small>
+Sound, vibration and browser notifications when possible.
+</small>
+
+</div>
+
+
+<div
+  class="switch"
+  id="alertsSwitch"
+>
+
+
+<div class="switchKnob">
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+</div>
+
+
+<!-- ======================================================
+     MOBILE NAV
+======================================================= -->
+
+<div class="bottomNav">
+
+
+<button
+  class="bottomButton active"
+  data-view="overview"
+>
+
+<span>
+⌂
+</span>
+
+HOME
+
+</button>
+
+
+<button
+  class="bottomButton"
+  data-view="chartView"
+>
+
+<span>
+⌁
+</span>
+
+CHART
+
+</button>
+
+
+<button
+  class="bottomButton"
+  data-view="zonesView"
+>
+
+<span>
+▰
+</span>
+
+ZONES
+
+</button>
+
+
+<button
+  class="bottomButton"
+  data-view="backtestView"
+>
+
+<span>
+↗
+</span>
+
+TEST
+
+</button>
+
+
+<button
+  class="bottomButton"
+  data-view="dataView"
+>
+
+<span>
+⚙
+</span>
+
+DATA
+
+</button>
 
 
 </div>
@@ -1958,6 +4801,56 @@ let analysing =
   false;
 
 
+let lastRequestAt =
+  0;
+
+
+let refreshSeconds =
+
+  Number(
+
+    localStorage.getItem(
+      "mkayfx_ui_refresh"
+    )
+
+    ||
+
+    60
+
+  );
+
+
+let alertsEnabled =
+
+  localStorage.getItem(
+    "mkayfx_ui_alerts"
+  )
+
+  ===
+
+  "true";
+
+
+let chartPrefs = {
+
+  zones:
+    true,
+
+  spikes:
+    true,
+
+  profile:
+    true,
+
+  poc:
+    true,
+
+  lock:
+    true
+
+};
+
+
 const $ =
   id =>
     document.getElementById(
@@ -1966,7 +4859,7 @@ const $ =
 
 
 /* =========================================================
-   FORMAT
+   BASIC FORMAT
 ========================================================= */
 
 function fmt(
@@ -1974,7 +4867,7 @@ function fmt(
   digits = 2
 ) {
 
-  const x =
+  const number =
     Number(
       value
     );
@@ -1982,7 +4875,7 @@ function fmt(
 
   if (
     !Number.isFinite(
-      x
+      number
     )
   ) {
 
@@ -1991,7 +4884,7 @@ function fmt(
   }
 
 
-  return x.toLocaleString(
+  return number.toLocaleString(
 
     undefined,
 
@@ -2010,9 +4903,32 @@ function fmt(
 }
 
 
-/* =========================================================
-   ESCAPE
-========================================================= */
+function pct(
+  value,
+  digits = 1
+) {
+
+  const number =
+    Number(
+      value
+    );
+
+
+  if (
+    !Number.isFinite(
+      number
+    )
+  ) {
+
+    return "—";
+
+  }
+
+
+  return `${number.toFixed(digits)}%`;
+
+}
+
 
 function esc(
   value
@@ -2098,7 +5014,7 @@ function displayTime(
   value
 ) {
 
-  const ts =
+  const timestamp =
     parseTime(
       value
     );
@@ -2106,7 +5022,7 @@ function displayTime(
 
   if (
     !Number.isFinite(
-      ts
+      timestamp
     )
   ) {
 
@@ -2117,7 +5033,7 @@ function displayTime(
 
 
   return new Date(
-    ts
+    timestamp
   )
     .toLocaleString(
 
@@ -2144,8 +5060,131 @@ function displayTime(
 }
 
 
+function secondsToNextFiveMinute() {
+
+  const now =
+    new Date();
+
+
+  const seconds =
+    now.getUTCMinutes() %
+    5
+    *
+    60
+
+    +
+
+    now.getUTCSeconds();
+
+
+  return Math.max(
+    0,
+    300 -
+    seconds
+  );
+
+}
+
+
+function formatCountdown(
+  seconds
+) {
+
+  const m =
+    Math.floor(
+      seconds /
+      60
+    );
+
+
+  const s =
+    seconds %
+    60;
+
+
+  return `${m}:${String(s).padStart(2,"0")}`;
+
+}
+
+
 /* =========================================================
-   ASSET
+   SESSION
+========================================================= */
+
+function currentSession() {
+
+  const hour =
+    new Date()
+      .getUTCHours();
+
+
+  if (
+    hour >=
+    0
+
+    &&
+
+    hour <
+    7
+  ) {
+
+    return "ASIA";
+
+  }
+
+
+  if (
+    hour >=
+    7
+
+    &&
+
+    hour <
+    12
+  ) {
+
+    return "LONDON";
+
+  }
+
+
+  if (
+    hour >=
+    12
+
+    &&
+
+    hour <
+    16
+  ) {
+
+    return "LDN / NY";
+
+  }
+
+
+  if (
+    hour >=
+    16
+
+    &&
+
+    hour <
+    21
+  ) {
+
+    return "NEW YORK";
+
+  }
+
+
+  return "LATE";
+
+}
+
+
+/* =========================================================
+   STORAGE KEYS
 ========================================================= */
 
 function assetName() {
@@ -2267,17 +5306,11 @@ function clearLock() {
 }
 
 
-function saveHistory(
-  trade
-) {
-
-  let history =
-    [];
-
+function getHistory() {
 
   try {
 
-    history =
+    const parsed =
       JSON.parse(
 
         localStorage.getItem(
@@ -2290,7 +5323,30 @@ function saveHistory(
 
       );
 
-  } catch {}
+
+    return Array.isArray(
+      parsed
+    )
+
+      ? parsed
+
+      : [];
+
+  } catch {
+
+    return [];
+
+  }
+
+}
+
+
+function saveHistory(
+  trade
+) {
+
+  const history =
+    getHistory();
 
 
   history.unshift(
@@ -2317,14 +5373,133 @@ function saveHistory(
 
 
 /* =========================================================
-   UPDATE ASSETS
+   NAVIGATION
+========================================================= */
+
+function showView(
+  viewId
+) {
+
+  document
+    .querySelectorAll(
+      ".view"
+    )
+    .forEach(
+      view => {
+
+        view.classList.toggle(
+
+          "active",
+
+          view.id ===
+          viewId
+
+        );
+
+      }
+    );
+
+
+  document
+    .querySelectorAll(
+      "[data-view]"
+    )
+    .forEach(
+      button => {
+
+        button.classList.toggle(
+
+          "active",
+
+          button.dataset.view ===
+          viewId
+
+        );
+
+      }
+    );
+
+
+  if (
+    viewId ===
+    "chartView"
+
+    &&
+
+    lastData
+  ) {
+
+    setTimeout(
+
+      () =>
+        drawChart(
+          lastData,
+          getLock()
+        ),
+
+      30
+
+    );
+
+  }
+
+
+  if (
+    viewId ===
+    "backtestView"
+
+    &&
+
+    lastData
+  ) {
+
+    setTimeout(
+
+      () =>
+        drawEquityChart(
+          lastData.backtest
+        ),
+
+      30
+
+    );
+
+  }
+
+}
+
+
+document
+  .querySelectorAll(
+    "[data-view]"
+  )
+  .forEach(
+    button => {
+
+      button.addEventListener(
+
+        "click",
+
+        () =>
+          showView(
+            button.dataset.view
+          )
+
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   ASSETS
 ========================================================= */
 
 function updateAssets() {
 
   document
     .querySelectorAll(
-      ".asset"
+      ".assetButton"
     )
     .forEach(
       button => {
@@ -2352,13 +5527,9 @@ function updateAssets() {
 }
 
 
-/* =========================================================
-   ASSET CLICK
-========================================================= */
-
 document
   .querySelectorAll(
-    ".asset"
+    ".assetButton"
   )
   .forEach(
     button => {
@@ -2385,6 +5556,9 @@ document
           updateAssets();
 
 
+          renderLiveHistory();
+
+
           runAnalysis();
 
         }
@@ -2396,7 +5570,7 @@ document
 
 
 /* =========================================================
-   CREATE HARD LOCK
+   CREATE LOCK
 ========================================================= */
 
 function maybeCreateLock(
@@ -2497,7 +5671,7 @@ function maybeCreateLock(
   const trade = {
 
     id:
-      `VOL-${Date.now()}-${selectedSymbol.replace("/", "")}`,
+      `VOL-${Date.now()}-${selectedSymbol.replace("/","")}`,
 
     symbol:
       selectedSymbol,
@@ -2533,6 +5707,11 @@ function maybeCreateLock(
 
 
   saveLock(
+    trade
+  );
+
+
+  notifyTrade(
     trade
   );
 
@@ -2594,34 +5773,194 @@ function currentR(
   }
 
 
-  return trade.signal ===
+  if (
+    trade.signal ===
     "BUY"
+  ) {
 
-    ?
+    return (
 
-    (
       price -
       trade.entry
+
     )
 
     /
-    risk
 
-    :
-
-    (
-      trade.entry -
-      price
-    )
-
-    /
     risk;
+
+  }
+
+
+  return (
+
+    trade.entry -
+    price
+
+  )
+
+  /
+
+  risk;
 
 }
 
 
 /* =========================================================
-   API ENDPOINT
+   ALERTS
+========================================================= */
+
+async function enableNotifications() {
+
+  if (
+    "Notification" in window
+
+    &&
+
+    Notification.permission ===
+    "default"
+  ) {
+
+    try {
+
+      await Notification.requestPermission();
+
+    } catch {}
+
+  }
+
+}
+
+
+function beep() {
+
+  try {
+
+    const AudioContextClass =
+
+      window.AudioContext
+
+      ||
+
+      window.webkitAudioContext;
+
+
+    if (
+      !AudioContextClass
+    ) {
+
+      return;
+
+    }
+
+
+    const ctx =
+      new AudioContextClass();
+
+
+    const oscillator =
+      ctx.createOscillator();
+
+
+    const gain =
+      ctx.createGain();
+
+
+    oscillator.frequency.value =
+      740;
+
+
+    gain.gain.value =
+      .06;
+
+
+    oscillator.connect(
+      gain
+    );
+
+
+    gain.connect(
+      ctx.destination
+    );
+
+
+    oscillator.start();
+
+
+    oscillator.stop(
+      ctx.currentTime +
+      .16
+    );
+
+  } catch {}
+
+}
+
+
+function notifyTrade(
+  trade
+) {
+
+  if (
+    !alertsEnabled
+  ) {
+
+    return;
+
+  }
+
+
+  beep();
+
+
+  if (
+    navigator.vibrate
+  ) {
+
+    navigator.vibrate(
+      [
+        80,
+        60,
+        120
+      ]
+    );
+
+  }
+
+
+  if (
+    "Notification" in window
+
+    &&
+
+    Notification.permission ===
+    "granted"
+  ) {
+
+    try {
+
+      new Notification(
+
+        `MKAYFX ${trade.signal} · ${trade.symbol}`,
+
+        {
+
+          body:
+            `Entry ${fmt(trade.entry)} · SL ${fmt(trade.stopLoss)} · TP ${fmt(trade.takeProfit)}`
+
+        }
+
+      );
+
+    } catch {}
+
+  }
+
+}
+
+
+/* =========================================================
+   ENDPOINT
 ========================================================= */
 
 function endpoint() {
@@ -2696,7 +6035,7 @@ function endpoint() {
 
 
 /* =========================================================
-   RUN
+   RUN ANALYSIS
 ========================================================= */
 
 async function runAnalysis() {
@@ -2712,6 +6051,10 @@ async function runAnalysis() {
 
   analysing =
     true;
+
+
+  const started =
+    performance.now();
 
 
   $("app")
@@ -2799,9 +6142,7 @@ async function runAnalysis() {
       getLock();
 
 
-    /* ===============================================
-       EXISTING LOCK HIT TP / SL
-    =============================================== */
+    /* LOCK EXIT */
 
     if (
 
@@ -2862,9 +6203,7 @@ async function runAnalysis() {
     }
 
 
-    /* ===============================================
-       CREATE NEW LOCK
-    =============================================== */
+    /* NEW LOCK */
 
     if (
       !lock
@@ -2882,13 +6221,27 @@ async function runAnalysis() {
       lock;
 
 
+    data.clientLatencyMs =
+      Math.round(
+        performance.now() -
+        started
+      );
+
+
     lastData =
       data;
+
+
+    lastRequestAt =
+      Date.now();
 
 
     render(
       data
     );
+
+
+    renderLiveHistory();
 
   } catch (
     error
@@ -2896,6 +6249,10 @@ async function runAnalysis() {
 
     $("engineBadge").textContent =
       "ENGINE ERROR";
+
+
+    $("healthDot").style.background =
+      "var(--red)";
 
 
     $("errorBox").textContent =
@@ -2936,7 +6293,230 @@ async function runAnalysis() {
 
 
 /* =========================================================
-   RENDER
+   DATA HEALTH
+========================================================= */
+
+function getDataHealth(
+  data
+) {
+
+  let score =
+    0;
+
+
+  if (
+    data.volume?.available
+  ) {
+
+    score +=
+      45;
+
+  }
+
+
+  if (
+    data.anchor
+  ) {
+
+    score +=
+      25;
+
+  }
+
+
+  const age =
+    Number(
+      data.candleAgeMinutes
+    );
+
+
+  if (
+    Number.isFinite(
+      age
+    )
+
+    &&
+
+    age <=
+    10
+  ) {
+
+    score +=
+      20;
+
+  } else if (
+    Number.isFinite(
+      age
+    )
+
+    &&
+
+    age <=
+    30
+  ) {
+
+    score +=
+      10;
+
+  }
+
+
+  if (
+    Array.isArray(
+      data.chart
+    )
+
+    &&
+
+    data.chart.length >
+    20
+  ) {
+
+    score +=
+      10;
+
+  }
+
+
+  return Math.min(
+    100,
+    score
+  );
+
+}
+
+
+/* =========================================================
+   NEAREST ZONE
+========================================================= */
+
+function nearestZoneInfo(
+  data
+) {
+
+  const price =
+    Number(
+      data.price
+    );
+
+
+  const zones =
+    Array.isArray(
+      data.anchor?.imbalances
+    )
+
+      ? data.anchor.imbalances
+
+      : [];
+
+
+  if (
+    !Number.isFinite(
+      price
+    )
+
+    ||
+
+    !zones.length
+  ) {
+
+    return null;
+
+  }
+
+
+  let best =
+    null;
+
+
+  for (
+    const zone
+    of zones
+  ) {
+
+    const low =
+      Number(
+        zone.low
+      );
+
+
+    const high =
+      Number(
+        zone.high
+      );
+
+
+    if (
+      !Number.isFinite(
+        low
+      )
+
+      ||
+
+      !Number.isFinite(
+        high
+      )
+    ) {
+
+      continue;
+
+    }
+
+
+    let distance =
+      0;
+
+
+    if (
+      price <
+      low
+    ) {
+
+      distance =
+        low -
+        price;
+
+    } else if (
+      price >
+      high
+    ) {
+
+      distance =
+        price -
+        high;
+
+    }
+
+
+    if (
+      !best
+
+      ||
+
+      distance <
+      best.distance
+    ) {
+
+      best = {
+
+        ...zone,
+
+        distance
+
+      };
+
+    }
+
+  }
+
+
+  return best;
+
+}
+
+
+/* =========================================================
+   MAIN RENDER
 ========================================================= */
 
 function render(
@@ -2966,9 +6546,9 @@ function render(
     data.symbol ===
     "BTC/USD"
 
-      ? "BTC · REAL VOL · 5M"
+      ? "BTC · REAL VOL"
 
-      : "GOLD · GC PROXY · 5M";
+      : "GOLD · GC PROXY";
 
 
   $("signal").textContent =
@@ -2991,69 +6571,135 @@ function render(
 
       ?
 
-      `5M · ${displayTime(data.candleTime)} · ${fmt(data.candleAgeMinutes,1)}m old`
+      `${displayTime(data.candleTime)} · ${fmt(data.candleAgeMinutes,1)}m old`
 
       :
 
-      "Latest completed 5M candle";
+      "Latest 5M candle";
 
 
-  /* SOURCES */
-
-  $("priceSource").textContent =
-    data.dataSources
-      ?.price
-    ||
-    "—";
+  $("session").textContent =
+    currentSession();
 
 
-  $("volumeSource").textContent =
-    data.dataSources
-      ?.volume
-    ||
-    "—";
+  $("apiLatency").textContent =
+    Number.isFinite(
+      data.clientLatencyMs
+    )
+
+      ? `${data.clientLatencyMs} ms`
+
+      : "—";
 
 
-  $("volumeMode").textContent =
-    data.dataSources
-      ?.volumeMode
-    ||
-    "—";
+  const health =
+    getDataHealth(
+      data
+    );
 
 
-  /* SPIKES */
+  $("dataHealth").textContent =
+    `${health}%`;
+
+
+  $("healthDot").style.background =
+
+    health >=
+    80
+
+      ? "var(--green)"
+
+      : health >=
+        50
+
+        ? "var(--gold)"
+
+        : "var(--red)";
+
+
+  /* PRESSURE */
+
+  const bull =
+    Number(
+      data.anchor?.bullSpikes
+      ??
+      0
+    );
+
+
+  const bear =
+    Number(
+      data.anchor?.bearSpikes
+      ??
+      0
+    );
+
+
+  const total =
+    bull +
+    bear;
+
+
+  const bullPct =
+
+    total >
+    0
+
+      ? bull /
+        total *
+        100
+
+      : 50;
+
+
+  const bearPct =
+
+    total >
+    0
+
+      ? bear /
+        total *
+        100
+
+      : 50;
+
 
   $("bullSpikes").textContent =
-    data.anchor
-      ?.bullSpikes
-    ??
-    0;
+    bull;
 
 
   $("bearSpikes").textContent =
-    data.anchor
-      ?.bearSpikes
+    bear;
+
+
+  $("totalSpikes").textContent =
+    data.anchor?.totalSpikes
     ??
-    0;
+    total;
+
+
+  $("bullPressure").style.width =
+    `${bullPct}%`;
+
+
+  $("bearPressure").style.width =
+    `${bearPct}%`;
 
 
   $("dominance").textContent =
-    data.anchor
-      ?.dominance
-    ||
+    data.anchor?.dominance
+    ??
     "—";
 
 
   $("dominance").className =
 
-    data.anchor
-      ?.dominance ===
+    data.anchor?.dominance ===
     "BULLISH"
 
       ? "green"
 
-      : data.anchor
-          ?.dominance ===
+      : data.anchor?.dominance ===
         "BEARISH"
 
         ? "red"
@@ -3061,87 +6707,280 @@ function render(
         : "gold";
 
 
+  $("dominanceSub").textContent =
+
+    total >
+    0
+
+      ? `${bullPct.toFixed(0)}% bull · ${bearPct.toFixed(0)}% bear`
+
+      : "No spikes yet";
+
+
+  /* POC */
+
   $("poc").textContent =
     fmt(
-      data.anchor
-        ?.poc
+      data.anchor?.poc
     );
+
+
+  const price =
+    Number(
+      data.price
+    );
+
+
+  const poc =
+    Number(
+      data.anchor?.poc
+    );
+
+
+  $("pocState").textContent =
+
+    Number.isFinite(
+      price
+    )
+
+    &&
+
+    Number.isFinite(
+      poc
+    )
+
+      ? price >
+        poc
+
+        ? "Price above POC"
+
+        : price <
+          poc
+
+          ? "Price below POC"
+
+          : "At POC"
+
+      : "—";
+
+
+  /* ZONES */
+
+  const zones =
+
+    Array.isArray(
+      data.anchor?.imbalances
+    )
+
+      ? data.anchor.imbalances
+
+      : [];
+
+
+  const bulls =
+    zones.filter(
+      zone =>
+        zone.direction ===
+        "BULLISH"
+    );
+
+
+  const bears =
+    zones.filter(
+      zone =>
+        zone.direction ===
+        "BEARISH"
+    );
+
+
+  $("zoneCount").textContent =
+    zones.length;
+
+
+  $("zoneSplit").textContent =
+    `${bulls.length} bull · ${bears.length} bear`;
+
+
+  const nearest =
+    nearestZoneInfo(
+      data
+    );
+
+
+  $("nearestZone").textContent =
+
+    nearest
+
+      ? nearest.direction ===
+        "BULLISH"
+
+        ? "BULLISH"
+
+        : "BEARISH"
+
+      : "—";
+
+
+  $("nearestZone").className =
+
+    nearest?.direction ===
+    "BULLISH"
+
+      ? "green"
+
+      : nearest?.direction ===
+        "BEARISH"
+
+        ? "red"
+
+        : "";
+
+
+  $("nearestZoneDistance").textContent =
+
+    nearest
+
+      ? nearest.distance ===
+        0
+
+        ? "Price inside zone"
+
+        : `${fmt(nearest.distance)} away`
+
+      : "No active zone";
+
+
+  /* 1H RANGE */
+
+  const aLow =
+    Number(
+      data.anchor?.low
+    );
+
+
+  const aHigh =
+    Number(
+      data.anchor?.high
+    );
+
+
+  let rangePercent =
+    null;
+
+
+  if (
+    Number.isFinite(
+      price
+    )
+
+    &&
+
+    Number.isFinite(
+      aLow
+    )
+
+    &&
+
+    Number.isFinite(
+      aHigh
+    )
+
+    &&
+
+    aHigh >
+    aLow
+  ) {
+
+    rangePercent =
+
+      (
+        price -
+        aLow
+      )
+
+      /
+
+      (
+        aHigh -
+        aLow
+      )
+
+      *
+      100;
+
+
+    rangePercent =
+      Math.max(
+        0,
+        Math.min(
+          100,
+          rangePercent
+        )
+      );
+
+  }
+
+
+  $("rangePosition").textContent =
+
+    Number.isFinite(
+      rangePercent
+    )
+
+      ? `${rangePercent.toFixed(0)}%`
+
+      : "—";
+
+
+  $("rangePercent").textContent =
+
+    Number.isFinite(
+      rangePercent
+    )
+
+      ? `${rangePercent.toFixed(1)}%`
+
+      : "—";
+
+
+  $("rangeMarker").style.left =
+
+    Number.isFinite(
+      rangePercent
+    )
+
+      ? `${rangePercent}%`
+
+      : "50%";
 
 
   /* ANCHOR */
 
   $("aOpen").textContent =
     fmt(
-      data.anchor
-        ?.open
+      data.anchor?.open
     );
 
 
   $("aHigh").textContent =
     fmt(
-      data.anchor
-        ?.high
+      data.anchor?.high
     );
 
 
   $("aLow").textContent =
     fmt(
-      data.anchor
-        ?.low
+      data.anchor?.low
     );
 
 
   $("aClose").textContent =
     fmt(
-      data.anchor
-        ?.close
+      data.anchor?.close
     );
 
 
-  /* SETTINGS */
-
-  $("spikeMult").textContent =
-    `${data.settings?.spikeMultiplier ?? 1.2}×`;
-
-
-  $("volMa").textContent =
-    data.settings
-      ?.volumeMALength
-    ??
-    20;
-
-
-  $("vpRows").textContent =
-    data.settings
-      ?.vpRows
-    ??
-    40;
-
-
-  $("stackMin").textContent =
-    data.settings
-      ?.minimumStackedSpikes
-    ??
-    3;
-
-
-  /* VOLUME STATUS */
-
-  $("volumeStatus").innerHTML =
-
-    data.volume
-      ?.available
-
-      ?
-
-      `Volume feed: <span class="green">AVAILABLE</span> · ${Number(data.volume.usableBars || 0).toLocaleString()} usable 1M bars.`
-
-      :
-
-      `Volume feed: <span class="red">UNAVAILABLE / TOO SPARSE</span>. Engine stays on WAIT.`;
-
-
-  /* HARD LOCK */
+  /* LOCK */
 
   if (
     lock
@@ -3152,7 +6991,7 @@ function render(
 
 
     $("signalDescription").textContent =
-      `${lock.signal} remains locked until TP or SL is hit.`;
+      `${lock.signal} remains locked until its stop loss or 3R target is reached.`;
 
   } else {
 
@@ -3165,14 +7004,14 @@ function render(
       data.signal ===
       "BUY"
 
-        ? "Fresh bullish stacked-imbalance breakout."
+        ? "Fresh bullish stacked-imbalance breakout detected."
 
         : data.signal ===
           "SELL"
 
-          ? "Fresh bearish stacked-imbalance breakdown."
+          ? "Fresh bearish stacked-imbalance breakdown detected."
 
-          : "Waiting for a stacked imbalance breakout.";
+          : "Waiting for a fresh qualified imbalance breakout.";
 
   }
 
@@ -3210,7 +7049,7 @@ function render(
       : "—";
 
 
-  const currentTradeR =
+  const rNow =
 
     lock
 
@@ -3225,10 +7064,10 @@ function render(
   $("currentR").textContent =
 
     Number.isFinite(
-      currentTradeR
+      rNow
     )
 
-      ? `${currentTradeR >= 0 ? "+" : ""}${currentTradeR.toFixed(2)}R`
+      ? `${rNow >= 0 ? "+" : ""}${rNow.toFixed(2)}R`
 
       : "—";
 
@@ -3236,30 +7075,42 @@ function render(
   $("currentR").className =
 
     Number.isFinite(
-      currentTradeR
+      rNow
     )
 
-      ? currentTradeR >=
+      ? rNow >=
         0
 
-        ? "green"
+        ? "currentR green"
 
-        : "red"
+        : "currentR red"
 
-      : "";
+      : "currentR";
 
 
-  renderZones(
-
-    data.anchor
-      ?.imbalances
-    ||
-    []
-
+  renderTradeDistances(
+    lock,
+    data.price
   );
 
 
-  renderStatus(
+  updateTradeProgress(
+    lock,
+    data.price
+  );
+
+
+  renderStrongestZones(
+    data
+  );
+
+
+  renderZones(
+    zones
+  );
+
+
+  renderReasons(
     data,
     lock
   );
@@ -3271,13 +7122,14 @@ function render(
 
 
   renderRecentSignals(
-
     data.recentSignals
-
     ||
-
     []
+  );
 
+
+  renderData(
+    data
   );
 
 
@@ -3286,75 +7138,554 @@ function render(
     lock
   );
 
+
+  drawEquityChart(
+    data.backtest
+  );
+
 }
 
 
 /* =========================================================
-   ZONES
+   TRADE DISTANCES
+========================================================= */
+
+function renderTradeDistances(
+  lock,
+  price
+) {
+
+  if (
+    !lock
+  ) {
+
+    $("riskDistance").textContent =
+      "—";
+
+
+    $("distanceToSL").textContent =
+      "—";
+
+
+    $("distanceToTP").textContent =
+      "—";
+
+
+    return;
+
+  }
+
+
+  const current =
+    Number(
+      price
+    );
+
+
+  const risk =
+    Number(
+      lock.risk
+    );
+
+
+  $("riskDistance").textContent =
+    fmt(
+      risk
+    );
+
+
+  if (
+    !Number.isFinite(
+      current
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  const slDistance =
+    Math.abs(
+
+      current -
+      Number(
+        lock.stopLoss
+      )
+
+    );
+
+
+  const tpDistance =
+    Math.abs(
+
+      Number(
+        lock.takeProfit
+      )
+
+      -
+
+      current
+
+    );
+
+
+  $("distanceToSL").textContent =
+    fmt(
+      slDistance
+    );
+
+
+  $("distanceToTP").textContent =
+    fmt(
+      tpDistance
+    );
+
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+function updateTradeProgress(
+  lock,
+  currentPrice
+) {
+
+  const marker =
+    $("tradeMarker");
+
+
+  if (
+    !lock
+  ) {
+
+    marker.style.left =
+      "25%";
+
+
+    marker.style.opacity =
+      ".35";
+
+
+    $("progressStatus").textContent =
+      "NO ACTIVE TRADE";
+
+
+    return;
+
+  }
+
+
+  marker.style.opacity =
+    "1";
+
+
+  const current =
+    Number(
+      currentPrice
+    );
+
+
+  const sl =
+    Number(
+      lock.stopLoss
+    );
+
+
+  const tp =
+    Number(
+      lock.takeProfit
+    );
+
+
+  if (
+    ![
+      current,
+      sl,
+      tp
+    ]
+      .every(
+        Number.isFinite
+      )
+  ) {
+
+    return;
+
+  }
+
+
+  let progress;
+
+
+  if (
+    lock.signal ===
+    "BUY"
+  ) {
+
+    progress =
+
+      (
+        current -
+        sl
+      )
+
+      /
+
+      Math.max(
+        tp -
+        sl,
+        1e-9
+      )
+      *
+      100;
+
+  } else {
+
+    progress =
+
+      (
+        sl -
+        current
+      )
+
+      /
+
+      Math.max(
+        sl -
+        tp,
+        1e-9
+      )
+      *
+      100;
+
+  }
+
+
+  progress =
+    Math.max(
+      0,
+      Math.min(
+        100,
+        progress
+      )
+    );
+
+
+  marker.style.left =
+    `${progress}%`;
+
+
+  const r =
+    currentR(
+      lock,
+      current
+    );
+
+
+  $("progressStatus").textContent =
+
+    Number.isFinite(
+      r
+    )
+
+      ? `${r >= 0 ? "+" : ""}${r.toFixed(2)}R`
+
+      : "ACTIVE";
+
+}
+
+
+/* =========================================================
+   STRONGEST ZONES
+========================================================= */
+
+function zoneMiniHTML(
+  zone
+) {
+
+  if (
+    !zone
+  ) {
+
+    return `
+      <div class="empty">
+        No qualified zone.
+      </div>
+    `;
+
+  }
+
+
+  return `
+
+    <div class="zone ${
+      zone.direction === "BULLISH"
+        ? "zoneBull"
+        : "zoneBear"
+    }">
+
+      <div class="zoneTop">
+
+        <span class="zoneType ${
+          zone.direction === "BULLISH"
+            ? "green"
+            : "red"
+        }">
+
+          ${esc(zone.direction)}
+
+        </span>
+
+        <span class="zoneStrength">
+          Strength ${zone.strength ?? 0}
+        </span>
+
+      </div>
+
+      <div class="zonePrice">
+
+        ${fmt(zone.low)}
+        →
+        ${fmt(zone.high)}
+
+      </div>
+
+      <div class="zoneStats">
+
+        Bull ${zone.bullCount ?? 0}
+        ·
+        Bear ${zone.bearCount ?? 0}
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+function renderStrongestZones(
+  data
+) {
+
+  const bull =
+    data.anchor?.strongestBullish;
+
+
+  const bear =
+    data.anchor?.strongestBearish;
+
+
+  $("strongestZones").innerHTML =
+
+    zoneMiniHTML(
+      bull
+    )
+
+    +
+
+    zoneMiniHTML(
+      bear
+    );
+
+
+  $("bestBullZone").innerHTML =
+    zoneMiniHTML(
+      bull
+    );
+
+
+  $("bestBearZone").innerHTML =
+    zoneMiniHTML(
+      bear
+    );
+
+}
+
+
+/* =========================================================
+   ALL ZONES
 ========================================================= */
 
 function renderZones(
   zones
 ) {
 
+  const list =
+    Array.isArray(
+      zones
+    )
+
+      ? zones
+
+      : [];
+
+
+  const bulls =
+    list.filter(
+      zone =>
+        zone.direction ===
+        "BULLISH"
+    );
+
+
+  const bears =
+    list.filter(
+      zone =>
+        zone.direction ===
+        "BEARISH"
+    );
+
+
+  $("zonesTotal").textContent =
+    list.length;
+
+
+  $("zonesBull").textContent =
+    bulls.length;
+
+
+  $("zonesBear").textContent =
+    bears.length;
+
+
+  const maxStrength =
+
+    Math.max(
+
+      1,
+
+      ...list.map(
+        zone =>
+          Number(
+            zone.strength
+          )
+          ||
+          0
+      )
+
+    );
+
+
   $("zones").innerHTML =
 
-    zones.length
+    list.length
 
       ?
 
-      zones
+      list
         .map(
-          zone => `
+          zone => {
 
-            <div class="zoneRow">
+            const strength =
+              Number(
+                zone.strength
+              )
+              ||
+              0;
 
-              <span class="zonePill ${
+
+            const width =
+
+              Math.max(
+
+                8,
+
+                strength /
+                maxStrength *
+                100
+
+              );
+
+
+            return `
+
+              <div class="zone ${
                 zone.direction === "BULLISH"
-                  ? "bullPill"
-                  : "bearPill"
+                  ? "zoneBull"
+                  : "zoneBear"
               }">
 
-                ${esc(zone.direction)}
+                <div class="zoneTop">
 
-              </span>
+                  <span class="zoneType ${
+                    zone.direction === "BULLISH"
+                      ? "green"
+                      : "red"
+                  }">
 
-              ${fmt(zone.low)}
-              →
-              ${fmt(zone.high)}
+                    ${esc(zone.direction)}
 
-              <br>
+                  </span>
 
-              <span class="tradeTime">
+                  <span class="zoneStrength">
 
-                Bull ${zone.bullCount}
-                ·
-                Bear ${zone.bearCount}
-                ·
-                Strength ${zone.strength}
+                    Strength ${strength}
 
-              </span>
+                  </span>
 
-            </div>
+                </div>
 
-          `
+                <div class="zonePrice">
+
+                  ${fmt(zone.low)}
+                  →
+                  ${fmt(zone.high)}
+
+                </div>
+
+                <div class="zoneStats">
+
+                  Bull ${zone.bullCount ?? 0}
+                  ·
+                  Bear ${zone.bearCount ?? 0}
+
+                </div>
+
+                <div class="zoneStrengthTrack">
+
+                  <div
+                    class="zoneStrengthFill"
+                    style="
+                      width:${width}%;
+                      background:${
+                        zone.direction === "BULLISH"
+                          ? "var(--green)"
+                          : "var(--red)"
+                      };
+                    "
+                  >
+                  </div>
+
+                </div>
+
+              </div>
+
+            `;
+
+          }
         )
         .join("")
 
       :
 
-      `<div class="reason">
-         No stacked imbalance zones in the current 1H anchor.
-       </div>`;
+      `
+        <div class="empty">
+          No qualified stacked imbalance zones in the current 1H anchor.
+        </div>
+      `;
 
 }
 
 
 /* =========================================================
-   STATUS
+   REASONS
 ========================================================= */
 
-function renderStatus(
+function renderReasons(
   data,
   lock
 ) {
@@ -3367,45 +7698,33 @@ function renderStatus(
 
       <div class="reason">
 
-        🔒 Signal is HARD LOCKED.
+        🔒 Trade is hard locked.
 
       </div>
 
-
       <div class="reason">
 
-        <b class="${
-          lock.signal === "BUY"
-            ? "green"
-            : "red"
-        }">
-
-          ${esc(lock.signal)}
-
-        </b>
-
-        · Entry ${fmt(lock.entry)}
+        ${esc(lock.signal)}
+        @
+        ${fmt(lock.entry)}
 
       </div>
 
-
       <div class="reason">
 
-        SL ${fmt(lock.stopLoss)}
+        Stop:
+        ${fmt(lock.stopLoss)}
         ·
-        TP ${fmt(lock.takeProfit)}
-        ·
-        1:${lock.rr}
+        Target:
+        ${fmt(lock.takeProfit)}
 
       </div>
-
 
       <div class="reason">
 
-        New BUY, SELL and WAIT states are ignored until this trade exits.
+        All new BUY, SELL and WAIT states are ignored until this trade exits.
 
       </div>
-
 
       <div class="reason">
 
@@ -3438,7 +7757,7 @@ function renderStatus(
 
       <div class="reason">
 
-        Previous locked trade completed:
+        Previous live trade completed:
 
         <b class="${
           trade.status === "WIN"
@@ -3452,7 +7771,6 @@ function renderStatus(
 
       </div>
 
-
       <div class="reason">
 
         Result:
@@ -3461,10 +7779,9 @@ function renderStatus(
 
       </div>
 
-
       <div class="reason">
 
-        Unlocked and waiting for the next fresh imbalance signal.
+        Engine is unlocked and waiting for the next fresh setup.
 
       </div>
 
@@ -3509,9 +7826,11 @@ function renderStatus(
 
       :
 
-      `<div class="reason">
-         Waiting for analysis.
-       </div>`;
+      `
+        <div class="reason">
+          Waiting for analysis.
+        </div>
+      `;
 
 }
 
@@ -3521,11 +7840,11 @@ function renderStatus(
 ========================================================= */
 
 function renderBacktest(
-  backtest
+  bt
 ) {
 
   if (
-    !backtest
+    !bt
   ) {
 
     return;
@@ -3534,36 +7853,54 @@ function renderBacktest(
 
 
   $("btTrades").textContent =
-    backtest.closedTrades
+    bt.closedTrades
+    ??
+    0;
+
+
+  $("btWins").textContent =
+    bt.wins
+    ??
+    0;
+
+
+  $("btLosses").textContent =
+    bt.losses
+    ??
+    0;
+
+
+  $("btOpen").textContent =
+    bt.openTrades
     ??
     0;
 
 
   $("btWin").textContent =
-    `${fmt(backtest.winRate,1)}%`;
+    `${fmt(bt.winRate,1)}%`;
 
 
   $("btPF").textContent =
 
-    backtest.profitFactor ===
+    bt.profitFactor ===
     999
 
       ? "∞"
 
       : fmt(
-          backtest.profitFactor,
+          bt.profitFactor,
           2
         );
 
 
   $("btNet").textContent =
-    `${fmt(backtest.netR,2)}R`;
+    `${fmt(bt.netR,2)}R`;
 
 
   $("btNet").className =
 
     Number(
-      backtest.netR
+      bt.netR
     ) >=
     0
 
@@ -3573,129 +7910,277 @@ function renderBacktest(
 
 
   $("btExpectancy").textContent =
-    `${fmt(backtest.expectancyR,3)}R`;
+    `${fmt(bt.expectancyR,3)}R`;
 
 
   $("btExpectancy").className =
 
     Number(
-      backtest.expectancyR
-    ) >=
+      bt.expectancyR
+    ) >
     0
 
       ? "green"
 
-      : "red";
+      : Number(
+          bt.expectancyR
+        ) <
+        0
+
+        ? "red"
+
+        : "";
 
 
   $("btDD").textContent =
-    `${fmt(backtest.maxDrawdownR,2)}R`;
+    `${fmt(bt.maxDrawdownR,2)}R`;
 
 
   $("btLossStreak").textContent =
-    backtest.maxLossStreak
+    bt.maxLossStreak
     ??
     0;
 
 
   $("btHold").textContent =
-    `${fmt(backtest.averageHoldMinutes,1)}m`;
+    `${fmt(bt.averageHoldMinutes,1)}m`;
 
 
   $("btPeriod").innerHTML =
 
-    backtest.unavailable
+    bt.unavailable
 
       ?
 
       `<span class="red">
          Backtest unavailable:
        </span>
-       ${esc(
-         backtest.reason ||
-         "No usable volume data."
-       )}`
+       ${esc(bt.reason || "No usable data.")}`
 
       :
 
-      `Hard lock · 3R target · Wins
-       <span class="green">
-         ${backtest.wins ?? 0}
-       </span>
-       · Losses
-       <span class="red">
-         ${backtest.losses ?? 0}
-       </span>
-       <br><br>
-       ${esc(
-         displayTime(
-           backtest.firstCandle
-         )
-       )}
+      `Test period:
+       ${esc(displayTime(bt.firstCandle))}
        →
-       ${esc(
-         displayTime(
-           backtest.lastCandle
-         )
-       )}`;
+       ${esc(displayTime(bt.lastCandle))}`;
 
 
-  const trades =
+  const rr =
+    Number(
+      bt.targetR
+      ??
+      lastData?.settings?.riskReward
+      ??
+      3
+    );
 
-    Array.isArray(
-      backtest.recentTrades
+
+  const breakEven =
+
+    Number.isFinite(
+      rr
     )
 
-      ? backtest.recentTrades
+    &&
+
+    rr >
+    0
+
+      ? 100 /
+        (
+          rr +
+          1
+        )
+
+      : null;
+
+
+  const winRate =
+    Number(
+      bt.winRate
+    );
+
+
+  const edge =
+
+    Number.isFinite(
+      breakEven
+    )
+
+    &&
+
+    Number.isFinite(
+      winRate
+    )
+
+      ? winRate -
+        breakEven
+
+      : null;
+
+
+  $("breakEvenWR").textContent =
+
+    Number.isFinite(
+      breakEven
+    )
+
+      ? `${breakEven.toFixed(1)}%`
+
+      : "—";
+
+
+  $("winRateEdge").textContent =
+
+    Number.isFinite(
+      edge
+    )
+
+      ? `${edge >= 0 ? "+" : ""}${edge.toFixed(1)}%`
+
+      : "—";
+
+
+  $("winRateEdge").className =
+
+    Number.isFinite(
+      edge
+    )
+
+      ? edge >=
+        0
+
+        ? "green"
+
+        : "red"
+
+      : "";
+
+
+  $("targetRR").textContent =
+    `1:${Number.isFinite(rr) ? rr : 3}`;
+
+
+  const expectancy =
+    Number(
+      bt.expectancyR
+    );
+
+
+  $("expectancyStatus").textContent =
+
+    Number.isFinite(
+      expectancy
+    )
+
+      ? expectancy >
+        0
+
+        ? "POSITIVE"
+
+        : expectancy <
+          0
+
+          ? "NEGATIVE"
+
+          : "FLAT"
+
+      : "—";
+
+
+  $("expectancyStatus").className =
+
+    Number.isFinite(
+      expectancy
+    )
+
+      ? expectancy >
+        0
+
+        ? "green"
+
+        : expectancy <
+          0
+
+          ? "red"
+
+          : "gold"
+
+      : "";
+
+
+  renderBacktestTrades(
+    bt.recentTrades
+    ||
+    []
+  );
+
+}
+
+
+/* =========================================================
+   BACKTEST TRADES
+========================================================= */
+
+function renderBacktestTrades(
+  trades
+) {
+
+  const list =
+    Array.isArray(
+      trades
+    )
+
+      ? trades
 
       : [];
 
 
   $("backtestTrades").innerHTML =
 
-    trades.length
+    list.length
 
       ?
 
-      trades
+      list
         .map(
           trade => `
 
-            <div class="tradeRow">
+            <div class="historyRow">
 
-              <b class="${
-                trade.signal === "BUY"
-                  ? "green"
-                  : "red"
-              }">
+              <div class="historyTop">
 
-                ${esc(trade.signal)}
+                <span class="historyDirection ${
+                  trade.signal === "BUY"
+                    ? "green"
+                    : "red"
+                }">
 
-              </b>
+                  ${esc(trade.signal)}
 
-              ·
+                </span>
 
-              <b class="${
-                trade.result === "WIN"
-                  ? "green"
-                  : trade.result === "LOSS"
-                    ? "red"
-                    : "gold"
-              }">
+                <span class="historyResult ${
+                  trade.result === "WIN"
+                    ? "green"
+                    : trade.result === "LOSS"
+                      ? "red"
+                      : "gold"
+                }">
 
-                ${esc(trade.result)}
+                  ${esc(trade.result)}
 
-                ${
-                  trade.r == null
-                    ? ""
-                    : ` · ${trade.r > 0 ? "+" : ""}${trade.r}R`
-                }
+                  ${
+                    trade.r == null
+                      ? ""
+                      : ` · ${trade.r > 0 ? "+" : ""}${trade.r}R`
+                  }
 
-              </b>
+                </span>
 
-              <br>
+              </div>
 
-              <span class="tradeTime">
+              <div class="historyBody">
 
                 Entry ${fmt(trade.entry)}
                 ·
@@ -3705,23 +8190,17 @@ function renderBacktest(
 
                 <br>
 
-                ${esc(
-                  displayTime(
-                    trade.entryTime
-                  )
-                )}
+                ${esc(displayTime(trade.entryTime))}
 
                 ${
                   trade.exitTime
-                    ? ` → ${esc(
-                        displayTime(
-                          trade.exitTime
-                        )
-                      )}`
+
+                    ? ` → ${esc(displayTime(trade.exitTime))}`
+
                     : ""
                 }
 
-              </span>
+              </div>
 
             </div>
 
@@ -3731,9 +8210,375 @@ function renderBacktest(
 
       :
 
-      `<div class="reason">
-         No backtest trades generated.
-       </div>`;
+      `
+        <div class="empty">
+          No backtest trades generated.
+        </div>
+      `;
+
+}
+
+
+/* =========================================================
+   EQUITY CURVE
+========================================================= */
+
+function drawEquityChart(
+  bt
+) {
+
+  const canvas =
+    $("equityChart");
+
+
+  if (
+    !canvas
+  ) {
+
+    return;
+
+  }
+
+
+  const rect =
+    canvas.getBoundingClientRect();
+
+
+  if (
+    rect.width <=
+    0
+
+    ||
+
+    rect.height <=
+    0
+  ) {
+
+    return;
+
+  }
+
+
+  const ratio =
+    window.devicePixelRatio
+    ||
+    1;
+
+
+  canvas.width =
+    Math.max(
+      1,
+      Math.round(
+        rect.width *
+        ratio
+      )
+    );
+
+
+  canvas.height =
+    Math.max(
+      1,
+      Math.round(
+        rect.height *
+        ratio
+      )
+    );
+
+
+  const ctx =
+    canvas.getContext(
+      "2d"
+    );
+
+
+  ctx.setTransform(
+    ratio,
+    0,
+    0,
+    ratio,
+    0,
+    0
+  );
+
+
+  ctx.clearRect(
+    0,
+    0,
+    rect.width,
+    rect.height
+  );
+
+
+  const trades =
+
+    Array.isArray(
+      bt?.recentTrades
+    )
+
+      ? bt.recentTrades
+          .slice()
+          .reverse()
+
+      : [];
+
+
+  const values =
+    [
+      0
+    ];
+
+
+  let equity =
+    0;
+
+
+  for (
+    const trade
+    of trades
+  ) {
+
+    const r =
+      Number(
+        trade.r
+      );
+
+
+    if (
+      Number.isFinite(
+        r
+      )
+    ) {
+
+      equity +=
+        r;
+
+
+      values.push(
+        equity
+      );
+
+    }
+
+  }
+
+
+  $("equityEnd").textContent =
+    `${equity >= 0 ? "+" : ""}${equity.toFixed(2)}R`;
+
+
+  if (
+    values.length <
+    2
+  ) {
+
+    ctx.fillStyle =
+      "rgba(255,255,255,.25)";
+
+
+    ctx.font =
+      "10px -apple-system";
+
+
+    ctx.fillText(
+      "Not enough recent trades",
+      12,
+      28
+    );
+
+
+    return;
+
+  }
+
+
+  let max =
+    Math.max(
+      ...values
+    );
+
+
+  let min =
+    Math.min(
+      ...values
+    );
+
+
+  if (
+    max ===
+    min
+  ) {
+
+    max +=
+      1;
+
+
+    min -=
+      1;
+
+  }
+
+
+  const padX =
+    12;
+
+
+  const padY =
+    14;
+
+
+  const W =
+    rect.width;
+
+
+  const H =
+    rect.height;
+
+
+  const x =
+    index =>
+
+      padX
+
+      +
+
+      index /
+      Math.max(
+        1,
+        values.length -
+        1
+      )
+
+      *
+      (
+        W -
+        padX *
+        2
+      );
+
+
+  const y =
+    value =>
+
+      H -
+      padY
+
+      -
+
+      (
+        value -
+        min
+      )
+
+      /
+      (
+        max -
+        min
+      )
+
+      *
+      (
+        H -
+        padY *
+        2
+      );
+
+
+  /* zero line */
+
+  if (
+    min <
+    0
+
+    &&
+
+    max >
+    0
+  ) {
+
+    ctx.strokeStyle =
+      "rgba(255,255,255,.08)";
+
+
+    ctx.setLineDash(
+      [
+        4,
+        4
+      ]
+    );
+
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+      0,
+      y(0)
+    );
+
+
+    ctx.lineTo(
+      W,
+      y(0)
+    );
+
+
+    ctx.stroke();
+
+
+    ctx.setLineDash(
+      []
+    );
+
+  }
+
+
+  ctx.strokeStyle =
+
+    equity >=
+    0
+
+      ? "#38e7a2"
+
+      : "#ff647c";
+
+
+  ctx.lineWidth =
+    2;
+
+
+  ctx.beginPath();
+
+
+  values.forEach(
+    (
+      value,
+      index
+    ) => {
+
+      if (
+        index ===
+        0
+      ) {
+
+        ctx.moveTo(
+          x(index),
+          y(value)
+        );
+
+      } else {
+
+        ctx.lineTo(
+          x(index),
+          y(value)
+        );
+
+      }
+
+    }
+  );
+
+
+  ctx.stroke();
 
 }
 
@@ -3746,39 +8591,55 @@ function renderRecentSignals(
   signals
 ) {
 
+  const list =
+    Array.isArray(
+      signals
+    )
+
+      ? signals
+
+      : [];
+
+
   $("recentSignals").innerHTML =
 
-    signals.length
+    list.length
 
       ?
 
-      signals
+      list
         .map(
           trade => `
 
-            <div class="tradeRow">
+            <div class="historyRow">
 
-              <b class="${
-                trade.signal === "BUY"
-                  ? "green"
-                  : "red"
-              }">
+              <div class="historyTop">
 
-                ${esc(trade.signal)}
+                <span class="historyDirection ${
+                  trade.signal === "BUY"
+                    ? "green"
+                    : "red"
+                }">
 
-              </b>
+                  ${esc(trade.signal)}
 
-              · Entry ${fmt(trade.entry)}
+                </span>
 
-              <br>
+                <span class="historyResult">
 
-              <span class="tradeTime">
+                  1:${trade.rr ?? 3}
 
+                </span>
+
+              </div>
+
+              <div class="historyBody">
+
+                Entry ${fmt(trade.entry)}
+                ·
                 SL ${fmt(trade.stopLoss)}
                 ·
                 TP ${fmt(trade.takeProfit)}
-                ·
-                1:${trade.rr ?? 3}
 
                 <br>
 
@@ -3787,20 +8648,23 @@ function renderRecentSignals(
                 →
                 ${fmt(trade.zone?.high)}
 
-                · Bull ${trade.bullSpikes}
-                /
-                Bear ${trade.bearSpikes}
+                <br>
+
+                Bull ${trade.bullSpikes ?? 0}
+                ·
+                Bear ${trade.bearSpikes ?? 0}
 
                 <br>
 
                 ${esc(
                   displayTime(
-                    trade.signalTime ||
+                    trade.signalTime
+                    ||
                     trade.time
                   )
                 )}
 
-              </span>
+              </div>
 
             </div>
 
@@ -3810,21 +8674,343 @@ function renderRecentSignals(
 
       :
 
-      `<div class="reason">
-         No recent qualified signals.
-       </div>`;
+      `
+        <div class="empty">
+          No recent qualified signals.
+        </div>
+      `;
 
 }
 
 
 /* =========================================================
-   CHART
+   LIVE HISTORY
+========================================================= */
+
+function renderLiveHistory() {
+
+  const history =
+    getHistory();
+
+
+  $("liveHistory").innerHTML =
+
+    history.length
+
+      ?
+
+      history
+        .map(
+          trade => `
+
+            <div class="historyRow">
+
+              <div class="historyTop">
+
+                <span class="historyDirection ${
+                  trade.signal === "BUY"
+                    ? "green"
+                    : "red"
+                }">
+
+                  ${esc(trade.signal)}
+                  ·
+                  ${esc(trade.symbol)}
+
+                </span>
+
+                <span class="historyResult ${
+                  trade.status === "WIN"
+                    ? "green"
+                    : "red"
+                }">
+
+                  ${esc(trade.status)}
+                  ·
+                  ${trade.resultR > 0 ? "+" : ""}
+                  ${trade.resultR}R
+
+                </span>
+
+              </div>
+
+              <div class="historyBody">
+
+                Entry ${fmt(trade.entry)}
+                ·
+                SL ${fmt(trade.stopLoss)}
+                ·
+                TP ${fmt(trade.takeProfit)}
+
+                <br>
+
+                ${esc(displayTime(trade.signalTime))}
+
+                ${
+                  trade.exitTime
+
+                    ? ` → ${esc(displayTime(trade.exitTime))}`
+
+                    : ""
+                }
+
+              </div>
+
+            </div>
+
+          `
+        )
+        .join("")
+
+      :
+
+      `
+        <div class="empty">
+          No completed live trades stored on this device.
+        </div>
+      `;
+
+}
+
+
+/* =========================================================
+   DATA VIEW
+========================================================= */
+
+function renderData(
+  data
+) {
+
+  $("priceSource").textContent =
+    data.dataSources?.price
+    ??
+    "—";
+
+
+  $("volumeSource").textContent =
+    data.dataSources?.volume
+    ??
+    "—";
+
+
+  $("volumeMode").textContent =
+    data.dataSources?.volumeMode
+    ??
+    "—";
+
+
+  $("volumeAvailable").textContent =
+
+    data.volume?.available
+
+      ? "YES"
+
+      : "NO";
+
+
+  $("volumeAvailable").className =
+
+    data.volume?.available
+
+      ? "green"
+
+      : "red";
+
+
+  $("usableBars").textContent =
+    Number(
+      data.volume?.usableBars
+      ??
+      0
+    )
+      .toLocaleString();
+
+
+  $("totalBars").textContent =
+    Number(
+      data.volume?.totalBars
+      ??
+      0
+    )
+      .toLocaleString();
+
+
+  $("lastUpdated").textContent =
+    displayTime(
+      data.generatedAt
+    );
+
+
+  $("volumeStatus").innerHTML =
+
+    data.volume?.available
+
+      ?
+
+      `<span class="green">
+         VOLUME FEED HEALTHY
+       </span>
+       · ${Number(data.volume.usableBars || 0).toLocaleString()} usable 1M bars.`
+
+      :
+
+      `<span class="red">
+         VOLUME UNAVAILABLE / TOO SPARSE
+       </span>
+       · Signal engine will remain on WAIT.`;
+
+
+  const settings =
+    data.settings
+    ||
+    {};
+
+
+  $("setExecution").textContent =
+    settings.executionTimeframe
+    ??
+    "5min";
+
+
+  $("setHTF").textContent =
+    settings.htfAnchor
+    ??
+    "60min";
+
+
+  $("setLTF").textContent =
+    settings.spikeGranularity
+    ??
+    "1min";
+
+
+  $("setSpikeMult").textContent =
+    `${settings.spikeMultiplier ?? 1.2}×`;
+
+
+  $("setVolMA").textContent =
+    settings.volumeMALength
+    ??
+    20;
+
+
+  $("setVPRows").textContent =
+    settings.vpRows
+    ??
+    40;
+
+
+  $("setMinStack").textContent =
+    settings.minimumStackedSpikes
+    ??
+    3;
+
+
+  $("setRR").textContent =
+    `1:${settings.riskReward ?? 3}`;
+
+}
+
+
+/* =========================================================
+   CHART PREFS
+========================================================= */
+
+document
+  .querySelectorAll(
+    "[data-chart-toggle]"
+  )
+  .forEach(
+    button => {
+
+      button.addEventListener(
+
+        "click",
+
+        () => {
+
+          const key =
+            button.dataset.chartToggle;
+
+
+          chartPrefs[
+            key
+          ] =
+            !chartPrefs[
+              key
+            ];
+
+
+          button.classList.toggle(
+
+            "active",
+
+            chartPrefs[
+              key
+            ]
+
+          );
+
+
+          if (
+            lastData
+          ) {
+
+            drawChart(
+              lastData,
+              getLock()
+            );
+
+          }
+
+        }
+
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   MAIN CHART
 ========================================================= */
 
 function drawChart(
   data,
   lock
 ) {
+
+  const canvas =
+    $("chart");
+
+
+  if (
+    !canvas
+  ) {
+
+    return;
+
+  }
+
+
+  const rect =
+    canvas.getBoundingClientRect();
+
+
+  if (
+    rect.width <=
+    0
+
+    ||
+
+    rect.height <=
+    0
+  ) {
+
+    return;
+
+  }
+
 
   const bars =
 
@@ -3837,42 +9023,29 @@ function drawChart(
       : [];
 
 
-  const canvas =
-    $("chart");
-
-
-  const rect =
-    canvas.getBoundingClientRect();
-
-
   const ratio =
-    window.devicePixelRatio ||
+    window.devicePixelRatio
+    ||
     1;
 
 
   canvas.width =
     Math.max(
-
       1,
-
       Math.round(
         rect.width *
         ratio
       )
-
     );
 
 
   canvas.height =
     Math.max(
-
       1,
-
       Math.round(
         rect.height *
         ratio
       )
-
     );
 
 
@@ -3883,24 +9056,20 @@ function drawChart(
 
 
   ctx.setTransform(
-
     ratio,
     0,
     0,
     ratio,
     0,
     0
-
   );
 
 
   ctx.clearRect(
-
     0,
     0,
     rect.width,
     rect.height
-
   );
 
 
@@ -3911,7 +9080,7 @@ function drawChart(
     $("chartLegend").innerHTML =
 
       `<span class="chip">
-         No chart data
+         NO CHART DATA
        </span>`;
 
 
@@ -3931,74 +9100,104 @@ function drawChart(
       : [];
 
 
-  const extra =
+  const values =
 
-    [
+    bars.flatMap(
+      bar => [
 
-      data.anchor?.poc,
+        Number(
+          bar.high
+        ),
 
-      lock?.entry,
+        Number(
+          bar.low
+        )
 
-      lock?.stopLoss,
-
-      lock?.takeProfit,
-
-      ...zones.flatMap(
-        zone => [
-
-          zone.low,
-
-          zone.high
-
-        ]
-      )
-
-    ]
-
-      .map(
-        Number
-      )
-
-      .filter(
-        Number.isFinite
-      );
-
-
-  const highs =
-
-    bars
-
-      .map(
-        bar =>
-          Number(
-            bar.high
-          )
-      )
-
-      .filter(
-        Number.isFinite
-      );
-
-
-  const lows =
-
-    bars
-
-      .map(
-        bar =>
-          Number(
-            bar.low
-          )
-      )
-
+      ]
+    )
       .filter(
         Number.isFinite
       );
 
 
   if (
-    !highs.length ||
-    !lows.length
+    chartPrefs.zones
+  ) {
+
+    zones.forEach(
+      zone => {
+
+        values.push(
+          Number(
+            zone.low
+          )
+        );
+
+
+        values.push(
+          Number(
+            zone.high
+          )
+        );
+
+      }
+    );
+
+  }
+
+
+  if (
+    chartPrefs.poc
+  ) {
+
+    values.push(
+      Number(
+        data.anchor?.poc
+      )
+    );
+
+  }
+
+
+  if (
+    chartPrefs.lock
+
+    &&
+
+    lock
+  ) {
+
+    values.push(
+      Number(
+        lock.entry
+      )
+    );
+
+
+    values.push(
+      Number(
+        lock.stopLoss
+      )
+    );
+
+
+    values.push(
+      Number(
+        lock.takeProfit
+      )
+    );
+
+  }
+
+
+  const finiteValues =
+    values.filter(
+      Number.isFinite
+    );
+
+
+  if (
+    !finiteValues.length
   ) {
 
     return;
@@ -4008,21 +9207,13 @@ function drawChart(
 
   let high =
     Math.max(
-
-      ...highs,
-
-      ...extra
-
+      ...finiteValues
     );
 
 
   let low =
     Math.min(
-
-      ...lows,
-
-      ...extra
-
+      ...finiteValues
     );
 
 
@@ -4034,7 +9225,7 @@ function drawChart(
     )
 
     *
-    .08
+    .07
 
     ||
 
@@ -4057,10 +9248,26 @@ function drawChart(
     rect.height;
 
 
+  const left =
+    12;
+
+
+  const right =
+    12;
+
+
+  const top =
+    12;
+
+
+  const bottom =
+    18;
+
+
   const x =
     index =>
 
-      14
+      left
 
       +
 
@@ -4072,10 +9279,10 @@ function drawChart(
       )
 
       *
-
       (
         W -
-        28
+        left -
+        right
       );
 
 
@@ -4083,7 +9290,7 @@ function drawChart(
     price =>
 
       H -
-      16
+      bottom
 
       -
 
@@ -4106,20 +9313,20 @@ function drawChart(
       )
 
       *
-
       (
         H -
-        32
+        top -
+        bottom
       );
 
 
-  const firstTimestamp =
+  const firstTime =
     parseTime(
       bars[0].time
     );
 
 
-  const lastTimestamp =
+  const lastTime =
     parseTime(
 
       bars.at(-1).closeTime
@@ -4131,71 +9338,72 @@ function drawChart(
     );
 
 
-  const xTime =
-    value => {
+  function xFromTime(
+    value
+  ) {
 
-      const timestamp =
-        parseTime(
-          value
-        );
-
-
-      if (
-        !Number.isFinite(
-          timestamp
-        )
-
-        ||
-
-        !Number.isFinite(
-          firstTimestamp
-        )
-
-        ||
-
-        !Number.isFinite(
-          lastTimestamp
-        )
-
-        ||
-
-        lastTimestamp ===
-        firstTimestamp
-      ) {
-
-        return null;
-
-      }
-
-
-      return (
-
-        14
-
-        +
-
-        (
-          timestamp -
-          firstTimestamp
-        )
-
-        /
-
-        (
-          lastTimestamp -
-          firstTimestamp
-        )
-
-        *
-
-        (
-          W -
-          28
-        )
-
+    const timestamp =
+      parseTime(
+        value
       );
 
-    };
+
+    if (
+      !Number.isFinite(
+        timestamp
+      )
+
+      ||
+
+      !Number.isFinite(
+        firstTime
+      )
+
+      ||
+
+      !Number.isFinite(
+        lastTime
+      )
+
+      ||
+
+      firstTime ===
+      lastTime
+    ) {
+
+      return null;
+
+    }
+
+
+    return (
+
+      left
+
+      +
+
+      (
+        timestamp -
+        firstTime
+      )
+
+      /
+
+      (
+        lastTime -
+        firstTime
+      )
+
+      *
+      (
+        W -
+        left -
+        right
+      )
+
+    );
+
+  }
 
 
   /* GRID */
@@ -4204,11 +9412,15 @@ function drawChart(
     "rgba(255,255,255,.045)";
 
 
+  ctx.lineWidth =
+    1;
+
+
   for (
     let row = 1;
 
     row <
-      6;
+    6;
 
     row++
   ) {
@@ -4239,53 +9451,85 @@ function drawChart(
   }
 
 
-  /* IMBALANCE ZONES */
+  /* ZONES */
 
-  for (
-    const zone
-    of zones
+  if (
+    chartPrefs.zones
   ) {
 
-    const top =
-      y(
-        zone.high
+    for (
+      const zone
+      of zones
+    ) {
+
+      const zLow =
+        Number(
+          zone.low
+        );
+
+
+      const zHigh =
+        Number(
+          zone.high
+        );
+
+
+      if (
+        !Number.isFinite(
+          zLow
+        )
+
+        ||
+
+        !Number.isFinite(
+          zHigh
+        )
+      ) {
+
+        continue;
+
+      }
+
+
+      const zoneTop =
+        y(
+          zHigh
+        );
+
+
+      const zoneBottom =
+        y(
+          zLow
+        );
+
+
+      ctx.fillStyle =
+
+        zone.direction ===
+        "BULLISH"
+
+          ? "rgba(56,231,162,.10)"
+
+          : "rgba(255,100,124,.10)";
+
+
+      ctx.fillRect(
+
+        0,
+
+        zoneTop,
+
+        W,
+
+        Math.max(
+          1,
+          zoneBottom -
+          zoneTop
+        )
+
       );
 
-
-    const bottom =
-      y(
-        zone.low
-      );
-
-
-    ctx.fillStyle =
-
-      zone.direction ===
-      "BULLISH"
-
-        ? "rgba(55,230,161,.10)"
-
-        : "rgba(255,98,121,.10)";
-
-
-    ctx.fillRect(
-
-      0,
-
-      top,
-
-      W,
-
-      Math.max(
-
-        1,
-
-        bottom -
-        top
-
-      )
-
-    );
+    }
 
   }
 
@@ -4302,9 +9546,12 @@ function drawChart(
 
         5,
 
-        W /
-        bars.length *
-        .67
+        (
+          W /
+          bars.length
+        )
+        *
+        .66
 
       )
 
@@ -4323,13 +9570,13 @@ function drawChart(
         );
 
 
-      const barHigh =
+      const highPrice =
         Number(
           bar.high
         );
 
 
-      const barLow =
+      const lowPrice =
         Number(
           bar.low
         );
@@ -4344,8 +9591,8 @@ function drawChart(
       if (
         ![
           open,
-          barHigh,
-          barLow,
+          highPrice,
+          lowPrice,
           close
         ]
           .every(
@@ -4364,42 +9611,40 @@ function drawChart(
         );
 
 
-      const candleColor =
-
+      const bullish =
         close >=
-        open
+        open;
 
-          ? "#37e6a1"
 
-          : "#ff6279";
+      const color =
+
+        bullish
+
+          ? "#38e7a2"
+
+          : "#ff647c";
 
 
       ctx.strokeStyle =
-        candleColor;
+        color;
 
 
       ctx.beginPath();
 
 
       ctx.moveTo(
-
         xx,
-
         y(
-          barLow
+          lowPrice
         )
-
       );
 
 
       ctx.lineTo(
-
         xx,
-
         y(
-          barHigh
+          highPrice
         )
-
       );
 
 
@@ -4407,7 +9652,7 @@ function drawChart(
 
 
       ctx.fillStyle =
-        candleColor;
+        color;
 
 
       const bodyTop =
@@ -4466,105 +9711,240 @@ function drawChart(
   );
 
 
-  /* SPIKE BUBBLES */
+  /* SPIKES */
 
-  const spikes =
+  if (
+    chartPrefs.spikes
+  ) {
 
-    Array.isArray(
-      data.anchor?.spikes
-    )
+    const spikes =
 
-      ? data.anchor.spikes
+      Array.isArray(
+        data.anchor?.spikes
+      )
 
-      : [];
+        ? data.anchor.spikes
 
-
-  spikes.forEach(
-    spike => {
-
-      const xx =
-        xTime(
-          spike.time
-        );
+        : [];
 
 
-      if (
-        xx ===
-        null
-      ) {
+    spikes.forEach(
+      spike => {
 
-        return;
-
-      }
-
-
-      const yy =
-        y(
-          spike.price
-        );
+        const xx =
+          xFromTime(
+            spike.time
+          );
 
 
-      const relative =
+        if (
+          xx ===
+          null
+        ) {
 
-        Math.max(
+          return;
 
-          .15,
+        }
 
-          Math.min(
 
-            1,
+        const price =
+          Number(
+            spike.price
+          );
 
-            Number(
-              spike.relative
+
+        if (
+          !Number.isFinite(
+            price
+          )
+        ) {
+
+          return;
+
+        }
+
+
+        const relative =
+
+          Math.max(
+
+            .15,
+
+            Math.min(
+
+              1,
+
+              Number(
+                spike.relative
+              )
+
+              ||
+
+              .2
+
             )
 
-            ||
+          );
 
-            .2
 
+        ctx.beginPath();
+
+
+        ctx.arc(
+
+          xx,
+
+          y(
+            price
+          ),
+
+          2 +
+          relative *
+          4,
+
+          0,
+
+          Math.PI *
+          2
+
+        );
+
+
+        ctx.fillStyle =
+
+          spike.delta >
+          0
+
+            ? `rgba(56,231,162,${.3 + relative * .62})`
+
+            : `rgba(255,100,124,${.3 + relative * .62})`;
+
+
+        ctx.fill();
+
+      }
+    );
+
+  }
+
+
+  /* PROFILE */
+
+  if (
+    chartPrefs.profile
+  ) {
+
+    const profile =
+
+      Array.isArray(
+        data.anchor?.profile
+      )
+
+        ? data.anchor.profile
+
+        : [];
+
+
+    const maxWidth =
+      Math.min(
+        100,
+        W *
+        .20
+      );
+
+
+    profile.forEach(
+      row => {
+
+        const relative =
+          Number(
+            row.relative
+          )
+          ||
+          0;
+
+
+        if (
+          relative <=
+          0
+        ) {
+
+          return;
+
+        }
+
+
+        const rowHigh =
+          Number(
+            row.high
+          );
+
+
+        const rowLow =
+          Number(
+            row.low
+          );
+
+
+        if (
+          !Number.isFinite(
+            rowHigh
+          )
+
+          ||
+
+          !Number.isFinite(
+            rowLow
+          )
+        ) {
+
+          return;
+
+        }
+
+
+        const rowTop =
+          y(
+            rowHigh
+          );
+
+
+        const rowBottom =
+          y(
+            rowLow
+          );
+
+
+        ctx.fillStyle =
+          "rgba(160,135,255,.19)";
+
+
+        ctx.fillRect(
+
+          W -
+          maxWidth *
+          relative,
+
+          rowTop,
+
+          maxWidth *
+          relative,
+
+          Math.max(
+            1,
+            rowBottom -
+            rowTop
           )
 
         );
 
+      }
+    );
 
-      ctx.beginPath();
-
-
-      ctx.arc(
-
-        xx,
-
-        yy,
-
-        2 +
-        relative *
-        4,
-
-        0,
-
-        Math.PI *
-        2
-
-      );
+  }
 
 
-      ctx.fillStyle =
-
-        spike.delta >
-        0
-
-          ? `rgba(55,230,161,${.35 + relative * .55})`
-
-          : `rgba(255,98,121,${.35 + relative * .55})`;
-
-
-      ctx.fill();
-
-    }
-  );
-
-
-  /* HORIZONTAL LINE */
+  /* HORIZONTAL */
 
   function horizontal(
     price,
@@ -4573,7 +9953,7 @@ function drawChart(
     dash = []
   ) {
 
-    const value =
+    const number =
       Number(
         price
       );
@@ -4581,7 +9961,7 @@ function drawChart(
 
     if (
       !Number.isFinite(
-        value
+        number
       )
     ) {
 
@@ -4592,7 +9972,7 @@ function drawChart(
 
     const yy =
       y(
-        value
+        number
       );
 
 
@@ -4636,17 +10016,17 @@ function drawChart(
 
 
     ctx.font =
-      "9px -apple-system";
+      "8px -apple-system";
 
 
     ctx.fillText(
 
-      `${label} ${fmt(value)}`,
+      `${label} ${fmt(number)}`,
 
       6,
 
       Math.max(
-        11,
+        10,
         yy -
         4
       )
@@ -4659,28 +10039,33 @@ function drawChart(
   }
 
 
-  /* POC */
+  if (
+    chartPrefs.poc
+  ) {
 
-  horizontal(
+    horizontal(
 
-    data.anchor
-      ?.poc,
+      data.anchor?.poc,
 
-    "POC",
+      "POC",
 
-    "rgba(157,131,255,.9)",
+      "rgba(160,135,255,.95)",
 
-    [
-      5,
-      5
-    ]
+      [
+        5,
+        5
+      ]
 
-  );
+    );
 
+  }
 
-  /* LOCK */
 
   if (
+    chartPrefs.lock
+
+    &&
+
     lock
   ) {
 
@@ -4690,7 +10075,7 @@ function drawChart(
 
       "ENTRY",
 
-      "rgba(121,148,255,.98)"
+      "rgba(121,150,255,.98)"
 
     );
 
@@ -4701,7 +10086,7 @@ function drawChart(
 
       "SL",
 
-      "rgba(255,98,121,.98)"
+      "rgba(255,100,124,.98)"
 
     );
 
@@ -4712,149 +10097,41 @@ function drawChart(
 
       "TP 3R",
 
-      "rgba(55,230,161,.98)"
+      "rgba(56,231,162,.98)"
 
     );
 
   }
 
 
-  /* VOLUME PROFILE */
-
-  const profile =
-
-    Array.isArray(
-      data.anchor?.profile
-    )
-
-      ? data.anchor.profile
-
-      : [];
-
-
-  const maxProfileWidth =
-
-    Math.min(
-
-      90,
-
-      W *
-      .18
-
-    );
-
-
-  profile.forEach(
-    row => {
-
-      const relative =
-        Number(
-          row.relative
-        )
-
-        ||
-
-        0;
-
-
-      if (
-        relative <=
-        0
-      ) {
-
-        return;
-
-      }
-
-
-      const top =
-        y(
-          row.high
-        );
-
-
-      const bottom =
-        y(
-          row.low
-        );
-
-
-      ctx.fillStyle =
-        "rgba(157,131,255,.18)";
-
-
-      ctx.fillRect(
-
-        W -
-        maxProfileWidth *
-        relative,
-
-        top,
-
-        maxProfileWidth *
-        relative,
-
-        Math.max(
-
-          1,
-
-          bottom -
-          top
-
-        )
-
-      );
-
-    }
-  );
-
-
-  /* LEGEND */
-
   $("chartLegend").innerHTML = `
 
     <span class="chip">
-
       ${esc(data.symbol)} · 5M
-
     </span>
 
-
     <span class="chip">
-
       1H ANCHOR
-
     </span>
 
-
     <span class="chip">
-
-      1M SPIKES
-
-    </span>
-
-
-    <span class="chip">
-
       ${data.anchor?.totalSpikes ?? 0} SPIKES
-
     </span>
 
+    <span class="chip">
+      ${zones.length} ZONES
+    </span>
 
     ${
       lock
 
-        ?
+        ? `<span class="chip">
+             🔒 ${lock.signal}
+           </span>`
 
-        `<span class="chip">
-           🔒 ${lock.signal} · 3R
-         </span>`
-
-        :
-
-        `<span class="chip">
-           UNLOCKED
-         </span>`
+        : `<span class="chip">
+             UNLOCKED
+           </span>`
     }
 
   `;
@@ -4863,51 +10140,225 @@ function drawChart(
 
 
 /* =========================================================
+   COPY SIGNAL
+========================================================= */
+
+async function copySignal() {
+
+  if (
+    !lastData
+  ) {
+
+    return;
+
+  }
+
+
+  const lock =
+    getLock();
+
+
+  const text =
+
+    lock
+
+      ?
+
+      `MKAYFX ${lock.symbol}
+${lock.signal} HARD LOCK
+Entry: ${fmt(lock.entry)}
+SL: ${fmt(lock.stopLoss)}
+TP: ${fmt(lock.takeProfit)}
+R:R: 1:${lock.rr}
+Current Price: ${fmt(lastData.price)}
+Current R: ${fmt(currentR(lock,lastData.price),2)}R`
+
+      :
+
+      `MKAYFX ${lastData.symbol}
+Signal: ${lastData.signal}
+Price: ${fmt(lastData.price)}
+Bull Spikes: ${lastData.anchor?.bullSpikes ?? 0}
+Bear Spikes: ${lastData.anchor?.bearSpikes ?? 0}
+Dominance: ${lastData.anchor?.dominance ?? "—"}
+POC: ${fmt(lastData.anchor?.poc)}`;
+
+
+  try {
+
+    await navigator.clipboard.writeText(
+      text
+    );
+
+
+    $("copyButton").textContent =
+      "✓";
+
+
+    setTimeout(
+      () => {
+
+        $("copyButton").textContent =
+          "⧉";
+
+      },
+      1200
+    );
+
+  } catch {}
+
+}
+
+
+/* =========================================================
+   COPY HISTORY
+========================================================= */
+
+async function copyHistory() {
+
+  const history =
+    getHistory();
+
+
+  if (
+    !history.length
+  ) {
+
+    return;
+
+  }
+
+
+  const text =
+    history
+      .map(
+        trade =>
+
+          `${trade.symbol} ${trade.signal} ${trade.status} ${trade.resultR > 0 ? "+" : ""}${trade.resultR}R | Entry ${trade.entry} | SL ${trade.stopLoss} | TP ${trade.takeProfit} | ${displayTime(trade.signalTime)}`
+
+      )
+      .join(
+        "\n"
+      );
+
+
+  try {
+
+    await navigator.clipboard.writeText(
+      text
+    );
+
+  } catch {}
+
+}
+
+
+/* =========================================================
    CLEAR LOCK
 ========================================================= */
 
-$("clearButton")
+function manualClearLock() {
+
+  const lock =
+    getLock();
+
+
+  if (
+    lock?.signalTime
+  ) {
+
+    localStorage.setItem(
+
+      ignoreKey(),
+
+      lock.signalTime
+
+    );
+
+  } else if (
+    lastData?.signalTime
+  ) {
+
+    localStorage.setItem(
+
+      ignoreKey(),
+
+      lastData.signalTime
+
+    );
+
+  }
+
+
+  clearLock();
+
+
+  runAnalysis();
+
+}
+
+
+/* =========================================================
+   ALERT TOGGLE
+========================================================= */
+
+function updateAlertSwitch() {
+
+  $("alertsSwitch").classList.toggle(
+
+    "on",
+
+    alertsEnabled
+
+  );
+
+
+  $("copyButton").classList.toggle(
+
+    "active",
+
+    alertsEnabled
+
+  );
+
+}
+
+
+$("alertsSwitch")
   .addEventListener(
 
     "click",
 
-    () => {
+    async () => {
 
-      const lock =
-        getLock();
+      alertsEnabled =
+        !alertsEnabled;
+
+
+      localStorage.setItem(
+
+        "mkayfx_ui_alerts",
+
+        String(
+          alertsEnabled
+        )
+
+      );
 
 
       if (
-        lock?.signalTime
+        alertsEnabled
       ) {
 
-        localStorage.setItem(
+        await enableNotifications();
 
-          ignoreKey(),
 
-          lock.signalTime
-
-        );
-
-      } else if (
-        lastData?.signalTime
-      ) {
-
-        localStorage.setItem(
-
-          ignoreKey(),
-
-          lastData.signalTime
-
-        );
+        beep();
 
       }
 
 
-      clearLock();
-
-
-      runAnalysis();
+      updateAlertSwitch();
 
     }
 
@@ -4915,15 +10366,139 @@ $("clearButton")
 
 
 /* =========================================================
-   RUN
+   AUTO REFRESH
+========================================================= */
+
+$("refreshSelect").value =
+  String(
+    refreshSeconds
+  );
+
+
+$("refreshSelect")
+  .addEventListener(
+
+    "change",
+
+    () => {
+
+      refreshSeconds =
+        Number(
+          $("refreshSelect").value
+        );
+
+
+      localStorage.setItem(
+
+        "mkayfx_ui_refresh",
+
+        String(
+          refreshSeconds
+        )
+
+      );
+
+    }
+
+  );
+
+
+/* =========================================================
+   CLOCK
+========================================================= */
+
+function tickUI() {
+
+  $("nextCandle").textContent =
+    formatCountdown(
+      secondsToNextFiveMinute()
+    );
+
+
+  $("session").textContent =
+    currentSession();
+
+
+  if (
+    refreshSeconds >
+    0
+
+    &&
+
+    !document.hidden
+
+    &&
+
+    !analysing
+
+    &&
+
+    Date.now() -
+    lastRequestAt >=
+    refreshSeconds *
+    1000
+  ) {
+
+    runAnalysis();
+
+  }
+
+}
+
+
+setInterval(
+  tickUI,
+  1000
+);
+
+
+/* =========================================================
+   BUTTON EVENTS
 ========================================================= */
 
 $("runButton")
   .addEventListener(
+    "click",
+    runAnalysis
+  );
+
+
+$("copyButton")
+  .addEventListener(
+    "click",
+    copySignal
+  );
+
+
+$("clearButton")
+  .addEventListener(
+    "click",
+    manualClearLock
+  );
+
+
+$("copyHistoryButton")
+  .addEventListener(
+    "click",
+    copyHistory
+  );
+
+
+$("clearHistoryButton")
+  .addEventListener(
 
     "click",
 
-    runAnalysis
+    () => {
+
+      localStorage.removeItem(
+        historyKey()
+      );
+
+
+      renderLiveHistory();
+
+    }
 
   );
 
@@ -4943,11 +10518,13 @@ window.addEventListener(
     ) {
 
       drawChart(
-
         lastData,
-
         getLock()
+      );
 
+
+      drawEquityChart(
+        lastData.backtest
       );
 
     }
@@ -4958,33 +10535,16 @@ window.addEventListener(
 
 
 /* =========================================================
-   AUTO REFRESH
-========================================================= */
-
-setInterval(
-
-  () => {
-
-    if (
-      !document.hidden
-    ) {
-
-      runAnalysis();
-
-    }
-
-  },
-
-  60000
-
-);
-
-
-/* =========================================================
    START
 ========================================================= */
 
 updateAssets();
+
+updateAlertSwitch();
+
+renderLiveHistory();
+
+tickUI();
 
 runAnalysis();
 
