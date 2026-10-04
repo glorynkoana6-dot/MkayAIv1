@@ -1,43 +1,33 @@
 /* =========================================================
-   MKAYFX 5M HTF VOLUME SPIKE + IMBALANCE ENGINE V3.3
+   MKAYFX 15M / 1H / 4H VOLUME IMBALANCE ENGINE V4.0
    /api/sr.js
 
-   FOUNDATION
-   ----------
-   HTF Volume Spike & Imbalance Projection [LuxAlgo]
-   © LuxAlgo — CC BY-NC-SA 4.0
+   MULTI-TIMEFRAME STRUCTURE
+   -------------------------
+   15M = Entry / execution
+   1H  = Imbalance zones + confirmation
+   4H  = Macro directional bias
 
-   MKAYFX CUSTOM STRATEGY
-   ----------------------
-   Execution:     5M
-   Context:       1H
-   Spike source:  1M
-   Zone memory:   3 hours
-   Target:        2R
-   Trade mode:    HARD LOCK
-
-   V3.3 SNIPER BALANCED
-   ---------------------
-   Minimum score:            49
-   Minimum score gap:        4
-   Minimum stacked spikes:   2
-   Spike multiplier:         1.2x
-   Opposite pressure penalty:-1
-
-   NEW SNIPER FILTERS
-   ------------------
-   Breakout body minimum:    50%
-   Reclaim body minimum:     42%
-   Retest body minimum:      38%
-   Reduced chase distance
-   Tighter zone interaction
-   Strong candle bonus
+   STRATEGY
+   --------
+   Spike source: 1M
+   Zone memory: 3 x 1H
+   RR: 1:2
+   Trade mode: HARD LOCK
 
    ENTRY TYPES
    -----------
    BREAKOUT
    RECLAIM
    RETEST
+
+   SNIPER FILTERS
+   --------------
+   15M candle confirmation
+   1H volume imbalance
+   4H directional confirmation
+   Anti-chase filter
+   Candle-close-position filter
 ========================================================= */
 
 
@@ -61,27 +51,17 @@ const MARKETS = {
 
   "XAU/USD": {
 
-    name:
-      "GOLD",
-
-    short:
-      "XAU",
-
-    digits:
-      2
+    name: "GOLD",
+    short: "XAU",
+    digits: 2
 
   },
 
   "BTC/USD": {
 
-    name:
-      "BITCOIN",
-
-    short:
-      "BTC",
-
-    digits:
-      2
+    name: "BITCOIN",
+    short: "BTC",
+    digits: 2
 
   }
 
@@ -89,16 +69,25 @@ const MARKETS = {
 
 
 /* =========================================================
-   STRATEGY SETTINGS
+   TIMEFRAMES
 ========================================================= */
 
 
 const EXECUTION_MINUTES =
-  5;
+  15;
 
 
-const HTF_MINUTES =
+const CONFIRMATION_MINUTES =
   60;
+
+
+const MACRO_MINUTES =
+  240;
+
+
+/* =========================================================
+   VOLUME SETTINGS
+========================================================= */
 
 
 const VOLUME_MA_LENGTH =
@@ -117,15 +106,20 @@ const MIN_STACKED_SPIKES =
   2;
 
 
+/*
+   Current 1H + previous 2 x 1H.
+*/
 const ZONE_LOOKBACK_HOURS =
   3;
 
 
-/*
-   V3.3 SNIPER
-*/
+/* =========================================================
+   SIGNAL SETTINGS
+========================================================= */
+
+
 const MIN_SIGNAL_SCORE =
-  49;
+  52;
 
 
 const MIN_SCORE_GAP =
@@ -137,16 +131,34 @@ const OPPOSITE_PRESSURE_PENALTY =
 
 
 /*
-   Tighter interaction area.
+   4H alignment.
 
-   V3.2:
-   0.65
-   0.020
+   Correct 4H direction gets a bonus.
 
-   V3.3:
-   0.55
-   0.017
+   Opposite 4H direction does not completely
+   block the trade, but heavily reduces score.
 */
+const MACRO_ALIGNMENT_BONUS =
+  8;
+
+
+const MACRO_BALANCED_BONUS =
+  3;
+
+
+const MACRO_OPPOSITE_PENALTY =
+  8;
+
+
+const MACRO_POC_BONUS =
+  4;
+
+
+/* =========================================================
+   ZONE INTERACTION
+========================================================= */
+
+
 const TOUCH_ZONE_MULTIPLIER =
   0.55;
 
@@ -155,17 +167,6 @@ const TOUCH_RANGE_MULTIPLIER =
   0.017;
 
 
-/*
-   Less chasing.
-
-   V3.2:
-   3.5
-   0.22
-
-   V3.3:
-   2.7
-   0.17
-*/
 const MAX_CHASE_ZONE_MULTIPLIER =
   2.7;
 
@@ -174,9 +175,11 @@ const MAX_CHASE_RANGE_MULTIPLIER =
   0.17;
 
 
-/*
-   Candle-quality filters.
-*/
+/* =========================================================
+   15M CANDLE QUALITY
+========================================================= */
+
+
 const BREAKOUT_MIN_BODY_RATIO =
   0.50;
 
@@ -189,21 +192,26 @@ const RETEST_MIN_BODY_RATIO =
   0.38;
 
 
+/* =========================================================
+   TRADE MANAGEMENT
+========================================================= */
+
+
 const RISK_REWARD =
   2;
 
 
 /* =========================================================
-   HISTORY SETTINGS
+   HISTORY
 ========================================================= */
 
 
 const XAU_OUTPUT_SIZE =
-  1800;
+  3000;
 
 
 const COINBASE_TARGET_BARS =
-  1100;
+  2500;
 
 
 const COINBASE_CHUNK_BARS =
@@ -227,19 +235,13 @@ const BACKTEST_WARMUP_STATES =
 ========================================================= */
 
 
-function num(
-  value
-) {
+function num(value) {
 
   const x =
-    Number(
-      value
-    );
+    Number(value);
 
 
-  return Number.isFinite(
-    x
-  )
+  return Number.isFinite(x)
     ? x
     : null;
 
@@ -252,67 +254,39 @@ function round(
 ) {
 
   const x =
-    num(
-      value
-    );
+    num(value);
 
 
-  return x ===
-    null
-
+  return x === null
     ? null
-
     : Number(
-        x.toFixed(
-          digits
-        )
+        x.toFixed(digits)
       );
 
 }
 
 
-function safeError(
-  value
-) {
+function safeError(value) {
 
-  if (
-    value == null
-  ) {
-
+  if (value == null) {
     return "";
-
   }
 
 
-  if (
-    typeof value ===
-    "string"
-  ) {
-
+  if (typeof value === "string") {
     return value;
+  }
+
+
+  if (value instanceof Error) {
+
+    return value.message
+      || String(value);
 
   }
 
 
-  if (
-    value instanceof Error
-  ) {
-
-    return (
-      value.message
-      ||
-      String(
-        value
-      )
-    );
-
-  }
-
-
-  if (
-    typeof value ===
-    "object"
-  ) {
+  if (typeof value === "object") {
 
     if (
       typeof value.message ===
@@ -336,18 +310,14 @@ function safeError(
 
     try {
 
-      return JSON.stringify(
-        value
-      );
+      return JSON.stringify(value);
 
     } catch {}
 
   }
 
 
-  return String(
-    value
-  );
+  return String(value);
 
 }
 
@@ -357,23 +327,15 @@ function safeError(
 ========================================================= */
 
 
-function parseTime(
-  value
-) {
+function parseTime(value) {
 
-  if (
-    !value
-  ) {
-
+  if (!value) {
     return NaN;
-
   }
 
 
   const text =
-    String(
-      value
-    )
+    String(value)
       .trim()
       .replace(
         " ",
@@ -383,9 +345,7 @@ function parseTime(
 
   return new Date(
 
-    /Z$|[+-]\d\d:\d\d$/.test(
-      text
-    )
+    /Z$|[+-]\d\d:\d\d$/.test(text)
 
       ? text
 
@@ -396,13 +356,9 @@ function parseTime(
 }
 
 
-function iso(
-  ms
-) {
+function iso(ms) {
 
-  return new Date(
-    ms
-  )
+  return new Date(ms)
     .toISOString();
 
 }
@@ -418,30 +374,26 @@ function bucketStart(
     60_000;
 
 
-  return Math.floor(
-    ts /
+  return (
+    Math.floor(
+      ts /
+      size
+    )
+    *
     size
-  )
-  *
-  size;
+  );
 
 }
 
 
-function minutesOld(
-  value
-) {
+function minutesOld(value) {
 
   const ts =
-    parseTime(
-      value
-    );
+    parseTime(value);
 
 
   if (
-    !Number.isFinite(
-      ts
-    )
+    !Number.isFinite(ts)
   ) {
 
     return null;
@@ -472,9 +424,7 @@ function minutesOld(
 ========================================================= */
 
 
-function normalizeSymbol(
-  value
-) {
+function normalizeSymbol(value) {
 
   const raw =
     String(
@@ -487,38 +437,24 @@ function normalizeSymbol(
 
   const aliases = {
 
-    XAUUSD:
-      "XAU/USD",
+    XAUUSD: "XAU/USD",
+    XAU: "XAU/USD",
+    GOLD: "XAU/USD",
 
-    XAU:
-      "XAU/USD",
-
-    GOLD:
-      "XAU/USD",
-
-    BTCUSD:
-      "BTC/USD",
-
-    BTC:
-      "BTC/USD",
-
-    BITCOIN:
-      "BTC/USD"
+    BTCUSD: "BTC/USD",
+    BTC: "BTC/USD",
+    BITCOIN: "BTC/USD"
 
   };
 
 
   const symbol =
-    aliases[
-      raw
-    ]
+    aliases[raw]
     ||
     raw;
 
 
-  return MARKETS[
-    symbol
-  ]
+  return MARKETS[symbol]
     ? symbol
     : "XAU/USD";
 
@@ -571,7 +507,7 @@ async function getJSON(
               "application/json",
 
             "User-Agent":
-              "MKAYFX/1.0",
+              "MKAYFX/4.0",
 
             ...(
               options.headers ||
@@ -597,25 +533,21 @@ async function getJSON(
 
       data =
         raw
-          ? JSON.parse(
-              raw
-            )
+          ? JSON.parse(raw)
           : null;
 
     } catch {
 
       throw new Error(
 
-        `Non-JSON response HTTP ${response.status}: ${raw.slice(0,250)}`
+        `Non-JSON response HTTP ${response.status}: ${raw.slice(0, 250)}`
 
       );
 
     }
 
 
-    if (
-      !response.ok
-    ) {
+    if (!response.ok) {
 
       throw new Error(
 
@@ -640,9 +572,7 @@ async function getJSON(
 
     return data;
 
-  } catch (
-    error
-  ) {
+  } catch (error) {
 
     if (
       error?.name ===
@@ -650,9 +580,7 @@ async function getJSON(
     ) {
 
       throw new Error(
-
         "Market-data request timed out."
-
       );
 
     }
@@ -662,9 +590,7 @@ async function getJSON(
 
   } finally {
 
-    clearTimeout(
-      timer
-    );
+    clearTimeout(timer);
 
   }
 
@@ -672,15 +598,13 @@ async function getJSON(
 
 
 /* =========================================================
-   XAU/USD
+   XAU/USD PRICE
 ========================================================= */
 
 
 async function fetchXauSpot1m() {
 
-  if (
-    !TWELVE_API_KEY
-  ) {
+  if (!TWELVE_API_KEY) {
 
     throw new Error(
 
@@ -757,7 +681,6 @@ async function fetchXauSpot1m() {
 
 
   const bars =
-
     data.values
 
       .map(
@@ -814,10 +737,9 @@ async function fetchXauSpot1m() {
             bar.high,
             bar.low,
             bar.close
-          ]
-            .every(
-              Number.isFinite
-            )
+          ].every(
+            Number.isFinite
+          )
       )
 
       .sort(
@@ -832,12 +754,12 @@ async function fetchXauSpot1m() {
 
   if (
     bars.length <
-    200
+    300
   ) {
 
     throw new Error(
 
-      "Not enough XAU/USD 1M price history."
+      "Not enough XAU/USD 1M history."
 
     );
 
@@ -898,8 +820,7 @@ async function fetchGoldFuturesVolume1m() {
 
 
   const timestamps =
-    result
-      ?.timestamp;
+    result?.timestamp;
 
 
   const quote =
@@ -921,7 +842,7 @@ async function fetchGoldFuturesVolume1m() {
 
     throw new Error(
 
-      "Gold futures proxy GC=F returned no usable 1M data."
+      "Gold futures GC=F returned no usable 1M data."
 
     );
 
@@ -953,6 +874,7 @@ async function fetchGoldFuturesVolume1m() {
 
 
     if (
+
       Number.isFinite(
         timestamp
       )
@@ -965,8 +887,8 @@ async function fetchGoldFuturesVolume1m() {
 
       &&
 
-      volume >=
-      0
+      volume >= 0
+
     ) {
 
       bars.push({
@@ -974,9 +896,7 @@ async function fetchGoldFuturesVolume1m() {
         timestamp,
 
         time:
-          iso(
-            timestamp
-          ),
+          iso(timestamp),
 
         volume
 
@@ -1017,7 +937,7 @@ async function fetchGoldFuturesVolume1m() {
 
 
 /* =========================================================
-   BTC/USD
+   BTC
 ========================================================= */
 
 
@@ -1033,14 +953,10 @@ async function fetchCoinbaseChunk(
         "60",
 
       start:
-        iso(
-          startMs
-        ),
+        iso(startMs),
 
       end:
-        iso(
-          endMs
-        )
+        iso(endMs)
 
     });
 
@@ -1054,9 +970,7 @@ async function fetchCoinbaseChunk(
 
 
   if (
-    !Array.isArray(
-      data
-    )
+    !Array.isArray(data)
   ) {
 
     throw new Error(
@@ -1086,12 +1000,8 @@ async function fetchCoinbaseChunk(
           timestamp,
 
           time:
-            Number.isFinite(
-              timestamp
-            )
-              ? iso(
-                  timestamp
-                )
+            Number.isFinite(timestamp)
+              ? iso(timestamp)
               : "",
 
           low:
@@ -1139,10 +1049,9 @@ async function fetchCoinbaseChunk(
           bar.low,
           bar.close,
           bar.volume
-        ]
-          .every(
-            Number.isFinite
-          )
+        ].every(
+          Number.isFinite
+        )
     );
 
 }
@@ -1248,9 +1157,7 @@ async function fetchBtcCoinbase1m() {
           minute,
 
         time:
-          iso(
-            minute
-          )
+          iso(minute)
 
       }
 
@@ -1260,7 +1167,6 @@ async function fetchBtcCoinbase1m() {
 
 
   const bars =
-
     [
       ...map.values()
     ]
@@ -1281,12 +1187,12 @@ async function fetchBtcCoinbase1m() {
 
   if (
     bars.length <
-    200
+    300
   ) {
 
     throw new Error(
 
-      "Coinbase returned too little BTC-USD 1M history."
+      "Coinbase returned too little BTC-USD history."
 
     );
 
@@ -1299,7 +1205,7 @@ async function fetchBtcCoinbase1m() {
 
 
 /* =========================================================
-   XAU VOLUME ALIGNMENT
+   VOLUME ALIGNMENT
 ========================================================= */
 
 
@@ -1325,11 +1231,8 @@ function attachProxyVolume(
 
 
     volumeMap.set(
-
       minute,
-
       proxy.volume
-
     );
 
   }
@@ -1362,7 +1265,7 @@ function attachProxyVolume(
 
 
 /* =========================================================
-   COMPLETED 1M BARS
+   COMPLETED 1M
 ========================================================= */
 
 
@@ -1388,7 +1291,7 @@ function completedOneMinuteBars(
 
 
 /* =========================================================
-   VOLUME SMA + SPIKES
+   VOLUME SPIKES
 ========================================================= */
 
 
@@ -1437,8 +1340,7 @@ function addVolumeSpikeStats(
 
 
     if (
-      volume !==
-      null
+      volume !== null
     ) {
 
       usable++;
@@ -1452,12 +1354,10 @@ function addVolumeSpikeStats(
 
 
     if (
-      volume !==
-      null
+      volume !== null
     ) {
 
-      sum +=
-        volume;
+      sum += volume;
 
     }
 
@@ -1472,12 +1372,10 @@ function addVolumeSpikeStats(
 
 
       if (
-        removed !==
-        null
+        removed !== null
       ) {
 
-        sum -=
-          removed;
+        sum -= removed;
 
       }
 
@@ -1493,8 +1391,7 @@ function addVolumeSpikeStats(
 
       window.every(
         item =>
-          item !==
-          null
+          item !== null
       );
 
 
@@ -1510,18 +1407,15 @@ function addVolumeSpikeStats(
 
     const isSpike =
 
-      volume !==
-      null
+      volume !== null
 
       &&
 
-      volumeMA !==
-      null
+      volumeMA !== null
 
       &&
 
-      volumeMA >
-      0
+      volumeMA > 0
 
       &&
 
@@ -1605,14 +1499,10 @@ function resamplePrice(
 
 
     let group =
-      map.get(
-        start
-      );
+      map.get(start);
 
 
-    if (
-      !group
-    ) {
+    if (!group) {
 
       group = {
 
@@ -1620,9 +1510,7 @@ function resamplePrice(
           start,
 
         time:
-          iso(
-            start
-          ),
+          iso(start),
 
         closeTimestamp:
           start +
@@ -1694,34 +1582,34 @@ function resamplePrice(
 
 
 /* =========================================================
-   BUILD 1H ANCHOR
+   BUILD GENERIC HTF ANCHOR
 ========================================================= */
 
 
 function buildAnchor(
   oneMinuteBars,
-  stateCloseTimestamp
+  stateCloseTimestamp,
+  anchorMinutes
 ) {
 
-  const htfStart =
+  const anchorStart =
     bucketStart(
 
       stateCloseTimestamp -
       1,
 
-      HTF_MINUTES
+      anchorMinutes
 
     );
 
 
   const anchorBars =
-
     oneMinuteBars.filter(
 
       bar =>
 
         bar.timestamp >=
-        htfStart
+        anchorStart
 
         &&
 
@@ -1782,7 +1670,6 @@ function buildAnchor(
 
 
   const spikes =
-
     anchorBars
 
       .filter(
@@ -1816,20 +1703,16 @@ function buildAnchor(
 
 
   const bullSpikes =
-
     spikes.filter(
       spike =>
-        spike.delta >
-        0
+        spike.delta > 0
     ).length;
 
 
   const bearSpikes =
-
     spikes.filter(
       spike =>
-        spike.delta <
-        0
+        spike.delta < 0
     ).length;
 
 
@@ -1863,7 +1746,6 @@ function buildAnchor(
 
 
     const bins =
-
       Array.from(
 
         {
@@ -1879,25 +1761,16 @@ function buildAnchor(
           index,
 
           low:
-
-            low
-
-            +
-
+            low +
             index *
             step,
 
           high:
-
-            low
-
-            +
-
+            low +
             (
               index +
               1
             )
-
             *
             step,
 
@@ -1914,6 +1787,10 @@ function buildAnchor(
 
       );
 
+
+    /*
+       Volume profile.
+    */
 
     for (
       const bar
@@ -1959,19 +1836,20 @@ function buildAnchor(
 
         &&
 
-        bar.volume >=
-        0
+        bar.volume >= 0
       ) {
 
-        bins[
-          index
-        ].volume +=
+        bins[index].volume +=
           bar.volume;
 
       }
 
     }
 
+
+    /*
+       Spike distribution.
+    */
 
     for (
       const spike
@@ -2015,15 +1893,13 @@ function buildAnchor(
         0
       ) {
 
-        bins[
-          index
-        ].bullCount++;
+        bins[index]
+          .bullCount++;
 
       } else {
 
-        bins[
-          index
-        ].bearCount++;
+        bins[index]
+          .bearCount++;
 
       }
 
@@ -2106,9 +1982,7 @@ function buildAnchor(
           direction:
 
             bullish
-
               ? "BULLISH"
-
               : "BEARISH",
 
           strength:
@@ -2146,8 +2020,7 @@ function buildAnchor(
 
         relative:
 
-          maxProfileVolume >
-          0
+          maxProfileVolume > 0
 
             ? bin.volume /
               maxProfileVolume
@@ -2163,9 +2036,12 @@ function buildAnchor(
 
   return {
 
+    timeframeMinutes:
+      anchorMinutes,
+
     startTime:
       iso(
-        htfStart
+        anchorStart
       ),
 
     endTime:
@@ -2216,7 +2092,7 @@ function buildAnchor(
 
 
 /* =========================================================
-   ACTIVE ZONES
+   ACTIVE 1H ZONES
 ========================================================= */
 
 
@@ -2245,10 +2121,14 @@ function activeZonesForState(
       stateCloseTimestamp -
       1,
 
-      HTF_MINUTES
+      CONFIRMATION_MINUTES
 
     );
 
+
+  /*
+     Current 1H.
+  */
 
   for (
     const zone
@@ -2273,6 +2153,10 @@ function activeZonesForState(
   }
 
 
+  /*
+     Previous 1H zones.
+  */
+
   for (
     let age = 1;
 
@@ -2294,7 +2178,7 @@ function activeZonesForState(
       )
 
       *
-      HTF_MINUTES
+      CONFIRMATION_MINUTES
       *
       60_000;
 
@@ -2304,7 +2188,9 @@ function activeZonesForState(
 
         oneMinuteBars,
 
-        boundary
+        boundary,
+
+        CONFIRMATION_MINUTES
 
       );
 
@@ -2367,7 +2253,7 @@ function activeZonesForState(
 
 
 /* =========================================================
-   STRATEGY ANCHOR
+   BUILD MTF CONTEXT
 ========================================================= */
 
 
@@ -2376,23 +2262,45 @@ function buildStrategyAnchor(
   stateCloseTimestamp
 ) {
 
-  const currentAnchor =
+  /*
+     1H confirmation.
+  */
+
+  const confirmation =
     buildAnchor(
 
       oneMinuteBars,
 
-      stateCloseTimestamp
+      stateCloseTimestamp,
+
+      CONFIRMATION_MINUTES
 
     );
 
 
   if (
-    !currentAnchor
+    !confirmation
   ) {
 
     return null;
 
   }
+
+
+  /*
+     4H macro.
+  */
+
+  const macro =
+    buildAnchor(
+
+      oneMinuteBars,
+
+      stateCloseTimestamp,
+
+      MACRO_MINUTES
+
+    );
 
 
   const activeZones =
@@ -2402,13 +2310,12 @@ function buildStrategyAnchor(
 
       stateCloseTimestamp,
 
-      currentAnchor
+      confirmation
 
     );
 
 
   const strongestBullish =
-
     activeZones
 
       .filter(
@@ -2438,7 +2345,6 @@ function buildStrategyAnchor(
 
 
   const strongestBearish =
-
     activeZones
 
       .filter(
@@ -2469,7 +2375,7 @@ function buildStrategyAnchor(
 
   return {
 
-    ...currentAnchor,
+    ...confirmation,
 
     zones:
       activeZones,
@@ -2479,7 +2385,9 @@ function buildStrategyAnchor(
     strongestBearish,
 
     zoneLookbackHours:
-      ZONE_LOOKBACK_HOURS
+      ZONE_LOOKBACK_HOURS,
+
+    macro
 
   };
 
@@ -2487,7 +2395,7 @@ function buildStrategyAnchor(
 
 
 /* =========================================================
-   V3.3 SNIPER ENTRY CANDIDATE
+   15M / 1H / 4H ENTRY CANDIDATE
 ========================================================= */
 
 
@@ -2500,6 +2408,7 @@ function evaluateCandidate(
 ) {
 
   if (
+
     !zone
 
     ||
@@ -2513,6 +2422,7 @@ function evaluateCandidate(
     ||
 
     !anchor
+
   ) {
 
     return null;
@@ -2533,6 +2443,7 @@ function evaluateCandidate(
 
 
   if (
+
     !Number.isFinite(
       zoneLow
     )
@@ -2547,6 +2458,7 @@ function evaluateCandidate(
 
     zoneHigh <=
     zoneLow
+
   ) {
 
     return null;
@@ -2591,10 +2503,9 @@ function evaluateCandidate(
       currentHigh,
       currentLow,
       currentClose
-    ]
-      .every(
-        Number.isFinite
-      )
+    ].every(
+      Number.isFinite
+    )
   ) {
 
     return null;
@@ -2602,9 +2513,10 @@ function evaluateCandidate(
   }
 
 
-  /*
-     Candle quality.
-  */
+  /* =======================================================
+     15M CANDLE QUALITY
+  ======================================================= */
+
 
   const candleRange =
     Math.max(
@@ -2627,10 +2539,14 @@ function evaluateCandidate(
 
 
   const bodyRatio =
-
     candleBody /
     candleRange;
 
+
+  /*
+     0 = candle closes at low
+     1 = candle closes at high
+  */
 
   const closePosition =
 
@@ -2644,8 +2560,12 @@ function evaluateCandidate(
     candleRange;
 
 
-  const zoneWidth =
+  /* =======================================================
+     ZONE DISTANCE
+  ======================================================= */
 
+
+  const zoneWidth =
     Math.max(
 
       zoneHigh -
@@ -2657,7 +2577,6 @@ function evaluateCandidate(
 
 
   const anchorRange =
-
     Math.max(
 
       Number(
@@ -2688,7 +2607,6 @@ function evaluateCandidate(
 
 
   const touchTolerance =
-
     Math.max(
 
       zoneWidth *
@@ -2701,7 +2619,6 @@ function evaluateCandidate(
 
 
   const maxChase =
-
     Math.max(
 
       zoneWidth *
@@ -2718,8 +2635,9 @@ function evaluateCandidate(
 
 
   /* =======================================================
-     BUY
+     BUY ENTRY
   ======================================================= */
+
 
   if (
     direction ===
@@ -2830,23 +2748,17 @@ function evaluateCandidate(
       maxChase;
 
 
-    if (
-      breakout
-    ) {
+    if (breakout) {
 
       trigger =
         "BREAKOUT";
 
-    } else if (
-      reclaim
-    ) {
+    } else if (reclaim) {
 
       trigger =
         "RECLAIM";
 
-    } else if (
-      retest
-    ) {
+    } else if (retest) {
 
       trigger =
         "RETEST";
@@ -2857,8 +2769,9 @@ function evaluateCandidate(
 
 
   /* =======================================================
-     SELL
+     SELL ENTRY
   ======================================================= */
+
 
   else {
 
@@ -2966,23 +2879,17 @@ function evaluateCandidate(
       maxChase;
 
 
-    if (
-      breakout
-    ) {
+    if (breakout) {
 
       trigger =
         "BREAKOUT";
 
-    } else if (
-      reclaim
-    ) {
+    } else if (reclaim) {
 
       trigger =
         "RECLAIM";
 
-    } else if (
-      retest
-    ) {
+    } else if (retest) {
 
       trigger =
         "RETEST";
@@ -3002,7 +2909,7 @@ function evaluateCandidate(
 
 
   /* =======================================================
-     SCORE
+     BASE SCORE
   ======================================================= */
 
 
@@ -3018,7 +2925,9 @@ function evaluateCandidate(
     score +=
       14;
 
-  } else if (
+  }
+
+  else if (
     trigger ===
     "RECLAIM"
   ) {
@@ -3026,7 +2935,9 @@ function evaluateCandidate(
     score +=
       13;
 
-  } else {
+  }
+
+  else {
 
     score +=
       11;
@@ -3034,12 +2945,12 @@ function evaluateCandidate(
   }
 
 
-  /*
-     Zone strength.
-  */
+  /* =======================================================
+     1H ZONE STRENGTH
+  ======================================================= */
+
 
   score +=
-
     Math.min(
 
       20,
@@ -3048,16 +2959,11 @@ function evaluateCandidate(
         zone.strength ||
         0
       )
-
       *
       8
 
     );
 
-
-  /*
-     Same-side spike concentration.
-  */
 
   const sameSideCount =
 
@@ -3076,7 +2982,6 @@ function evaluateCandidate(
 
 
   score +=
-
     Math.min(
 
       10,
@@ -3087,9 +2992,10 @@ function evaluateCandidate(
     );
 
 
-  /*
-     SNIPER CANDLE QUALITY BONUS.
-  */
+  /* =======================================================
+     15M CANDLE QUALITY BONUS
+  ======================================================= */
+
 
   if (
     bodyRatio >=
@@ -3099,7 +3005,9 @@ function evaluateCandidate(
     score +=
       5;
 
-  } else if (
+  }
+
+  else if (
     bodyRatio >=
     0.55
   ) {
@@ -3107,7 +3015,9 @@ function evaluateCandidate(
     score +=
       3;
 
-  } else if (
+  }
+
+  else if (
     bodyRatio >=
     0.45
   ) {
@@ -3116,6 +3026,11 @@ function evaluateCandidate(
       1;
 
   }
+
+
+  /* =======================================================
+     1H VOLUME PRESSURE
+  ======================================================= */
 
 
   const bullSpikes =
@@ -3132,10 +3047,6 @@ function evaluateCandidate(
     );
 
 
-  /* =======================================================
-     BUY CONTEXT
-  ======================================================= */
-
   if (
     direction ===
     "BUY"
@@ -3149,7 +3060,9 @@ function evaluateCandidate(
       score +=
         10;
 
-    } else if (
+    }
+
+    else if (
       bullSpikes ===
       bearSpikes
     ) {
@@ -3157,7 +3070,9 @@ function evaluateCandidate(
       score +=
         5;
 
-    } else {
+    }
+
+    else {
 
       score -=
         OPPOSITE_PRESSURE_PENALTY;
@@ -3195,10 +3110,6 @@ function evaluateCandidate(
   }
 
 
-  /* =======================================================
-     SELL CONTEXT
-  ======================================================= */
-
   else {
 
     if (
@@ -3209,7 +3120,9 @@ function evaluateCandidate(
       score +=
         10;
 
-    } else if (
+    }
+
+    else if (
       bullSpikes ===
       bearSpikes
     ) {
@@ -3217,7 +3130,9 @@ function evaluateCandidate(
       score +=
         5;
 
-    } else {
+    }
+
+    else {
 
       score -=
         OPPOSITE_PRESSURE_PENALTY;
@@ -3255,9 +3170,124 @@ function evaluateCandidate(
   }
 
 
-  /*
-     Zone age bonus.
-  */
+  /* =======================================================
+     4H MACRO CONFIRMATION
+  ======================================================= */
+
+
+  const macro =
+    anchor.macro;
+
+
+  if (macro) {
+
+    if (
+      direction ===
+      "BUY"
+    ) {
+
+      if (
+        macro.dominance ===
+        "BULLISH"
+      ) {
+
+        score +=
+          MACRO_ALIGNMENT_BONUS;
+
+      }
+
+      else if (
+        macro.dominance ===
+        "BALANCED"
+      ) {
+
+        score +=
+          MACRO_BALANCED_BONUS;
+
+      }
+
+      else {
+
+        score -=
+          MACRO_OPPOSITE_PENALTY;
+
+      }
+
+
+      if (
+        Number.isFinite(
+          macro.poc
+        )
+
+        &&
+
+        currentClose >=
+        macro.poc
+      ) {
+
+        score +=
+          MACRO_POC_BONUS;
+
+      }
+
+    }
+
+
+    else {
+
+      if (
+        macro.dominance ===
+        "BEARISH"
+      ) {
+
+        score +=
+          MACRO_ALIGNMENT_BONUS;
+
+      }
+
+      else if (
+        macro.dominance ===
+        "BALANCED"
+      ) {
+
+        score +=
+          MACRO_BALANCED_BONUS;
+
+      }
+
+      else {
+
+        score -=
+          MACRO_OPPOSITE_PENALTY;
+
+      }
+
+
+      if (
+        Number.isFinite(
+          macro.poc
+        )
+
+        &&
+
+        currentClose <=
+        macro.poc
+      ) {
+
+        score +=
+          MACRO_POC_BONUS;
+
+      }
+
+    }
+
+  }
+
+
+  /* =======================================================
+     ZONE AGE
+  ======================================================= */
+
 
   const ageHours =
     Number(
@@ -3274,7 +3304,9 @@ function evaluateCandidate(
     score +=
       8;
 
-  } else if (
+  }
+
+  else if (
     ageHours ===
     1
   ) {
@@ -3282,7 +3314,9 @@ function evaluateCandidate(
     score +=
       5;
 
-  } else if (
+  }
+
+  else if (
     ageHours ===
     2
   ) {
@@ -3310,7 +3344,15 @@ function evaluateCandidate(
     score:
       Math.round(
         score
-      )
+      ),
+
+    oneHourBias:
+      anchor.dominance,
+
+    fourHourBias:
+      macro?.dominance
+      ??
+      "BALANCED"
 
   };
 
@@ -3329,6 +3371,7 @@ function selectSignal(
 ) {
 
   if (
+
     !anchor
 
     ||
@@ -3338,6 +3381,7 @@ function selectSignal(
     ||
 
     !currentBar
+
   ) {
 
     return null;
@@ -3346,7 +3390,6 @@ function selectSignal(
 
 
   const buyCandidates =
-
     anchor.zones
 
       .filter(
@@ -3372,9 +3415,7 @@ function selectSignal(
           )
       )
 
-      .filter(
-        Boolean
-      )
+      .filter(Boolean)
 
       .sort(
         (
@@ -3393,7 +3434,6 @@ function selectSignal(
 
 
   const sellCandidates =
-
     anchor.zones
 
       .filter(
@@ -3419,9 +3459,7 @@ function selectSignal(
           )
       )
 
-      .filter(
-        Boolean
-      )
+      .filter(Boolean)
 
       .sort(
         (
@@ -3484,17 +3522,7 @@ function selectSignal(
       signal:
         "BUY",
 
-      zone:
-        bestBuy.zone,
-
-      trigger:
-        bestBuy.trigger,
-
-      bodyRatio:
-        bestBuy.bodyRatio,
-
-      score:
-        bestBuy.score
+      ...bestBuy
 
     };
 
@@ -3514,17 +3542,7 @@ function selectSignal(
       signal:
         "SELL",
 
-      zone:
-        bestSell.zone,
-
-      trigger:
-        bestSell.trigger,
-
-      bodyRatio:
-        bestSell.bodyRatio,
-
-      score:
-        bestSell.score
+      ...bestSell
 
     };
 
@@ -3540,7 +3558,6 @@ function selectSignal(
   ) {
 
     const difference =
-
       Math.abs(
 
         bestBuy.score -
@@ -3569,17 +3586,7 @@ function selectSignal(
         signal:
           "BUY",
 
-        zone:
-          bestBuy.zone,
-
-        trigger:
-          bestBuy.trigger,
-
-        bodyRatio:
-          bestBuy.bodyRatio,
-
-        score:
-          bestBuy.score
+        ...bestBuy
 
       };
 
@@ -3591,17 +3598,7 @@ function selectSignal(
       signal:
         "SELL",
 
-      zone:
-        bestSell.zone,
-
-      trigger:
-        bestSell.trigger,
-
-      bodyRatio:
-        bestSell.bodyRatio,
-
-      score:
-        bestSell.score
+      ...bestSell
 
     };
 
@@ -3625,6 +3622,7 @@ function buildTradePlan(
 ) {
 
   if (
+
     !zone
 
     ||
@@ -3638,24 +3636,20 @@ function buildTradePlan(
       signal !==
       "SELL"
     )
+
   ) {
 
     return {
 
-      valid:
-        false,
+      valid: false,
 
-      entry:
-        null,
+      entry: null,
 
-      stopLoss:
-        null,
+      stopLoss: null,
 
-      takeProfit:
-        null,
+      takeProfit: null,
 
-      risk:
-        null,
+      risk: null,
 
       rr:
         RISK_REWARD
@@ -3688,32 +3682,28 @@ function buildTradePlan(
 
 
   if (
+
     !Number.isFinite(
       risk
     )
 
     ||
 
-    risk <=
-    0
+    risk <= 0
+
   ) {
 
     return {
 
-      valid:
-        false,
+      valid: false,
 
-      entry:
-        null,
+      entry: null,
 
-      stopLoss:
-        null,
+      stopLoss: null,
 
-      takeProfit:
-        null,
+      takeProfit: null,
 
-      risk:
-        null,
+      risk: null,
 
       rr:
         RISK_REWARD
@@ -3759,13 +3749,13 @@ function buildTradePlan(
 
 
 /* =========================================================
-   BUILD STATES
+   BUILD 15M STATES
 ========================================================= */
 
 
 function buildStates(
   oneMinuteBars,
-  fiveMinuteBars
+  executionBars
 ) {
 
   const states =
@@ -3774,14 +3764,12 @@ function buildStates(
 
   for (
     let i = 0;
-    i < fiveMinuteBars.length;
+    i < executionBars.length;
     i++
   ) {
 
     const bar =
-      fiveMinuteBars[
-        i
-      ];
+      executionBars[i];
 
 
     const anchor =
@@ -3796,10 +3784,9 @@ function buildStates(
 
     const previousBar =
 
-      i >
-      0
+      i > 0
 
-        ? fiveMinuteBars[
+        ? executionBars[
             i -
             1
           ]
@@ -3847,6 +3834,22 @@ function buildStates(
       selection?.score
       ||
       0;
+
+
+    let oneHourBias =
+      selection?.oneHourBias
+      ||
+      anchor?.dominance
+      ||
+      "BALANCED";
+
+
+    let fourHourBias =
+      selection?.fourHourBias
+      ||
+      anchor?.macro?.dominance
+      ||
+      "BALANCED";
 
 
     let plan =
@@ -3920,6 +3923,10 @@ function buildStates(
 
       score,
 
+      oneHourBias,
+
+      fourHourBias,
+
       ...plan
 
     });
@@ -3983,20 +3990,22 @@ function simulateTrade(
     ) {
 
       const stopHit =
-
         bar.low <=
         state.stopLoss;
 
 
       const targetHit =
-
         bar.high >=
         state.takeProfit;
 
 
-      if (
-        stopHit
-      ) {
+      /*
+         Conservative:
+         SL wins if SL + TP hit
+         during same 1M candle.
+      */
+
+      if (stopHit) {
 
         result =
           "LOSS";
@@ -4023,9 +4032,7 @@ function simulateTrade(
       }
 
 
-      if (
-        targetHit
-      ) {
+      if (targetHit) {
 
         result =
           "WIN";
@@ -4060,20 +4067,16 @@ function simulateTrade(
     ) {
 
       const stopHit =
-
         bar.high >=
         state.stopLoss;
 
 
       const targetHit =
-
         bar.low <=
         state.takeProfit;
 
 
-      if (
-        stopHit
-      ) {
+      if (stopHit) {
 
         result =
           "LOSS";
@@ -4100,9 +4103,7 @@ function simulateTrade(
       }
 
 
-      if (
-        targetHit
-      ) {
+      if (targetHit) {
 
         result =
           "WIN";
@@ -4188,7 +4189,6 @@ function backtest(
 
 
   let index =
-
     Math.min(
 
       BACKTEST_WARMUP_STATES,
@@ -4208,9 +4208,7 @@ function backtest(
   ) {
 
     const state =
-      states[
-        index
-      ];
+      states[index];
 
 
     if (
@@ -4243,11 +4241,17 @@ function backtest(
       trigger:
         state.trigger,
 
+      score:
+        state.score,
+
       bodyRatio:
         state.bodyRatio,
 
-      score:
-        state.score,
+      oneHourBias:
+        state.oneHourBias,
+
+      fourHourBias:
+        state.fourHourBias,
 
       entryTime:
         state.closeTime,
@@ -4269,18 +4273,6 @@ function backtest(
 
       zone:
         state.zone,
-
-      bullSpikes:
-        state.anchor
-          ?.bullSpikes
-        ??
-        0,
-
-      bearSpikes:
-        state.anchor
-          ?.bearSpikes
-        ??
-        0,
 
       result:
         simulation.result,
@@ -4316,6 +4308,12 @@ function backtest(
     index++;
 
 
+    /*
+       Hard lock:
+       skip every potential entry
+       until existing trade closes.
+    */
+
     while (
 
       index <
@@ -4323,9 +4321,8 @@ function backtest(
 
       &&
 
-      states[
-        index
-      ].closeTimestamp <=
+      states[index]
+        .closeTimestamp <=
       simulation.exitTimestamp
 
     ) {
@@ -4338,7 +4335,6 @@ function backtest(
 
 
   const closed =
-
     trades.filter(
       trade =>
 
@@ -4353,7 +4349,6 @@ function backtest(
 
 
   const wins =
-
     closed.filter(
       trade =>
         trade.result ===
@@ -4362,7 +4357,6 @@ function backtest(
 
 
   const losses =
-
     closed.filter(
       trade =>
         trade.result ===
@@ -4371,22 +4365,18 @@ function backtest(
 
 
   const grossProfitR =
-
     wins.reduce(
       (
         total,
         trade
       ) =>
-
         total +
         trade.r,
-
       0
     );
 
 
   const grossLossR =
-
     Math.abs(
 
       losses.reduce(
@@ -4394,10 +4384,8 @@ function backtest(
           total,
           trade
         ) =>
-
           total +
           trade.r,
-
         0
       )
 
@@ -4405,16 +4393,13 @@ function backtest(
 
 
   const netR =
-
     closed.reduce(
       (
         total,
         trade
       ) =>
-
         total +
         trade.r,
-
       0
     );
 
@@ -4442,14 +4427,12 @@ function backtest(
 
   const profitFactor =
 
-    grossLossR >
-    0
+    grossLossR > 0
 
       ? grossProfitR /
         grossLossR
 
-      : grossProfitR >
-        0
+      : grossProfitR > 0
 
         ? 999
 
@@ -4531,7 +4514,6 @@ function backtest(
 
 
   const holdValues =
-
     closed
 
       .map(
@@ -4555,10 +4537,8 @@ function backtest(
           total,
           value
         ) =>
-
           total +
           value,
-
         0
       )
 
@@ -4576,6 +4556,15 @@ function backtest(
     mode:
       "HARD LOCK",
 
+    execution:
+      "15M",
+
+    confirmation:
+      "1H",
+
+    macro:
+      "4H",
+
     targetR:
       RISK_REWARD,
 
@@ -4586,7 +4575,6 @@ function backtest(
       closed.length,
 
     openTrades:
-
       trades.filter(
         trade =>
           trade.result ===
@@ -4656,7 +4644,6 @@ function backtest(
       null,
 
     recentTrades:
-
       trades
 
         .slice(
@@ -4707,9 +4694,7 @@ function recentSignals(
 ========================================================= */
 
 
-function getRequestedLock(
-  req
-) {
+function getRequestedLock(req) {
 
   const signal =
     String(
@@ -4739,51 +4724,46 @@ function getRequestedLock(
 
   const entry =
     num(
-      req.query
-        ?.lockEntry
+      req.query?.lockEntry
     );
 
 
   const stopLoss =
     num(
-      req.query
-        ?.lockSL
+      req.query?.lockSL
     );
 
 
   const takeProfit =
     num(
-      req.query
-        ?.lockTP
+      req.query?.lockTP
     );
 
 
   const time =
     String(
-      req.query
-        ?.lockTime
+      req.query?.lockTime
       ||
       ""
     );
 
 
   if (
-    entry ===
-    null
+
+    entry === null
 
     ||
 
-    stopLoss ===
-    null
+    stopLoss === null
 
     ||
 
-    takeProfit ===
-    null
+    takeProfit === null
 
     ||
 
     !time
+
   ) {
 
     return null;
@@ -4818,12 +4798,8 @@ function checkRequestedLock(
   lock
 ) {
 
-  if (
-    !lock
-  ) {
-
+  if (!lock) {
     return null;
-
   }
 
 
@@ -4834,9 +4810,7 @@ function checkRequestedLock(
 
 
   if (
-    !Number.isFinite(
-      start
-    )
+    !Number.isFinite(start)
   ) {
 
     return {
@@ -4850,12 +4824,14 @@ function checkRequestedLock(
 
 
   if (
+
     priceBars.length
 
     &&
 
     start <
     priceBars[0].timestamp
+
   ) {
 
     return {
@@ -4938,7 +4914,10 @@ function checkRequestedLock(
 
       }
 
-    } else {
+    }
+
+
+    else {
 
       if (
         bar.high >=
@@ -5012,12 +4991,8 @@ function mapZone(
   digits
 ) {
 
-  if (
-    !zone
-  ) {
-
+  if (!zone) {
     return null;
-
   }
 
 
@@ -5080,11 +5055,17 @@ function mapSignalState(
     trigger:
       state.trigger,
 
+    score:
+      state.score,
+
     bodyRatio:
       state.bodyRatio,
 
-    score:
-      state.score,
+    oneHourBias:
+      state.oneHourBias,
+
+    fourHourBias:
+      state.fourHourBias,
 
     time:
       state.time,
@@ -5123,25 +5104,7 @@ function mapSignalState(
       mapZone(
         state.zone,
         digits
-      ),
-
-    bullSpikes:
-      state.anchor
-        ?.bullSpikes
-      ??
-      0,
-
-    bearSpikes:
-      state.anchor
-        ?.bearSpikes
-      ??
-      0,
-
-    dominance:
-      state.anchor
-        ?.dominance
-      ??
-      "BALANCED"
+      )
 
   };
 
@@ -5153,9 +5116,7 @@ function mapSignalState(
 ========================================================= */
 
 
-async function loadMarket(
-  symbol
-) {
+async function loadMarket(symbol) {
 
   if (
     symbol ===
@@ -5178,7 +5139,7 @@ async function loadMarket(
         "Coinbase Exchange BTC-USD",
 
       volumeSource:
-        "Coinbase Exchange BTC-USD traded volume",
+        "Coinbase BTC-USD traded volume",
 
       volumeMode:
         "REAL EXCHANGE VOLUME"
@@ -5331,9 +5292,12 @@ export default async function handler(
 
 
     const market =
-      MARKETS[
-        symbol
-      ];
+      MARKETS[symbol];
+
+
+    /* =====================================================
+       LOAD
+    ===================================================== */
 
 
     const packet =
@@ -5344,13 +5308,17 @@ export default async function handler(
 
     const completedPrice =
       completedOneMinuteBars(
+
         packet.priceBars
+
       );
 
 
     const volumePacket =
       addVolumeSpikeStats(
+
         completedPrice
+
       );
 
 
@@ -5358,8 +5326,12 @@ export default async function handler(
       volumePacket.bars;
 
 
-    const fiveMinuteBars =
+    /* =====================================================
+       BUILD 15M EXECUTION
+    ===================================================== */
 
+
+    const executionBars =
       resamplePrice(
 
         oneMinuteBars,
@@ -5377,17 +5349,22 @@ export default async function handler(
 
 
     if (
-      fiveMinuteBars.length <
-      30
+      executionBars.length <
+      20
     ) {
 
       throw new Error(
 
-        `${symbol}: not enough completed 5M candles.`
+        `${symbol}: not enough completed 15M candles.`
 
       );
 
     }
+
+
+    /* =====================================================
+       STATES
+    ===================================================== */
 
 
     const states =
@@ -5395,7 +5372,7 @@ export default async function handler(
 
         oneMinuteBars,
 
-        fiveMinuteBars
+        executionBars
 
       );
 
@@ -5410,7 +5387,7 @@ export default async function handler(
 
       throw new Error(
 
-        `${symbol}: current 1H anchor could not be built.`
+        `${symbol}: current 1H confirmation anchor could not be built.`
 
       );
 
@@ -5451,6 +5428,15 @@ export default async function handler(
 
           mode:
             "HARD LOCK",
+
+          execution:
+            "15M",
+
+          confirmation:
+            "1H",
+
+          macro:
+            "4H",
 
           targetR:
             RISK_REWARD,
@@ -5497,15 +5483,6 @@ export default async function handler(
           averageHoldMinutes:
             0,
 
-          firstCandle:
-            states[0]
-              ?.time
-            ??
-            null,
-
-          lastCandle:
-            current.closeTime,
-
           recentTrades:
             []
 
@@ -5513,7 +5490,7 @@ export default async function handler(
 
 
     /* =====================================================
-       LIVE LOCK
+       LOCK
     ===================================================== */
 
 
@@ -5552,13 +5529,28 @@ export default async function handler(
       [];
 
 
+    const oneHourBias =
+      current.anchor
+        ?.dominance
+      ??
+      "BALANCED";
+
+
+    const fourHourBias =
+      current.anchor
+        ?.macro
+        ?.dominance
+      ??
+      "BALANCED";
+
+
     if (
       !volumePacket.volumeAvailable
     ) {
 
       reasons.push(
 
-        "Volume source is too sparse for the 20-bar 1M volume average."
+        "Volume data is currently too sparse."
 
       );
 
@@ -5572,49 +5564,49 @@ export default async function handler(
 
       reasons.push(
 
-        `BUY ${current.trigger || "SETUP"} scored ${current.score}; V3.3 requires ${MIN_SIGNAL_SCORE}.`
+        `15M BUY ${current.trigger} scored ${current.score}.`
 
       );
 
 
       reasons.push(
 
-        `Entry candle body quality: ${round((current.bodyRatio || 0) * 100, 1)}%.`
+        `15M entry candle body: ${round((current.bodyRatio || 0) * 100, 1)}%.`
 
       );
 
 
       reasons.push(
 
-        `Bullish imbalance zones remain active for ${ZONE_LOOKBACK_HOURS} hours.`
+        `1H confirmation bias: ${oneHourBias}.`
 
       );
 
 
       reasons.push(
 
-        "Sniper candle confirmation passed."
+        `4H macro bias: ${fourHourBias}.`
 
       );
 
 
       reasons.push(
 
-        "Tighter zone interaction and reduced chase distance passed."
+        "Bullish 1H imbalance interaction confirmed."
 
       );
 
 
       reasons.push(
 
-        "Stop Loss is the bottom of the bullish imbalance zone."
+        "15M candle confirmation passed."
 
       );
 
 
       reasons.push(
 
-        `Take Profit is ${RISK_REWARD}R with hard lock until SL or TP.`
+        `Target is ${RISK_REWARD}R.`
 
       );
 
@@ -5628,49 +5620,49 @@ export default async function handler(
 
       reasons.push(
 
-        `SELL ${current.trigger || "SETUP"} scored ${current.score}; V3.3 requires ${MIN_SIGNAL_SCORE}.`
+        `15M SELL ${current.trigger} scored ${current.score}.`
 
       );
 
 
       reasons.push(
 
-        `Entry candle body quality: ${round((current.bodyRatio || 0) * 100, 1)}%.`
+        `15M entry candle body: ${round((current.bodyRatio || 0) * 100, 1)}%.`
 
       );
 
 
       reasons.push(
 
-        `Bearish imbalance zones remain active for ${ZONE_LOOKBACK_HOURS} hours.`
+        `1H confirmation bias: ${oneHourBias}.`
 
       );
 
 
       reasons.push(
 
-        "Sniper candle confirmation passed."
+        `4H macro bias: ${fourHourBias}.`
 
       );
 
 
       reasons.push(
 
-        "Tighter zone interaction and reduced chase distance passed."
+        "Bearish 1H imbalance interaction confirmed."
 
       );
 
 
       reasons.push(
 
-        "Stop Loss is the top of the bearish imbalance zone."
+        "15M candle confirmation passed."
 
       );
 
 
       reasons.push(
 
-        `Take Profit is ${RISK_REWARD}R with hard lock until SL or TP.`
+        `Target is ${RISK_REWARD}R.`
 
       );
 
@@ -5681,69 +5673,56 @@ export default async function handler(
 
       reasons.push(
 
-        "No V3.3 sniper entry qualified on the latest completed 5M candle."
+        "No 15M sniper entry qualified."
 
       );
 
 
       reasons.push(
 
-        `Minimum signal score: ${MIN_SIGNAL_SCORE}.`
+        `Minimum score is ${MIN_SIGNAL_SCORE}.`
 
       );
 
 
       reasons.push(
 
-        `Breakout requires at least ${BREAKOUT_MIN_BODY_RATIO * 100}% candle body.`
+        `1H bias: ${oneHourBias}.`
 
       );
 
 
       reasons.push(
 
-        `Reclaim requires at least ${RECLAIM_MIN_BODY_RATIO * 100}% candle body.`
+        `4H bias: ${fourHourBias}.`
 
       );
 
 
       reasons.push(
 
-        `Retest requires at least ${RETEST_MIN_BODY_RATIO * 100}% candle body.`
+        `1H bullish spikes: ${current.anchor.bullSpikes}.`
 
       );
 
 
       reasons.push(
 
-        `${MIN_STACKED_SPIKES} same-side spikes are required to create a zone.`
+        `1H bearish spikes: ${current.anchor.bearSpikes}.`
 
       );
 
 
       reasons.push(
 
-        `Current 1H pressure: ${current.anchor.bullSpikes} bullish spikes vs ${current.anchor.bearSpikes} bearish spikes.`
-
-      );
-
-
-      reasons.push(
-
-        `Active current + carried zones: ${current.anchor.zones.length}.`
+        `Active 1H imbalance zones: ${current.anchor.zones.length}.`
 
       );
 
     }
 
 
-    /* =====================================================
-       SPIKE NORMALIZATION
-    ===================================================== */
-
-
     const maxSpikeVolume =
-
       Math.max(
 
         0,
@@ -5773,10 +5752,10 @@ export default async function handler(
           true,
 
         engine:
-          "MKAYFX 5M HTF VOLUME IMBALANCE V3.3",
+          "MKAYFX MTF VOLUME IMBALANCE V4.0",
 
         strategyMode:
-          "SNIPER BALANCED",
+          "15M SNIPER / 1H CONFIRMATION / 4H MACRO",
 
         symbol,
 
@@ -5787,7 +5766,13 @@ export default async function handler(
           market.short,
 
         timeframe:
-          "5min",
+          "15min",
+
+        confirmationTimeframe:
+          "1h",
+
+        macroTimeframe:
+          "4h",
 
         generatedAt:
           new Date()
@@ -5801,10 +5786,13 @@ export default async function handler(
 
         candleAgeMinutes:
           round(
+
             minutesOld(
               current.closeTime
             ),
+
             1
+
           ),
 
         price:
@@ -5824,15 +5812,6 @@ export default async function handler(
 
             : current.trigger,
 
-        bodyRatio:
-
-          signal ===
-          "WAIT"
-
-            ? null
-
-            : current.bodyRatio,
-
         signalScore:
 
           signal ===
@@ -5841,6 +5820,15 @@ export default async function handler(
             ? 0
 
             : current.score,
+
+        bodyRatio:
+
+          signal ===
+          "WAIT"
+
+            ? null
+
+            : current.bodyRatio,
 
         entry:
 
@@ -5894,6 +5882,36 @@ export default async function handler(
           RISK_REWARD,
 
 
+        /* =================================================
+           TIMEFRAME BIAS
+        ================================================= */
+
+
+        timeframeBias: {
+
+          M15:
+
+            signal ===
+            "WAIT"
+
+              ? "WAIT"
+
+              : signal,
+
+          H1:
+            oneHourBias,
+
+          H4:
+            fourHourBias
+
+        },
+
+
+        /* =================================================
+           SOURCES
+        ================================================= */
+
+
         dataSources: {
 
           price:
@@ -5908,13 +5926,21 @@ export default async function handler(
         },
 
 
+        /* =================================================
+           SETTINGS
+        ================================================= */
+
+
         settings: {
 
           executionTimeframe:
-            "5min",
+            "15min",
 
-          htfAnchor:
+          confirmationTimeframe:
             "60min",
+
+          macroTimeframe:
+            "240min",
 
           spikeGranularity:
             "1min",
@@ -5924,9 +5950,6 @@ export default async function handler(
 
           volumeMALength:
             VOLUME_MA_LENGTH,
-
-          vpRows:
-            VP_ROWS,
 
           minimumStackedSpikes:
             MIN_STACKED_SPIKES,
@@ -5940,20 +5963,17 @@ export default async function handler(
           minimumScoreGap:
             MIN_SCORE_GAP,
 
-          oppositePressurePenalty:
-            OPPOSITE_PRESSURE_PENALTY,
+          macroAlignmentBonus:
+            MACRO_ALIGNMENT_BONUS,
 
-          touchZoneMultiplier:
-            TOUCH_ZONE_MULTIPLIER,
+          macroBalancedBonus:
+            MACRO_BALANCED_BONUS,
 
-          touchRangeMultiplier:
-            TOUCH_RANGE_MULTIPLIER,
+          macroOppositePenalty:
+            MACRO_OPPOSITE_PENALTY,
 
-          maxChaseZoneMultiplier:
-            MAX_CHASE_ZONE_MULTIPLIER,
-
-          maxChaseRangeMultiplier:
-            MAX_CHASE_RANGE_MULTIPLIER,
+          macroPocBonus:
+            MACRO_POC_BONUS,
 
           breakoutMinBodyRatio:
             BREAKOUT_MIN_BODY_RATIO,
@@ -5973,6 +5993,11 @@ export default async function handler(
         },
 
 
+        /* =================================================
+           VOLUME
+        ================================================= */
+
+
         volume: {
 
           available:
@@ -5987,7 +6012,15 @@ export default async function handler(
         },
 
 
+        /* =================================================
+           1H CONFIRMATION
+        ================================================= */
+
+
         anchor: {
+
+          timeframe:
+            "1H",
 
           startTime:
             current.anchor.startTime,
@@ -6031,9 +6064,6 @@ export default async function handler(
           dominance:
             current.anchor.dominance,
 
-          zoneLookbackHours:
-            current.anchor.zoneLookbackHours,
-
           poc:
             round(
               current.anchor.poc,
@@ -6042,20 +6072,25 @@ export default async function handler(
 
           strongestBullish:
             mapZone(
+
               current.anchor
                 .strongestBullish,
+
               market.digits
+
             ),
 
           strongestBearish:
             mapZone(
+
               current.anchor
                 .strongestBearish,
+
               market.digits
+
             ),
 
           imbalances:
-
             current.anchor.zones
 
               .slice()
@@ -6083,13 +6118,15 @@ export default async function handler(
               .map(
                 zone =>
                   mapZone(
+
                     zone,
+
                     market.digits
+
                   )
               ),
 
           profile:
-
             current.anchor.profile
 
               .map(
@@ -6117,7 +6154,6 @@ export default async function handler(
               ),
 
           spikes:
-
             current.anchor.spikes
 
               .slice(
@@ -6147,13 +6183,15 @@ export default async function handler(
 
                   relative:
 
-                    maxSpikeVolume >
-                    0
+                    maxSpikeVolume > 0
 
                       ? round(
+
                           spike.volume /
                           maxSpikeVolume,
+
                           4
+
                         )
 
                       : 0
@@ -6164,10 +6202,117 @@ export default async function handler(
         },
 
 
+        /* =================================================
+           4H MACRO
+        ================================================= */
+
+
+        macro: current.anchor.macro
+
+          ? {
+
+              timeframe:
+                "4H",
+
+              startTime:
+                current.anchor
+                  .macro
+                  .startTime,
+
+              endTime:
+                current.anchor
+                  .macro
+                  .endTime,
+
+              open:
+                round(
+
+                  current.anchor
+                    .macro
+                    .open,
+
+                  market.digits
+
+                ),
+
+              high:
+                round(
+
+                  current.anchor
+                    .macro
+                    .high,
+
+                  market.digits
+
+                ),
+
+              low:
+                round(
+
+                  current.anchor
+                    .macro
+                    .low,
+
+                  market.digits
+
+                ),
+
+              close:
+                round(
+
+                  current.anchor
+                    .macro
+                    .close,
+
+                  market.digits
+
+                ),
+
+              bullSpikes:
+                current.anchor
+                  .macro
+                  .bullSpikes,
+
+              bearSpikes:
+                current.anchor
+                  .macro
+                  .bearSpikes,
+
+              totalSpikes:
+                current.anchor
+                  .macro
+                  .totalSpikes,
+
+              dominance:
+                current.anchor
+                  .macro
+                  .dominance,
+
+              poc:
+                round(
+
+                  current.anchor
+                    .macro
+                    .poc,
+
+                  market.digits
+
+                )
+
+            }
+
+          : null,
+
+
         reasons,
 
 
         lockCheck,
+
+
+        /* =================================================
+           RECENT SIGNALS
+        ================================================= */
 
 
         recentSignals:
@@ -6179,11 +6324,15 @@ export default async function handler(
             recentSignals(
               states
             )
+
               .map(
                 state =>
                   mapSignalState(
+
                     state,
+
                     market.digits
+
                   )
               )
 
@@ -6192,12 +6341,16 @@ export default async function handler(
             [],
 
 
+        /* =================================================
+           BACKTEST
+        ================================================= */
+
+
         backtest: {
 
           ...backtestResult,
 
           recentTrades:
-
             (
               backtestResult.recentTrades
               ||
@@ -6241,8 +6394,11 @@ export default async function handler(
 
                   zone:
                     mapZone(
+
                       trade.zone,
+
                       market.digits
+
                     )
 
                 })
@@ -6251,9 +6407,13 @@ export default async function handler(
         },
 
 
-        chart:
+        /* =================================================
+           15M CHART
+        ================================================= */
 
-          fiveMinuteBars
+
+        chart:
+          executionBars
 
             .slice(
               -180
@@ -6297,13 +6457,11 @@ export default async function handler(
 
       });
 
-  } catch (
-    error
-  ) {
+  } catch (error) {
 
     console.error(
 
-      "MKAYFX VOLUME ENGINE ERROR",
+      "MKAYFX MTF ENGINE ERROR",
 
       error
 
@@ -6318,7 +6476,7 @@ export default async function handler(
           false,
 
         engine:
-          "MKAYFX 5M HTF VOLUME IMBALANCE V3.3",
+          "MKAYFX MTF VOLUME IMBALANCE V4.0",
 
         error:
 
@@ -6328,7 +6486,7 @@ export default async function handler(
 
           ||
 
-          "Unknown volume engine error."
+          "Unknown MTF engine error."
 
       });
 
