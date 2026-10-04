@@ -93,15 +93,15 @@ const MARKETS = {
 ========================================================= */
 
 const INTERVAL =
-  "1min";
+  "5min";
 
 
 const LENGTH =
-  10;
+  7;
 
 
 const MAX_LEVELS =
-  2;
+  15;
 
 
 const SHOW_ZONES =
@@ -112,7 +112,7 @@ const SHOW_ZONES =
    TP STRETCHED FROM 2R TO 3R
 */
 const RISK_REWARD =
-  5;
+  2;
 
 
 const OUTPUT_SIZE =
@@ -120,7 +120,7 @@ const OUTPUT_SIZE =
 
 
 const RECENT_SIGNAL_LIMIT =
-  40;
+  20;
 
 
 const RECENT_BACKTEST_LIMIT =
