@@ -104,7 +104,7 @@ const MARKETS = {
 ========================================================= */
 
 const INTERVAL =
-  "5min";
+  "1min";
 
 
 const OTT_PERIOD =
