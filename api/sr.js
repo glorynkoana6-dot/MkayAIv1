@@ -74,15 +74,15 @@ const MARKETS = {
 
 
 const EXECUTION_MINUTES =
-  5;
+  1;
 
 
 const CONFIRMATION_MINUTES =
-  60;
+  15;
 
 
 const MACRO_MINUTES =
-  60;
+  15;
 
 
 /* =========================================================
