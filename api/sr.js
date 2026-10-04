@@ -197,7 +197,7 @@ const XAU_OUTPUT_SIZE =
 
 
 const COINBASE_TARGET_BARS =
-  1440;
+  10000;
 
 
 const COINBASE_CHUNK_BARS =
