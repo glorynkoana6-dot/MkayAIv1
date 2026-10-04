@@ -97,7 +97,7 @@ const INTERVAL =
 
 
 const LENGTH =
-  8;
+  5;
 
 
 const MAX_LEVELS =
