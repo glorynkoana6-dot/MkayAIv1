@@ -1,21 +1,62 @@
-const COINBASE_BASE = "https://api.exchange.coinbase.com";
-const PRODUCT_ID = "BTC-USD";
-const SYMBOL = "BTC/USD";
+/* =========================================================
+   MKAYFX BTC/USD LIQUIDITY SNIPER BACKTESTER V1.1
+   HIGHER-FREQUENCY / BALANCED MODE
 
-const GRANULARITY_5M = 300;
-const CHUNK_CANDLES = 299;
-const REQUEST_CONCURRENCY = 4;
+   Vercel API route:
+   /api/backtest.js
 
-const ALLOWED_DAYS = new Set([
-  3,
-  7,
-  14,
-  30
-]);
+   STRATEGY
+   --------
+   4H  = Macro bias
+   1H  = Direction + liquidity
+   15M = Sweep / BOS / displacement
+   5M  = Precision
+
+   CHANGES FROM V1
+   ----------------
+   - Min score: 70 -> 60
+   - Sweep lookback: 6 -> 12 bars
+   - Smaller minimum sweep depth
+   - Easier displacement threshold
+   - Easier volume expansion threshold
+   - Larger entry-extension allowance
+   - A / B / C setup tiers
+   - Less aggressive BUY/SELL conflict filter
+   - Maximum historical hold = 18 hours
+   - Timed-out trades no longer block the rest of the test
+   - Still uses NEXT 5M OPEN for historical entry
+   - Still assumes SL first when TP + SL occur in same candle
+========================================================= */
+
+const COINBASE_BASE =
+  "https://api.exchange.coinbase.com";
+
+const PRODUCT_ID =
+  "BTC-USD";
+
+const SYMBOL =
+  "BTC/USD";
+
+const GRANULARITY_5M =
+  300;
+
+const CHUNK_CANDLES =
+  299;
+
+const REQUEST_CONCURRENCY =
+  4;
+
+const ALLOWED_DAYS =
+  new Set([
+    3,
+    7,
+    14,
+    30
+  ]);
 
 
 /* =========================================================
-   MAIN VERCEL HANDLER
+   HANDLER
 ========================================================= */
 
 export default async function handler(
@@ -41,6 +82,7 @@ export default async function handler(
 
 
   if (
+
     req.method !==
     "GET"
 
@@ -48,6 +90,7 @@ export default async function handler(
 
     req.method !==
     "POST"
+
   ) {
 
     return res
@@ -130,30 +173,13 @@ export default async function handler(
 
 
     /*
-      Extra historical data is downloaded before
-      the actual test period so EMA50, ATR,
-      structure and liquidity levels are warmed up.
+      Extra warmup gives EMA / ATR / structure
+      enough historical candles before the
+      actual test period starts.
     */
 
     const warmupDays =
-      Math.max(
-
-        10,
-
-        Math.ceil(
-
-          (
-            50 *
-            4
-          )
-
-          /
-
-          24
-
-        )
-
-      );
+      10;
 
 
     const fetchStartSec =
@@ -169,7 +195,7 @@ export default async function handler(
 
 
     /* =====================================================
-       DOWNLOAD 5M HISTORY
+       DOWNLOAD BTC 5M HISTORY
     ===================================================== */
 
     const candles5m =
@@ -194,7 +220,7 @@ export default async function handler(
 
       throw new Error(
 
-        `Not enough historical 5M candles returned: ${candles5m.length}`
+        `Not enough historical candles: ${candles5m.length}`
 
       );
 
@@ -202,7 +228,7 @@ export default async function handler(
 
 
     /* =====================================================
-       CREATE HIGHER TIMEFRAMES
+       RESAMPLE TIMEFRAMES
     ===================================================== */
 
     const candles15m =
@@ -272,7 +298,7 @@ export default async function handler(
 
 
     /* =====================================================
-       RUN REPLAY
+       RUN TEST
     ===================================================== */
 
     const result =
@@ -305,7 +331,7 @@ export default async function handler(
           true,
 
         model:
-          "MKAYFX BTC LIQUIDITY SNIPER BACKTEST V1.0",
+          "MKAYFX BTC LIQUIDITY SNIPER BACKTEST V1.1",
 
         symbol:
           SYMBOL,
@@ -411,6 +437,9 @@ export default async function handler(
           maximumHoldHours:
             cfg.maxHoldHours,
 
+          triggerMode:
+            "BALANCED_FREQUENCY",
+
           sameCandleRule:
             "STOP_FIRST",
 
@@ -497,15 +526,20 @@ function buildConfig(
 
   return {
 
+    /*
+      Lower than old 70.
+      This is the main frequency increase.
+    */
+
     minScore:
       clamp(
 
         numberOr(
           input.minScore,
-          70
+          60
         ),
 
-        55,
+        50,
 
         95
 
@@ -517,10 +551,10 @@ function buildConfig(
 
         numberOr(
           input.sniperScore,
-          80
+          78
         ),
 
-        65,
+        60,
 
         100
 
@@ -562,7 +596,7 @@ function buildConfig(
 
         numberOr(
           input.stopAtrBuffer,
-          0.20
+          0.18
         ),
 
         0.05,
@@ -577,7 +611,7 @@ function buildConfig(
 
         numberOr(
           input.maxEntryExtensionAtr,
-          1.20
+          1.8
         ),
 
         0.4,
@@ -587,6 +621,11 @@ function buildConfig(
       ),
 
 
+    /*
+      12 × 15M =
+      3-hour liquidity sweep memory.
+    */
+
     sweepLookback:
       Math.round(
 
@@ -594,12 +633,12 @@ function buildConfig(
 
           numberOr(
             input.sweepLookback,
-            6
+            12
           ),
 
-          2,
+          3,
 
-          12
+          20
 
         )
 
@@ -611,7 +650,7 @@ function buildConfig(
 
         numberOr(
           input.minSweepDepthAtr,
-          0.03
+          0.01
         ),
 
         0,
@@ -628,10 +667,10 @@ function buildConfig(
 
           numberOr(
             input.bosLookback,
-            8
+            6
           ),
 
-          4,
+          3,
 
           20
 
@@ -645,10 +684,10 @@ function buildConfig(
 
         numberOr(
           input.displacementBodyAtr,
-          0.55
+          0.35
         ),
 
-        0.25,
+        0.20,
 
         1.5
 
@@ -660,10 +699,10 @@ function buildConfig(
 
         numberOr(
           input.displacementEfficiency,
-          0.55
+          0.42
         ),
 
-        0.30,
+        0.25,
 
         0.90
 
@@ -675,7 +714,7 @@ function buildConfig(
 
         numberOr(
           input.volumeSpikeMult,
-          1.25
+          1.08
         ),
 
         1,
@@ -692,12 +731,12 @@ function buildConfig(
 
           numberOr(
             input.fvgLookback5m,
-            24
+            30
           ),
 
           8,
 
-          60
+          80
 
         )
 
@@ -719,17 +758,23 @@ function buildConfig(
       ),
 
 
+    /*
+      VERY IMPORTANT:
+      an unresolved trade will not lock the
+      backtester forever.
+    */
+
     maxHoldHours:
       clamp(
 
         numberOr(
           input.maxHoldHours,
-          48
+          18
         ),
 
-        2,
+        3,
 
-        168
+        72
 
       )
 
@@ -739,7 +784,7 @@ function buildConfig(
 
 
 /* =========================================================
-   MAIN BACKTEST LOOP
+   BACKTEST LOOP
 ========================================================= */
 
 function runBacktest({
@@ -801,14 +846,6 @@ function runBacktest({
     );
 
 
-  /*
-    Each loop represents a historical 15-minute
-    decision point.
-
-    Only candles that had already closed at
-    cutoffSec are given to the strategy.
-  */
-
   for (
 
     let i =
@@ -851,9 +888,7 @@ function runBacktest({
 
 
     /*
-      Hard-lock simulation:
-      no new signal while another historical
-      position is active.
+      One position at a time.
     */
 
     if (
@@ -865,6 +900,13 @@ function runBacktest({
 
     }
 
+
+    /*
+      Historical state.
+
+      Every timeframe is cut off at the
+      current historical moment.
+    */
 
     const m15 =
       candles15m.slice(
@@ -941,10 +983,6 @@ function runBacktest({
     }
 
 
-    /* =====================================================
-       ANALYSE HISTORICAL STATE
-    ===================================================== */
-
     const analysis =
       analyzeHistoricalState({
 
@@ -1002,8 +1040,8 @@ function runBacktest({
 
 
     /*
-      Prevent the same sweep/BOS event from
-      producing repeated entries.
+      Avoid repeatedly entering from the
+      exact same liquidity event.
     */
 
     const signalKey = [
@@ -1048,11 +1086,10 @@ function runBacktest({
 
 
     /*
-      IMPORTANT:
-      Strategy decides only after the 15M candle
-      closes.
+      We only enter after the signal candle
+      has closed.
 
-      Entry occurs at the NEXT 5M OPEN.
+      This prevents look-ahead.
     */
 
     const entryIndex =
@@ -1142,10 +1179,6 @@ function runBacktest({
     }
 
 
-    /* =====================================================
-       FOLLOW FUTURE CANDLES FOR SL / TP
-    ===================================================== */
-
     const resolution =
       resolveTrade({
 
@@ -1179,6 +1212,12 @@ function runBacktest({
     );
 
 
+    /*
+      FIX:
+      even timed-out trades have an exitTimeSec,
+      allowing the replay to continue.
+    */
+
     nextTradableTime =
 
       resolution.exitTimeSec
@@ -1186,8 +1225,10 @@ function runBacktest({
         ? resolution.exitTimeSec +
           300
 
-        : endSec +
-          1;
+        : entryCandle.time +
+          cfg.maxHoldHours *
+          3600 +
+          300;
 
   }
 
@@ -1206,7 +1247,7 @@ function runBacktest({
 
 
 /* =========================================================
-   HISTORICAL STRATEGY STATE
+   HISTORICAL MARKET ANALYSIS
 ========================================================= */
 
 function analyzeHistoricalState({
@@ -1236,15 +1277,21 @@ function analyzeHistoricalState({
 
   const atr15 =
     atr(
+
       candles15m,
+
       14
+
     );
 
 
   const atr1h =
     atr(
+
       candles1h,
+
       14
+
     );
 
 
@@ -1372,20 +1419,27 @@ function analyzeHistoricalState({
       : "WAIT";
 
 
+  /*
+    Old version rejected too many setups.
+
+    Only reject when BOTH sides are genuinely
+    strong and nearly identical.
+  */
+
   const conflicting =
 
     buySetup.score >=
-    60
+    68
 
     &&
 
     sellSetup.score >=
-    60
+    68
 
     &&
 
     scoreGap <
-    10;
+    6;
 
 
   if (
@@ -1447,7 +1501,7 @@ function analyzeHistoricalState({
 
 
 /* =========================================================
-   SCORE DIRECTION
+   SCORE BUY / SELL
 ========================================================= */
 
 function evaluateDirection({
@@ -1518,7 +1572,7 @@ function evaluateDirection({
 
 
   /* =====================================================
-     4H
+     4H TREND
   ===================================================== */
 
   if (
@@ -1543,7 +1597,7 @@ function evaluateDirection({
 
 
   /* =====================================================
-     1H
+     1H TREND
   ===================================================== */
 
   if (
@@ -1568,7 +1622,7 @@ function evaluateDirection({
 
 
   /* =====================================================
-     SWEEP
+     LIQUIDITY SWEEP
   ===================================================== */
 
   const sweep =
@@ -1727,7 +1781,7 @@ function evaluateDirection({
 
   else if (
     volume.ratio >=
-    1.05
+    1.02
   ) {
 
     components
@@ -1738,7 +1792,7 @@ function evaluateDirection({
 
 
   /* =====================================================
-     5M PRECISION
+     5M
   ===================================================== */
 
   const precision =
@@ -1845,6 +1899,7 @@ function evaluateDirection({
           sum,
           value
         ) =>
+
           sum +
           value,
 
@@ -1852,6 +1907,11 @@ function evaluateDirection({
 
       );
 
+
+  /*
+    HTF opposition still matters,
+    but old -12 penalty was aggressive.
+  */
 
   if (
 
@@ -1870,7 +1930,7 @@ function evaluateDirection({
   ) {
 
     score -=
-      12;
+      8;
 
   }
 
@@ -1928,11 +1988,20 @@ function evaluateDirection({
   const extended =
 
     extensionAtr >
-
     cfg.maxEntryExtensionAtr;
 
 
-  const coreTrigger =
+  /* =====================================================
+     SETUP TIERS
+  ===================================================== */
+
+  /*
+    A-TIER
+
+    Full original setup.
+  */
+
+  const tierA =
     Boolean(
 
       sweep
@@ -1948,13 +2017,95 @@ function evaluateDirection({
     );
 
 
+  /*
+    B-TIER
+
+    Liquidity sweep + confirmed BOS.
+    Allows partial displacement when 5M
+    is pointing the same direction.
+  */
+
+  const tierB =
+    Boolean(
+
+      sweep
+
+      &&
+
+      bos.confirmed
+
+      &&
+
+      (
+        displacement.confirmed
+
+        ||
+
+        displacement.partial
+      )
+
+      &&
+
+      precision.bias ===
+      side
+
+    );
+
+
+  /*
+    C-TIER
+
+    Liquidity sweep + strong displacement.
+    Allows a soft BOS if 5M direction agrees.
+  */
+
+  const tierC =
+    Boolean(
+
+      sweep
+
+      &&
+
+      (
+        bos.confirmed
+
+        ||
+
+        bos.soft
+      )
+
+      &&
+
+      displacement.confirmed
+
+      &&
+
+      precision.bias ===
+      side
+
+    );
+
+
+  const coreTrigger =
+
+    tierA
+
+    ||
+
+    tierB
+
+    ||
+
+    tierC;
+
+
   let trigger =
     "NONE";
 
 
   if (
 
-    coreTrigger
+    tierA
 
     &&
 
@@ -1963,16 +2114,34 @@ function evaluateDirection({
   ) {
 
     trigger =
-      "SWEEP_BOS_DISPLACEMENT_5M_CONFIRM";
+      "A_SWEEP_BOS_DISPLACEMENT_5M";
 
   }
 
   else if (
-    coreTrigger
+    tierA
   ) {
 
     trigger =
-      "SWEEP_BOS_DISPLACEMENT";
+      "A_SWEEP_BOS_DISPLACEMENT";
+
+  }
+
+  else if (
+    tierB
+  ) {
+
+    trigger =
+      "B_SWEEP_BOS_PARTIAL_DISPLACEMENT";
+
+  }
+
+  else if (
+    tierC
+  ) {
+
+    trigger =
+      "C_SWEEP_SOFT_BOS_DISPLACEMENT";
 
   }
 
@@ -1984,6 +2153,12 @@ function evaluateDirection({
     score,
 
     coreTrigger,
+
+    tierA,
+
+    tierB,
+
+    tierC,
 
     trigger,
 
@@ -2010,7 +2185,11 @@ function evaluateDirection({
 
         ? side
 
-        : "NEUTRAL"
+        : bos.soft
+
+          ? side
+
+          : "NEUTRAL"
 
   };
 
@@ -2055,7 +2234,7 @@ function buildHistoricalTrade({
         false,
 
       reason:
-        "No sweep for stop placement."
+        "No liquidity sweep."
 
     };
 
@@ -2066,12 +2245,7 @@ function buildHistoricalTrade({
     entryCandle.open;
 
 
-  /*
-    Add configurable historical slippage.
-    Default = 1 basis point.
-  */
-
-  const slip =
+  const slippage =
 
     rawEntry *
 
@@ -2087,10 +2261,10 @@ function buildHistoricalTrade({
     "BUY"
 
       ? rawEntry +
-        slip
+        slippage
 
       : rawEntry -
-        slip;
+        slippage;
 
 
   const buffer =
@@ -2150,7 +2324,7 @@ function buildHistoricalTrade({
         false,
 
       reason:
-        "Invalid risk distance."
+        "Invalid stop distance."
 
     };
 
@@ -2158,13 +2332,14 @@ function buildHistoricalTrade({
 
 
   /*
-    Avoid ridiculous historical stops.
+    Still reject insane stops,
+    but give BTC slightly more room.
   */
 
   if (
     risk >
     atr15 *
-    3
+    3.5
   ) {
 
     return {
@@ -2173,7 +2348,7 @@ function buildHistoricalTrade({
         false,
 
       reason:
-        "Stop wider than 3 ATR."
+        "Stop too wide."
 
     };
 
@@ -2286,6 +2461,22 @@ function buildHistoricalTrade({
     trigger:
       setup.trigger,
 
+    setupTier:
+
+      setup.tierA
+
+        ? "A"
+
+        : setup.tierB
+
+          ? "B"
+
+          : setup.tierC
+
+            ? "C"
+
+            : "UNKNOWN",
+
     session:
       getSession(
 
@@ -2359,7 +2550,7 @@ function buildHistoricalTrade({
 
 
 /* =========================================================
-   RESOLVE HISTORICAL TRADE
+   RESOLVE TRADE
 ========================================================= */
 
 function resolveTrade({
@@ -2376,11 +2567,15 @@ function resolveTrade({
 
 }) {
 
-  const maxHoldSec =
+  /*
+    IMPORTANT FIX.
 
-    cfg.maxHoldHours *
-    3600;
+    Previously an unresolved trade could stay
+    active for most/all of the historical test.
 
+    Now it can only block entries for
+    maxHoldHours.
+  */
 
   const finalAllowedSec =
 
@@ -2389,7 +2584,9 @@ function resolveTrade({
       endSec,
 
       trade.entryTimeSec +
-      maxHoldSec
+
+      cfg.maxHoldHours *
+      3600
 
     );
 
@@ -2404,6 +2601,10 @@ function resolveTrade({
 
   let tp1Hit =
     false;
+
+
+  let lastCandle =
+    null;
 
 
   for (
@@ -2430,6 +2631,10 @@ function resolveTrade({
       break;
 
     }
+
+
+    lastCandle =
+      candle;
 
 
     const highR =
@@ -2547,13 +2752,7 @@ function resolveTrade({
 
 
     /*
-      We only have candle OHLC, not tick ordering.
-
-      If both SL and TP are inside one candle,
-      assume STOP FIRST.
-
-      This intentionally avoids optimistic
-      backtest bias.
+      Conservative OHLC assumption.
     */
 
     if (
@@ -2586,7 +2785,10 @@ function resolveTrade({
         tp1Hit,
 
         ambiguous:
-          true
+          true,
+
+        exitReason:
+          "SL_AND_TP_SAME_CANDLE_STOP_FIRST"
 
       });
 
@@ -2622,7 +2824,10 @@ function resolveTrade({
         tp1Hit,
 
         ambiguous:
-          false
+          false,
+
+        exitReason:
+          "STOP_LOSS"
 
       });
 
@@ -2658,7 +2863,10 @@ function resolveTrade({
         tp1Hit,
 
         ambiguous:
-          false
+          false,
+
+        exitReason:
+          "TAKE_PROFIT"
 
       });
 
@@ -2667,22 +2875,15 @@ function resolveTrade({
   }
 
 
-  const lastCandle =
+  /*
+    TIMEOUT.
 
-    [
-      ...candles5m
-    ]
+    The trade is left as OPEN for performance
+    statistics because it did not reach SL/TP.
 
-      .reverse()
-
-      .find(
-
-        candle =>
-          candle.time <=
-          finalAllowedSec
-
-      );
-
+    BUT it now has a real exit time so it
+    cannot block later trades.
+  */
 
   const markPrice =
 
@@ -2718,6 +2919,28 @@ function resolveTrade({
         trade.risk;
 
 
+  const timeoutExitSec =
+
+    Math.min(
+
+      endSec,
+
+      (
+        lastCandle
+          ?.time
+
+        ??
+
+        finalAllowedSec
+      )
+
+      +
+
+      300
+
+    );
+
+
   return {
 
     result:
@@ -2728,24 +2951,38 @@ function resolveTrade({
 
     markR:
       round(
+
         openR,
+
         2
+
       ),
 
+    exitReason:
+      "TIMEOUT",
+
     exitPrice:
-      null,
+      roundPrice(
+        markPrice
+      ),
 
     exitTime:
-      null,
+      new Date(
+
+        timeoutExitSec *
+        1000
+
+      )
+        .toISOString(),
 
     exitTimeSec:
-      null,
+      timeoutExitSec,
 
     holdMinutes:
       round(
 
         (
-          finalAllowedSec -
+          timeoutExitSec -
           trade.entryTimeSec
         )
 
@@ -2759,14 +2996,20 @@ function resolveTrade({
 
     bestR:
       round(
+
         bestR,
+
         2
+
       ),
 
     worstR:
       round(
+
         worstR,
+
         2
+
       ),
 
     tp1Hit,
@@ -2780,7 +3023,7 @@ function resolveTrade({
 
 
 /* =========================================================
-   COMPLETED RESULT
+   COMPLETED RESOLUTION
 ========================================================= */
 
 function completedResolution({
@@ -2801,7 +3044,9 @@ function completedResolution({
 
   tp1Hit,
 
-  ambiguous
+  ambiguous,
+
+  exitReason
 
 }) {
 
@@ -2813,6 +3058,8 @@ function completedResolution({
 
     markR:
       null,
+
+    exitReason,
 
     exitPrice:
       roundPrice(
@@ -2848,14 +3095,20 @@ function completedResolution({
 
     bestR:
       round(
+
         bestR,
+
         2
+
       ),
 
     worstR:
       round(
+
         worstR,
+
         2
+
       ),
 
     tp1Hit,
@@ -2868,7 +3121,7 @@ function completedResolution({
 
 
 /* =========================================================
-   BACKTEST STATISTICS
+   STATISTICS
 ========================================================= */
 
 function buildBacktestStats(
@@ -3043,7 +3296,7 @@ function buildBacktestStats(
 
 
   /* =====================================================
-     EQUITY / DRAWDOWN
+     EQUITY + DD
   ===================================================== */
 
   let equity =
@@ -3168,8 +3421,11 @@ function buildBacktestStats(
 
       equityR:
         round(
+
           equity,
+
           2
+
         )
 
     });
@@ -3182,8 +3438,11 @@ function buildBacktestStats(
 
       drawdownR:
         round(
+
           drawdown,
+
           2
+
         )
 
     });
@@ -3193,9 +3452,9 @@ function buildBacktestStats(
 
   const averageHoldMinutes =
 
-    closed.length
+    trades.length
 
-      ? closed.reduce(
+      ? trades.reduce(
 
           (
             sum,
@@ -3216,7 +3475,7 @@ function buildBacktestStats(
 
         /
 
-        closed.length
+        trades.length
 
       : 0;
 
@@ -3309,10 +3568,6 @@ function buildBacktestStats(
     );
 
 
-  /* =====================================================
-     SESSION PERFORMANCE
-  ===================================================== */
-
   const sessionNames = [
 
     "ASIA",
@@ -3357,11 +3612,27 @@ function buildBacktestStats(
     );
 
 
-  /* =====================================================
-     SCORE BUCKETS
-  ===================================================== */
-
   const scoreBuckets = {
+
+    "60-69":
+      groupStats(
+
+        closed.filter(
+
+          trade =>
+
+            trade.score >=
+            60
+
+            &&
+
+            trade.score <
+            70
+
+        )
+
+      ),
+
 
     "70-79":
       groupStats(
@@ -3443,6 +3714,50 @@ function buildBacktestStats(
       : 0;
 
 
+  const setupTiers = {
+
+    A:
+      groupStats(
+
+        closed.filter(
+
+          trade =>
+            trade.setupTier ===
+            "A"
+
+        )
+
+      ),
+
+    B:
+      groupStats(
+
+        closed.filter(
+
+          trade =>
+            trade.setupTier ===
+            "B"
+
+        )
+
+      ),
+
+    C:
+      groupStats(
+
+        closed.filter(
+
+          trade =>
+            trade.setupTier ===
+            "C"
+
+        )
+
+      )
+
+  };
+
+
   return {
 
     trades:
@@ -3454,6 +3769,16 @@ function buildBacktestStats(
     openTrades:
       open.length,
 
+    timedOutTrades:
+      open.filter(
+
+        trade =>
+          trade.exitReason ===
+          "TIMEOUT"
+
+      )
+        .length,
+
     wins:
       wins.length,
 
@@ -3462,38 +3787,56 @@ function buildBacktestStats(
 
     winRate:
       round(
+
         winRate,
+
         2
+
       ),
 
     breakEvenWinRate:
       round(
+
         breakEvenWinRate,
+
         2
+
       ),
 
     winRateEdge:
       round(
+
         winRateEdge,
+
         2
+
       ),
 
     netR:
       round(
+
         netR,
+
         2
+
       ),
 
     grossWinsR:
       round(
+
         grossWinsR,
+
         2
+
       ),
 
     grossLossesR:
       round(
+
         grossLossesR,
+
         2
+
       ),
 
     profitFactor:
@@ -3504,40 +3847,58 @@ function buildBacktestStats(
         ? 999
 
         : round(
+
             profitFactor,
+
             2
+
           ),
 
     expectancyR:
       round(
+
         expectancyR,
+
         3
+
       ),
 
     maxDrawdownR:
       round(
+
         maxDrawdownR,
+
         2
+
       ),
 
     maxLossStreak,
 
     averageHoldMinutes:
       round(
+
         averageHoldMinutes,
+
         1
+
       ),
 
     averageScore:
       round(
+
         averageScore,
+
         1
+
       ),
 
     bestScore:
       round(
+
         bestScore,
+
         0
+
       ),
 
     sniperTrades:
@@ -3551,8 +3912,11 @@ function buildBacktestStats(
 
     tp1HitRate:
       round(
+
         tp1HitRate,
+
         2
+
       ),
 
     ambiguousCandles:
@@ -3578,6 +3942,8 @@ function buildBacktestStats(
 
     scoreBuckets,
 
+    setupTiers,
+
     equityCurve,
 
     drawdownCurve,
@@ -3599,7 +3965,7 @@ function buildBacktestStats(
 
 
 /* =========================================================
-   CLEAN RESPONSE
+   CLEAN TRADE RESPONSE
 ========================================================= */
 
 function cleanTradeForResponse(
@@ -3728,8 +4094,11 @@ function groupStats(
 
     netR:
       round(
+
         netR,
+
         2
+
       ),
 
     expectancyR:
@@ -3753,7 +4122,7 @@ function groupStats(
 
 
 /* =========================================================
-   BUILD LIQUIDITY MAP
+   LIQUIDITY MAP
 ========================================================= */
 
 function buildLiquidityMap({
@@ -3773,10 +4142,6 @@ function buildLiquidityMap({
   const lows =
     [];
 
-
-  /* =====================================================
-     PREVIOUS DAY
-  ===================================================== */
 
   const previousDay =
     getPreviousUtcDayRange(
@@ -3821,10 +4186,6 @@ function buildLiquidityMap({
 
   }
 
-
-  /* =====================================================
-     PREVIOUS 4H
-  ===================================================== */
 
   const previous4h =
 
@@ -3875,10 +4236,6 @@ function buildLiquidityMap({
   }
 
 
-  /* =====================================================
-     ASIA
-  ===================================================== */
-
   const asian =
     getLatestAsianRange(
 
@@ -3923,10 +4280,6 @@ function buildLiquidityMap({
   }
 
 
-  /* =====================================================
-     1H SWINGS
-  ===================================================== */
-
   const highPivots =
 
     findPivots(
@@ -3941,7 +4294,7 @@ function buildLiquidityMap({
 
     )
       .slice(
-        -8
+        -10
       );
 
 
@@ -3959,7 +4312,7 @@ function buildLiquidityMap({
 
     )
       .slice(
-        -8
+        -10
       );
 
 
@@ -4015,8 +4368,8 @@ function buildLiquidityMap({
 
     highPivots.map(
 
-      item =>
-        item.price
+      pivot =>
+        pivot.price
 
     );
 
@@ -4025,8 +4378,8 @@ function buildLiquidityMap({
 
     lowPivots.map(
 
-      item =>
-        item.price
+      pivot =>
+        pivot.price
 
     );
 
@@ -4036,16 +4389,12 @@ function buildLiquidityMap({
     Math.max(
 
       atr1h *
-      0.12,
+      0.15,
 
       10
 
     );
 
-
-  /* =====================================================
-     EQUAL HIGHS / LOWS
-  ===================================================== */
 
   const equalHighs =
     findEqualLevels(
@@ -4110,10 +4459,6 @@ function buildLiquidityMap({
 
   }
 
-
-  /* =====================================================
-     WEEKLY OPEN
-  ===================================================== */
 
   const weeklyOpen =
     getCurrentWeekOpen(
@@ -4206,7 +4551,7 @@ function buildLiquidityMap({
 
 
 /* =========================================================
-   FIND LIQUIDITY SWEEP
+   SWEEP
 ========================================================= */
 
 function findRecentSweep({
@@ -4350,6 +4695,7 @@ function findRecentSweep({
 
         (
           depth /
+
           Math.max(
 
             atrValue,
@@ -4571,6 +4917,10 @@ function detectBos({
         level;
 
 
+  /*
+    Wider soft-BOS allowance.
+  */
+
   const soft =
 
     confirmedIndex ===
@@ -4580,7 +4930,7 @@ function detectBos({
 
     distance <=
     localAtr *
-    0.15;
+    0.25;
 
 
   return {
@@ -4627,7 +4977,7 @@ function detectDisplacement({
       candles.length,
 
       fromIndex +
-      5
+      6
 
     );
 
@@ -4802,13 +5152,13 @@ function detectDisplacement({
 
     best.bodyAtr >=
     cfg.displacementBodyAtr *
-    0.70
+    0.65
 
     &&
 
     best.efficiency >=
     cfg.displacementEfficiency *
-    0.80;
+    0.75;
 
 
   return {
@@ -4844,7 +5194,7 @@ function detectDisplacement({
 
 
 /* =========================================================
-   VOLUME EXPANSION
+   VOLUME
 ========================================================= */
 
 function detectVolumeExpansion({
@@ -4891,7 +5241,7 @@ function detectVolumeExpansion({
     );
 
 
-  const averageVolume =
+  const baselineVolume =
 
     average(
 
@@ -4916,14 +5266,14 @@ function detectVolumeExpansion({
         candles.length,
 
         fromIndex +
-        5
+        6
 
       )
 
     );
 
 
-  const maxVolume =
+  const maximumVolume =
 
     test.length
 
@@ -4943,11 +5293,11 @@ function detectVolumeExpansion({
 
   const ratio =
 
-    averageVolume >
+    baselineVolume >
     0
 
-      ? maxVolume /
-        averageVolume
+      ? maximumVolume /
+        baselineVolume
 
       : 0;
 
@@ -5079,7 +5429,7 @@ function analyze5mPrecision({
           latest.open -
           latest.low >
           body *
-          0.35
+          0.25
         )
 
       : (
@@ -5091,7 +5441,7 @@ function analyze5mPrecision({
           latest.high -
           latest.open >
           body *
-          0.35
+          0.25
         );
 
 
@@ -5108,7 +5458,7 @@ function analyze5mPrecision({
     const tolerance =
 
       atr15 *
-      0.18;
+      0.25;
 
 
     const touched =
@@ -5129,10 +5479,14 @@ function analyze5mPrecision({
       bullish
 
         ? latest.close >=
-          bosLevel
+          bosLevel -
+          tolerance *
+          0.25
 
         : latest.close <=
-          bosLevel;
+          bosLevel +
+          tolerance *
+          0.25;
 
 
     if (
@@ -5156,7 +5510,7 @@ function analyze5mPrecision({
     const tolerance =
 
       atr15 *
-      0.12;
+      0.16;
 
 
     const zoneTouched =
@@ -5188,10 +5542,10 @@ function analyze5mPrecision({
 
     bullish
 
-      ? latest.close >
+      ? latest.close >=
         previous.close
 
-      : latest.close <
+      : latest.close <=
         previous.close;
 
 
@@ -5246,7 +5600,7 @@ function analyze5mPrecision({
 
 
 /* =========================================================
-   5M MICROSTRUCTURE
+   MICROSTRUCTURE
 ========================================================= */
 
 function analyzeMicroStructure(
@@ -5372,6 +5726,11 @@ function analyzeMicroStructure(
   }
 
 
+  /*
+    EMA fallback makes 5M confirmation
+    less binary.
+  */
+
   const closes =
 
     candles.map(
@@ -5492,7 +5851,7 @@ function findRecentFvg(
 
   ) {
 
-    const candleA =
+    const first =
 
       candles[
         i -
@@ -5500,7 +5859,7 @@ function findRecentFvg(
       ];
 
 
-    const candleC =
+    const third =
       candles[i];
 
 
@@ -5510,8 +5869,8 @@ function findRecentFvg(
 
       &&
 
-      candleC.low >
-      candleA.high
+      third.low >
+      first.high
 
     ) {
 
@@ -5521,13 +5880,13 @@ function findRecentFvg(
           "BUY",
 
         low:
-          candleA.high,
+          first.high,
 
         high:
-          candleC.low,
+          third.low,
 
         time:
-          candleC.time
+          third.time
 
       };
 
@@ -5540,8 +5899,8 @@ function findRecentFvg(
 
       &&
 
-      candleC.high <
-      candleA.low
+      third.high <
+      first.low
 
     ) {
 
@@ -5551,13 +5910,13 @@ function findRecentFvg(
           "SELL",
 
         low:
-          candleC.high,
+          third.high,
 
         high:
-          candleA.low,
+          first.low,
 
         time:
-          candleC.time
+          third.time
 
       };
 
@@ -5621,18 +5980,13 @@ function analyzeTrend(
     );
 
 
-  const previousCloses =
-
-    closes.slice(
-      0,
-      -3
-    );
-
-
   const previousEma20 =
     ema(
 
-      previousCloses,
+      closes.slice(
+        0,
+        -3
+      ),
 
       20
 
@@ -5750,7 +6104,7 @@ function analyzeTrend(
 
     &&
 
-    ema20 >
+    ema20 >=
     previousEma20;
 
 
@@ -5766,7 +6120,7 @@ function analyzeTrend(
 
     &&
 
-    ema20 <
+    ema20 <=
     previousEma20;
 
 
@@ -5860,7 +6214,7 @@ function analyzeTrend(
 
 
 /* =========================================================
-   HISTORICAL CANDLE DOWNLOAD
+   DOWNLOAD HISTORICAL CANDLES
 ========================================================= */
 
 async function fetchHistoricalCandles({
@@ -5925,11 +6279,6 @@ async function fetchHistoricalCandles({
   const rows =
     [];
 
-
-  /*
-    Download several chunks simultaneously,
-    but not everything at once.
-  */
 
   for (
 
@@ -6005,13 +6354,6 @@ async function fetchHistoricalCandles({
   }
 
 
-  /*
-    Coinbase returns candles newest-first and
-    overlapping requests can duplicate timestamps.
-
-    Use a map to remove duplicates.
-  */
-
   const byTime =
     new Map();
 
@@ -6077,7 +6419,7 @@ async function fetchHistoricalCandles({
 
 
 /* =========================================================
-   FETCH ONE COINBASE CHUNK
+   FETCH CHUNK
 ========================================================= */
 
 async function fetchCandleChunk({
@@ -6169,7 +6511,7 @@ async function fetchCandleChunk({
               "application/json",
 
             "User-Agent":
-              "MKAYFX-BTC-Backtester/1.0"
+              "MKAYFX-BTC-Backtester/1.1"
 
           },
 
@@ -6201,26 +6543,26 @@ async function fetchCandleChunk({
     }
 
 
-    const data =
+    const rows =
       await response.json();
 
 
     if (
       !Array.isArray(
-        data
+        rows
       )
     ) {
 
       throw new Error(
 
-        "Coinbase candle response was not an array."
+        "Coinbase candles response is not an array."
 
       );
 
     }
 
 
-    return data
+    return rows
 
       .map(
 
@@ -6301,7 +6643,7 @@ async function fetchCandleChunk({
 
 
 /* =========================================================
-   RESAMPLE 5M INTO 15M / 1H / 4H
+   RESAMPLE
 ========================================================= */
 
 function resampleCandles(
@@ -6397,10 +6739,6 @@ function resampleCandles(
 
   ) {
 
-    /*
-      Skip incomplete higher-timeframe candles.
-    */
-
     if (
       group.length <
       expectedParts
@@ -6467,11 +6805,11 @@ function resampleCandles(
         group.reduce(
 
           (
-            sum,
+            total,
             candle
           ) =>
 
-            sum +
+            total +
             candle.volume,
 
           0
@@ -6489,138 +6827,7 @@ function resampleCandles(
 
 
 /* =========================================================
-   SESSION
-========================================================= */
-
-function getSession(
-  date
-) {
-
-  const utcHour =
-
-    date.getUTCHours()
-
-    +
-
-    date.getUTCMinutes() /
-    60;
-
-
-  if (
-
-    utcHour >=
-    0
-
-    &&
-
-    utcHour <
-    7
-
-  ) {
-
-    return {
-
-      name:
-        "ASIA",
-
-      label:
-        "Asian session"
-
-    };
-
-  }
-
-
-  if (
-
-    utcHour >=
-    7
-
-    &&
-
-    utcHour <
-    12
-
-  ) {
-
-    return {
-
-      name:
-        "LONDON",
-
-      label:
-        "London session"
-
-    };
-
-  }
-
-
-  if (
-
-    utcHour >=
-    12
-
-    &&
-
-    utcHour <
-    16
-
-  ) {
-
-    return {
-
-      name:
-        "LONDON_NY_OVERLAP",
-
-      label:
-        "London / New York overlap"
-
-    };
-
-  }
-
-
-  if (
-
-    utcHour >=
-    16
-
-    &&
-
-    utcHour <
-    21
-
-  ) {
-
-    return {
-
-      name:
-        "NEW_YORK",
-
-      label:
-        "New York session"
-
-    };
-
-  }
-
-
-  return {
-
-    name:
-      "OFF_HOURS",
-
-    label:
-      "Off-hours"
-
-  };
-
-}
-
-
-/* =========================================================
-   PREVIOUS UTC DAY RANGE
+   PREVIOUS DAY
 ========================================================= */
 
 function getPreviousUtcDayRange(
@@ -6770,11 +6977,14 @@ function getLatestAsianRange(
 
     Date.UTC(
 
-      latestDate.getUTCFullYear(),
+      latestDate
+        .getUTCFullYear(),
 
-      latestDate.getUTCMonth(),
+      latestDate
+        .getUTCMonth(),
 
-      latestDate.getUTCDate()
+      latestDate
+        .getUTCDate()
 
     )
 
@@ -6782,14 +6992,6 @@ function getLatestAsianRange(
 
     1000;
 
-
-  /*
-    Asian liquidity range:
-    00:00 - 08:00 UTC.
-
-    If we're currently still inside that period,
-    use the previous completed Asian range.
-  */
 
   if (
 
@@ -6953,6 +7155,137 @@ function getCurrentWeekOpen(
     null
 
   );
+
+}
+
+
+/* =========================================================
+   SESSION
+========================================================= */
+
+function getSession(
+  date
+) {
+
+  const hour =
+
+    date.getUTCHours()
+
+    +
+
+    date.getUTCMinutes() /
+    60;
+
+
+  if (
+
+    hour >=
+    0
+
+    &&
+
+    hour <
+    7
+
+  ) {
+
+    return {
+
+      name:
+        "ASIA",
+
+      label:
+        "Asian session"
+
+    };
+
+  }
+
+
+  if (
+
+    hour >=
+    7
+
+    &&
+
+    hour <
+    12
+
+  ) {
+
+    return {
+
+      name:
+        "LONDON",
+
+      label:
+        "London session"
+
+    };
+
+  }
+
+
+  if (
+
+    hour >=
+    12
+
+    &&
+
+    hour <
+    16
+
+  ) {
+
+    return {
+
+      name:
+        "LONDON_NY_OVERLAP",
+
+      label:
+        "London / New York overlap"
+
+    };
+
+  }
+
+
+  if (
+
+    hour >=
+    16
+
+    &&
+
+    hour <
+    21
+
+  ) {
+
+    return {
+
+      name:
+        "NEW_YORK",
+
+      label:
+        "New York session"
+
+    };
+
+  }
+
+
+  return {
+
+    name:
+      "OFF_HOURS",
+
+    label:
+      "Off-hours"
+
+  };
 
 }
 
@@ -7173,7 +7506,7 @@ function findEqualLevels(
     output,
 
     tolerance *
-    0.70
+    0.7
 
   );
 
@@ -7181,7 +7514,7 @@ function findEqualLevels(
 
 
 /* =========================================================
-   PUSH LEVEL
+   ADD LEVEL
 ========================================================= */
 
 function pushLevel(
@@ -7230,7 +7563,7 @@ function pushLevel(
 
 
 /* =========================================================
-   DEDUPE LIQUIDITY
+   DEDUPE
 ========================================================= */
 
 function dedupeLevels(
@@ -7393,7 +7726,7 @@ function atr(
   }
 
 
-  const trueRanges =
+  const ranges =
     [];
 
 
@@ -7420,7 +7753,7 @@ function atr(
       ];
 
 
-    trueRanges.push(
+    ranges.push(
 
       Math.max(
 
@@ -7450,7 +7783,7 @@ function atr(
 
   return average(
 
-    trueRanges.slice(
+    ranges.slice(
 
       -period
 
@@ -7553,7 +7886,7 @@ function ema(
 
 
 /* =========================================================
-   NEXT 5M CANDLE
+   NEXT 5M INDEX
 ========================================================= */
 
 function findNext5mIndex(
@@ -7582,7 +7915,7 @@ function findNext5mIndex(
     high
   ) {
 
-    const mid =
+    const middle =
 
       Math.floor(
 
@@ -7599,16 +7932,16 @@ function findNext5mIndex(
 
 
     if (
-      candles[mid].time >=
+      candles[middle].time >=
       cutoffSec
     ) {
 
       answer =
-        mid;
+        middle;
 
 
       high =
-        mid -
+        middle -
         1;
 
     }
@@ -7616,7 +7949,7 @@ function findNext5mIndex(
     else {
 
       low =
-        mid +
+        middle +
         1;
 
     }
@@ -7669,11 +8002,11 @@ function average(
     values.reduce(
 
       (
-        sum,
+        total,
         value
       ) =>
 
-        sum +
+        total +
         value,
 
       0
@@ -7766,17 +8099,17 @@ function numberOr(
 
 ) {
 
-  const n =
+  const valueNumber =
     Number(
       value
     );
 
 
   return Number.isFinite(
-    n
+    valueNumber
   )
 
-    ? n
+    ? valueNumber
 
     : fallback;
 
@@ -7787,19 +8120,19 @@ function clamp(
 
   value,
 
-  min,
+  minimum,
 
-  max
+  maximum
 
 ) {
 
   return Math.min(
 
-    max,
+    maximum,
 
     Math.max(
 
-      min,
+      minimum,
 
       value
 
@@ -7887,7 +8220,7 @@ function roundPrice(
 
 
 function delay(
-  ms
+  milliseconds
 ) {
 
   return new Promise(
@@ -7897,7 +8230,7 @@ function delay(
 
         resolve,
 
-        ms
+        milliseconds
 
       )
 
