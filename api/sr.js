@@ -112,7 +112,7 @@ const SHOW_ZONES =
    TP STRETCHED FROM 2R TO 3R
 */
 const RISK_REWARD =
-  0.8;
+  3;
 
 
 const OUTPUT_SIZE =
@@ -120,7 +120,7 @@ const OUTPUT_SIZE =
 
 
 const RECENT_SIGNAL_LIMIT =
-  20;
+  40;
 
 
 const RECENT_BACKTEST_LIMIT =
