@@ -1,5 +1,5 @@
 /* =========================================================
-   MKAYFX 5M HTF VOLUME SPIKE + IMBALANCE ENGINE V3.2
+   MKAYFX 5M HTF VOLUME SPIKE + IMBALANCE ENGINE V3.3
    /api/sr.js
 
    FOUNDATION
@@ -13,16 +13,25 @@
    Context:       1H
    Spike source:  1M
    Zone memory:   3 hours
-   Target:        3R
+   Target:        2R
    Trade mode:    HARD LOCK
 
-   V3.2 BALANCED-RELAXED
+   V3.3 SNIPER BALANCED
    ---------------------
-   Minimum score:            47
-   Minimum score gap:        2
+   Minimum score:            49
+   Minimum score gap:        4
    Minimum stacked spikes:   2
    Spike multiplier:         1.2x
    Opposite pressure penalty:-1
+
+   NEW SNIPER FILTERS
+   ------------------
+   Breakout body minimum:    50%
+   Reclaim body minimum:     42%
+   Retest body minimum:      38%
+   Reduced chase distance
+   Tighter zone interaction
+   Strong candle bonus
 
    ENTRY TYPES
    -----------
@@ -104,83 +113,80 @@ const VP_ROWS =
   40;
 
 
-/*
-   Keep this at 2.
-
-   1 would make practically every isolated
-   spike capable of producing a zone.
-*/
 const MIN_STACKED_SPIKES =
   2;
 
 
-/*
-   Current hour + previous two hours.
-*/
 const ZONE_LOOKBACK_HOURS =
   3;
 
 
 /*
-   V3.1 = 50
-   V3.2 = 47
+   V3.3 SNIPER
 */
 const MIN_SIGNAL_SCORE =
-  44;
+  49;
 
 
-/*
-   V3.1 = 3
-   V3.2 = 2
-*/
 const MIN_SCORE_GAP =
-  2;
+  4;
 
 
-/*
-   V3.1 = 2
-   V3.2 = 1
-*/
 const OPPOSITE_PRESSURE_PENALTY =
   1;
 
 
 /*
-   Wider interaction area around a zone.
-
-   V3.1:
-   0.55
-   0.015
+   Tighter interaction area.
 
    V3.2:
    0.65
    0.020
+
+   V3.3:
+   0.55
+   0.017
 */
 const TOUCH_ZONE_MULTIPLIER =
-  0.65;
+  0.55;
 
 
 const TOUCH_RANGE_MULTIPLIER =
-  0.020;
+  0.017;
 
 
 /*
-   Permit slightly more movement beyond a zone.
-
-   V3.1:
-   3.0
-   0.18
+   Less chasing.
 
    V3.2:
    3.5
    0.22
+
+   V3.3:
+   2.7
+   0.17
 */
 const MAX_CHASE_ZONE_MULTIPLIER =
-  3.5;
+  2.7;
 
 
 const MAX_CHASE_RANGE_MULTIPLIER =
-  0.22;
+  0.17;
+
+
+/*
+   Candle-quality filters.
+*/
+const BREAKOUT_MIN_BODY_RATIO =
+  0.50;
+
+
+const RECLAIM_MIN_BODY_RATIO =
+  0.42;
+
+
+const RETEST_MIN_BODY_RATIO =
+  0.38;
 
 
 const RISK_REWARD =
@@ -667,7 +673,6 @@ async function getJSON(
 
 /* =========================================================
    XAU/USD
-   TWELVE DATA PRICE
 ========================================================= */
 
 
@@ -846,7 +851,6 @@ async function fetchXauSpot1m() {
 
 /* =========================================================
    GOLD FUTURES VOLUME
-   YAHOO GC=F
 ========================================================= */
 
 
@@ -1014,7 +1018,6 @@ async function fetchGoldFuturesVolume1m() {
 
 /* =========================================================
    BTC/USD
-   COINBASE
 ========================================================= */
 
 
@@ -1571,7 +1574,7 @@ function addVolumeSpikeStats(
 
 
 /* =========================================================
-   1M -> 5M
+   RESAMPLE
 ========================================================= */
 
 
@@ -1912,10 +1915,6 @@ function buildAnchor(
       );
 
 
-    /* ===============================================
-       PROFILE
-    =============================================== */
-
     for (
       const bar
       of anchorBars
@@ -1973,10 +1972,6 @@ function buildAnchor(
 
     }
 
-
-    /* ===============================================
-       SPIKE ROWS
-    =============================================== */
 
     for (
       const spike
@@ -2255,10 +2250,6 @@ function activeZonesForState(
     );
 
 
-  /*
-     CURRENT HOUR
-  */
-
   for (
     const zone
     of currentAnchor.zones
@@ -2281,10 +2272,6 @@ function activeZonesForState(
 
   }
 
-
-  /*
-     PREVIOUS HOURS
-  */
 
   for (
     let age = 1;
@@ -2500,7 +2487,7 @@ function buildStrategyAnchor(
 
 
 /* =========================================================
-   V3.2 ENTRY CANDIDATE
+   V3.3 SNIPER ENTRY CANDIDATE
 ========================================================= */
 
 
@@ -2615,6 +2602,48 @@ function evaluateCandidate(
   }
 
 
+  /*
+     Candle quality.
+  */
+
+  const candleRange =
+    Math.max(
+
+      currentHigh -
+      currentLow,
+
+      1e-9
+
+    );
+
+
+  const candleBody =
+    Math.abs(
+
+      currentClose -
+      currentOpen
+
+    );
+
+
+  const bodyRatio =
+
+    candleBody /
+    candleRange;
+
+
+  const closePosition =
+
+    (
+      currentClose -
+      currentLow
+    )
+
+    /
+
+    candleRange;
+
+
   const zoneWidth =
 
     Math.max(
@@ -2658,11 +2687,6 @@ function evaluateCandidate(
     2;
 
 
-  /*
-     V3.2:
-     slightly wider touch region.
-  */
-
   const touchTolerance =
 
     Math.max(
@@ -2675,12 +2699,6 @@ function evaluateCandidate(
 
     );
 
-
-  /*
-     V3.2:
-     price may move slightly further beyond
-     a zone before the setup is considered chased.
-  */
 
   const maxChase =
 
@@ -2708,10 +2726,6 @@ function evaluateCandidate(
     "BUY"
   ) {
 
-    /*
-       BREAKOUT
-    */
-
     const breakout =
 
       previousClose <=
@@ -2725,17 +2739,25 @@ function evaluateCandidate(
 
       &&
 
+      currentClose >
+      currentOpen
+
+      &&
+
+      bodyRatio >=
+      BREAKOUT_MIN_BODY_RATIO
+
+      &&
+
+      closePosition >=
+      0.60
+
+      &&
+
       currentClose -
       zoneHigh <=
       maxChase;
 
-
-    /*
-       RECLAIM
-
-       Price trades into the zone,
-       then finishes above midpoint.
-    */
 
     const reclaim =
 
@@ -2750,8 +2772,18 @@ function evaluateCandidate(
 
       &&
 
-      currentClose >=
+      currentClose >
       currentOpen
+
+      &&
+
+      bodyRatio >=
+      RECLAIM_MIN_BODY_RATIO
+
+      &&
+
+      closePosition >=
+      0.55
 
       &&
 
@@ -2759,10 +2791,6 @@ function evaluateCandidate(
       zoneHigh <=
       maxChase;
 
-
-    /*
-       RETEST
-    */
 
     const retest =
 
@@ -2782,8 +2810,24 @@ function evaluateCandidate(
 
       &&
 
-      currentClose >=
-      currentOpen;
+      currentClose >
+      currentOpen
+
+      &&
+
+      bodyRatio >=
+      RETEST_MIN_BODY_RATIO
+
+      &&
+
+      closePosition >=
+      0.55
+
+      &&
+
+      currentClose -
+      zoneHigh <=
+      maxChase;
 
 
     if (
@@ -2831,6 +2875,21 @@ function evaluateCandidate(
 
       &&
 
+      currentClose <
+      currentOpen
+
+      &&
+
+      bodyRatio >=
+      BREAKOUT_MIN_BODY_RATIO
+
+      &&
+
+      closePosition <=
+      0.40
+
+      &&
+
       zoneLow -
       currentClose <=
       maxChase;
@@ -2849,8 +2908,18 @@ function evaluateCandidate(
 
       &&
 
-      currentClose <=
+      currentClose <
       currentOpen
+
+      &&
+
+      bodyRatio >=
+      RECLAIM_MIN_BODY_RATIO
+
+      &&
+
+      closePosition <=
+      0.45
 
       &&
 
@@ -2877,8 +2946,24 @@ function evaluateCandidate(
 
       &&
 
+      currentClose <
+      currentOpen
+
+      &&
+
+      bodyRatio >=
+      RETEST_MIN_BODY_RATIO
+
+      &&
+
+      closePosition <=
+      0.45
+
+      &&
+
+      zoneLow -
       currentClose <=
-      currentOpen;
+      maxChase;
 
 
     if (
@@ -2925,10 +3010,6 @@ function evaluateCandidate(
     30;
 
 
-  /*
-     ENTRY QUALITY
-  */
-
   if (
     trigger ===
     "BREAKOUT"
@@ -2954,7 +3035,7 @@ function evaluateCandidate(
 
 
   /*
-     ZONE STRENGTH
+     Zone strength.
   */
 
   score +=
@@ -2975,7 +3056,7 @@ function evaluateCandidate(
 
 
   /*
-     SPIKES INSIDE THE ZONE
+     Same-side spike concentration.
   */
 
   const sameSideCount =
@@ -3004,6 +3085,37 @@ function evaluateCandidate(
       2
 
     );
+
+
+  /*
+     SNIPER CANDLE QUALITY BONUS.
+  */
+
+  if (
+    bodyRatio >=
+    0.70
+  ) {
+
+    score +=
+      5;
+
+  } else if (
+    bodyRatio >=
+    0.55
+  ) {
+
+    score +=
+      3;
+
+  } else if (
+    bodyRatio >=
+    0.45
+  ) {
+
+    score +=
+      1;
+
+  }
 
 
   const bullSpikes =
@@ -3047,10 +3159,6 @@ function evaluateCandidate(
 
     } else {
 
-      /*
-         Only -1 now.
-      */
-
       score -=
         OPPOSITE_PRESSURE_PENALTY;
 
@@ -3065,14 +3173,6 @@ function evaluateCandidate(
       score +=
         8;
 
-    } else if (
-      currentClose ===
-      currentOpen
-    ) {
-
-      score +=
-        4;
-
     }
 
 
@@ -3080,27 +3180,15 @@ function evaluateCandidate(
       Number.isFinite(
         anchor.poc
       )
+
+      &&
+
+      currentClose >=
+      anchor.poc
     ) {
 
-      if (
-        currentClose >=
-        anchor.poc
-      ) {
-
-        score +=
-          6;
-
-      } else {
-
-        /*
-           Below POC no longer kills a BUY.
-           It simply gets no POC bonus.
-        */
-
-        score +=
-          0;
-
-      }
+      score +=
+        6;
 
     }
 
@@ -3145,14 +3233,6 @@ function evaluateCandidate(
       score +=
         8;
 
-    } else if (
-      currentClose ===
-      currentOpen
-    ) {
-
-      score +=
-        4;
-
     }
 
 
@@ -3160,17 +3240,15 @@ function evaluateCandidate(
       Number.isFinite(
         anchor.poc
       )
+
+      &&
+
+      currentClose <=
+      anchor.poc
     ) {
 
-      if (
-        currentClose <=
-        anchor.poc
-      ) {
-
-        score +=
-          6;
-
-      }
+      score +=
+        6;
 
     }
 
@@ -3178,7 +3256,7 @@ function evaluateCandidate(
 
 
   /*
-     ZONE AGE BONUS
+     Zone age bonus.
   */
 
   const ageHours =
@@ -3222,6 +3300,12 @@ function evaluateCandidate(
     zone,
 
     trigger,
+
+    bodyRatio:
+      round(
+        bodyRatio,
+        3
+      ),
 
     score:
       Math.round(
@@ -3406,6 +3490,9 @@ function selectSignal(
       trigger:
         bestBuy.trigger,
 
+      bodyRatio:
+        bestBuy.bodyRatio,
+
       score:
         bestBuy.score
 
@@ -3433,6 +3520,9 @@ function selectSignal(
       trigger:
         bestSell.trigger,
 
+      bodyRatio:
+        bestSell.bodyRatio,
+
       score:
         bestSell.score
 
@@ -3440,10 +3530,6 @@ function selectSignal(
 
   }
 
-
-  /*
-     BOTH SIDES QUALIFY
-  */
 
   if (
     buyQualified
@@ -3462,10 +3548,6 @@ function selectSignal(
 
       );
 
-
-    /*
-       V3.2 only needs a 2 point advantage.
-    */
 
     if (
       difference <
@@ -3493,6 +3575,9 @@ function selectSignal(
         trigger:
           bestBuy.trigger,
 
+        bodyRatio:
+          bestBuy.bodyRatio,
+
         score:
           bestBuy.score
 
@@ -3511,6 +3596,9 @@ function selectSignal(
 
       trigger:
         bestSell.trigger,
+
+      bodyRatio:
+        bestSell.bodyRatio,
 
       score:
         bestSell.score
@@ -3749,6 +3837,12 @@ function buildStates(
       null;
 
 
+    let bodyRatio =
+      selection?.bodyRatio
+      ??
+      null;
+
+
     let score =
       selection?.score
       ||
@@ -3780,6 +3874,10 @@ function buildStates(
 
 
       trigger =
+        null;
+
+
+      bodyRatio =
         null;
 
 
@@ -3817,6 +3915,8 @@ function buildStates(
       zone,
 
       trigger,
+
+      bodyRatio,
 
       score,
 
@@ -3877,10 +3977,6 @@ function simulateTrade(
     }
 
 
-    /* =====================================================
-       BUY
-    ===================================================== */
-
     if (
       state.signal ===
       "BUY"
@@ -3897,11 +3993,6 @@ function simulateTrade(
         bar.high >=
         state.takeProfit;
 
-
-      /*
-         Conservative:
-         both SL + TP in same 1M candle = LOSS.
-      */
 
       if (
         stopHit
@@ -3962,10 +4053,6 @@ function simulateTrade(
 
     }
 
-
-    /* =====================================================
-       SELL
-    ===================================================== */
 
     if (
       state.signal ===
@@ -4156,6 +4243,9 @@ function backtest(
       trigger:
         state.trigger,
 
+      bodyRatio:
+        state.bodyRatio,
+
       score:
         state.score,
 
@@ -4225,13 +4315,6 @@ function backtest(
 
     index++;
 
-
-    /*
-       HARD LOCK
-
-       Do not allow another signal before
-       this trade has closed.
-    */
 
     while (
 
@@ -4766,11 +4849,6 @@ function checkRequestedLock(
   }
 
 
-  /*
-     Don't make assumptions if a lock started
-     before the downloaded price history.
-  */
-
   if (
     priceBars.length
 
@@ -5001,6 +5079,9 @@ function mapSignalState(
 
     trigger:
       state.trigger,
+
+    bodyRatio:
+      state.bodyRatio,
 
     score:
       state.score,
@@ -5491,7 +5572,14 @@ export default async function handler(
 
       reasons.push(
 
-        `BUY ${current.trigger || "SETUP"} scored ${current.score}; V3.2 requires ${MIN_SIGNAL_SCORE}.`
+        `BUY ${current.trigger || "SETUP"} scored ${current.score}; V3.3 requires ${MIN_SIGNAL_SCORE}.`
+
+      );
+
+
+      reasons.push(
+
+        `Entry candle body quality: ${round((current.bodyRatio || 0) * 100, 1)}%.`
 
       );
 
@@ -5505,21 +5593,14 @@ export default async function handler(
 
       reasons.push(
 
-        "Breakout, reclaim, or retest interaction qualified."
+        "Sniper candle confirmation passed."
 
       );
 
 
       reasons.push(
 
-        "V3.2 uses wider interaction tolerance around imbalance zones."
-
-      );
-
-
-      reasons.push(
-
-        "Opposite 1H volume pressure only removes one score point."
+        "Tighter zone interaction and reduced chase distance passed."
 
       );
 
@@ -5533,7 +5614,7 @@ export default async function handler(
 
       reasons.push(
 
-        "Take Profit remains 3R with hard lock until SL or TP."
+        `Take Profit is ${RISK_REWARD}R with hard lock until SL or TP.`
 
       );
 
@@ -5547,7 +5628,14 @@ export default async function handler(
 
       reasons.push(
 
-        `SELL ${current.trigger || "SETUP"} scored ${current.score}; V3.2 requires ${MIN_SIGNAL_SCORE}.`
+        `SELL ${current.trigger || "SETUP"} scored ${current.score}; V3.3 requires ${MIN_SIGNAL_SCORE}.`
+
+      );
+
+
+      reasons.push(
+
+        `Entry candle body quality: ${round((current.bodyRatio || 0) * 100, 1)}%.`
 
       );
 
@@ -5561,21 +5649,14 @@ export default async function handler(
 
       reasons.push(
 
-        "Breakdown, reclaim, or retest interaction qualified."
+        "Sniper candle confirmation passed."
 
       );
 
 
       reasons.push(
 
-        "V3.2 uses wider interaction tolerance around imbalance zones."
-
-      );
-
-
-      reasons.push(
-
-        "Opposite 1H volume pressure only removes one score point."
+        "Tighter zone interaction and reduced chase distance passed."
 
       );
 
@@ -5589,7 +5670,7 @@ export default async function handler(
 
       reasons.push(
 
-        "Take Profit remains 3R with hard lock until SL or TP."
+        `Take Profit is ${RISK_REWARD}R with hard lock until SL or TP.`
 
       );
 
@@ -5600,7 +5681,35 @@ export default async function handler(
 
       reasons.push(
 
-        `No candidate reached the V3.2 minimum signal score of ${MIN_SIGNAL_SCORE}.`
+        "No V3.3 sniper entry qualified on the latest completed 5M candle."
+
+      );
+
+
+      reasons.push(
+
+        `Minimum signal score: ${MIN_SIGNAL_SCORE}.`
+
+      );
+
+
+      reasons.push(
+
+        `Breakout requires at least ${BREAKOUT_MIN_BODY_RATIO * 100}% candle body.`
+
+      );
+
+
+      reasons.push(
+
+        `Reclaim requires at least ${RECLAIM_MIN_BODY_RATIO * 100}% candle body.`
+
+      );
+
+
+      reasons.push(
+
+        `Retest requires at least ${RETEST_MIN_BODY_RATIO * 100}% candle body.`
 
       );
 
@@ -5608,13 +5717,6 @@ export default async function handler(
       reasons.push(
 
         `${MIN_STACKED_SPIKES} same-side spikes are required to create a zone.`
-
-      );
-
-
-      reasons.push(
-
-        `Zones remain tradable for ${ZONE_LOOKBACK_HOURS} hours.`
 
       );
 
@@ -5671,10 +5773,10 @@ export default async function handler(
           true,
 
         engine:
-          "MKAYFX 5M HTF VOLUME IMBALANCE V3.2",
+          "MKAYFX 5M HTF VOLUME IMBALANCE V3.3",
 
         strategyMode:
-          "BALANCED RELAXED",
+          "SNIPER BALANCED",
 
         symbol,
 
@@ -5721,6 +5823,15 @@ export default async function handler(
             ? null
 
             : current.trigger,
+
+        bodyRatio:
+
+          signal ===
+          "WAIT"
+
+            ? null
+
+            : current.bodyRatio,
 
         signalScore:
 
@@ -5783,11 +5894,6 @@ export default async function handler(
           RISK_REWARD,
 
 
-        /* =================================================
-           DATA
-        ================================================= */
-
-
         dataSources: {
 
           price:
@@ -5800,11 +5906,6 @@ export default async function handler(
             packet.volumeMode
 
         },
-
-
-        /* =================================================
-           SETTINGS
-        ================================================= */
 
 
         settings: {
@@ -5854,6 +5955,15 @@ export default async function handler(
           maxChaseRangeMultiplier:
             MAX_CHASE_RANGE_MULTIPLIER,
 
+          breakoutMinBodyRatio:
+            BREAKOUT_MIN_BODY_RATIO,
+
+          reclaimMinBodyRatio:
+            RECLAIM_MIN_BODY_RATIO,
+
+          retestMinBodyRatio:
+            RETEST_MIN_BODY_RATIO,
+
           riskReward:
             RISK_REWARD,
 
@@ -5861,11 +5971,6 @@ export default async function handler(
             true
 
         },
-
-
-        /* =================================================
-           VOLUME
-        ================================================= */
 
 
         volume: {
@@ -5880,11 +5985,6 @@ export default async function handler(
             oneMinuteBars.length
 
         },
-
-
-        /* =================================================
-           CURRENT 1H CONTEXT
-        ================================================= */
 
 
         anchor: {
@@ -6067,17 +6167,7 @@ export default async function handler(
         reasons,
 
 
-        /* =================================================
-           HARD LOCK
-        ================================================= */
-
-
         lockCheck,
-
-
-        /* =================================================
-           RECENT SIGNALS
-        ================================================= */
 
 
         recentSignals:
@@ -6100,11 +6190,6 @@ export default async function handler(
             :
 
             [],
-
-
-        /* =================================================
-           BACKTEST
-        ================================================= */
 
 
         backtest: {
@@ -6164,11 +6249,6 @@ export default async function handler(
               )
 
         },
-
-
-        /* =================================================
-           CHART
-        ================================================= */
 
 
         chart:
@@ -6238,7 +6318,7 @@ export default async function handler(
           false,
 
         engine:
-          "MKAYFX 5M HTF VOLUME IMBALANCE V3.2",
+          "MKAYFX 5M HTF VOLUME IMBALANCE V3.3",
 
         error:
 
