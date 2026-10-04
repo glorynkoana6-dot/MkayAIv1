@@ -97,11 +97,11 @@ const INTERVAL =
 
 
 const LENGTH =
-  7;
+  5;
 
 
 const MAX_LEVELS =
-  15;
+  3;
 
 
 const SHOW_ZONES =
