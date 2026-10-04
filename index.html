@@ -38,52 +38,41 @@ MKAYFX 5M S&R
 }
 
 :root{
-
   --bg:#05070b;
   --panel:#0a1119;
   --border:rgba(255,255,255,.085);
-
   --text:#f6f8fb;
   --muted:#788698;
-
   --gold:#f4c85d;
   --green:#37e6a1;
   --red:#ff6279;
   --blue:#7994ff;
-
 }
 
 html,
 body{
-
   margin:0;
   min-height:100%;
-
   background:
     radial-gradient(
       circle at top,
       #101b2e 0%,
       #05070b 42%
     );
-
   color:var(--text);
-
   font-family:
     -apple-system,
     BlinkMacSystemFont,
     "SF Pro Display",
     "Segoe UI",
     sans-serif;
-
 }
 
 body{
-
   padding:
     calc(env(safe-area-inset-top) + 14px)
     14px
     calc(env(safe-area-inset-bottom) + 30px);
-
 }
 
 button{
@@ -91,320 +80,213 @@ button{
 }
 
 .app{
-
   max-width:1050px;
   margin:auto;
-
 }
 
 
 /* HEADER */
 
 .header{
-
   display:flex;
   align-items:center;
   justify-content:space-between;
-
   gap:12px;
-
   margin-bottom:16px;
-
 }
 
 .brand{
-
   font-size:27px;
   font-weight:950;
-
 }
 
 .brand span{
-
   color:var(--gold);
-
 }
 
 .subtitle{
-
   margin-top:5px;
-
   color:var(--muted);
-
   font-size:11px;
-
 }
 
 .badge{
-
   padding:10px 13px;
-
   border-radius:999px;
-
   border:1px solid var(--border);
-
   background:var(--panel);
-
   font-size:9px;
-
   color:var(--muted);
-
   text-transform:uppercase;
-
   letter-spacing:.8px;
-
 }
 
 
 /* ASSETS */
 
 .assets{
-
   display:grid;
-
   grid-template-columns:1fr 1fr;
-
   gap:9px;
-
   margin-bottom:10px;
-
 }
 
 .asset{
-
   border:1px solid var(--border);
-
   background:#080e15;
-
   border-radius:17px;
-
   min-height:76px;
-
   color:white;
-
   text-align:left;
-
   padding:12px;
-
   display:flex;
-
   gap:10px;
-
   align-items:center;
-
 }
 
 .asset.active{
-
   border-color:
     rgba(121,148,255,.65);
-
   background:
     linear-gradient(
       135deg,
       rgba(33,52,86,.95),
       rgba(11,18,31,.98)
     );
-
 }
 
 .assetIcon{
-
   width:48px;
   height:48px;
-
   border-radius:13px;
-
   display:grid;
-
   place-items:center;
-
   font-size:19px;
   font-weight:950;
-
   flex-shrink:0;
-
 }
 
 .goldIcon{
-
   background:
     linear-gradient(
       135deg,
       #ffe789,
       #c4921c
     );
-
   color:#16130a;
-
 }
 
 .btcIcon{
-
   background:
     linear-gradient(
       135deg,
       #ffb34d,
       #f7931a
     );
-
   color:white;
-
 }
 
 .assetName{
-
   font-size:14px;
   font-weight:900;
-
 }
 
 .assetSymbol{
-
   color:var(--muted);
-
   font-size:8px;
-
   margin-top:3px;
-
 }
 
 
 /* RUN */
 
 .run{
-
   width:100%;
-
   min-height:60px;
-
   border-radius:18px;
-
   border:
     1px solid
     rgba(121,148,255,.45);
-
   background:
     linear-gradient(
       135deg,
       #263b61,
       #121e32
     );
-
   color:white;
-
   font-size:16px;
   font-weight:950;
-
 }
 
 
 /* ERROR */
 
 .error{
-
   display:none;
-
   margin-top:12px;
-
   border:
     1px solid
     rgba(255,98,121,.5);
-
   background:
     rgba(255,98,121,.08);
-
   color:#ffc2cc;
-
   padding:14px;
-
   border-radius:16px;
-
   white-space:pre-wrap;
-
   word-break:break-word;
-
   font-size:11px;
-
 }
 
 
-/* GRID */
+/* MAIN GRID */
 
 .grid{
-
   display:grid;
-
   grid-template-columns:
     minmax(0,1.4fr)
     minmax(300px,.8fr);
-
   gap:12px;
-
   margin-top:12px;
-
 }
 
 .card{
-
   background:
     linear-gradient(
       180deg,
       rgba(12,19,28,.98),
       rgba(5,10,15,.98)
     );
-
   border:1px solid var(--border);
-
   border-radius:20px;
-
   overflow:hidden;
-
 }
 
 .pad{
-
   padding:16px;
-
 }
 
 .label{
-
   color:var(--muted);
-
   font-size:9px;
-
   text-transform:uppercase;
-
   letter-spacing:1.2px;
-
 }
 
 
 /* SIGNAL */
 
 .signalTop{
-
   display:flex;
-
   justify-content:space-between;
-
   align-items:flex-end;
-
   gap:12px;
-
 }
 
 .signal{
-
   margin-top:7px;
-
   font-size:58px;
-
   font-weight:950;
-
   line-height:.95;
-
 }
 
 .signal.WAIT{
@@ -420,170 +302,105 @@ button{
 }
 
 .price{
-
   font-size:30px;
-
   font-weight:950;
-
   text-align:right;
-
 }
 
 .statusText{
-
   color:var(--muted);
-
   font-size:10px;
-
   margin-top:6px;
-
 }
 
 
-/* SUPPORT / RESISTANCE */
+/* S&R */
 
 .metrics{
-
   display:grid;
-
   grid-template-columns:repeat(2,1fr);
-
   gap:8px;
-
   margin-top:18px;
-
 }
 
 .metric{
-
   padding:13px;
-
   min-height:90px;
-
   border:1px solid var(--border);
-
   border-radius:15px;
-
   background:#070d14;
-
 }
 
 .metric small{
-
   color:var(--muted);
-
   font-size:8px;
-
   text-transform:uppercase;
-
 }
 
 .metric strong{
-
   display:block;
-
   margin-top:9px;
-
   font-size:18px;
-
 }
 
 
-/* TRADE */
+/* TRADE PLAN */
 
 .tradeGrid{
-
   display:grid;
-
   grid-template-columns:repeat(2,1fr);
-
   gap:8px;
-
   margin-top:14px;
-
 }
 
 .level{
-
   border:1px solid var(--border);
-
   background:#070d14;
-
   border-radius:14px;
-
   padding:12px;
-
   min-height:82px;
-
 }
 
 .level small{
-
   color:var(--muted);
-
   font-size:8px;
-
   text-transform:uppercase;
-
 }
 
 .level b{
-
   display:block;
-
   margin-top:7px;
-
   font-size:17px;
-
 }
 
 
 /* SETTINGS */
 
 .settingsGrid{
-
   display:grid;
-
   grid-template-columns:repeat(4,1fr);
-
   gap:8px;
-
   margin-top:14px;
-
 }
 
 .setting{
-
   padding:10px;
-
   border:1px solid var(--border);
-
   border-radius:13px;
-
   background:#070d14;
-
 }
 
 .setting small{
-
   display:block;
-
   color:var(--muted);
-
   font-size:7px;
-
   text-transform:uppercase;
-
 }
 
 .setting b{
-
   display:block;
-
   margin-top:6px;
-
   font-size:13px;
-
 }
 
 
@@ -609,201 +426,165 @@ button{
 /* CHART */
 
 .chart{
-
   position:relative;
-
   height:390px;
-
   border-top:1px solid var(--border);
-
   background:#050b11;
-
 }
 
 canvas{
-
   display:block;
-
   width:100%;
   height:100%;
-
 }
 
 .chartLegend{
-
   position:absolute;
-
   left:10px;
   top:10px;
-
   display:flex;
-
   flex-wrap:wrap;
-
   gap:5px;
-
   pointer-events:none;
-
 }
 
 .chip{
-
   padding:5px 7px;
-
   font-size:8px;
-
   border-radius:999px;
-
   border:1px solid var(--border);
-
   background:
     rgba(5,7,11,.88);
-
   color:#c6cfdb;
-
 }
 
 
-/* SIDE */
+/* SECTIONS */
 
 .sectionTitle{
-
   color:var(--muted);
-
   text-transform:uppercase;
-
   letter-spacing:1px;
-
   font-size:9px;
-
   margin-bottom:10px;
-
 }
 
 .reason{
-
   padding:10px 0;
-
   border-bottom:
     1px solid
     rgba(255,255,255,.05);
-
   color:#c9d2dd;
-
   font-size:10px;
-
   line-height:1.5;
-
 }
 
 .reason:last-child{
-
   border-bottom:0;
-
 }
 
 
 /* LEVEL LISTS */
 
 .levelLists{
-
   display:grid;
-
   grid-template-columns:1fr 1fr;
-
   gap:10px;
-
 }
 
 .levelTitle{
-
   color:var(--muted);
-
   font-size:8px;
-
   margin-bottom:6px;
-
   text-transform:uppercase;
-
 }
 
 .levelRow{
-
   padding:9px;
-
   border-radius:11px;
-
   margin-bottom:6px;
-
   background:#070d14;
-
   border:1px solid var(--border);
-
   font-size:11px;
-
   font-weight:800;
-
 }
 
 .newestSupport{
-
   border-color:
     rgba(55,230,161,.5);
-
 }
 
 .newestResistance{
-
   border-color:
     rgba(255,98,121,.5);
-
 }
 
 
-/* HISTORY */
+/* BACKTEST */
+
+.btGrid{
+  display:grid;
+  grid-template-columns:
+    repeat(2,1fr);
+  gap:7px;
+}
+
+.bt{
+  padding:11px;
+  border-radius:13px;
+  border:1px solid var(--border);
+  background:#070d14;
+}
+
+.bt small{
+  display:block;
+  color:var(--muted);
+  font-size:7px;
+  text-transform:uppercase;
+}
+
+.bt strong{
+  display:block;
+  margin-top:6px;
+  font-size:16px;
+}
+
+
+/* TRADE HISTORY */
 
 .tradeRow{
-
   padding:10px 0;
-
   border-bottom:
     1px solid
     rgba(255,255,255,.05);
-
   font-size:10px;
+  line-height:1.45;
+}
 
+.tradeRow:last-child{
+  border-bottom:0;
 }
 
 .tradeTime{
-
   color:var(--muted);
-
   font-size:8px;
-
   margin-top:4px;
-
-  line-height:1.5;
-
+  line-height:1.55;
 }
 
 .note{
-
   margin-top:12px;
-
   color:var(--muted);
-
   font-size:8px;
-
-  line-height:1.55;
-
+  line-height:1.6;
 }
 
+
+/* LOADING */
+
 .loading{
-
   opacity:.55;
-
   pointer-events:none;
-
 }
 
 
@@ -824,7 +605,6 @@ canvas{
   }
 
 }
-
 
 @media(max-width:430px){
 
@@ -855,31 +635,21 @@ canvas{
 <div>
 
 <div class="brand">
-
 MKAYFX
-
-<span>
-S&R
-</span>
-
+<span>S&R</span>
 </div>
 
 <div class="subtitle">
-
 5-Min Multi-Asset Support & Resistance Scalper
-
 </div>
 
 </div>
-
 
 <div
   class="badge"
   id="engineBadge"
 >
-
 CHECKING
-
 </div>
 
 </div>
@@ -888,7 +658,6 @@ CHECKING
 <!-- ASSETS -->
 
 <div class="assets">
-
 
 <button
   class="asset active"
@@ -900,15 +669,12 @@ Au
 </div>
 
 <div>
-
 <div class="assetName">
 GOLD
 </div>
-
 <div class="assetSymbol">
 XAU/USD · 5M
 </div>
-
 </div>
 
 </button>
@@ -924,19 +690,15 @@ XAU/USD · 5M
 </div>
 
 <div>
-
 <div class="assetName">
 BITCOIN
 </div>
-
 <div class="assetSymbol">
 BTC/USD · 5M
 </div>
-
 </div>
 
 </button>
-
 
 </div>
 
@@ -947,9 +709,7 @@ BTC/USD · 5M
   class="run"
   id="runButton"
 >
-
 RUN GOLD ANALYSIS
-
 </button>
 
 
@@ -960,7 +720,7 @@ RUN GOLD ANALYSIS
 </div>
 
 
-<!-- GRID -->
+<!-- MAIN GRID -->
 
 <div class="grid">
 
@@ -969,12 +729,10 @@ RUN GOLD ANALYSIS
 
 <div class="card">
 
-
 <div class="pad">
 
 
 <div class="signalTop">
-
 
 <div>
 
@@ -982,29 +740,21 @@ RUN GOLD ANALYSIS
   class="label"
   id="decisionTitle"
 >
-
 XAU/USD · 5M SIGNAL
-
 </div>
-
 
 <div
   class="signal WAIT"
   id="signal"
 >
-
 WAIT
-
 </div>
-
 
 <div
   class="statusText"
   id="signalDescription"
 >
-
 Waiting for 5M S&R crossover
-
 </div>
 
 </div>
@@ -1016,31 +766,24 @@ Waiting for 5M S&R crossover
   class="price"
   id="price"
 >
-
 —
-
 </div>
-
 
 <div
   class="statusText"
   id="candleTime"
 >
-
 Latest 5M candle
-
 </div>
 
 </div>
 
-
 </div>
 
 
-<!-- S/R -->
+<!-- SUPPORT / RESISTANCE -->
 
 <div class="metrics">
-
 
 <div class="metric">
 
@@ -1052,9 +795,7 @@ Newest Support
   class="green"
   id="support"
 >
-
 —
-
 </strong>
 
 </div>
@@ -1070,13 +811,10 @@ Newest Resistance
   class="red"
   id="resistance"
 >
-
 —
-
 </strong>
 
 </div>
-
 
 </div>
 
@@ -1084,7 +822,6 @@ Newest Resistance
 <!-- TRADE PLAN -->
 
 <div class="tradeGrid">
-
 
 <div class="level">
 
@@ -1096,9 +833,7 @@ Entry
   class="blue"
   id="entry"
 >
-
 —
-
 </b>
 
 </div>
@@ -1114,9 +849,7 @@ Stop Loss
   class="red"
   id="sl"
 >
-
 —
-
 </b>
 
 </div>
@@ -1132,9 +865,7 @@ Take Profit · 2R
   class="green"
   id="tp"
 >
-
 —
-
 </b>
 
 </div>
@@ -1147,13 +878,10 @@ Risk Distance
 </small>
 
 <b id="risk">
-
 —
-
 </b>
 
 </div>
-
 
 </div>
 
@@ -1162,61 +890,27 @@ Risk Distance
 
 <div class="settingsGrid">
 
+<div class="setting">
+<small>Timeframe</small>
+<b>5M</b>
+</div>
 
 <div class="setting">
-
-<small>
-Timeframe
-</small>
-
-<b>
-5M
-</b>
-
+<small>Pivot</small>
+<b id="pivotLength">9</b>
 </div>
-
 
 <div class="setting">
-
-<small>
-Pivot
-</small>
-
-<b id="pivotLength">
-9
-</b>
-
+<small>Max Levels</small>
+<b id="maxLevels">5</b>
 </div>
-
 
 <div class="setting">
-
-<small>
-Max Levels
-</small>
-
-<b id="maxLevels">
-5
-</b>
-
+<small>R:R</small>
+<b id="rr">1:2</b>
 </div>
 
-
-<div class="setting">
-
-<small>
-R:R
-</small>
-
-<b id="rr">
-1:2
-</b>
-
 </div>
-
-
-</div>
-
 
 </div>
 
@@ -1236,7 +930,6 @@ R:R
 
 </div>
 
-
 </div>
 
 
@@ -1244,6 +937,8 @@ R:R
 
 <div>
 
+
+<!-- ACTIVE LEVELS -->
 
 <div class="card pad">
 
@@ -1253,7 +948,6 @@ Active 5M S&R Levels
 
 
 <div class="levelLists">
-
 
 <div>
 
@@ -1288,11 +982,12 @@ Waiting for data.
 
 </div>
 
-
 </div>
 
 </div>
 
+
+<!-- CURRENT SIGNAL -->
 
 <div
   class="card pad"
@@ -1314,6 +1009,135 @@ Waiting for analysis.
 </div>
 
 
+<!-- BACKTEST -->
+
+<div
+  class="card pad"
+  style="margin-top:12px"
+>
+
+<div class="sectionTitle">
+Historical Backtest
+</div>
+
+
+<div class="btGrid">
+
+<div class="bt">
+<small>Signals</small>
+<strong id="btSignals">—</strong>
+</div>
+
+<div class="bt">
+<small>Closed Trades</small>
+<strong id="btClosed">—</strong>
+</div>
+
+<div class="bt">
+<small>Win Rate</small>
+<strong id="btWinRate">—</strong>
+</div>
+
+<div class="bt">
+<small>Profit Factor</small>
+<strong id="btPF">—</strong>
+</div>
+
+<div class="bt">
+<small>Net Result</small>
+<strong id="btNet">—</strong>
+</div>
+
+<div class="bt">
+<small>Expectancy</small>
+<strong id="btExpectancy">—</strong>
+</div>
+
+<div class="bt">
+<small>Max Drawdown</small>
+<strong id="btDD">—</strong>
+</div>
+
+<div class="bt">
+<small>Loss Streak</small>
+<strong id="btLossStreak">—</strong>
+</div>
+
+<div class="bt">
+<small>Avg Hold</small>
+<strong id="btHold">—</strong>
+</div>
+
+<div class="bt">
+<small>Bars Tested</small>
+<strong id="btBars">—</strong>
+</div>
+
+</div>
+
+
+<div
+  class="note"
+  id="btPeriod"
+>
+Waiting for backtest.
+</div>
+
+</div>
+
+
+<!-- RECENT BACKTEST TRADES -->
+
+<div
+  class="card pad"
+  style="margin-top:12px"
+>
+
+<div class="sectionTitle">
+Recent Backtest Trades
+</div>
+
+<div id="backtestTrades">
+
+<div class="reason">
+Waiting for backtest.
+</div>
+
+</div>
+
+<div class="note">
+
+Backtest uses the same Pivot-9 / Max-5 S&R signals.
+
+<br><br>
+
+Entry = signal candle close.
+
+<br>
+
+SL = support/resistance level.
+
+<br>
+
+TP = 2R.
+
+<br><br>
+
+Exit testing begins on the next 5M candle.
+
+If SL and TP are both reached inside the same candle, the backtester counts the stop first.
+
+<br><br>
+
+Spread, commission and slippage are not included.
+
+</div>
+
+</div>
+
+
+<!-- RECENT RAW SIGNALS -->
+
 <div
   class="card pad"
   style="margin-top:12px"
@@ -1331,37 +1155,6 @@ No signals loaded.
 
 </div>
 
-
-<div class="note">
-
-5M strategy only.
-
-<br><br>
-
-BUY = 5-minute close crosses above newest confirmed support.
-
-<br><br>
-
-SELL = 5-minute close crosses below newest confirmed resistance.
-
-<br><br>
-
-Pivot length = 9.
-
-<br>
-
-Maximum active S&R levels = 5.
-
-<br>
-
-Stop Loss = S&R level.
-
-<br>
-
-Take Profit = 2R.
-
-</div>
-
 </div>
 
 
@@ -1369,7 +1162,6 @@ Take Profit = 2R.
 
 
 </div>
-
 
 </div>
 
@@ -1420,9 +1212,7 @@ function fmt(
   if (
     !Number.isFinite(n)
   ) {
-
     return "—";
-
   }
 
 
@@ -1444,7 +1234,7 @@ function fmt(
 
 
 /* =========================================================
-   ESCAPE
+   ESCAPE HTML
 ========================================================= */
 
 function escapeHtml(value) {
@@ -1490,9 +1280,7 @@ function displayTime(value) {
   if (
     !value
   ) {
-
     return "—";
-
   }
 
 
@@ -1522,9 +1310,7 @@ function displayTime(value) {
       date.getTime()
     )
   ) {
-
     return value;
-
   }
 
 
@@ -1533,7 +1319,6 @@ function displayTime(value) {
     undefined,
 
     {
-
       month:
         "short",
 
@@ -1545,7 +1330,6 @@ function displayTime(value) {
 
       minute:
         "2-digit"
-
     }
 
   );
@@ -1644,7 +1428,7 @@ document
 
 
 /* =========================================================
-   FETCH
+   RUN
 ========================================================= */
 
 async function runAnalysis() {
@@ -1652,9 +1436,7 @@ async function runAnalysis() {
   if (
     analysing
   ) {
-
     return;
-
   }
 
 
@@ -1774,7 +1556,7 @@ async function runAnalysis() {
 
 
 /* =========================================================
-   RENDER
+   MAIN RENDER
 ========================================================= */
 
 function render(data) {
@@ -1900,21 +1682,15 @@ function render(data) {
 
   $("pivotLength").textContent =
 
-    data.settings
-      ?.pivotLookbackLength
-
+    data.settings?.pivotLookbackLength
     ??
-
     9;
 
 
   $("maxLevels").textContent =
 
-    data.settings
-      ?.maxActiveLevels
-
+    data.settings?.maxActiveLevels
     ??
-
     5;
 
 
@@ -1948,13 +1724,17 @@ function render(data) {
     data.recentSignals
   );
 
+  renderBacktest(
+    data.backtest
+  );
+
   drawChart(data);
 
 }
 
 
 /* =========================================================
-   LEVEL LISTS
+   LEVELS
 ========================================================= */
 
 function renderLevels(data) {
@@ -2190,6 +1970,276 @@ function renderRecentSignals(signals) {
 
 
 /* =========================================================
+   BACKTEST
+========================================================= */
+
+function renderBacktest(bt) {
+
+  if (
+    !bt
+  ) {
+
+    $("backtestTrades").innerHTML =
+      `<div class="reason">
+         No backtest data returned.
+       </div>`;
+
+    return;
+
+  }
+
+
+  $("btSignals").textContent =
+    bt.signals ??
+    0;
+
+
+  $("btClosed").textContent =
+    bt.closedTrades ??
+    0;
+
+
+  $("btWinRate").textContent =
+    `${fmt(bt.winRate, 1)}%`;
+
+
+  $("btPF").textContent =
+
+    bt.profitFactor === 999
+
+      ? "∞"
+
+      : fmt(
+          bt.profitFactor,
+          2
+        );
+
+
+  $("btNet").textContent =
+    `${fmt(bt.netR, 2)}R`;
+
+
+  $("btNet").className =
+
+    Number(bt.netR) >= 0
+
+      ? "green"
+
+      : "red";
+
+
+  $("btExpectancy").textContent =
+    `${fmt(bt.expectancyR, 3)}R`;
+
+
+  $("btExpectancy").className =
+
+    Number(bt.expectancyR) >= 0
+
+      ? "green"
+
+      : "red";
+
+
+  $("btDD").textContent =
+    `${fmt(bt.maxDrawdownR, 2)}R`;
+
+
+  $("btLossStreak").textContent =
+    String(
+      bt.maxLossStreak ??
+      0
+    );
+
+
+  $("btHold").textContent =
+    `${fmt(bt.averageHoldMinutes, 1)}m`;
+
+
+  $("btBars").textContent =
+    Number(
+      bt.barsTested ??
+      0
+    )
+      .toLocaleString();
+
+
+  $("btPeriod").innerHTML = `
+
+    Tested:
+
+    ${escapeHtml(
+      displayTime(
+        bt.firstCandle
+      )
+    )}
+
+    →
+
+    ${escapeHtml(
+      displayTime(
+        bt.lastCandle
+      )
+    )}
+
+    <br><br>
+
+    Wins:
+    <span class="green">
+      ${bt.wins ?? 0}
+    </span>
+
+    ·
+
+    Losses:
+    <span class="red">
+      ${bt.losses ?? 0}
+    </span>
+
+    ·
+
+    Open:
+    <span class="gold">
+      ${bt.openTrades ?? 0}
+    </span>
+
+  `;
+
+
+  const trades =
+
+    Array.isArray(
+      bt.recentTrades
+    )
+
+      ? bt.recentTrades
+
+      : [];
+
+
+  $("backtestTrades").innerHTML =
+
+    trades.length
+
+      ?
+
+      trades
+        .map(
+          trade => {
+
+            const resultClass =
+
+              trade.result === "WIN"
+
+                ? "green"
+
+                : trade.result === "LOSS"
+
+                  ? "red"
+
+                  : "gold";
+
+
+            const directionClass =
+
+              trade.signal === "BUY"
+
+                ? "green"
+
+                : "red";
+
+
+            const resultText =
+
+              trade.r == null
+
+                ? trade.result
+
+                : `${trade.result} · ${trade.r > 0 ? "+" : ""}${trade.r}R`;
+
+
+            return `
+
+              <div class="tradeRow">
+
+                <b class="${directionClass}">
+
+                  ${escapeHtml(trade.signal)}
+
+                </b>
+
+                ·
+
+                <b class="${resultClass}">
+
+                  ${escapeHtml(resultText)}
+
+                </b>
+
+                <br>
+
+                <span class="tradeTime">
+
+                  Entry ${fmt(trade.entry)}
+
+                  <br>
+
+                  SL ${fmt(trade.stopLoss)}
+
+                  ·
+
+                  TP ${fmt(trade.takeProfit)}
+
+                  <br>
+
+                  Exit ${
+                    trade.exitPrice == null
+                      ? "OPEN"
+                      : fmt(trade.exitPrice)
+                  }
+
+                  ·
+
+                  Hold ${trade.holdBars ?? 0} bars
+
+                  <br>
+
+                  ${escapeHtml(
+                    displayTime(
+                      trade.entryTime
+                    )
+                  )}
+
+                  ${
+                    trade.exitTime
+                      ? ` → ${escapeHtml(
+                          displayTime(
+                            trade.exitTime
+                          )
+                        )}`
+                      : ""
+                  }
+
+                </span>
+
+              </div>
+
+            `;
+
+          }
+        )
+        .join("")
+
+      :
+
+      `<div class="reason">
+         No backtest trades generated.
+       </div>`;
+
+}
+
+
+/* =========================================================
    CHART
 ========================================================= */
 
@@ -2221,27 +2271,21 @@ function drawChart(data) {
 
   canvas.width =
     Math.max(
-
       1,
-
       Math.round(
         rect.width *
         ratio
       )
-
     );
 
 
   canvas.height =
     Math.max(
-
       1,
-
       Math.round(
         rect.height *
         ratio
       )
-
     );
 
 
@@ -2252,24 +2296,20 @@ function drawChart(data) {
 
 
   ctx.setTransform(
-
     ratio,
     0,
     0,
     ratio,
     0,
     0
-
   );
 
 
   ctx.clearRect(
-
     0,
     0,
     rect.width,
     rect.height
-
   );
 
 
@@ -2325,7 +2365,6 @@ function drawChart(data) {
 
 
   const important =
-
     [
       ...supports,
       ...resistances,
@@ -2357,9 +2396,7 @@ function drawChart(data) {
     !highs.length ||
     !lows.length
   ) {
-
     return;
-
   }
 
 
@@ -2492,7 +2529,7 @@ function drawChart(data) {
   }
 
 
-  /* LINE FUNCTION */
+  /* LEVEL LINE */
 
   function horizontal(
     price,
@@ -2509,9 +2546,7 @@ function drawChart(data) {
     if (
       !Number.isFinite(number)
     ) {
-
       return;
-
     }
 
 
@@ -2525,10 +2560,8 @@ function drawChart(data) {
     ctx.strokeStyle =
       color;
 
-
     ctx.fillStyle =
       color;
-
 
     ctx.lineWidth =
       width;
@@ -2653,50 +2686,32 @@ function drawChart(data) {
   );
 
 
-  /* TRADE PLAN */
+  /* CURRENT TRADE */
 
   horizontal(
-
     data.entry,
-
     "ENTRY",
-
     "rgba(121,148,255,.98)",
-
     true,
-
     1.5
-
   );
 
 
   horizontal(
-
     data.stopLoss,
-
     "SL",
-
     "rgba(255,98,121,.98)",
-
     true,
-
     1.5
-
   );
 
 
   horizontal(
-
     data.takeProfit,
-
     "TP",
-
     "rgba(55,230,161,.98)",
-
     true,
-
     1.5
-
   );
 
 
@@ -2748,11 +2763,11 @@ function drawChart(data) {
           lowPrice,
           close
         ]
-          .every(Number.isFinite)
+          .every(
+            Number.isFinite
+          )
       ) {
-
         return;
-
       }
 
 
@@ -2773,8 +2788,6 @@ function drawChart(data) {
           : "#ff6279";
 
 
-      /* WICK */
-
       ctx.strokeStyle =
         color;
 
@@ -2793,8 +2806,6 @@ function drawChart(data) {
 
       ctx.stroke();
 
-
-      /* BODY */
 
       ctx.fillStyle =
         color;
@@ -2842,15 +2853,11 @@ function drawChart(data) {
   $("chartLegend").innerHTML = `
 
     <span class="chip">
-
       ${escapeHtml(data.symbol)}
-
     </span>
 
     <span class="chip">
-
       5M · ${bars.length} candles
-
     </span>
 
     ${
@@ -2927,9 +2934,6 @@ window.addEventListener(
 
 /* =========================================================
    AUTO REFRESH
-
-   Check once per minute even though the chart is 5M.
-   That lets the UI see the latest 5M candle update.
 ========================================================= */
 
 setInterval(
