@@ -48,7 +48,7 @@ const CFG = {
   minScore:
     envNumber(
       "BTC_MIN_SIGNAL_SCORE",
-      70,
+      60,
       55,
       95
     ),
@@ -56,7 +56,7 @@ const CFG = {
   sniperScore:
     envNumber(
       "BTC_SNIPER_SCORE",
-      80,
+      70,
       65,
       100
     ),
