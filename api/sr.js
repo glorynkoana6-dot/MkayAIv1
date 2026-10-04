@@ -126,7 +126,7 @@ const ZONE_LOOKBACK_HOURS =
    V3.2 = 47
 */
 const MIN_SIGNAL_SCORE =
-  47;
+  44;
 
 
 /*
