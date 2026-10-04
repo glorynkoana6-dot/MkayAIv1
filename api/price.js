@@ -1,160 +1,5 @@
-import {
-  fetchPrice,
-  finite,
-  round
-} from "./core.js";
-
-
-const ASSETS = {
-
-  "XAU/USD": {
-    code: "XAUUSD",
-    name: "Gold",
-    precision: 2
-  },
-
-  "BTC/USD": {
-    code: "BTCUSD",
-    name: "Bitcoin",
-    precision: 2
-  }
-
-};
-
-
-function normalizeSymbol(value) {
-
-  const raw =
-    String(
-      value ||
-      "XAU/USD"
-    )
-      .trim()
-      .toUpperCase()
-      .replace(/\s+/g, "");
-
-
-  if (
-    raw === "XAUUSD" ||
-    raw === "XAU/USD" ||
-    raw === "GOLD"
-  ) {
-    return "XAU/USD";
-  }
-
-
-  if (
-    raw === "BTCUSD" ||
-    raw === "BTC/USD" ||
-    raw === "BTC"
-  ) {
-    return "BTC/USD";
-  }
-
-
-  return null;
-}
-
-
-function queryValue(
-  req,
-  key
-) {
-
-  if (
-    req.query &&
-    req.query[key] !==
-      undefined
-  ) {
-
-    const value =
-      req.query[key];
-
-    return Array.isArray(
-      value
-    )
-      ? value[0]
-      : value;
-
-  }
-
-
-  try {
-
-    const url =
-      new URL(
-        req.url,
-        "http://localhost"
-      );
-
-    return url.searchParams.get(
-      key
-    );
-
-  }
-  catch {
-
-    return null;
-
-  }
-
-}
-
-
-const CACHE =
-  globalThis.__MKAYFX_PRICE_CACHE__ ||
-  new Map();
-
-
-globalThis.__MKAYFX_PRICE_CACHE__ =
-  CACHE;
-
-
-async function cachedPrice(
-  symbol
-) {
-
-  const now =
-    Date.now();
-
-
-  const existing =
-    CACHE.get(
-      symbol
-    );
-
-
-  if (
-    existing &&
-    now -
-      existing.time <
-      5000
-  ) {
-
-    return existing.price;
-
-  }
-
-
-  const price =
-    await fetchPrice(
-      symbol
-    );
-
-
-  CACHE.set(
-    symbol,
-    {
-      time:
-        now,
-
-      price
-    }
-  );
-
-
-  return price;
-}
+const TD_BASE =
+  "https://api.twelvedata.com";
 
 
 export default async function handler(
@@ -163,48 +8,28 @@ export default async function handler(
 ) {
 
   res.setHeader(
+    "Content-Type",
+    "application/json; charset=utf-8"
+  );
+
+  res.setHeader(
     "Cache-Control",
-    "no-store"
+    "s-maxage=8, stale-while-revalidate=12"
   );
 
 
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "*"
-  );
+  const apiKey =
+    process.env.TWELVE_DATA_API_KEY;
 
 
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET,OPTIONS"
-  );
-
-
-  if (
-    req.method ===
-    "OPTIONS"
-  ) {
+  if (!apiKey) {
 
     return res
-      .status(204)
-      .end();
-
-  }
-
-
-  if (
-    req.method !==
-    "GET"
-  ) {
-
-    return res
-      .status(405)
+      .status(500)
       .json({
-        success:
-          false,
-
+        ok: false,
         error:
-          "Use GET."
+          "Missing TWELVE_DATA_API_KEY in Vercel Environment Variables."
       });
 
   }
@@ -212,65 +37,54 @@ export default async function handler(
 
   try {
 
-    const requested =
-      queryValue(
-        req,
-        "symbol"
-      ) ||
-      "XAU/USD";
+    const url =
+      `${TD_BASE}/price` +
+      `?symbol=${encodeURIComponent("XAU/USD")}` +
+      `&apikey=${encodeURIComponent(apiKey)}`;
 
 
-    const symbol =
-      normalizeSymbol(
-        requested
+    const response =
+      await fetch(
+        url,
+        {
+          headers: {
+            Accept:
+              "application/json"
+          },
+
+          signal:
+            AbortSignal.timeout(
+              8000
+            )
+        }
       );
 
 
-    if (!symbol) {
+    if (!response.ok) {
 
-      return res
-        .status(400)
-        .json({
-
-          success:
-            false,
-
-          error:
-            "Unsupported symbol.",
-
-          supportedSymbols: [
-            "XAU/USD",
-            "BTC/USD"
-          ]
-
-        });
+      throw new Error(
+        `Twelve Data HTTP ${response.status}`
+      );
 
     }
 
 
-    const asset =
-      ASSETS[symbol];
-
-
-    const value =
-      await cachedPrice(
-        symbol
-      );
-
-
-    const price =
-      finite(
-        value
-      );
+    const data =
+      await response.json();
 
 
     if (
-      price ===
-      null
+      data.status === "error" ||
+      !Number.isFinite(
+        Number(
+          data.price
+        )
+      )
     ) {
 
       throw new Error(
-        `${symbol} price unavailable.`
+        data.message ||
+        "Twelve Data returned no XAU/USD price."
       );
 
     }
@@ -280,38 +94,34 @@ export default async function handler(
       .status(200)
       .json({
 
-        success:
-          true,
+        ok: true,
 
-        symbol,
-
-        code:
-          asset.code,
-
-        name:
-          asset.name,
+        symbol:
+          "XAU/USD",
 
         price:
-          round(
-            price,
-            asset.precision
+          Number(
+            data.price
           ),
 
         timestamp:
           new Date()
-            .toISOString()
+            .toISOString(),
+
+        source:
+          "Twelve Data"
 
       });
 
   }
+
   catch (error) {
 
     return res
-      .status(500)
+      .status(502)
       .json({
 
-        success:
-          false,
+        ok: false,
 
         error:
           error?.message ||
