@@ -27,7 +27,7 @@
 >
 
 <title>
-MKAYFX 5M S&R HARD LOCK
+MKAYFX TOTT
 </title>
 
 
@@ -40,16 +40,24 @@ MKAYFX 5M S&R HARD LOCK
 :root{
 
   --bg:#05070b;
+
   --panel:#0a1119;
+
   --border:rgba(255,255,255,.085);
 
   --text:#f6f8fb;
+
   --muted:#788698;
 
   --gold:#f4c85d;
+
   --green:#37e6a1;
+
   --red:#ff6279;
-  --blue:#7994ff;
+
+  --blue:#5ba8ff;
+
+  --purple:#9d83ff;
 
 }
 
@@ -128,7 +136,7 @@ button{
 
 .brand span{
 
-  color:var(--gold);
+  color:var(--blue);
 
 }
 
@@ -157,37 +165,6 @@ button{
   color:var(--muted);
 
   text-transform:uppercase;
-
-  letter-spacing:.8px;
-
-}
-
-.lockBadge{
-
-  display:inline-flex;
-
-  align-items:center;
-
-  gap:6px;
-
-  margin-top:8px;
-
-  padding:6px 9px;
-
-  border-radius:999px;
-
-  border:
-    1px solid
-    rgba(244,200,93,.35);
-
-  background:
-    rgba(244,200,93,.08);
-
-  color:var(--gold);
-
-  font-size:8px;
-
-  font-weight:900;
 
   letter-spacing:.8px;
 
@@ -237,12 +214,12 @@ button{
 .asset.active{
 
   border-color:
-    rgba(121,148,255,.65);
+    rgba(91,168,255,.65);
 
   background:
     linear-gradient(
       135deg,
-      rgba(33,52,86,.95),
+      rgba(30,52,86,.95),
       rgba(11,18,31,.98)
     );
 
@@ -327,7 +304,7 @@ button{
 
   border:
     1px solid
-    rgba(121,148,255,.45);
+    rgba(91,168,255,.45);
 
   background:
     linear-gradient(
@@ -348,20 +325,20 @@ button{
 
   width:100%;
 
-  margin-top:8px;
-
   min-height:44px;
+
+  margin-top:8px;
 
   border-radius:15px;
 
   border:
     1px solid
-    rgba(255,98,121,.24);
+    rgba(255,98,121,.25);
 
   background:
     rgba(255,98,121,.06);
 
-  color:#ffa6b4;
+  color:#ffa9b5;
 
   font-size:10px;
 
@@ -485,23 +462,21 @@ button{
 }
 
 .signal.WAIT{
+
   color:var(--gold);
+
 }
 
 .signal.BUY{
+
   color:var(--green);
+
 }
 
 .signal.SELL{
-  color:var(--red);
-}
 
-.signal.WIN{
-  color:var(--green);
-}
-
-.signal.LOSS{
   color:var(--red);
+
 }
 
 .price{
@@ -524,16 +499,42 @@ button{
 
 }
 
+.lockBadge{
+
+  display:inline-flex;
+
+  margin-top:9px;
+
+  padding:6px 9px;
+
+  border-radius:999px;
+
+  border:
+    1px solid
+    rgba(244,200,93,.35);
+
+  background:
+    rgba(244,200,93,.07);
+
+  color:var(--gold);
+
+  font-size:8px;
+
+  font-weight:900;
+
+}
+
 
 /* =========================================================
-   METRICS
+   TOTT METRICS
 ========================================================= */
 
 .metrics{
 
   display:grid;
 
-  grid-template-columns:repeat(2,1fr);
+  grid-template-columns:
+    repeat(2,1fr);
 
   gap:8px;
 
@@ -545,7 +546,7 @@ button{
 
   padding:13px;
 
-  min-height:90px;
+  min-height:86px;
 
   border:1px solid var(--border);
 
@@ -571,7 +572,7 @@ button{
 
   margin-top:9px;
 
-  font-size:18px;
+  font-size:17px;
 
 }
 
@@ -584,7 +585,8 @@ button{
 
   display:grid;
 
-  grid-template-columns:repeat(2,1fr);
+  grid-template-columns:
+    repeat(2,1fr);
 
   gap:8px;
 
@@ -635,7 +637,8 @@ button{
 
   display:grid;
 
-  grid-template-columns:repeat(4,1fr);
+  grid-template-columns:
+    repeat(3,1fr);
 
   gap:8px;
 
@@ -698,6 +701,10 @@ button{
   color:var(--blue);
 }
 
+.purple{
+  color:var(--purple);
+}
+
 
 /* =========================================================
    CHART
@@ -707,7 +714,7 @@ button{
 
   position:relative;
 
-  height:390px;
+  height:400px;
 
   border-top:
     1px solid
@@ -805,65 +812,6 @@ canvas{
 
 
 /* =========================================================
-   LEVEL LISTS
-========================================================= */
-
-.levelLists{
-
-  display:grid;
-
-  grid-template-columns:1fr 1fr;
-
-  gap:10px;
-
-}
-
-.levelTitle{
-
-  color:var(--muted);
-
-  font-size:8px;
-
-  margin-bottom:6px;
-
-  text-transform:uppercase;
-
-}
-
-.levelRow{
-
-  padding:9px;
-
-  border-radius:11px;
-
-  margin-bottom:6px;
-
-  background:#070d14;
-
-  border:1px solid var(--border);
-
-  font-size:11px;
-
-  font-weight:800;
-
-}
-
-.newestSupport{
-
-  border-color:
-    rgba(55,230,161,.5);
-
-}
-
-.newestResistance{
-
-  border-color:
-    rgba(255,98,121,.5);
-
-}
-
-
-/* =========================================================
    BACKTEST
 ========================================================= */
 
@@ -914,7 +862,7 @@ canvas{
 
 
 /* =========================================================
-   TRADE ROW
+   HISTORY
 ========================================================= */
 
 .tradeRow{
@@ -942,8 +890,6 @@ canvas{
   color:var(--muted);
 
   font-size:8px;
-
-  margin-top:4px;
 
   line-height:1.55;
 
@@ -995,7 +941,7 @@ canvas{
 
   .chart{
 
-    height:350px;
+    height:355px;
 
   }
 
@@ -1006,7 +952,8 @@ canvas{
 
   .settingsGrid{
 
-    grid-template-columns:repeat(2,1fr);
+    grid-template-columns:
+      repeat(2,1fr);
 
   }
 
@@ -1026,18 +973,22 @@ canvas{
 >
 
 
-<!-- HEADER -->
+<!-- ======================================================
+     HEADER
+======================================================= -->
 
 <div class="header">
 
+
 <div>
+
 
 <div class="brand">
 
 MKAYFX
 
 <span>
-S&R
+TOTT
 </span>
 
 </div>
@@ -1045,9 +996,10 @@ S&R
 
 <div class="subtitle">
 
-5-Min Hard-Locked Support & Resistance Scalper
+5-Min Twin Optimized Trend Tracker
 
 </div>
+
 
 </div>
 
@@ -1061,10 +1013,13 @@ CHECKING
 
 </div>
 
+
 </div>
 
 
-<!-- ASSETS -->
+<!-- ======================================================
+     ASSETS
+======================================================= -->
 
 <div class="assets">
 
@@ -1120,14 +1075,16 @@ BTC/USD · 5M
 </div>
 
 
-<!-- BUTTON -->
+<!-- ======================================================
+     BUTTONS
+======================================================= -->
 
 <button
   class="run"
   id="runButton"
 >
 
-RUN GOLD ANALYSIS
+RUN GOLD TOTT ANALYSIS
 
 </button>
 
@@ -1149,12 +1106,16 @@ CLEAR LOCKED TRADE
 </div>
 
 
-<!-- GRID -->
+<!-- ======================================================
+     GRID
+======================================================= -->
 
 <div class="grid">
 
 
-<!-- LEFT -->
+<!-- ======================================================
+     LEFT
+======================================================= -->
 
 <div class="card">
 
@@ -1167,12 +1128,13 @@ CLEAR LOCKED TRADE
 
 <div>
 
+
 <div
   class="label"
   id="decisionTitle"
 >
 
-XAU/USD · 5M SIGNAL
+XAU/USD · TOTT SIGNAL
 
 </div>
 
@@ -1192,7 +1154,7 @@ WAIT
   id="signalDescription"
 >
 
-Waiting for 5M S&R crossover
+Waiting for TOTT crossover
 
 </div>
 
@@ -1206,10 +1168,12 @@ UNLOCKED · WAITING
 
 </div>
 
+
 </div>
 
 
 <div>
+
 
 <div
   class="price"
@@ -1226,17 +1190,20 @@ UNLOCKED · WAITING
   id="candleTime"
 >
 
-Latest 5M candle
-
-</div>
-
-</div>
-
+Latest completed 5M candle
 
 </div>
 
 
-<!-- SUPPORT / RESISTANCE -->
+</div>
+
+
+</div>
+
+
+<!-- ======================================================
+     TOTT VALUES
+======================================================= -->
 
 <div class="metrics">
 
@@ -1244,12 +1211,12 @@ Latest 5M candle
 <div class="metric">
 
 <small>
-Newest Support
+VAR Support
 </small>
 
 <strong
-  class="green"
-  id="support"
+  class="blue"
+  id="mavg"
 >
 —
 </strong>
@@ -1260,12 +1227,43 @@ Newest Support
 <div class="metric">
 
 <small>
-Newest Resistance
+OTT Upper
+</small>
+
+<strong
+  class="green"
+  id="ottUpper"
+>
+—
+</strong>
+
+</div>
+
+
+<div class="metric">
+
+<small>
+OTT Lower
 </small>
 
 <strong
   class="red"
-  id="resistance"
+  id="ottLower"
+>
+—
+</strong>
+
+</div>
+
+
+<div class="metric">
+
+<small>
+TOTT Direction
+</small>
+
+<strong
+  id="direction"
 >
 —
 </strong>
@@ -1276,7 +1274,9 @@ Newest Resistance
 </div>
 
 
-<!-- LOCKED TRADE -->
+<!-- ======================================================
+     LOCKED TRADE
+======================================================= -->
 
 <div class="tradeGrid">
 
@@ -1291,9 +1291,7 @@ Locked Entry
   class="blue"
   id="entry"
 >
-
 —
-
 </b>
 
 </div>
@@ -1302,16 +1300,14 @@ Locked Entry
 <div class="level">
 
 <small>
-Locked Stop Loss
+Stop Loss
 </small>
 
 <b
   class="red"
   id="sl"
 >
-
 —
-
 </b>
 
 </div>
@@ -1327,9 +1323,7 @@ Stretched TP · 3R
   class="green"
   id="tp"
 >
-
 —
-
 </b>
 
 </div>
@@ -1341,12 +1335,8 @@ Stretched TP · 3R
 Current R
 </small>
 
-<b
-  id="currentR"
->
-
+<b id="currentR">
 —
-
 </b>
 
 </div>
@@ -1355,7 +1345,9 @@ Current R
 </div>
 
 
-<!-- SETTINGS -->
+<!-- ======================================================
+     SETTINGS
+======================================================= -->
 
 <div class="settingsGrid">
 
@@ -1376,11 +1368,11 @@ Timeframe
 <div class="setting">
 
 <small>
-Pivot
+MA
 </small>
 
-<b id="pivotLength">
-9
+<b>
+VAR
 </b>
 
 </div>
@@ -1389,11 +1381,11 @@ Pivot
 <div class="setting">
 
 <small>
-Max Levels
+Period
 </small>
 
-<b id="maxLevels">
-5
+<b id="period">
+40
 </b>
 
 </div>
@@ -1402,7 +1394,33 @@ Max Levels
 <div class="setting">
 
 <small>
-R:R
+Optimization
+</small>
+
+<b id="percent">
+1%
+</b>
+
+</div>
+
+
+<div class="setting">
+
+<small>
+Twin Coeff
+</small>
+
+<b id="coefficient">
+0.001
+</b>
+
+</div>
+
+
+<div class="setting">
+
+<small>
+Target
 </small>
 
 <b id="rr">
@@ -1418,12 +1436,16 @@ R:R
 </div>
 
 
-<!-- CHART -->
+<!-- ======================================================
+     CHART
+======================================================= -->
 
 <div class="chart">
 
+
 <canvas id="chart">
 </canvas>
+
 
 <div
   class="chartLegend"
@@ -1431,76 +1453,23 @@ R:R
 >
 </div>
 
-</div>
-
 
 </div>
 
 
-<!-- RIGHT -->
+</div>
+
+
+<!-- ======================================================
+     RIGHT
+======================================================= -->
 
 <div>
 
 
-<!-- LEVELS -->
+<!-- SIGNAL STATUS -->
 
 <div class="card pad">
-
-<div class="sectionTitle">
-
-Active 5M S&R Levels
-
-</div>
-
-
-<div class="levelLists">
-
-
-<div>
-
-<div class="levelTitle">
-Supports
-</div>
-
-<div id="supportLevels">
-
-<div class="reason">
-Waiting for data.
-</div>
-
-</div>
-
-</div>
-
-
-<div>
-
-<div class="levelTitle">
-Resistances
-</div>
-
-<div id="resistanceLevels">
-
-<div class="reason">
-Waiting for data.
-</div>
-
-</div>
-
-</div>
-
-
-</div>
-
-</div>
-
-
-<!-- CURRENT STATE -->
-
-<div
-  class="card pad"
-  style="margin-top:12px"
->
 
 <div class="sectionTitle">
 
@@ -1511,7 +1480,9 @@ Hard-Lock Status
 <div id="reasons">
 
 <div class="reason">
-Waiting for analysis.
+
+Waiting for TOTT analysis.
+
 </div>
 
 </div>
@@ -1528,7 +1499,7 @@ Waiting for analysis.
 
 <div class="sectionTitle">
 
-Hard-Lock Backtest
+TOTT Hard-Lock Backtest
 
 </div>
 
@@ -1555,7 +1526,7 @@ Trades
 Win Rate
 </small>
 
-<strong id="btWinRate">
+<strong id="btWin">
 —
 </strong>
 
@@ -1617,7 +1588,7 @@ Max Drawdown
 <div class="bt">
 
 <small>
-Max Loss Streak
+Loss Streak
 </small>
 
 <strong id="btLossStreak">
@@ -1652,11 +1623,10 @@ Waiting for backtest.
 
 </div>
 
-
 </div>
 
 
-<!-- RECENT BACKTEST -->
+<!-- BACKTEST TRADES -->
 
 <div
   class="card pad"
@@ -1665,17 +1635,54 @@ Waiting for backtest.
 
 <div class="sectionTitle">
 
-Recent Hard-Lock Trades
+Recent Backtest Trades
 
 </div>
 
 <div id="backtestTrades">
 
 <div class="reason">
-
 Waiting for backtest.
+</div>
 
 </div>
+
+</div>
+
+
+<!-- RAW SIGNALS -->
+
+<div
+  class="card pad"
+  style="margin-top:12px"
+>
+
+<div class="sectionTitle">
+
+Recent TOTT Signals
+
+</div>
+
+<div id="recentSignals">
+
+<div class="reason">
+Waiting for signals.
+</div>
+
+</div>
+
+
+<div class="note">
+
+BUY = VAR crosses above OTT Upper [2].
+
+<br><br>
+
+SELL = VAR crosses below OTT Lower [2].
+
+<br><br>
+
+The original TOTT strategy provides the BUY/SELL logic. This app adds the hard lock, TOTT-band stop and stretched 3R target.
 
 </div>
 
@@ -1700,7 +1707,7 @@ Waiting for backtest.
 let selectedSymbol =
 
   localStorage.getItem(
-    "mkayfx_sr_symbol"
+    "mkayfx_tott_symbol"
   )
 
   ||
@@ -1724,9 +1731,7 @@ const $ =
 
 
 /* =========================================================
-   LOCAL STORAGE KEYS
-
-   Separate hard lock for GOLD and BTC.
+   STORAGE KEYS
 ========================================================= */
 
 function lockKey() {
@@ -1734,9 +1739,9 @@ function lockKey() {
   return selectedSymbol ===
     "BTC/USD"
 
-    ? "mkayfx_sr_lock_btc_v3"
+    ? "mkayfx_tott_lock_btc_v1"
 
-    : "mkayfx_sr_lock_xau_v3";
+    : "mkayfx_tott_lock_xau_v1";
 
 }
 
@@ -1746,9 +1751,21 @@ function historyKey() {
   return selectedSymbol ===
     "BTC/USD"
 
-    ? "mkayfx_sr_history_btc_v3"
+    ? "mkayfx_tott_history_btc_v1"
 
-    : "mkayfx_sr_history_xau_v3";
+    : "mkayfx_tott_history_xau_v1";
+
+}
+
+
+function ignoreKey() {
+
+  return selectedSymbol ===
+    "BTC/USD"
+
+    ? "mkayfx_tott_ignore_btc_v1"
+
+    : "mkayfx_tott_ignore_xau_v1";
 
 }
 
@@ -1799,7 +1816,7 @@ function fmt(
 
 
 /* =========================================================
-   ESCAPE
+   HTML ESCAPE
 ========================================================= */
 
 function escapeHtml(
@@ -2103,17 +2120,17 @@ function updateAssetButtons() {
 
 
   $("runButton").textContent =
-    `RUN ${assetName()} ANALYSIS`;
+    `RUN ${assetName()} TOTT ANALYSIS`;
 
 
   $("decisionTitle").textContent =
-    `${selectedSymbol} · 5M SIGNAL`;
+    `${selectedSymbol} · TOTT SIGNAL`;
 
 }
 
 
 /* =========================================================
-   ASSET CLICK
+   ASSET BUTTONS
 ========================================================= */
 
 document
@@ -2135,7 +2152,7 @@ document
 
           localStorage.setItem(
 
-            "mkayfx_sr_symbol",
+            "mkayfx_tott_symbol",
 
             selectedSymbol
 
@@ -2156,21 +2173,16 @@ document
 
 
 /* =========================================================
-   CREATE HARD LOCK
+   CREATE LOCK
 ========================================================= */
 
-function maybeLockSignal(
+function maybeCreateLock(
   data
 ) {
 
   const existing =
     getLockedTrade();
 
-
-  /*
-     Existing trade stays locked.
-     NEVER replace it with a new signal.
-  */
 
   if (
     existing
@@ -2182,8 +2194,36 @@ function maybeLockSignal(
 
 
   if (
-    data.signal !== "BUY" &&
-    data.signal !== "SELL"
+    data.signal !==
+    "BUY"
+
+    &&
+
+    data.signal !==
+    "SELL"
+  ) {
+
+    return null;
+
+  }
+
+
+  /*
+     If user manually cleared this exact
+     signal candle, don't immediately
+     recreate it.
+  */
+
+  const ignoredTime =
+    localStorage.getItem(
+      ignoreKey()
+    );
+
+
+  if (
+    ignoredTime &&
+    ignoredTime ===
+    data.signalTime
   ) {
 
     return null;
@@ -2245,7 +2285,7 @@ function maybeLockSignal(
   const trade = {
 
     id:
-      `LOCK-${Date.now()}-${selectedSymbol.replace("/", "")}`,
+      `TOTT-${Date.now()}-${selectedSymbol.replace("/", "")}`,
 
     symbol:
       selectedSymbol,
@@ -2267,12 +2307,12 @@ function maybeLockSignal(
         3
       ),
 
+    signalTime:
+      data.signalTime,
+
     createdAt:
       new Date()
         .toISOString(),
-
-    signalCandleTime:
-      data.candleTime,
 
     status:
       "ACTIVE"
@@ -2291,269 +2331,12 @@ function maybeLockSignal(
 
 
 /* =========================================================
-   CHECK WHETHER LOCKED TRADE HIT TP / SL
-
-   Uses all returned chart candles from signal time onward.
-
-   If both SL and TP are hit inside the same candle,
-   SL is counted first.
-========================================================= */
-
-function evaluateLockedTrade(
-  trade,
-  data
-) {
-
-  if (
-    !trade
-  ) {
-
-    return null;
-
-  }
-
-
-  const bars =
-    Array.isArray(
-      data.chart
-    )
-
-      ? data.chart
-
-      : [];
-
-
-  const startTime =
-    parseTime(
-
-      trade.signalCandleTime
-
-      ||
-
-      trade.createdAt
-
-    );
-
-
-  const relevantBars =
-
-    bars.filter(
-      bar => {
-
-        const t =
-          parseTime(
-            bar.time
-          );
-
-
-        return (
-
-          Number.isFinite(
-            t
-          )
-
-          &&
-
-          (
-            !Number.isFinite(
-              startTime
-            )
-
-            ||
-
-            t >
-            startTime
-
-          )
-
-        );
-
-      }
-    );
-
-
-  for (
-    const bar
-    of relevantBars
-  ) {
-
-    const high =
-      Number(
-        bar.high
-      );
-
-
-    const low =
-      Number(
-        bar.low
-      );
-
-
-    if (
-      !Number.isFinite(
-        high
-      )
-
-      ||
-
-      !Number.isFinite(
-        low
-      )
-    ) {
-
-      continue;
-
-    }
-
-
-    if (
-      trade.signal ===
-      "BUY"
-    ) {
-
-      const stopHit =
-        low <=
-        trade.stopLoss;
-
-
-      const targetHit =
-        high >=
-        trade.takeProfit;
-
-
-      if (
-        stopHit
-      ) {
-
-        return {
-
-          ...trade,
-
-          status:
-            "LOSS",
-
-          resultR:
-            -1,
-
-          exitPrice:
-            trade.stopLoss,
-
-          exitTime:
-            bar.time
-
-        };
-
-      }
-
-
-      if (
-        targetHit
-      ) {
-
-        return {
-
-          ...trade,
-
-          status:
-            "WIN",
-
-          resultR:
-            trade.rr,
-
-          exitPrice:
-            trade.takeProfit,
-
-          exitTime:
-            bar.time
-
-        };
-
-      }
-
-    }
-
-
-    if (
-      trade.signal ===
-      "SELL"
-    ) {
-
-      const stopHit =
-        high >=
-        trade.stopLoss;
-
-
-      const targetHit =
-        low <=
-        trade.takeProfit;
-
-
-      if (
-        stopHit
-      ) {
-
-        return {
-
-          ...trade,
-
-          status:
-            "LOSS",
-
-          resultR:
-            -1,
-
-          exitPrice:
-            trade.stopLoss,
-
-          exitTime:
-            bar.time
-
-        };
-
-      }
-
-
-      if (
-        targetHit
-      ) {
-
-        return {
-
-          ...trade,
-
-          status:
-            "WIN",
-
-          resultR:
-            trade.rr,
-
-          exitPrice:
-            trade.takeProfit,
-
-          exitTime:
-            bar.time
-
-        };
-
-      }
-
-    }
-
-  }
-
-
-  return null;
-
-}
-
-
-/* =========================================================
    CURRENT R
 ========================================================= */
 
 function currentR(
   trade,
-  price
+  currentPrice
 ) {
 
   if (
@@ -2565,26 +2348,32 @@ function currentR(
   }
 
 
-  const currentPrice =
+  const price =
     Number(
-      price
+      currentPrice
+    );
+
+
+  const risk =
+    Number(
+      trade.risk
     );
 
 
   if (
     !Number.isFinite(
-      currentPrice
+      price
     )
 
     ||
 
     !Number.isFinite(
-      trade.risk
+      risk
     )
 
     ||
 
-    trade.risk <=
+    risk <=
     0
   ) {
 
@@ -2600,12 +2389,12 @@ function currentR(
 
     return (
 
-      currentPrice -
+      price -
       trade.entry
 
     )
     /
-    trade.risk;
+    risk;
 
   }
 
@@ -2613,17 +2402,92 @@ function currentR(
   return (
 
     trade.entry -
-    currentPrice
+    price
 
   )
   /
-  trade.risk;
+  risk;
 
 }
 
 
 /* =========================================================
-   RUN ANALYSIS
+   BUILD API URL
+========================================================= */
+
+function buildEndpoint() {
+
+  const params =
+    new URLSearchParams({
+
+      symbol:
+        selectedSymbol,
+
+      t:
+        String(
+          Date.now()
+        )
+
+    });
+
+
+  const lock =
+    getLockedTrade();
+
+
+  if (
+    lock
+  ) {
+
+    params.set(
+      "lockSignal",
+      lock.signal
+    );
+
+
+    params.set(
+      "lockEntry",
+      String(
+        lock.entry
+      )
+    );
+
+
+    params.set(
+      "lockSL",
+      String(
+        lock.stopLoss
+      )
+    );
+
+
+    params.set(
+      "lockTP",
+      String(
+        lock.takeProfit
+      )
+    );
+
+
+    params.set(
+      "lockTime",
+      String(
+        lock.signalTime
+      )
+    );
+
+  }
+
+
+  return (
+    `/api/sr?${params.toString()}`
+  );
+
+}
+
+
+/* =========================================================
+   RUN
 ========================================================= */
 
 async function runAnalysis() {
@@ -2656,15 +2520,10 @@ async function runAnalysis() {
 
   try {
 
-    const endpoint =
-
-      `/api/sr?symbol=${encodeURIComponent(selectedSymbol)}&t=${Date.now()}`;
-
-
     const response =
       await fetch(
 
-        endpoint,
+        buildEndpoint(),
 
         {
 
@@ -2717,68 +2576,76 @@ async function runAnalysis() {
     }
 
 
-    /*
-       FIRST:
-       check existing lock.
-    */
-
-    let lockedTrade =
+    let lock =
       getLockedTrade();
 
 
     /*
-       SECOND:
-       if trade exists, see if TP or SL
-       was reached.
+       SERVER-SIDE LOCK CHECK
     */
 
     if (
-      lockedTrade
+      lock &&
+      data.lockCheck &&
+      (
+        data.lockCheck.status ===
+        "WIN"
+
+        ||
+
+        data.lockCheck.status ===
+        "LOSS"
+      )
     ) {
 
-      const completed =
-        evaluateLockedTrade(
-          lockedTrade,
-          data
-        );
+      const completed = {
+
+        ...lock,
+
+        status:
+          data.lockCheck.status,
+
+        resultR:
+          data.lockCheck.resultR,
+
+        exitPrice:
+          data.lockCheck.exitPrice,
+
+        exitTime:
+          data.lockCheck.exitTime
+
+      };
 
 
-      if (
+      saveCompletedTrade(
         completed
-      ) {
-
-        saveCompletedTrade(
-          completed
-        );
+      );
 
 
-        clearLockedTrade();
+      clearLockedTrade();
 
 
-        lockedTrade =
-          null;
+      lock =
+        null;
 
 
-        data.lastCompletedTrade =
-          completed;
-
-      }
+      data.lastCompletedTrade =
+        completed;
 
     }
 
 
     /*
-       THIRD:
-       Only when there is NO active lock,
-       a fresh API BUY/SELL can become locked.
+       CREATE NEW HARD LOCK
+       ONLY IF NONE EXISTS
     */
 
     if (
-      !lockedTrade
+      !lock
     ) {
 
-      lockedTrade =
-        maybeLockSignal(
+      lock =
+        maybeCreateLock(
           data
         );
 
@@ -2786,7 +2653,7 @@ async function runAnalysis() {
 
 
     data.lockedTrade =
-      lockedTrade;
+      lock;
 
 
     lastData =
@@ -2831,7 +2698,7 @@ async function runAnalysis() {
 
 
     $("runButton").textContent =
-      `RUN ${assetName()} ANALYSIS`;
+      `RUN ${assetName()} TOTT ANALYSIS`;
 
   }
 
@@ -2847,7 +2714,7 @@ function render(
 ) {
 
   $("decisionTitle").textContent =
-    `${data.symbol} · 5M SIGNAL`;
+    `${data.symbol} · TOTT SIGNAL`;
 
 
   $("engineBadge").textContent =
@@ -2855,21 +2722,14 @@ function render(
     data.symbol ===
     "BTC/USD"
 
-      ? "BTC · 5M · 24/7"
+      ? "BTC · TOTT · 5M"
 
-      : "GOLD · 5M";
+      : "GOLD · TOTT · 5M";
 
 
   const lock =
     data.lockedTrade;
 
-
-  /*
-     HARD LOCK DISPLAY:
-
-     If active lock exists,
-     ignore raw API WAIT/opposite signals.
-  */
 
   const displayedSignal =
 
@@ -2915,25 +2775,82 @@ function render(
 
       :
 
-      "Latest 5M candle";
+      "Latest completed 5M candle";
 
+
+  /* TOTT */
+
+  $("mavg").textContent =
+    fmt(
+      data.mavg
+    );
+
+
+  $("ottUpper").textContent =
+    fmt(
+      data.ottUpper
+    );
+
+
+  $("ottLower").textContent =
+    fmt(
+      data.ottLower
+    );
+
+
+  $("direction").textContent =
+    data.direction ||
+    "—";
+
+
+  $("direction").className =
+
+    data.direction ===
+    "UP"
+
+      ? "green"
+
+      : data.direction ===
+        "DOWN"
+
+        ? "red"
+
+        : "";
+
+
+  /* SETTINGS */
+
+  $("period").textContent =
+    data.settings?.ottPeriod ??
+    40;
+
+
+  $("percent").textContent =
+    `${data.settings?.optimizationConstant ?? 1}%`;
+
+
+  $("coefficient").textContent =
+    data.settings?.twinCoefficient ??
+    0.001;
+
+
+  $("rr").textContent =
+    `1:${data.settings?.riskReward ?? 3}`;
+
+
+  /* LOCK */
 
   if (
     lock
   ) {
 
     $("lockBadge").textContent =
-
       `🔒 HARD LOCK · ${lock.signal}`;
 
 
     $("signalDescription").textContent =
 
-      `${lock.signal} remains locked until ${
-        lock.signal === "BUY"
-          ? `TP ${fmt(lock.takeProfit)} or SL ${fmt(lock.stopLoss)}`
-          : `TP ${fmt(lock.takeProfit)} or SL ${fmt(lock.stopLoss)}`
-      } is hit.`;
+      `${lock.signal} stays locked until TP or SL.`;
 
   } else {
 
@@ -2943,35 +2860,20 @@ function render(
 
     $("signalDescription").textContent =
 
-      data.signal === "BUY"
+      data.signal ===
+      "BUY"
 
-        ? "Fresh BUY signal detected."
+        ? "Fresh TOTT BUY crossover."
 
-        : data.signal === "SELL"
+        : data.signal ===
+          "SELL"
 
-          ? "Fresh SELL signal detected."
+          ? "Fresh TOTT SELL crossover."
 
-          : "Waiting for 5M S&R crossover.";
+          : "Waiting for TOTT crossover.";
 
   }
 
-
-  $("support").textContent =
-    fmt(
-      data.support
-    );
-
-
-  $("resistance").textContent =
-    fmt(
-      data.resistance
-    );
-
-
-  /*
-     SHOW LOCKED TRADE PLAN,
-     NOT RAW NEW API SIGNAL.
-  */
 
   $("entry").textContent =
 
@@ -3035,52 +2937,17 @@ function render(
       rNow
     )
 
-    &&
+      ? rNow >=
+        0
 
-    rNow >=
-    0
+        ? "green"
 
-      ? "green"
+        : "red"
 
-      : Number.isFinite(
-          rNow
-        )
-
-        ? "red"
-
-        : "";
+      : "";
 
 
-  $("pivotLength").textContent =
-
-    data.settings
-      ?.pivotLookbackLength
-
-    ??
-
-    9;
-
-
-  $("maxLevels").textContent =
-
-    data.settings
-      ?.maxActiveLevels
-
-    ??
-
-    5;
-
-
-  $("rr").textContent =
-    `1:${data.settings?.riskReward ?? 3}`;
-
-
-  renderLevels(
-    data
-  );
-
-
-  renderReasons(
+  renderStatus(
     data,
     lock
   );
@@ -3088,6 +2955,11 @@ function render(
 
   renderBacktest(
     data.backtest
+  );
+
+
+  renderRecentSignals(
+    data.recentSignals
   );
 
 
@@ -3100,122 +2972,10 @@ function render(
 
 
 /* =========================================================
-   LEVELS
-========================================================= */
-
-function renderLevels(
-  data
-) {
-
-  const supports =
-
-    Array.isArray(
-      data.levels?.supports
-    )
-
-      ? data.levels.supports
-
-      : [];
-
-
-  const resistances =
-
-    Array.isArray(
-      data.levels?.resistances
-    )
-
-      ? data.levels.resistances
-
-      : [];
-
-
-  $("supportLevels").innerHTML =
-
-    supports.length
-
-      ?
-
-      supports
-        .map(
-          (
-            price,
-            index
-          ) => `
-
-            <div class="levelRow ${
-              index === 0
-                ? "newestSupport"
-                : ""
-            }">
-
-              <span class="green">
-
-                S${index + 1} ·
-
-              </span>
-
-              ${fmt(price)}
-
-            </div>
-
-          `
-        )
-        .join("")
-
-      :
-
-      `<div class="reason">
-         No confirmed support yet.
-       </div>`;
-
-
-  $("resistanceLevels").innerHTML =
-
-    resistances.length
-
-      ?
-
-      resistances
-        .map(
-          (
-            price,
-            index
-          ) => `
-
-            <div class="levelRow ${
-              index === 0
-                ? "newestResistance"
-                : ""
-            }">
-
-              <span class="red">
-
-                R${index + 1} ·
-
-              </span>
-
-              ${fmt(price)}
-
-            </div>
-
-          `
-        )
-        .join("")
-
-      :
-
-      `<div class="reason">
-         No confirmed resistance yet.
-       </div>`;
-
-}
-
-
-/* =========================================================
    STATUS
 ========================================================= */
 
-function renderReasons(
+function renderStatus(
   data,
   lock
 ) {
@@ -3228,28 +2988,42 @@ function renderReasons(
 
       <div class="reason">
 
-        🔒 Signal is HARD LOCKED.
+        🔒 TOTT trade is HARD LOCKED.
 
       </div>
 
       <div class="reason">
 
-        ${lock.signal}
-        entry:
+        Direction:
+        <b class="${
+          lock.signal === "BUY"
+            ? "green"
+            : "red"
+        }">
+
+          ${escapeHtml(lock.signal)}
+
+        </b>
+
+      </div>
+
+      <div class="reason">
+
+        Entry:
         ${fmt(lock.entry)}
 
       </div>
 
       <div class="reason">
 
-        Stop Loss:
+        TOTT Stop:
         ${fmt(lock.stopLoss)}
 
       </div>
 
       <div class="reason">
 
-        Stretched Take Profit:
+        Stretched Target:
         ${fmt(lock.takeProfit)}
         · 3R
 
@@ -3257,16 +3031,16 @@ function renderReasons(
 
       <div class="reason">
 
-        New BUY / SELL / WAIT signals are ignored until this trade exits.
+        New TOTT signals are ignored until this trade hits TP or SL.
 
       </div>
 
       <div class="reason">
 
-        Locked:
+        Signal candle:
         ${escapeHtml(
           displayTime(
-            lock.createdAt
+            lock.signalTime
           )
         )}
 
@@ -3283,7 +3057,7 @@ function renderReasons(
     data.lastCompletedTrade
   ) {
 
-    const completed =
+    const trade =
       data.lastCompletedTrade;
 
 
@@ -3291,15 +3065,15 @@ function renderReasons(
 
       <div class="reason">
 
-        Previous locked trade completed:
+        Previous hard-locked trade completed:
 
         <b class="${
-          completed.status === "WIN"
+          trade.status === "WIN"
             ? "green"
             : "red"
         }">
 
-          ${escapeHtml(completed.status)}
+          ${escapeHtml(trade.status)}
 
         </b>
 
@@ -3308,14 +3082,14 @@ function renderReasons(
       <div class="reason">
 
         Result:
-        ${completed.resultR > 0 ? "+" : ""}
-        ${completed.resultR}R
+        ${trade.resultR > 0 ? "+" : ""}
+        ${trade.resultR}R
 
       </div>
 
       <div class="reason">
 
-        System is unlocked and waiting for the next fresh S&R signal.
+        Waiting for the next fresh TOTT crossover.
 
       </div>
 
@@ -3326,27 +3100,41 @@ function renderReasons(
   }
 
 
-  $("reasons").innerHTML = `
+  const reasons =
+    Array.isArray(
+      data.reasons
+    )
 
-    <div class="reason">
+      ? data.reasons
 
-      No active locked trade.
+      : [];
 
-    </div>
 
-    <div class="reason">
+  $("reasons").innerHTML =
 
-      Waiting for a fresh 5M crossover / crossunder signal.
+    reasons.length
 
-    </div>
+      ?
 
-    <div class="reason">
+      reasons
+        .map(
+          reason => `
 
-      The next valid BUY or SELL will automatically hard-lock.
+            <div class="reason">
 
-    </div>
+              ${escapeHtml(reason)}
 
-  `;
+            </div>
+
+          `
+        )
+        .join("")
+
+      :
+
+      `<div class="reason">
+         Waiting for TOTT crossover.
+       </div>`;
 
 }
 
@@ -3373,7 +3161,7 @@ function renderBacktest(
     0;
 
 
-  $("btWinRate").textContent =
+  $("btWin").textContent =
     `${fmt(bt.winRate, 1)}%`;
 
 
@@ -3439,17 +3227,16 @@ function renderBacktest(
 
   $("btPeriod").innerHTML = `
 
-    Mode:
-    <b class="gold">
-      HARD LOCK
+    TOTT · VAR 40 · Optimization 1% · Twin 0.001
+
+    <br>
+
+    Hard-lock target:
+    <b class="green">
+      3R
     </b>
 
-    <br>
-
-    Target:
-    3R
-
-    <br>
+    <br><br>
 
     Wins:
     <span class="green">
@@ -3461,6 +3248,13 @@ function renderBacktest(
     Losses:
     <span class="red">
       ${bt.losses ?? 0}
+    </span>
+
+    ·
+
+    Open:
+    <span class="gold">
+      ${bt.openTrades ?? 0}
     </span>
 
     <br><br>
@@ -3511,7 +3305,7 @@ function renderBacktest(
                   : "red"
               }">
 
-                ${trade.signal}
+                ${escapeHtml(trade.signal)}
 
               </b>
 
@@ -3525,7 +3319,7 @@ function renderBacktest(
                     : "gold"
               }">
 
-                ${trade.result}
+                ${escapeHtml(trade.result)}
 
                 ${
                   trade.r == null
@@ -3553,7 +3347,7 @@ function renderBacktest(
 
                 Hold:
                 ${trade.holdBars ?? 0}
-                candles
+                × 5M candles
 
                 <br>
 
@@ -3565,11 +3359,13 @@ function renderBacktest(
 
                 ${
                   trade.exitTime
+
                     ? ` → ${escapeHtml(
                         displayTime(
                           trade.exitTime
                         )
                       )}`
+
                     : ""
                 }
 
@@ -3584,7 +3380,93 @@ function renderBacktest(
       :
 
       `<div class="reason">
-         No hard-lock backtest trades.
+         No backtest trades generated.
+       </div>`;
+
+}
+
+
+/* =========================================================
+   RECENT TOTT SIGNALS
+========================================================= */
+
+function renderRecentSignals(
+  signals
+) {
+
+  const list =
+
+    Array.isArray(
+      signals
+    )
+
+      ? signals
+
+      : [];
+
+
+  $("recentSignals").innerHTML =
+
+    list.length
+
+      ?
+
+      list
+        .map(
+          trade => `
+
+            <div class="tradeRow">
+
+              <b class="${
+                trade.signal === "BUY"
+                  ? "green"
+                  : "red"
+              }">
+
+                ${escapeHtml(trade.signal)}
+
+              </b>
+
+              · Entry ${fmt(trade.entry)}
+
+              <br>
+
+              <span class="tradeTime">
+
+                SL ${fmt(trade.stopLoss)}
+
+                ·
+
+                TP ${fmt(trade.takeProfit)}
+
+                ·
+
+                1:${trade.rr ?? 3}
+
+                <br>
+
+                VAR ${fmt(trade.mavg)}
+
+                <br>
+
+                ${escapeHtml(
+                  displayTime(
+                    trade.time
+                  )
+                )}
+
+              </span>
+
+            </div>
+
+          `
+        )
+        .join("")
+
+      :
+
+      `<div class="reason">
+         No recent TOTT signals.
        </div>`;
 
 }
@@ -3686,107 +3568,80 @@ function drawChart(
   }
 
 
-  const supports =
-
-    Array.isArray(
-      data.levels?.supports
-    )
-
-      ? data.levels.supports
-          .map(
-            Number
-          )
-          .filter(
-            Number.isFinite
-          )
-
-      : [];
+  const values =
+    [];
 
 
-  const resistances =
+  bars.forEach(
+    bar => {
 
-    Array.isArray(
-      data.levels?.resistances
-    )
+      [
+        bar.high,
+        bar.low,
+        bar.mavg,
+        bar.ottUpper,
+        bar.ottLower
+      ]
+        .map(
+          Number
+        )
+        .filter(
+          Number.isFinite
+        )
+        .forEach(
+          value =>
+            values.push(
+              value
+            )
+        );
 
-      ? data.levels.resistances
-          .map(
-            Number
-          )
-          .filter(
-            Number.isFinite
-          )
-
-      : [];
+    }
+  );
 
 
-  const lockedPrices =
-
+  if (
     lock
-
-      ? [
-          lock.entry,
-          lock.stopLoss,
-          lock.takeProfit
-        ]
-
-      : [];
-
-
-  const important =
+  ) {
 
     [
-      ...supports,
-      ...resistances,
-      ...lockedPrices
+      lock.entry,
+      lock.stopLoss,
+      lock.takeProfit
     ]
       .map(
         Number
       )
       .filter(
         Number.isFinite
-      );
-
-
-  const highs =
-
-    bars
-      .map(
-        bar =>
-          Number(
-            bar.high
-          )
       )
-      .filter(
-        Number.isFinite
-      );
-
-
-  const lows =
-
-    bars
-      .map(
-        bar =>
-          Number(
-            bar.low
+      .forEach(
+        value =>
+          values.push(
+            value
           )
-      )
-      .filter(
-        Number.isFinite
       );
+
+  }
+
+
+  if (
+    !values.length
+  ) {
+
+    return;
+
+  }
 
 
   let high =
     Math.max(
-      ...highs,
-      ...important
+      ...values
     );
 
 
   let low =
     Math.min(
-      ...lows,
-      ...important
+      ...values
     );
 
 
@@ -3898,221 +3753,27 @@ function drawChart(
 
     ctx.beginPath();
 
-    ctx.moveTo(
-      0,
-      yy
-    );
-
-    ctx.lineTo(
-      W,
-      yy
-    );
-
-    ctx.stroke();
-
-  }
-
-
-  function horizontal(
-    price,
-    label,
-    color,
-    solid = false,
-    width = 1
-  ) {
-
-    const n =
-      Number(
-        price
-      );
-
-
-    if (
-      !Number.isFinite(
-        n
-      )
-    ) {
-
-      return;
-
-    }
-
-
-    const yy =
-      y(
-        n
-      );
-
-
-    ctx.save();
-
-
-    ctx.strokeStyle =
-      color;
-
-
-    ctx.fillStyle =
-      color;
-
-
-    ctx.lineWidth =
-      width;
-
-
-    ctx.setLineDash(
-
-      solid
-
-        ? []
-
-        : [
-            6,
-            6
-          ]
-
-    );
-
-
-    ctx.beginPath();
 
     ctx.moveTo(
       0,
       yy
     );
 
+
     ctx.lineTo(
       W,
       yy
     );
 
+
     ctx.stroke();
 
-
-    ctx.setLineDash([]);
-
-
-    ctx.font =
-      "9px -apple-system";
-
-
-    ctx.fillText(
-
-      `${label} ${fmt(n)}`,
-
-      6,
-
-      Math.max(
-        11,
-        yy -
-        4
-      )
-
-    );
-
-
-    ctx.restore();
-
   }
 
 
-  supports.forEach(
-    (
-      level,
-      index
-    ) => {
-
-      horizontal(
-
-        level,
-
-        `S${index + 1}`,
-
-        index === 0
-
-          ? "rgba(55,230,161,.95)"
-
-          : "rgba(55,230,161,.38)"
-
-      );
-
-    }
-  );
-
-
-  resistances.forEach(
-    (
-      level,
-      index
-    ) => {
-
-      horizontal(
-
-        level,
-
-        `R${index + 1}`,
-
-        index === 0
-
-          ? "rgba(255,98,121,.95)"
-
-          : "rgba(255,98,121,.38)"
-
-      );
-
-    }
-  );
-
-
-  if (
-    lock
-  ) {
-
-    horizontal(
-
-      lock.entry,
-
-      "LOCK ENTRY",
-
-      "rgba(121,148,255,.98)",
-
-      true,
-
-      1.7
-
-    );
-
-
-    horizontal(
-
-      lock.stopLoss,
-
-      "LOCK SL",
-
-      "rgba(255,98,121,.98)",
-
-      true,
-
-      1.7
-
-    );
-
-
-    horizontal(
-
-      lock.takeProfit,
-
-      "LOCK TP 3R",
-
-      "rgba(55,230,161,.98)",
-
-      true,
-
-      1.7
-
-    );
-
-  }
-
+  /* =======================================================
+     CANDLES
+  ======================================================= */
 
   const candleWidth =
 
@@ -4130,7 +3791,7 @@ function drawChart(
         )
 
         *
-        .68
+        .67
 
       )
 
@@ -4167,6 +3828,23 @@ function drawChart(
         );
 
 
+      if (
+        ![
+          open,
+          highPrice,
+          lowPrice,
+          close
+        ]
+          .every(
+            Number.isFinite
+          )
+      ) {
+
+        return;
+
+      }
+
+
       const xx =
         x(
           index
@@ -4182,9 +3860,9 @@ function drawChart(
 
         bullish
 
-          ? "#37e6a1"
+          ? "rgba(55,230,161,.70)"
 
-          : "#ff6279";
+          : "rgba(255,98,121,.70)";
 
 
       ctx.strokeStyle =
@@ -4193,6 +3871,7 @@ function drawChart(
 
       ctx.beginPath();
 
+
       ctx.moveTo(
         xx,
         y(
@@ -4200,12 +3879,14 @@ function drawChart(
         )
       );
 
+
       ctx.lineTo(
         xx,
         y(
           highPrice
         )
       );
+
 
       ctx.stroke();
 
@@ -4261,38 +3942,407 @@ function drawChart(
   );
 
 
+  /* =======================================================
+     SERIES
+  ======================================================= */
+
+  function drawSeries(
+    key,
+    color,
+    width
+  ) {
+
+    ctx.save();
+
+
+    ctx.strokeStyle =
+      color;
+
+
+    ctx.lineWidth =
+      width;
+
+
+    ctx.beginPath();
+
+
+    let started =
+      false;
+
+
+    bars.forEach(
+      (
+        bar,
+        index
+      ) => {
+
+        const value =
+          Number(
+            bar[
+              key
+            ]
+          );
+
+
+        if (
+          !Number.isFinite(
+            value
+          )
+        ) {
+
+          return;
+
+        }
+
+
+        if (
+          !started
+        ) {
+
+          ctx.moveTo(
+
+            x(
+              index
+            ),
+
+            y(
+              value
+            )
+
+          );
+
+
+          started =
+            true;
+
+        } else {
+
+          ctx.lineTo(
+
+            x(
+              index
+            ),
+
+            y(
+              value
+            )
+
+          );
+
+        }
+
+      }
+    );
+
+
+    ctx.stroke();
+
+
+    ctx.restore();
+
+  }
+
+
+  /*
+     Pine Support Line
+  */
+
+  drawSeries(
+
+    "mavg",
+
+    "#5ba8ff",
+
+    2
+
+  );
+
+
+  /*
+     Twin OTT upper
+  */
+
+  drawSeries(
+
+    "ottUpper",
+
+    "#37e6a1",
+
+    2
+
+  );
+
+
+  /*
+     Twin OTT lower
+  */
+
+  drawSeries(
+
+    "ottLower",
+
+    "#ff6279",
+
+    2
+
+  );
+
+
+  /* =======================================================
+     LOCKED LEVELS
+  ======================================================= */
+
+  function horizontal(
+    price,
+    label,
+    color
+  ) {
+
+    const value =
+      Number(
+        price
+      );
+
+
+    if (
+      !Number.isFinite(
+        value
+      )
+    ) {
+
+      return;
+
+    }
+
+
+    const yy =
+      y(
+        value
+      );
+
+
+    ctx.save();
+
+
+    ctx.strokeStyle =
+      color;
+
+
+    ctx.fillStyle =
+      color;
+
+
+    ctx.lineWidth =
+      1.5;
+
+
+    ctx.setLineDash(
+      []
+    );
+
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+      0,
+      yy
+    );
+
+
+    ctx.lineTo(
+      W,
+      yy
+    );
+
+
+    ctx.stroke();
+
+
+    ctx.font =
+      "9px -apple-system";
+
+
+    ctx.fillText(
+
+      `${label} ${fmt(value)}`,
+
+      6,
+
+      Math.max(
+        11,
+        yy - 4
+      )
+
+    );
+
+
+    ctx.restore();
+
+  }
+
+
+  if (
+    lock
+  ) {
+
+    horizontal(
+
+      lock.entry,
+
+      "ENTRY",
+
+      "rgba(157,131,255,.98)"
+
+    );
+
+
+    horizontal(
+
+      lock.stopLoss,
+
+      "SL",
+
+      "rgba(255,98,121,.98)"
+
+    );
+
+
+    horizontal(
+
+      lock.takeProfit,
+
+      "TP 3R",
+
+      "rgba(55,230,161,.98)"
+
+    );
+
+  }
+
+
+  /* =======================================================
+     SIGNAL MARKERS
+  ======================================================= */
+
+  bars.forEach(
+    (
+      bar,
+      index
+    ) => {
+
+      if (
+        bar.signal !==
+        "BUY"
+
+        &&
+
+        bar.signal !==
+        "SELL"
+      ) {
+
+        return;
+
+      }
+
+
+      const xx =
+        x(
+          index
+        );
+
+
+      const yy =
+
+        bar.signal ===
+        "BUY"
+
+          ? y(
+              bar.low
+            ) +
+            12
+
+          : y(
+              bar.high
+            ) -
+            12;
+
+
+      ctx.fillStyle =
+
+        bar.signal ===
+        "BUY"
+
+          ? "#37e6a1"
+
+          : "#ff6279";
+
+
+      ctx.font =
+        "bold 9px -apple-system";
+
+
+      ctx.textAlign =
+        "center";
+
+
+      ctx.fillText(
+
+        bar.signal,
+
+        xx,
+
+        yy
+
+      );
+
+    }
+  );
+
+
+  ctx.textAlign =
+    "left";
+
+
   $("chartLegend").innerHTML = `
 
     <span class="chip">
+
       ${escapeHtml(
         data.symbol
       )}
+      · 5M
+
     </span>
 
     <span class="chip">
-      5M
+
+      BLUE · VAR
+
+    </span>
+
+    <span class="chip">
+
+      GREEN · OTT UP
+
+    </span>
+
+    <span class="chip">
+
+      RED · OTT DOWN
+
     </span>
 
     ${
       lock
 
         ? `<span class="chip">
-             🔒 ${lock.signal} HARD LOCK
+             🔒 ${lock.signal} · 3R
            </span>`
 
         : `<span class="chip">
              UNLOCKED
            </span>`
-    }
-
-    ${
-      lock
-
-        ? `<span class="chip">
-             TP 3R · ${fmt(lock.takeProfit)}
-           </span>`
-
-        : ""
     }
 
   `;
@@ -4301,7 +4351,7 @@ function drawChart(
 
 
 /* =========================================================
-   CLEAR BUTTON
+   CLEAR LOCK
 ========================================================= */
 
 $("clearButton")
@@ -4310,6 +4360,37 @@ $("clearButton")
     "click",
 
     () => {
+
+      const lock =
+        getLockedTrade();
+
+
+      if (
+        lock?.signalTime
+      ) {
+
+        localStorage.setItem(
+
+          ignoreKey(),
+
+          lock.signalTime
+
+        );
+
+      } else if (
+        lastData?.signalTime
+      ) {
+
+        localStorage.setItem(
+
+          ignoreKey(),
+
+          lastData.signalTime
+
+        );
+
+      }
+
 
       clearLockedTrade();
 
@@ -4322,7 +4403,7 @@ $("clearButton")
 
 
 /* =========================================================
-   RUN
+   RUN BUTTON
 ========================================================= */
 
 $("runButton")
