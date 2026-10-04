@@ -93,11 +93,11 @@ const MARKETS = {
 ========================================================= */
 
 const INTERVAL =
-  "15min";
+  "30min";
 
 
 const LENGTH =
-  12;
+  5;
 
 
 const MAX_LEVELS =
