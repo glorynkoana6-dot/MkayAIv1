@@ -1,5 +1,5 @@
 /* =========================================================
-   MKAYFX MULTI-ASSET 5M S&R ENGINE + BACKTESTER
+   MKAYFX MULTI-ASSET 5M S&R ENGINE V3
    /api/sr.js
 
    MARKETS
@@ -27,20 +27,19 @@
 
    BUY:
    SL = newest support
-   TP = 2R
+   TP = 3R
 
    SELL:
    SL = newest resistance
-   TP = 2R
+   TP = 3R
 
-   BACKTEST
-   --------
-   - Same exact S&R signal logic
-   - Entry at signal close
-   - Exit checks begin on following candle
-   - SL gets priority if SL and TP hit same candle
-   - Each signal is tested independently
-   - No spread, commission or slippage
+   HARD-LOCK BACKTEST
+   ------------------
+   - One trade at a time
+   - Ignore all new signals while a trade is active
+   - Trade remains active until SL or TP
+   - Next signal can only be taken after exit
+   - If SL + TP touch same candle, SL wins conservatively
 
    NO EXTRA INDICATORS
 ========================================================= */
@@ -48,6 +47,7 @@
 
 const API_KEY =
   process.env.TWELVE_DATA_API_KEY;
+
 
 const BASE_URL =
   "https://api.twelvedata.com";
@@ -60,15 +60,29 @@ const BASE_URL =
 const MARKETS = {
 
   "XAU/USD": {
-    name: "GOLD",
-    short: "XAU",
-    digits: 2
+
+    name:
+      "GOLD",
+
+    short:
+      "XAU",
+
+    digits:
+      2
+
   },
 
   "BTC/USD": {
-    name: "BITCOIN",
-    short: "BTC",
-    digits: 2
+
+    name:
+      "BITCOIN",
+
+    short:
+      "BTC",
+
+    digits:
+      2
+
   }
 
 };
@@ -81,29 +95,33 @@ const MARKETS = {
 const INTERVAL =
   "5min";
 
+
 const LENGTH =
   9;
+
 
 const MAX_LEVELS =
   5;
 
+
 const SHOW_ZONES =
   true;
 
-const RISK_REWARD =
-  2;
 
 /*
-   5000 x 5M candles gives a much larger historical
-   sample than 500 candles.
-
-   Chart only sends the latest 180 candles to frontend.
+   TP STRETCHED FROM 2R TO 3R
 */
+const RISK_REWARD =
+  3;
+
+
 const OUTPUT_SIZE =
   5000;
 
+
 const RECENT_SIGNAL_LIMIT =
   20;
+
 
 const RECENT_BACKTEST_LIMIT =
   15;
@@ -113,12 +131,19 @@ const RECENT_BACKTEST_LIMIT =
    HELPERS
 ========================================================= */
 
-function num(value) {
+function num(
+  value
+) {
 
   const n =
-    Number(value);
+    Number(
+      value
+    );
 
-  return Number.isFinite(n)
+
+  return Number.isFinite(
+    n
+  )
     ? n
     : null;
 
@@ -131,51 +156,51 @@ function round(
 ) {
 
   const n =
-    num(value);
+    num(
+      value
+    );
+
 
   if (
     n === null
   ) {
+
     return null;
+
   }
 
+
   return Number(
-    n.toFixed(digits)
-  );
-
-}
-
-
-function clamp(
-  value,
-  min,
-  max
-) {
-
-  return Math.max(
-    min,
-    Math.min(
-      max,
-      value
+    n.toFixed(
+      digits
     )
   );
 
 }
 
 
-function safeError(value) {
+function safeError(
+  value
+) {
 
   if (
     value == null
   ) {
+
     return "";
+
   }
 
+
   if (
-    typeof value === "string"
+    typeof value ===
+    "string"
   ) {
+
     return value;
+
   }
+
 
   if (
     value instanceof Error
@@ -183,40 +208,64 @@ function safeError(value) {
 
     return (
       value.message ||
-      String(value)
+      String(
+        value
+      )
     );
 
   }
 
+
   if (
-    typeof value === "object"
+    typeof value ===
+    "object"
   ) {
 
     const nested =
-      value.message ??
-      value.error ??
+
+      value.message
+
+      ??
+
+      value.error
+
+      ??
+
       value.detail;
+
 
     if (
       nested !== undefined &&
       nested !== value
     ) {
-      return safeError(nested);
+
+      return safeError(
+        nested
+      );
+
     }
+
 
     try {
 
-      return JSON.stringify(value);
+      return JSON.stringify(
+        value
+      );
 
     } catch {
 
-      return String(value);
+      return String(
+        value
+      );
 
     }
 
   }
 
-  return String(value);
+
+  return String(
+    value
+  );
 
 }
 
@@ -225,7 +274,9 @@ function safeError(value) {
    SYMBOL
 ========================================================= */
 
-function normalizeSymbol(value) {
+function normalizeSymbol(
+  value
+) {
 
   const raw =
     String(
@@ -260,11 +311,16 @@ function normalizeSymbol(value) {
 
 
   const symbol =
-    aliases[raw] ||
+    aliases[
+      raw
+    ]
+    ||
     raw;
 
 
-  return MARKETS[symbol]
+  return MARKETS[
+    symbol
+  ]
     ? symbol
     : "XAU/USD";
 
@@ -275,17 +331,23 @@ function normalizeSymbol(value) {
    TIME
 ========================================================= */
 
-function parseTime(value) {
+function parseTime(
+  value
+) {
 
   if (
     !value
   ) {
+
     return NaN;
+
   }
 
 
   const text =
-    String(value)
+    String(
+      value
+    )
       .trim()
       .replace(
         " ",
@@ -295,7 +357,9 @@ function parseTime(value) {
 
   return new Date(
 
-    /Z$|[+-]\d\d:\d\d$/.test(text)
+    /Z$|[+-]\d\d:\d\d$/.test(
+      text
+    )
 
       ? text
 
@@ -306,16 +370,24 @@ function parseTime(value) {
 }
 
 
-function minutesOld(value) {
+function minutesOld(
+  value
+) {
 
   const timestamp =
-    parseTime(value);
+    parseTime(
+      value
+    );
 
 
   if (
-    !Number.isFinite(timestamp)
+    !Number.isFinite(
+      timestamp
+    )
   ) {
+
     return null;
+
   }
 
 
@@ -326,7 +398,9 @@ function minutesOld(value) {
     (
       Date.now() -
       timestamp
-    ) / 60000
+    )
+    /
+    60000
 
   );
 
@@ -348,7 +422,8 @@ async function getJSON(
 
   const timer =
     setTimeout(
-      () => controller.abort(),
+      () =>
+        controller.abort(),
       timeout
     );
 
@@ -357,16 +432,23 @@ async function getJSON(
 
     const response =
       await fetch(
+
         url,
+
         {
+
           signal:
             controller.signal,
 
           headers: {
+
             Accept:
               "application/json"
+
           }
+
         }
+
       );
 
 
@@ -385,7 +467,9 @@ async function getJSON(
       try {
 
         data =
-          JSON.parse(raw);
+          JSON.parse(
+            raw
+          );
 
       } catch {
 
@@ -407,8 +491,18 @@ async function getJSON(
 
       throw new Error(
 
-        safeError(data?.message) ||
-        safeError(data?.error) ||
+        safeError(
+          data?.message
+        )
+
+        ||
+
+        safeError(
+          data?.error
+        )
+
+        ||
+
         `HTTP ${response.status}`
 
       );
@@ -418,10 +512,13 @@ async function getJSON(
 
     return data;
 
-  } catch (error) {
+  } catch (
+    error
+  ) {
 
     if (
-      error?.name === "AbortError"
+      error?.name ===
+      "AbortError"
     ) {
 
       throw new Error(
@@ -430,11 +527,14 @@ async function getJSON(
 
     }
 
+
     throw error;
 
   } finally {
 
-    clearTimeout(timer);
+    clearTimeout(
+      timer
+    );
 
   }
 
@@ -445,7 +545,9 @@ async function getJSON(
    FETCH 5M CANDLES
 ========================================================= */
 
-async function fetch5m(symbol) {
+async function fetch5m(
+  symbol
+) {
 
   if (
     !API_KEY
@@ -469,7 +571,9 @@ async function fetch5m(symbol) {
         INTERVAL,
 
       outputsize:
-        String(OUTPUT_SIZE),
+        String(
+          OUTPUT_SIZE
+        ),
 
       timezone:
         "UTC",
@@ -492,7 +596,9 @@ async function fetch5m(symbol) {
 
 
   if (
-    !Array.isArray(data.values)
+    !Array.isArray(
+      data.values
+    )
   ) {
 
     throw new Error(
@@ -518,16 +624,24 @@ async function fetch5m(symbol) {
             ),
 
           open:
-            Number(item.open),
+            Number(
+              item.open
+            ),
 
           high:
-            Number(item.high),
+            Number(
+              item.high
+            ),
 
           low:
-            Number(item.low),
+            Number(
+              item.low
+            ),
 
           close:
-            Number(item.close)
+            Number(
+              item.close
+            )
 
         })
       )
@@ -552,8 +666,15 @@ async function fetch5m(symbol) {
           b
         ) =>
 
-          parseTime(a.time) -
-          parseTime(b.time)
+          parseTime(
+            a.time
+          )
+
+          -
+
+          parseTime(
+            b.time
+          )
       );
 
 
@@ -578,14 +699,6 @@ async function fetch5m(symbol) {
 
 /* =========================================================
    PIVOT LOW
-
-   Pine equivalent:
-
-   ta.pivotlow(
-     low,
-     length,
-     length
-   )
 ========================================================= */
 
 function isPivotLow(
@@ -605,7 +718,9 @@ function isPivotLow(
 
 
   const price =
-    bars[center].low;
+    bars[
+      center
+    ].low;
 
 
   for (
@@ -621,7 +736,9 @@ function isPivotLow(
     if (
       i === center
     ) {
+
       continue;
+
     }
 
 
@@ -644,14 +761,6 @@ function isPivotLow(
 
 /* =========================================================
    PIVOT HIGH
-
-   Pine equivalent:
-
-   ta.pivothigh(
-     high,
-     length,
-     length
-   )
 ========================================================= */
 
 function isPivotHigh(
@@ -671,7 +780,9 @@ function isPivotHigh(
 
 
   const price =
-    bars[center].high;
+    bars[
+      center
+    ].high;
 
 
   for (
@@ -687,7 +798,9 @@ function isPivotHigh(
     if (
       i === center
     ) {
+
       continue;
+
     }
 
 
@@ -709,16 +822,20 @@ function isPivotHigh(
 
 
 /* =========================================================
-   BUILD PINE-STYLE S&R STATES
+   BUILD S&R STATES
 ========================================================= */
 
-function buildStates(bars) {
+function buildStates(
+  bars
+) {
 
   const supports =
     [];
 
+
   const resistances =
     [];
+
 
   const states =
     [];
@@ -732,16 +849,6 @@ function buildStates(bars) {
 
     currentIndex++
   ) {
-
-    /*
-       Pivot is only known LENGTH candles later.
-
-       With LENGTH = 9:
-
-       pivot center
-       + 9 candles right
-       = confirmation
-    */
 
     const center =
       currentIndex -
@@ -760,7 +867,11 @@ function buildStates(bars) {
     ) {
 
       resistances.unshift(
-        bars[center].high
+
+        bars[
+          center
+        ].high
+
       );
 
 
@@ -788,7 +899,11 @@ function buildStates(bars) {
     ) {
 
       supports.unshift(
-        bars[center].low
+
+        bars[
+          center
+        ].low
+
       );
 
 
@@ -803,15 +918,6 @@ function buildStates(bars) {
 
     }
 
-
-    /*
-       Same as Pine:
-
-       array.get(supports, 0)
-       array.get(resistances, 0)
-
-       Index 0 is newest confirmed pivot.
-    */
 
     const nearestSupport =
 
@@ -837,20 +943,28 @@ function buildStates(bars) {
         currentIndex,
 
       time:
-        bars[currentIndex].time,
+        bars[
+          currentIndex
+        ].time,
 
       close:
-        bars[currentIndex].close,
+        bars[
+          currentIndex
+        ].close,
 
       nearestSupport,
 
       nearestResistance,
 
       supports:
-        [...supports],
+        [
+          ...supports
+        ],
 
       resistances:
-        [...resistances]
+        [
+          ...resistances
+        ]
 
     });
 
@@ -864,9 +978,6 @@ function buildStates(bars) {
 
 /* =========================================================
    BUY CROSSOVER
-
-   Pine:
-   ta.crossover(close, nearestSupport)
 ========================================================= */
 
 function supportCrossover(
@@ -878,7 +989,9 @@ function supportCrossover(
     !previous ||
     !current
   ) {
+
     return false;
+
   }
 
 
@@ -886,7 +999,9 @@ function supportCrossover(
     previous.nearestSupport === null ||
     current.nearestSupport === null
   ) {
+
     return false;
+
   }
 
 
@@ -907,9 +1022,6 @@ function supportCrossover(
 
 /* =========================================================
    SELL CROSSUNDER
-
-   Pine:
-   ta.crossunder(close, nearestResistance)
 ========================================================= */
 
 function resistanceCrossunder(
@@ -921,7 +1033,9 @@ function resistanceCrossunder(
     !previous ||
     !current
   ) {
+
     return false;
+
   }
 
 
@@ -929,7 +1043,9 @@ function resistanceCrossunder(
     previous.nearestResistance === null ||
     current.nearestResistance === null
   ) {
+
     return false;
+
   }
 
 
@@ -949,7 +1065,7 @@ function resistanceCrossunder(
 
 
 /* =========================================================
-   SIGNAL FROM STATE
+   SIGNAL
 ========================================================= */
 
 function signalAt(
@@ -987,9 +1103,7 @@ function signalAt(
 
 
 /* =========================================================
-   ENTRY / STOP / TP
-
-   ONLY S&R + PRICE
+   ENTRY / SL / STRETCHED TP
 ========================================================= */
 
 function tradePlan(
@@ -1000,17 +1114,18 @@ function tradePlan(
   let entry =
     null;
 
+
   let stopLoss =
     null;
+
 
   let takeProfit =
     null;
 
+
   let risk =
     null;
 
-
-  /* BUY */
 
   if (
     signal === "BUY" &&
@@ -1048,8 +1163,6 @@ function tradePlan(
   }
 
 
-  /* SELL */
-
   if (
     signal === "SELL" &&
     state.nearestResistance !== null
@@ -1086,51 +1199,59 @@ function tradePlan(
   }
 
 
-  if (
-    !Number.isFinite(entry) ||
-    !Number.isFinite(stopLoss) ||
-    !Number.isFinite(takeProfit) ||
-    !Number.isFinite(risk) ||
-    risk <= 0
-  ) {
+  const valid =
 
-    return {
+    Number.isFinite(
+      entry
+    )
 
-      valid:
-        false,
+    &&
 
-      entry:
-        null,
+    Number.isFinite(
+      stopLoss
+    )
 
-      stopLoss:
-        null,
+    &&
 
-      takeProfit:
-        null,
+    Number.isFinite(
+      takeProfit
+    )
 
-      risk:
-        null,
+    &&
 
-      rr:
-        RISK_REWARD
+    Number.isFinite(
+      risk
+    )
 
-    };
+    &&
 
-  }
+    risk >
+    0;
 
 
   return {
 
-    valid:
-      true,
+    valid,
 
-    entry,
+    entry:
+      valid
+        ? entry
+        : null,
 
-    stopLoss,
+    stopLoss:
+      valid
+        ? stopLoss
+        : null,
 
-    takeProfit,
+    takeProfit:
+      valid
+        ? takeProfit
+        : null,
 
-    risk,
+    risk:
+      valid
+        ? risk
+        : null,
 
     rr:
       RISK_REWARD
@@ -1144,10 +1265,14 @@ function tradePlan(
    CURRENT ANALYSIS
 ========================================================= */
 
-function analyse(bars) {
+function analyse(
+  bars
+) {
 
   const states =
-    buildStates(bars);
+    buildStates(
+      bars
+    );
 
 
   const current =
@@ -1212,7 +1337,7 @@ function analyse(bars) {
 
 
 /* =========================================================
-   RECENT RAW SIGNALS
+   RECENT SIGNALS
 ========================================================= */
 
 function recentSignals(
@@ -1222,7 +1347,9 @@ function recentSignals(
 ) {
 
   const states =
-    buildStates(bars);
+    buildStates(
+      bars
+    );
 
 
   const signals =
@@ -1232,17 +1359,22 @@ function recentSignals(
   for (
     let i = 1;
 
-    i < states.length;
+    i <
+      states.length;
 
     i++
   ) {
 
     const previous =
-      states[i - 1];
+      states[
+        i - 1
+      ];
 
 
     const current =
-      states[i];
+      states[
+        i
+      ];
 
 
     const signal =
@@ -1255,7 +1387,9 @@ function recentSignals(
     if (
       signal === "WAIT"
     ) {
+
       continue;
+
     }
 
 
@@ -1269,7 +1403,9 @@ function recentSignals(
     if (
       !plan.valid
     ) {
+
       continue;
+
     }
 
 
@@ -1312,23 +1448,16 @@ function recentSignals(
 
 
   return signals
-    .slice(-limit)
+    .slice(
+      -limit
+    )
     .reverse();
 
 }
 
 
 /* =========================================================
-   BACKTEST ONE SIGNAL
-
-   IMPORTANT:
-
-   Signal happens at candle CLOSE.
-
-   Therefore the signal candle's earlier high/low cannot
-   be used to decide whether TP/SL was hit after entry.
-
-   Exit checking starts from the NEXT candle.
+   SIMULATE HARD-LOCKED TRADE
 ========================================================= */
 
 function simulateTrade(
@@ -1341,30 +1470,42 @@ function simulateTrade(
   let result =
     "OPEN";
 
+
   let resultR =
     null;
+
 
   let exitPrice =
     null;
 
+
   let exitTime =
     null;
+
 
   let exitIndex =
     null;
 
 
+  /*
+     Signal entry happens at signal candle close.
+     Therefore exit checking begins on NEXT candle.
+  */
+
   for (
     let j =
       signalIndex + 1;
 
-    j < bars.length;
+    j <
+      bars.length;
 
     j++
   ) {
 
     const candle =
-      bars[j];
+      bars[
+        j
+      ];
 
 
     if (
@@ -1372,22 +1513,21 @@ function simulateTrade(
     ) {
 
       const stopHit =
+
         candle.low <=
         plan.stopLoss;
 
 
       const targetHit =
+
         candle.high >=
         plan.takeProfit;
 
 
       /*
-         Conservative assumption:
-
-         If both are touched inside the same candle,
-         we do not know which came first.
-
-         Count SL first.
+         Conservative:
+         if both touched in same candle,
+         stop counts first.
       */
 
       if (
@@ -1397,17 +1537,22 @@ function simulateTrade(
         result =
           "LOSS";
 
+
         resultR =
           -1;
+
 
         exitPrice =
           plan.stopLoss;
 
+
         exitTime =
           candle.time;
 
+
         exitIndex =
           j;
+
 
         break;
 
@@ -1421,17 +1566,22 @@ function simulateTrade(
         result =
           "WIN";
 
+
         resultR =
           RISK_REWARD;
+
 
         exitPrice =
           plan.takeProfit;
 
+
         exitTime =
           candle.time;
 
+
         exitIndex =
           j;
+
 
         break;
 
@@ -1445,11 +1595,13 @@ function simulateTrade(
     ) {
 
       const stopHit =
+
         candle.high >=
         plan.stopLoss;
 
 
       const targetHit =
+
         candle.low <=
         plan.takeProfit;
 
@@ -1461,17 +1613,22 @@ function simulateTrade(
         result =
           "LOSS";
 
+
         resultR =
           -1;
+
 
         exitPrice =
           plan.stopLoss;
 
+
         exitTime =
           candle.time;
 
+
         exitIndex =
           j;
+
 
         break;
 
@@ -1485,17 +1642,22 @@ function simulateTrade(
         result =
           "WIN";
 
+
         resultR =
           RISK_REWARD;
+
 
         exitPrice =
           plan.takeProfit;
 
+
         exitTime =
           candle.time;
 
+
         exitIndex =
           j;
+
 
         break;
 
@@ -1536,34 +1698,49 @@ function simulateTrade(
 
 
 /* =========================================================
-   BACKTESTER
+   HARD-LOCK BACKTESTER
+
+   IMPORTANT:
+   Only ONE trade can exist at a time.
+
+   When BUY/SELL opens:
+   all signals are ignored until exit.
 ========================================================= */
 
-function backtest(bars) {
+function backtest(
+  bars
+) {
 
   const states =
-    buildStates(bars);
+    buildStates(
+      bars
+    );
 
 
   const trades =
     [];
 
 
-  for (
-    let i = 1;
+  let i =
+    1;
 
+
+  while (
     i <
-      states.length - 1;
-
-    i++
+    states.length -
+    1
   ) {
 
     const previous =
-      states[i - 1];
+      states[
+        i - 1
+      ];
 
 
     const current =
-      states[i];
+      states[
+        i
+      ];
 
 
     const signal =
@@ -1576,7 +1753,11 @@ function backtest(bars) {
     if (
       signal === "WAIT"
     ) {
+
+      i++;
+
       continue;
+
     }
 
 
@@ -1590,7 +1771,11 @@ function backtest(bars) {
     if (
       !plan.valid
     ) {
+
+      i++;
+
       continue;
+
     }
 
 
@@ -1642,17 +1827,45 @@ function backtest(bars) {
       exitTime:
         simulation.exitTime,
 
+      exitIndex:
+        simulation.exitIndex,
+
       holdBars:
         simulation.holdBars
 
     });
 
+
+    /*
+       HARD LOCK:
+
+       If trade closed, jump directly to
+       the candle AFTER exit.
+
+       This prevents overlapping entries.
+    */
+
+    if (
+      simulation.exitIndex !== null
+    ) {
+
+      i =
+        simulation.exitIndex +
+        1;
+
+    } else {
+
+      /*
+         Trade is still open at end of data.
+         No later signal can be taken.
+      */
+
+      break;
+
+    }
+
   }
 
-
-  /* =======================================================
-     CLOSED TRADES ONLY FOR PERFORMANCE STATISTICS
-  ======================================================= */
 
   const closedTrades =
 
@@ -1753,33 +1966,35 @@ function backtest(bars) {
 
   const profitFactor =
 
-    grossLoss > 0
+    grossLoss >
+    0
 
       ? grossProfit /
         grossLoss
 
-      : grossProfit > 0
+      : grossProfit >
+        0
 
         ? 999
 
         : 0;
 
 
-  /* =======================================================
-     MAX DRAWDOWN
-  ======================================================= */
-
   let equity =
     0;
+
 
   let peak =
     0;
 
+
   let maxDrawdown =
     0;
 
+
   let currentLossStreak =
     0;
+
 
   let maxLossStreak =
     0;
@@ -1813,7 +2028,8 @@ function backtest(bars) {
 
 
     if (
-      trade.result === "LOSS"
+      trade.result ===
+      "LOSS"
     ) {
 
       currentLossStreak++;
@@ -1842,31 +2058,29 @@ function backtest(bars) {
 
     closedTrades.length
 
-      ? closedTrades.reduce(
-          (
-            total,
-            trade
-          ) =>
-            total +
-            trade.holdBars,
-          0
-        )
-        /
-        closedTrades.length
+      ?
 
-      : 0;
-
-
-  const recentTrades =
-
-    trades
-      .slice(
-        -RECENT_BACKTEST_LIMIT
+      closedTrades.reduce(
+        (
+          total,
+          trade
+        ) =>
+          total +
+          trade.holdBars,
+        0
       )
-      .reverse();
+      /
+      closedTrades.length
+
+      :
+
+      0;
 
 
   return {
+
+    mode:
+      "HARD LOCK",
 
     timeframe:
       "5min",
@@ -1891,7 +2105,7 @@ function backtest(bars) {
       bars.at(-1)?.time ??
       null,
 
-    signals:
+    signalsTaken:
       trades.length,
 
     closedTrades:
@@ -1926,7 +2140,8 @@ function backtest(bars) {
 
     profitFactor:
 
-      profitFactor === 999
+      profitFactor ===
+      999
 
         ? 999
 
@@ -1968,17 +2183,13 @@ function backtest(bars) {
         1
       ),
 
-    assumptions: [
-      "Entry is the signal candle close.",
-      "Exit testing begins on the following 5-minute candle.",
-      "Stop Loss is the signal S&R level.",
-      "Take Profit is 2R.",
-      "If Stop Loss and Take Profit are both touched in one candle, Stop Loss is counted first.",
-      "Every S&R signal is tested independently.",
-      "Spread, commission and slippage are not included."
-    ],
+    recentTrades:
 
-    recentTrades
+      trades
+        .slice(
+          -RECENT_BACKTEST_LIMIT
+        )
+        .reverse()
 
   };
 
@@ -1995,31 +2206,44 @@ export default async function handler(
 ) {
 
   res.setHeader(
+
     "Cache-Control",
+
     "no-store, no-cache, must-revalidate"
+
   );
 
 
   res.setHeader(
+
     "Access-Control-Allow-Origin",
+
     "*"
+
   );
 
 
   res.setHeader(
+
     "Access-Control-Allow-Methods",
+
     "GET,OPTIONS"
+
   );
 
 
   res.setHeader(
+
     "Access-Control-Allow-Headers",
+
     "Content-Type"
+
   );
 
 
   if (
-    req.method === "OPTIONS"
+    req.method ===
+    "OPTIONS"
   ) {
 
     return res
@@ -2030,7 +2254,8 @@ export default async function handler(
 
 
   if (
-    req.method !== "GET"
+    req.method !==
+    "GET"
   ) {
 
     return res
@@ -2068,7 +2293,9 @@ export default async function handler(
 
 
     const market =
-      MARKETS[symbol];
+      MARKETS[
+        symbol
+      ];
 
 
     const bars =
@@ -2089,7 +2316,7 @@ export default async function handler(
       );
 
 
-    const backtestResult =
+    const bt =
       backtest(
         bars
       );
@@ -2109,7 +2336,7 @@ export default async function handler(
           true,
 
         engine:
-          "MKAYFX 5M S&R + BACKTESTER",
+          "MKAYFX 5M S&R HARD LOCK V3",
 
         strategy:
           "5M PIVOT S&R CROSSOVER",
@@ -2153,7 +2380,10 @@ export default async function handler(
             SHOW_ZONES,
 
           riskReward:
-            RISK_REWARD
+            RISK_REWARD,
+
+          hardLock:
+            true
 
         },
 
@@ -2243,29 +2473,33 @@ export default async function handler(
 
         reasons:
 
-          analysis.signal === "BUY"
+          analysis.signal ===
+          "BUY"
 
             ? [
 
                 "5M close crossed above newest confirmed support.",
-                "Stop Loss uses that confirmed support.",
-                "Take Profit is 2R from entry."
+                "This signal can be hard-locked by the frontend.",
+                "Stop Loss uses the confirmed support.",
+                "Take Profit is stretched to 3R."
 
               ]
 
-            : analysis.signal === "SELL"
+            : analysis.signal ===
+              "SELL"
 
               ? [
 
                   "5M close crossed below newest confirmed resistance.",
-                  "Stop Loss uses that confirmed resistance.",
-                  "Take Profit is 2R from entry."
+                  "This signal can be hard-locked by the frontend.",
+                  "Stop Loss uses the confirmed resistance.",
+                  "Take Profit is stretched to 3R."
 
                 ]
 
               : [
 
-                  "Waiting for a 5M close to cross newest support or resistance."
+                  "Waiting for a new 5M S&R crossover."
 
                 ],
 
@@ -2317,56 +2551,56 @@ export default async function handler(
 
         backtest: {
 
-          ...backtestResult,
+          ...bt,
 
           recentTrades:
 
-            backtestResult
-              .recentTrades
-              .map(
-                trade => ({
+            bt.recentTrades.map(
+              trade => ({
 
-                  ...trade,
+                ...trade,
 
-                  entry:
-                    round(
-                      trade.entry,
-                      market.digits
-                    ),
+                entry:
+                  round(
+                    trade.entry,
+                    market.digits
+                  ),
 
-                  stopLoss:
-                    round(
-                      trade.stopLoss,
-                      market.digits
-                    ),
+                stopLoss:
+                  round(
+                    trade.stopLoss,
+                    market.digits
+                  ),
 
-                  takeProfit:
-                    round(
-                      trade.takeProfit,
-                      market.digits
-                    ),
+                takeProfit:
+                  round(
+                    trade.takeProfit,
+                    market.digits
+                  ),
 
-                  risk:
-                    round(
-                      trade.risk,
-                      market.digits
-                    ),
+                risk:
+                  round(
+                    trade.risk,
+                    market.digits
+                  ),
 
-                  exitPrice:
-                    round(
-                      trade.exitPrice,
-                      market.digits
-                    )
+                exitPrice:
+                  round(
+                    trade.exitPrice,
+                    market.digits
+                  )
 
-                })
-              )
+              })
+            )
 
         },
 
         chart:
 
           bars
-            .slice(-180)
+            .slice(
+              -180
+            )
             .map(
               bar => ({
 
@@ -2402,11 +2636,16 @@ export default async function handler(
 
       });
 
-  } catch (error) {
+  } catch (
+    error
+  ) {
 
     console.error(
+
       "MKAYFX 5M S&R ERROR",
+
       error
+
     );
 
 
@@ -2418,10 +2657,16 @@ export default async function handler(
           false,
 
         engine:
-          "MKAYFX 5M S&R + BACKTESTER",
+          "MKAYFX 5M S&R HARD LOCK V3",
 
         error:
-          safeError(error) ||
+
+          safeError(
+            error
+          )
+
+          ||
+
           "Unknown S&R engine error."
 
       });
