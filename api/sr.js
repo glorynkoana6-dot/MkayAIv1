@@ -112,7 +112,7 @@ const SHOW_ZONES =
    TP STRETCHED FROM 2R TO 3R
 */
 const RISK_REWARD =
-  1;
+  3;
 
 
 const OUTPUT_SIZE =
