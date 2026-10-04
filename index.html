@@ -1,40 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"
->
-
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#030507">
-
-<meta
-  name="apple-mobile-web-app-capable"
-  content="yes"
->
-
-<meta
-  name="apple-mobile-web-app-status-bar-style"
-  content="black-translucent"
->
-
-<meta
-  name="apple-mobile-web-app-title"
-  content="MKAYFX BTC"
->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MKAYFX BTC">
 
 <title>MKAYFX BTC SNIPER</title>
 
-
 <style>
-
-/* =========================================================
-   ROOT
-========================================================= */
 
 *{
   box-sizing:border-box;
@@ -42,48 +18,33 @@
 }
 
 :root{
-
   --bg:#030609;
-  --bg2:#07101a;
-
   --card:#09121c;
-  --card2:#0d1723;
-  --card3:#060d14;
-
+  --card2:#060d14;
   --border:rgba(255,255,255,.075);
-  --border2:rgba(255,255,255,.15);
+  --border2:rgba(255,255,255,.14);
 
   --text:#f7f9fc;
   --muted:#7d8a9c;
-  --muted2:#536173;
 
   --green:#38e7a2;
-  --greenSoft:rgba(56,231,162,.10);
-
   --red:#ff647c;
-  --redSoft:rgba(255,100,124,.10);
-
   --gold:#f5ca63;
-  --goldSoft:rgba(245,202,99,.10);
-
   --blue:#7995ff;
-  --blueSoft:rgba(121,149,255,.12);
-
-  --purple:#ad91ff;
-
   --orange:#f7931a;
-  --cyan:#57d9ff;
+  --purple:#ad91ff;
 
   --shadow:
     0 22px 65px
     rgba(0,0,0,.22);
-
 }
+
 
 html,
 body{
 
   margin:0;
+
   min-height:100%;
 
   background:
@@ -106,6 +67,7 @@ body{
 
 }
 
+
 body{
 
   padding:
@@ -115,72 +77,63 @@ body{
 
 }
 
+
 body.amoled{
 
   --bg:#000;
   --card:#020202;
-  --card2:#050505;
-  --card3:#010101;
+  --card2:#010101;
 
   background:#000;
 
 }
 
+
 button,
-select,
-input{
+select{
   font:inherit;
 }
+
 
 button{
   cursor:pointer;
 }
 
+
 .app{
 
   width:100%;
+
   max-width:1180px;
-  margin:0 auto;
+
+  margin:auto;
 
 }
 
 
-/* =========================================================
-   OFFLINE
-========================================================= */
+.green{
+  color:var(--green);
+}
 
-.offlineBanner{
+.red{
+  color:var(--red);
+}
 
-  display:none;
-
-  margin-bottom:10px;
-
-  padding:11px 13px;
-
-  border:
-    1px solid
-    rgba(245,202,99,.3);
-
-  border-radius:15px;
-
-  background:
-    rgba(245,202,99,.07);
-
+.gold{
   color:var(--gold);
-
-  font-size:8px;
-  font-weight:850;
-  line-height:1.5;
-
 }
 
-.offlineBanner.show{
-  display:block;
+.blue{
+  color:var(--blue);
+}
+
+.muted{
+  color:var(--muted);
 }
 
 
 /* =========================================================
-   TOP
+   TOP BAR
 ========================================================= */
 
 .topbar{
@@ -188,14 +141,15 @@ button{
   display:flex;
 
   align-items:center;
+
   justify-content:space-between;
 
   gap:10px;
 
-  padding:3px 2px;
   margin-bottom:12px;
 
 }
+
 
 .brand{
 
@@ -207,9 +161,11 @@ button{
 
 }
 
+
 .brand span{
   color:var(--orange);
 }
+
 
 .subtitle{
 
@@ -219,22 +175,24 @@ button{
 
   font-size:8px;
 
-  line-height:1.45;
-
 }
 
-.topStatus{
+
+.status{
 
   display:flex;
+
   align-items:center;
 
   gap:7px;
 
 }
 
-.healthDot{
+
+.dot{
 
   width:9px;
+
   height:9px;
 
   border-radius:50%;
@@ -247,14 +205,8 @@ button{
 
 }
 
-.engineBadge{
 
-  display:flex;
-
-  align-items:center;
-  justify-content:center;
-
-  min-height:31px;
+.badge{
 
   padding:7px 10px;
 
@@ -270,31 +222,29 @@ button{
   color:var(--muted);
 
   font-size:7px;
+
   font-weight:900;
-
-  text-transform:uppercase;
-
-  letter-spacing:.6px;
 
 }
 
 
 /* =========================================================
-   BTC ASSET HEADER
+   ASSET
 ========================================================= */
 
-.assetCard{
+.asset{
 
   display:flex;
 
   align-items:center;
+
   justify-content:space-between;
 
   gap:10px;
 
   margin-bottom:9px;
 
-  padding:9px 11px;
+  padding:10px 12px;
 
   border:
     1px solid
@@ -311,21 +261,26 @@ button{
 
 }
 
-.assetLeft{
+
+.assetL{
 
   display:flex;
+
   align-items:center;
 
   gap:10px;
 
 }
 
-.btcIcon{
+
+.btc{
 
   width:45px;
+
   height:45px;
 
   display:grid;
+
   place-items:center;
 
   border-radius:14px;
@@ -337,25 +292,24 @@ button{
       #f7931a
     );
 
-  color:white;
-
   font-size:22px;
+
   font-weight:1000;
 
-  box-shadow:
-    0 8px 30px
-    rgba(247,147,26,.16);
-
 }
+
 
 .assetName{
 
   font-size:13px;
+
   font-weight:950;
 
 }
 
-.assetSub{
+
+.assetSub,
+.tiny{
 
   margin-top:4px;
 
@@ -365,26 +319,14 @@ button{
 
 }
 
-.assetRight{
-
-  text-align:right;
-
-}
 
 .assetPrice{
 
+  text-align:right;
+
   font-size:19px;
+
   font-weight:1000;
-
-}
-
-.assetSpread{
-
-  margin-top:4px;
-
-  color:var(--muted);
-
-  font-size:6px;
 
 }
 
@@ -393,7 +335,7 @@ button{
    ACTIONS
 ========================================================= */
 
-.actionBar{
+.actions{
 
   display:grid;
 
@@ -409,7 +351,8 @@ button{
 
 }
 
-.primaryButton{
+
+.primary{
 
   min-height:52px;
 
@@ -429,13 +372,16 @@ button{
   color:white;
 
   font-size:11px;
+
   font-weight:950;
 
 }
 
-.iconButton{
+
+.icon{
 
   width:52px;
+
   min-height:52px;
 
   border:
@@ -452,24 +398,23 @@ button{
 
 }
 
-.iconButton.danger{
 
-  color:var(--red);
+.danger{
+
+  color:var(--red) !important;
 
   border-color:
-    rgba(255,100,124,.22);
-
-  background:
-    rgba(255,100,124,.05);
+    rgba(255,100,124,.22) !important;
 
 }
 
 
 /* =========================================================
-   ERROR
+   ERROR / OFFLINE
 ========================================================= */
 
-.errorBox{
+.error,
+.offline{
 
   display:none;
 
@@ -477,18 +422,10 @@ button{
 
   padding:12px;
 
-  border:
-    1px solid
-    rgba(255,100,124,.35);
-
-  border-radius:16px;
-
-  background:
-    rgba(255,100,124,.07);
-
-  color:#ffcbd3;
+  border-radius:15px;
 
   font-size:8px;
+
   line-height:1.55;
 
   white-space:pre-wrap;
@@ -496,18 +433,44 @@ button{
 }
 
 
+.error{
+
+  border:
+    1px solid
+    rgba(255,100,124,.35);
+
+  background:
+    rgba(255,100,124,.07);
+
+  color:#ffcbd3;
+
+}
+
+
+.offline{
+
+  border:
+    1px solid
+    rgba(245,202,99,.3);
+
+  background:
+    rgba(245,202,99,.07);
+
+  color:var(--gold);
+
+}
+
+
+.show{
+  display:block !important;
+}
+
+
 /* =========================================================
-   NAV
+   NAVIGATION
 ========================================================= */
 
-.tabBar{
-
-  position:sticky;
-
-  top:
-    calc(env(safe-area-inset-top) + 4px);
-
-  z-index:30;
+.tabs{
 
   display:flex;
 
@@ -528,24 +491,24 @@ button{
   background:
     rgba(4,9,14,.9);
 
-  backdrop-filter:
-    blur(20px);
+  position:sticky;
 
-  scrollbar-width:none;
+  top:
+    calc(env(safe-area-inset-top) + 4px);
+
+  z-index:40;
 
 }
 
-.tabBar::-webkit-scrollbar{
-  display:none;
-}
 
-.tabButton{
+.tab{
 
   flex:0 0 auto;
 
   min-height:34px;
 
-  padding:0 12px;
+  padding:
+    0 12px;
 
   border:0;
 
@@ -556,15 +519,13 @@ button{
   color:var(--muted);
 
   font-size:7px;
+
   font-weight:900;
-
-  letter-spacing:.6px;
-
-  text-transform:uppercase;
 
 }
 
-.tabButton.active{
+
+.tab.active{
 
   color:white;
 
@@ -582,11 +543,13 @@ button{
   display:none;
 }
 
+
 .view.active{
   display:block;
 }
 
-.layoutGrid{
+
+.layout{
 
   display:grid;
 
@@ -598,9 +561,11 @@ button{
 
 }
 
+
 .stack{
 
   display:flex;
+
   flex-direction:column;
 
   gap:10px;
@@ -609,14 +574,10 @@ button{
 
 
 /* =========================================================
-   CARD
+   CARDS
 ========================================================= */
 
 .card{
-
-  position:relative;
-
-  overflow:hidden;
 
   border:
     1px solid
@@ -634,26 +595,24 @@ button{
   box-shadow:
     var(--shadow);
 
+  overflow:hidden;
+
 }
+
 
 .pad{
   padding:15px;
 }
 
-.sectionTitle{
 
-  display:flex;
-
-  align-items:center;
-  justify-content:space-between;
-
-  gap:8px;
+.section{
 
   margin-bottom:11px;
 
   color:var(--muted);
 
   font-size:7px;
+
   font-weight:900;
 
   letter-spacing:1.3px;
@@ -667,55 +626,31 @@ button{
    HERO
 ========================================================= */
 
-.heroGlow{
-
-  position:absolute;
-
-  width:300px;
-  height:300px;
-
-  right:-110px;
-  top:-160px;
-
-  border-radius:50%;
-
-  background:
-    radial-gradient(
-      circle,
-      rgba(247,147,26,.15),
-      rgba(121,149,255,.08),
-      transparent 70%
-    );
-
-  pointer-events:none;
-
-}
-
-.heroTop{
-
-  position:relative;
+.hero{
 
   display:flex;
 
   align-items:flex-start;
+
   justify-content:space-between;
 
   gap:12px;
 
 }
 
+
 .eyebrow{
 
   color:var(--muted);
 
   font-size:7px;
+
   font-weight:850;
 
   letter-spacing:1px;
 
-  text-transform:uppercase;
-
 }
+
 
 .signal{
 
@@ -731,6 +666,7 @@ button{
 
 }
 
+
 .signal.BUY{
   color:var(--green);
 }
@@ -743,7 +679,8 @@ button{
   color:var(--gold);
 }
 
-.signalSub{
+
+.desc{
 
   max-width:440px;
 
@@ -757,7 +694,8 @@ button{
 
 }
 
-.lockBadge{
+
+.lock{
 
   display:inline-flex;
 
@@ -777,15 +715,11 @@ button{
   color:var(--gold);
 
   font-size:7px;
+
   font-weight:950;
 
-  letter-spacing:.5px;
-
 }
 
-.heroPrice{
-  text-align:right;
-}
 
 .price{
 
@@ -793,9 +727,10 @@ button{
 
   font-weight:1000;
 
-  letter-spacing:-1px;
+  text-align:right;
 
 }
+
 
 .priceMeta{
 
@@ -805,68 +740,45 @@ button{
 
   font-size:6px;
 
-  line-height:1.5;
+  text-align:right;
 
 }
 
 
 /* =========================================================
-   GRID
+   GRIDS
 ========================================================= */
 
-.metaGrid,
-.tradeGrid,
-.componentGrid,
-.structureGrid,
-.liquidityGrid,
-.techGrid,
-.statsGrid,
-.settingsGrid{
+.grid2,
+.grid3,
+.grid4,
+.grid5{
 
   display:grid;
+
   gap:7px;
 
 }
 
-.metaGrid{
 
-  grid-template-columns:
-    repeat(5,1fr);
-
-  margin-top:15px;
-
-}
-
-.tradeGrid{
-  grid-template-columns:repeat(5,1fr);
-}
-
-.componentGrid{
-  grid-template-columns:repeat(4,1fr);
-}
-
-.structureGrid{
-  grid-template-columns:repeat(4,1fr);
-}
-
-.liquidityGrid{
-  grid-template-columns:repeat(3,1fr);
-}
-
-.techGrid,
-.statsGrid,
-.settingsGrid{
+.grid2{
   grid-template-columns:repeat(2,1fr);
 }
 
-.metric,
-.tradeMetric,
-.component,
-.structureCard,
-.liquidityCard,
-.techCard,
-.statCard,
-.settingCell{
+.grid3{
+  grid-template-columns:repeat(3,1fr);
+}
+
+.grid4{
+  grid-template-columns:repeat(4,1fr);
+}
+
+.grid5{
+  grid-template-columns:repeat(5,1fr);
+}
+
+
+.metric{
 
   min-height:68px;
 
@@ -878,19 +790,12 @@ button{
 
   border-radius:14px;
 
-  background:
-    var(--card3);
+  background:var(--card2);
 
 }
 
-.metric small,
-.tradeMetric small,
-.component small,
-.structureCard small,
-.liquidityCard small,
-.techCard small,
-.statCard small,
-.settingCell small{
+
+.metric small{
 
   display:block;
 
@@ -902,14 +807,8 @@ button{
 
 }
 
-.metric b,
-.tradeMetric b,
-.component b,
-.structureCard b,
-.liquidityCard b,
-.techCard b,
-.statCard b,
-.settingCell b{
+
+.metric b{
 
   display:block;
 
@@ -918,6 +817,7 @@ button{
   font-size:12px;
 
 }
+
 
 .sub{
 
@@ -933,15 +833,16 @@ button{
 
 
 /* =========================================================
-   SCORE PANEL
+   SCORE
 ========================================================= */
 
-.scorePanel{
+.score{
 
   display:grid;
 
   grid-template-columns:
-    auto 1fr;
+    auto
+    1fr;
 
   align-items:center;
 
@@ -957,19 +858,21 @@ button{
 
   border-radius:16px;
 
-  background:
-    var(--card3);
+  background:var(--card2);
 
 }
+
 
 .scoreCircle{
 
   position:relative;
 
   width:72px;
+
   height:72px;
 
   display:grid;
+
   place-items:center;
 
   border-radius:50%;
@@ -982,31 +885,36 @@ button{
 
 }
 
-.scoreCircle::after{
+
+.scoreCircle:after{
 
   content:"";
 
   position:absolute;
 
   width:57px;
+
   height:57px;
 
   border-radius:50%;
 
-  background:var(--card3);
+  background:var(--card2);
 
 }
+
 
 .scoreCircle strong{
 
   position:relative;
+
   z-index:2;
 
   font-size:17px;
 
 }
 
-.scoreInfo small{
+
+.scoreText small{
 
   display:block;
 
@@ -1014,11 +922,10 @@ button{
 
   font-size:6px;
 
-  text-transform:uppercase;
-
 }
 
-.scoreInfo b{
+
+.scoreText b{
 
   display:block;
 
@@ -1028,7 +935,8 @@ button{
 
 }
 
-.scoreInfo span{
+
+.scoreText span{
 
   display:block;
 
@@ -1038,16 +946,14 @@ button{
 
   font-size:7px;
 
-  line-height:1.5;
-
 }
 
 
 /* =========================================================
-   BUY SELL BAR
+   BIAS
 ========================================================= */
 
-.biasPanel{
+.bias{
 
   margin-top:8px;
 
@@ -1059,11 +965,12 @@ button{
 
   border-radius:15px;
 
-  background:var(--card3);
+  background:var(--card2);
 
 }
 
-.biasHeader{
+
+.biasTop{
 
   display:flex;
 
@@ -1075,20 +982,8 @@ button{
 
   font-size:6px;
 
-  text-transform:uppercase;
-
 }
 
-.biasNumbers{
-
-  display:flex;
-  gap:10px;
-
-  font-size:8px;
-
-  font-weight:950;
-
-}
 
 .biasBar{
 
@@ -1104,46 +999,20 @@ button{
 
 }
 
+
 .buyBar{
-
-  width:50%;
-
-  background:
-    linear-gradient(
-      90deg,
-      rgba(56,231,162,.3),
-      var(--green)
-    );
-
-  transition:width .3s ease;
-
+  background:var(--green);
 }
 
+
 .sellBar{
-
-  width:50%;
-
-  background:
-    linear-gradient(
-      90deg,
-      var(--red),
-      rgba(255,100,124,.3)
-    );
-
-  transition:width .3s ease;
-
+  background:var(--red);
 }
 
 
 /* =========================================================
-   COMPONENTS
+   COMPONENT SCORE
 ========================================================= */
-
-.component{
-
-  min-height:74px;
-
-}
 
 .componentBar{
 
@@ -1151,19 +1020,18 @@ button{
 
   margin-top:8px;
 
-  overflow:hidden;
-
   border-radius:999px;
 
   background:#121c27;
 
+  overflow:hidden;
+
 }
 
-.componentFill{
+
+.fill{
 
   height:100%;
-
-  border-radius:999px;
 
   background:var(--blue);
 
@@ -1171,141 +1039,10 @@ button{
 
 
 /* =========================================================
-   TRADE
+   TIMEFRAMES
 ========================================================= */
 
-.tradeTitle{
-
-  display:flex;
-
-  align-items:center;
-  justify-content:space-between;
-
-  gap:8px;
-
-  margin:
-    15px 0 8px;
-
-}
-
-.tradeTitle span:first-child{
-
-  color:var(--muted);
-
-  font-size:7px;
-
-  letter-spacing:1px;
-
-  text-transform:uppercase;
-
-}
-
-.currentR{
-
-  font-size:10px;
-  font-weight:950;
-
-}
-
-.progressPanel{
-
-  margin-top:9px;
-
-  padding:11px;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:15px;
-
-  background:var(--card3);
-
-}
-
-.progressHeader{
-
-  display:flex;
-
-  justify-content:space-between;
-
-  gap:8px;
-
-  margin-bottom:8px;
-
-  color:var(--muted);
-
-  font-size:6px;
-
-  text-transform:uppercase;
-
-}
-
-.tradeTrack{
-
-  position:relative;
-
-  height:10px;
-
-  border-radius:999px;
-
-  background:
-    linear-gradient(
-      90deg,
-      rgba(255,100,124,.48),
-      rgba(121,149,255,.35) 25%,
-      rgba(56,231,162,.45)
-    );
-
-}
-
-.tradeMarker{
-
-  position:absolute;
-
-  left:25%;
-  top:50%;
-
-  width:18px;
-  height:18px;
-
-  transform:
-    translate(-50%,-50%);
-
-  border:
-    3px solid
-    #05080d;
-
-  border-radius:50%;
-
-  background:white;
-
-  transition:left .3s ease;
-
-}
-
-.progressLabels{
-
-  display:flex;
-
-  justify-content:space-between;
-
-  margin-top:7px;
-
-  color:var(--muted);
-
-  font-size:6px;
-
-}
-
-
-/* =========================================================
-   TF CARDS
-========================================================= */
-
-.tfBias{
-
-  margin-top:8px;
+.tf{
 
   font-size:18px !important;
 
@@ -1313,101 +1050,26 @@ button{
 
 }
 
-.tfBias.BUY{
+
+.tf.BUY{
   color:var(--green);
 }
 
-.tfBias.SELL{
+.tf.SELL{
   color:var(--red);
 }
 
-.tfBias.NEUTRAL{
+.tf.NEUTRAL{
   color:var(--gold);
 }
 
 
 /* =========================================================
-   LIQUIDITY
-========================================================= */
-
-.sweepHero{
-
-  margin-bottom:9px;
-
-  padding:13px;
-
-  border:
-    1px solid
-    rgba(121,149,255,.2);
-
-  border-radius:16px;
-
-  background:
-    linear-gradient(
-      135deg,
-      rgba(121,149,255,.09),
-      rgba(247,147,26,.05)
-    );
-
-}
-
-.sweepHero small{
-
-  color:var(--muted);
-
-  font-size:6px;
-
-  text-transform:uppercase;
-
-}
-
-.sweepHero strong{
-
-  display:block;
-
-  margin-top:7px;
-
-  font-size:18px;
-
-}
-
-.levelList{
-
-  display:flex;
-
-  flex-wrap:wrap;
-
-  gap:6px;
-
-  margin-top:8px;
-
-}
-
-.levelChip{
-
-  padding:6px 8px;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:999px;
-
-  background:var(--card3);
-
-  color:#d6deea;
-
-  font-size:7px;
-
-}
-
-
-/* =========================================================
-   REASONS
+   TEXT ROWS
 ========================================================= */
 
 .reason,
-.historyRow{
+.history{
 
   padding:9px 0;
 
@@ -1421,113 +1083,21 @@ button{
 
 }
 
+
 .reason:last-child,
-.historyRow:last-child{
+.history:last-child{
   border-bottom:0;
 }
 
-.blocker{
 
-  color:#ffc2cc;
-
-}
-
-.reasonGood{
-
+.good{
   color:#d9fff0;
-
 }
 
-
-/* =========================================================
-   LIVE MONITOR
-========================================================= */
-
-.monitorCanvasWrap{
-
-  position:relative;
-
-  height:380px;
-
-  overflow:hidden;
-
-  border-radius:16px;
-
-  background:
-    linear-gradient(
-      180deg,
-      #050c13,
-      #02070b
-    );
-
-  border:
-    1px solid
-    var(--border);
-
+.bad{
+  color:#ffc2cc;
 }
 
-canvas{
-
-  display:block;
-
-  width:100%;
-  height:100%;
-
-}
-
-.monitorLegend{
-
-  position:absolute;
-
-  top:8px;
-  left:8px;
-
-  display:flex;
-
-  flex-wrap:wrap;
-
-  gap:5px;
-
-  pointer-events:none;
-
-}
-
-.chip{
-
-  padding:5px 7px;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:999px;
-
-  background:
-    rgba(4,9,14,.9);
-
-  color:#d3dce7;
-
-  font-size:6px;
-
-}
-
-.monitorStats{
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(4,1fr);
-
-  gap:7px;
-
-  margin-top:8px;
-
-}
-
-
-/* =========================================================
-   HISTORY
-========================================================= */
 
 .historyTop{
 
@@ -1539,13 +1109,6 @@ canvas{
 
 }
 
-.historyDirection,
-.historyResult{
-
-  font-size:8px;
-  font-weight:950;
-
-}
 
 .historyBody{
 
@@ -1560,61 +1123,20 @@ canvas{
 }
 
 
-/* =========================================================
-   CONTROLS
-========================================================= */
-
-.controlRow{
+.levelList{
 
   display:flex;
 
-  align-items:center;
-  justify-content:space-between;
+  flex-wrap:wrap;
 
-  gap:10px;
-
-  padding:10px 0;
-
-  border-bottom:
-    1px solid
-    rgba(255,255,255,.05);
+  gap:6px;
 
 }
 
-.controlRow:last-child{
-  border-bottom:0;
-}
 
-.controlText strong{
+.chip{
 
-  display:block;
-
-  font-size:8px;
-
-}
-
-.controlText small{
-
-  display:block;
-
-  margin-top:4px;
-
-  color:var(--muted);
-
-  font-size:6px;
-
-  line-height:1.5;
-
-}
-
-.switch{
-
-  position:relative;
-
-  flex-shrink:0;
-
-  width:42px;
-  height:24px;
+  padding:5px 7px;
 
   border:
     1px solid
@@ -1622,47 +1144,218 @@ canvas{
 
   border-radius:999px;
 
-  background:#151e29;
+  background:
+    rgba(4,9,14,.9);
+
+  font-size:6px;
 
 }
 
-.switchKnob{
+
+/* =========================================================
+   TRADE PROGRESS
+========================================================= */
+
+.tradeTrack{
+
+  position:relative;
+
+  height:10px;
+
+  margin-top:9px;
+
+  border-radius:999px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,100,124,.48),
+      rgba(121,149,255,.35) 25%,
+      rgba(56,231,162,.45)
+    );
+
+}
+
+
+.marker{
 
   position:absolute;
 
-  left:3px;
-  top:3px;
+  left:25%;
 
-  width:16px;
-  height:16px;
+  top:50%;
+
+  width:18px;
+
+  height:18px;
+
+  transform:
+    translate(-50%,-50%);
+
+  border:
+    3px solid
+    #05080d;
 
   border-radius:50%;
 
-  background:#7d8998;
-
-  transition:.2s ease;
+  background:white;
 
 }
 
-.switch.on{
 
-  background:
-    rgba(56,231,162,.1);
+.labels{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  margin-top:7px;
+
+  color:var(--muted);
+
+  font-size:6px;
+
+}
+
+
+/* =========================================================
+   CHART
+========================================================= */
+
+.canvasWrap{
+
+  position:relative;
+
+  height:320px;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:16px;
+
+  background:#03080d;
+
+  overflow:hidden;
+
+}
+
+
+.canvasWrap.small{
+  height:220px;
+}
+
+
+canvas{
+
+  display:block;
+
+  width:100%;
+
+  height:100%;
+
+}
+
+
+/* =========================================================
+   BACKTEST
+========================================================= */
+
+.periods{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(4,1fr);
+
+  gap:6px;
+
+  margin-bottom:9px;
+
+}
+
+
+.period{
+
+  min-height:38px;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:12px;
+
+  background:var(--card2);
+
+  color:var(--muted);
+
+  font-size:7px;
+
+  font-weight:900;
+
+}
+
+
+.period.active{
+
+  color:white;
 
   border-color:
-    rgba(56,231,162,.3);
+    rgba(121,149,255,.35);
+
+  background:
+    rgba(121,149,255,.12);
 
 }
 
-.switch.on .switchKnob{
 
-  left:21px;
+.runBT{
 
-  background:var(--green);
+  width:100%;
+
+  min-height:48px;
+
+  margin-bottom:9px;
+
+  border:
+    1px solid
+    rgba(247,147,26,.38);
+
+  border-radius:14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(247,147,26,.9),
+      rgba(183,94,7,.95)
+    );
+
+  color:white;
+
+  font-size:9px;
+
+  font-weight:950;
 
 }
 
-.miniSelect{
+
+.filters{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:6px;
+
+  margin-bottom:9px;
+
+}
+
+
+.select{
+
+  width:100%;
 
   min-height:35px;
 
@@ -1674,7 +1367,7 @@ canvas{
 
   border-radius:10px;
 
-  background:var(--card3);
+  background:var(--card2);
 
   color:white;
 
@@ -1684,69 +1377,23 @@ canvas{
 
 
 /* =========================================================
-   BUTTONS
+   FLOATING TRADE
 ========================================================= */
 
-.buttonGrid{
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(2,1fr);
-
-  gap:7px;
-
-  margin-top:9px;
-
-}
-
-.smallButton{
-
-  min-height:42px;
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:13px;
-
-  background:var(--card3);
-
-  color:#dce4ee;
-
-  font-size:7px;
-
-  font-weight:850;
-
-}
-
-.smallButton.danger{
-
-  color:var(--red);
-
-  border-color:
-    rgba(255,100,124,.2);
-
-}
-
-
-/* =========================================================
-   FLOAT TRADE
-========================================================= */
-
-.floatingTrade{
+.floating{
 
   display:none;
 
   position:fixed;
 
-  z-index:90;
-
   left:10px;
+
   right:10px;
 
   bottom:
     calc(env(safe-area-inset-bottom) + 70px);
+
+  z-index:90;
 
   max-width:600px;
 
@@ -1766,39 +1413,21 @@ canvas{
   backdrop-filter:
     blur(20px);
 
-  box-shadow:
-    0 20px 60px
-    rgba(0,0,0,.4);
-
 }
 
-.floatingTrade.show{
+
+.floating.active{
 
   display:flex;
 
   align-items:center;
+
   justify-content:space-between;
 
   gap:8px;
 
 }
 
-.floatTitle{
-
-  font-size:8px;
-  font-weight:950;
-
-}
-
-.floatSub{
-
-  margin-top:4px;
-
-  color:var(--muted);
-
-  font-size:6px;
-
-}
 
 .floatR{
 
@@ -1825,6 +1454,7 @@ canvas{
     calc(env(safe-area-inset-top) + 12px);
 
   left:12px;
+
   right:12px;
 
   max-width:500px;
@@ -1842,36 +1472,11 @@ canvas{
   background:
     rgba(5,11,18,.97);
 
-  backdrop-filter:
-    blur(20px);
-
-  box-shadow:
-    0 20px 60px
-    rgba(0,0,0,.5);
-
 }
 
-.toast.show{
+
+.toast.active{
   display:block;
-}
-
-.toastTitle{
-
-  font-size:10px;
-  font-weight:950;
-
-}
-
-.toastBody{
-
-  margin-top:5px;
-
-  color:var(--muted);
-
-  font-size:8px;
-
-  line-height:1.5;
-
 }
 
 
@@ -1879,7 +1484,7 @@ canvas{
    MOBILE NAV
 ========================================================= */
 
-.bottomNav{
+.bottom{
 
   display:none;
 
@@ -1888,13 +1493,14 @@ canvas{
   z-index:80;
 
   left:8px;
+
   right:8px;
 
   bottom:
     calc(env(safe-area-inset-bottom) + 6px);
 
   grid-template-columns:
-    repeat(5,1fr);
+    repeat(6,1fr);
 
   gap:3px;
 
@@ -1909,16 +1515,10 @@ canvas{
   background:
     rgba(4,9,14,.95);
 
-  backdrop-filter:
-    blur(22px);
-
-  box-shadow:
-    0 15px 55px
-    rgba(0,0,0,.4);
-
 }
 
-.bottomButton{
+
+.bottom button{
 
   min-height:47px;
 
@@ -1930,23 +1530,14 @@ canvas{
 
   color:var(--muted);
 
-  font-size:5.5px;
+  font-size:5px;
 
   font-weight:850;
 
 }
 
-.bottomButton span{
 
-  display:block;
-
-  margin-bottom:3px;
-
-  font-size:14px;
-
-}
-
-.bottomButton.active{
+.bottom button.active{
 
   color:white;
 
@@ -1957,108 +1548,63 @@ canvas{
 
 
 /* =========================================================
-   UTILITY
-========================================================= */
-
-.green{color:var(--green);}
-.red{color:var(--red);}
-.gold{color:var(--gold);}
-.blue{color:var(--blue);}
-.orange{color:var(--orange);}
-.purple{color:var(--purple);}
-.muted{color:var(--muted);}
-
-.empty{
-
-  padding:10px 0;
-
-  color:var(--muted);
-
-  font-size:8px;
-
-  line-height:1.5;
-
-}
-
-.loading{
-
-  opacity:.58;
-
-  pointer-events:none;
-
-}
-
-
-/* =========================================================
    RESPONSIVE
 ========================================================= */
 
 @media(max-width:850px){
 
-  .layoutGrid{
+  .layout{
     grid-template-columns:1fr;
   }
 
-  .tabBar{
+  .tabs{
     display:none;
   }
 
-  .bottomNav{
+  .bottom{
     display:grid;
   }
 
-  .metaGrid{
+  .grid5{
     grid-template-columns:repeat(3,1fr);
   }
 
-  .tradeGrid{
-    grid-template-columns:repeat(3,1fr);
-  }
-
-  .componentGrid{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .liquidityGrid{
+  .grid4{
     grid-template-columns:repeat(2,1fr);
   }
 
 }
 
+
 @media(max-width:560px){
 
   .signal{
-    font-size:51px;
+    font-size:50px;
   }
 
-  .price{
-    font-size:27px;
-  }
-
-  .metaGrid{
+  .grid5{
     grid-template-columns:repeat(2,1fr);
   }
 
-  .tradeGrid{
+  .grid3{
     grid-template-columns:repeat(2,1fr);
   }
 
-  .structureGrid{
-    grid-template-columns:repeat(2,1fr);
+  .filters{
+    grid-template-columns:1fr;
   }
 
-  .monitorStats{
-    grid-template-columns:repeat(2,1fr);
+  .canvasWrap{
+    height:280px;
   }
 
-  .monitorCanvasWrap{
-    height:320px;
+  .canvasWrap.small{
+    height:190px;
   }
 
 }
 
 </style>
-
 </head>
 
 
@@ -2066,10 +1612,10 @@ canvas{
 
 
 <div
-  class="offlineBanner"
-  id="offlineBanner"
+  class="offline"
+  id="offline"
 >
-STALE DATA — displaying the last successful BTC analysis stored on this device.
+STALE DATA — showing cached analysis.
 </div>
 
 
@@ -2093,21 +1639,21 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
     </div>
 
     <div class="subtitle">
-      4H regime · 1H liquidity · 15M setup · 5M precision
+      4H regime · 1H liquidity · 15M setup · 5M precision · historical replay
     </div>
 
   </div>
 
-  <div class="topStatus">
+  <div class="status">
 
     <div
-      class="healthDot"
-      id="healthDot"
+      class="dot"
+      id="dot"
     ></div>
 
     <div
-      class="engineBadge"
-      id="engineBadge"
+      class="badge"
+      id="engine"
     >
       CONNECTING
     </div>
@@ -2121,11 +1667,11 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
      ASSET
 ======================================================= -->
 
-<div class="assetCard">
+<div class="asset">
 
-  <div class="assetLeft">
+  <div class="assetL">
 
-    <div class="btcIcon">
+    <div class="btc">
       ₿
     </div>
 
@@ -2136,14 +1682,14 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
       </div>
 
       <div class="assetSub">
-        BTC/USD · LIQUIDITY SNIPER ENGINE
+        BTC/USD · LIQUIDITY SNIPER
       </div>
 
     </div>
 
   </div>
 
-  <div class="assetRight">
+  <div>
 
     <div
       class="assetPrice"
@@ -2153,8 +1699,8 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
     </div>
 
     <div
-      class="assetSpread"
-      id="topSpread"
+      class="tiny"
+      id="spread"
     >
       BID — · ASK —
     </div>
@@ -2168,32 +1714,32 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
      ACTIONS
 ======================================================= -->
 
-<div class="actionBar">
+<div class="actions">
 
   <button
-    class="primaryButton"
-    id="runButton"
+    class="primary"
+    id="run"
   >
     RUN BTC ANALYSIS
   </button>
 
   <button
-    class="iconButton"
-    id="copyButton"
+    class="icon"
+    id="copy"
   >
     ⧉
   </button>
 
   <button
-    class="iconButton"
-    id="shareButton"
+    class="icon"
+    id="share"
   >
     ↗
   </button>
 
   <button
-    class="iconButton danger"
-    id="clearButton"
+    class="icon danger"
+    id="clear"
   >
     ✕
   </button>
@@ -2202,48 +1748,55 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
 
 
 <div
-  class="errorBox"
-  id="errorBox"
+  class="error"
+  id="error"
 ></div>
 
 
 <!-- ======================================================
-     DESKTOP NAV
+     NAVIGATION
 ======================================================= -->
 
-<div class="tabBar">
+<div class="tabs">
 
   <button
-    class="tabButton active"
-    data-view="homeView"
+    class="tab active"
+    data-view="home"
   >
     COMMAND
   </button>
 
   <button
-    class="tabButton"
-    data-view="structureView"
+    class="tab"
+    data-view="structure"
   >
     STRUCTURE
   </button>
 
   <button
-    class="tabButton"
-    data-view="liquidityView"
+    class="tab"
+    data-view="liquidity"
   >
     LIQUIDITY
   </button>
 
   <button
-    class="tabButton"
-    data-view="monitorView"
+    class="tab"
+    data-view="monitor"
   >
     MONITOR
   </button>
 
   <button
-    class="tabButton"
-    data-view="journalView"
+    class="tab"
+    data-view="backtest"
+  >
+    BACKTEST
+  </button>
+
+  <button
+    class="tab"
+    data-view="journal"
   >
     JOURNAL
   </button>
@@ -2252,661 +1805,514 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
 
 
 <!-- ======================================================
-     HOME
+     COMMAND VIEW
 ======================================================= -->
 
 <section
   class="view active"
-  id="homeView"
+  id="home"
 >
 
-<div class="layoutGrid">
+<div class="layout">
 
-
-<!-- LEFT -->
 
 <div class="stack">
 
 
 <div class="card">
 
-  <div class="heroGlow"></div>
+<div class="pad">
 
-  <div class="pad">
 
-    <div class="heroTop">
+<div class="hero">
 
-      <div>
+  <div>
 
-        <div class="eyebrow">
-          BTC/USD · LIQUIDITY SNIPER
-        </div>
-
-        <div
-          class="signal WAIT"
-          id="signal"
-        >
-          WAIT
-        </div>
-
-        <div
-          class="signalSub"
-          id="signalDescription"
-        >
-          Waiting for a 15M liquidity sweep, BOS and displacement.
-        </div>
-
-        <div
-          class="lockBadge"
-          id="lockBadge"
-        >
-          UNLOCKED
-        </div>
-
-      </div>
-
-      <div class="heroPrice">
-
-        <div
-          class="price"
-          id="price"
-        >
-          —
-        </div>
-
-        <div
-          class="priceMeta"
-          id="priceMeta"
-        >
-          Coinbase BTC-USD
-        </div>
-
-      </div>
-
+    <div class="eyebrow">
+      BTC/USD · LIQUIDITY SNIPER
     </div>
 
-
-    <div class="metaGrid">
-
-      <div class="metric">
-
-        <small>
-          Signal Score
-        </small>
-
-        <b id="signalScore">
-          0/100
-        </b>
-
-      </div>
-
-      <div class="metric">
-
-        <small>
-          Confidence
-        </small>
-
-        <b id="confidence">
-          0%
-        </b>
-
-      </div>
-
-      <div class="metric">
-
-        <small>
-          Session
-        </small>
-
-        <b id="session">
-          —
-        </b>
-
-      </div>
-
-      <div class="metric">
-
-        <small>
-          Trigger
-        </small>
-
-        <b id="trigger">
-          —
-        </b>
-
-      </div>
-
-      <div class="metric">
-
-        <small>
-          Status
-        </small>
-
-        <b id="sniperStatus">
-          WAIT
-        </b>
-
-      </div>
-
+    <div
+      class="signal WAIT"
+      id="signal"
+    >
+      WAIT
     </div>
 
+    <div
+      class="desc"
+      id="desc"
+    >
+      Waiting for liquidity sweep + BOS + displacement.
+    </div>
 
-    <div class="scorePanel">
+    <div
+      class="lock"
+      id="lockBadge"
+    >
+      UNLOCKED
+    </div>
 
-      <div
-        class="scoreCircle"
-        id="scoreCircle"
+  </div>
+
+
+  <div>
+
+    <div
+      class="price"
+      id="price"
+    >
+      —
+    </div>
+
+    <div
+      class="priceMeta"
+      id="priceMeta"
+    >
+      Coinbase BTC-USD
+    </div>
+
+  </div>
+
+</div>
+
+
+<div
+  class="grid5"
+  style="margin-top:15px"
+>
+
+  <div class="metric">
+
+    <small>
+      Score
+    </small>
+
+    <b id="score">
+      0/100
+    </b>
+
+  </div>
+
+
+  <div class="metric">
+
+    <small>
+      Confidence
+    </small>
+
+    <b id="confidence">
+      0%
+    </b>
+
+  </div>
+
+
+  <div class="metric">
+
+    <small>
+      Session
+    </small>
+
+    <b id="session">
+      —
+    </b>
+
+  </div>
+
+
+  <div class="metric">
+
+    <small>
+      Trigger
+    </small>
+
+    <b id="trigger">
+      —
+    </b>
+
+  </div>
+
+
+  <div class="metric">
+
+    <small>
+      State
+    </small>
+
+    <b id="sniper">
+      WAIT
+    </b>
+
+  </div>
+
+</div>
+
+
+<div class="score">
+
+  <div
+    class="scoreCircle"
+    id="scoreCircle"
+  >
+
+    <strong id="scoreN">
+      0
+    </strong>
+
+  </div>
+
+
+  <div class="scoreText">
+
+    <small>
+      SETUP QUALITY
+    </small>
+
+    <b id="scoreLabel">
+      WAITING
+    </b>
+
+    <span id="scoreInfo">
+      Minimum 70 · Sniper 80
+    </span>
+
+  </div>
+
+</div>
+
+
+<div class="bias">
+
+  <div class="biasTop">
+
+    <span>
+      BUY VS SELL
+    </span>
+
+    <span>
+
+      <b
+        class="green"
+        id="buyScore"
       >
-        <strong id="scoreNumber">
-          0
-        </strong>
-      </div>
+        0
+      </b>
 
-      <div class="scoreInfo">
+      /
 
-        <small>
-          Setup Quality
-        </small>
+      <b
+        class="red"
+        id="sellScore"
+      >
+        0
+      </b>
 
-        <b id="scoreLabel">
-          WAITING
-        </b>
+    </span>
 
-        <span id="scoreText">
-          Minimum score 70. Sniper threshold 80.
-        </span>
-
-      </div>
-
-    </div>
+  </div>
 
 
-    <div class="biasPanel">
+  <div class="biasBar">
 
-      <div class="biasHeader">
+    <div
+      class="buyBar"
+      id="buyBar"
+    ></div>
 
-        <span>
-          BUY VS SELL MODEL
-        </span>
+    <div
+      class="sellBar"
+      id="sellBar"
+    ></div>
 
-        <div class="biasNumbers">
+  </div>
 
-          <span class="green">
-            BUY
-            <b id="buyScore">
-              0
-            </b>
-          </span>
-
-          <span class="red">
-            SELL
-            <b id="sellScore">
-              0
-            </b>
-          </span>
-
-        </div>
-
-      </div>
-
-      <div class="biasBar">
-
-        <div
-          class="buyBar"
-          id="buyBar"
-        ></div>
-
-        <div
-          class="sellBar"
-          id="sellBar"
-        ></div>
-
-      </div>
-
-    </div>
+</div>
 
 
-    <div class="tradeTitle">
+<div
+  class="section"
+  style="margin-top:15px"
+>
 
-      <span>
-        HARD-LOCKED TRADE
-      </span>
+  HARD-LOCKED TRADE
 
-      <span
-        class="currentR"
-        id="currentR"
+  <span
+    id="currentR"
+    style="float:right"
+  >
+    —
+  </span>
+
+</div>
+
+
+<div class="grid5">
+
+
+<div class="metric">
+
+  <small>
+    Entry
+  </small>
+
+  <b
+    class="blue"
+    id="entry"
+  >
+    —
+  </b>
+
+</div>
+
+
+<div class="metric">
+
+  <small>
+    Stop
+  </small>
+
+  <b
+    class="red"
+    id="sl"
+  >
+    —
+  </b>
+
+</div>
+
+
+<div class="metric">
+
+  <small>
+    TP1
+  </small>
+
+  <b
+    class="green"
+    id="tp1"
+  >
+    —
+  </b>
+
+</div>
+
+
+<div class="metric">
+
+  <small>
+    TP 3R
+  </small>
+
+  <b
+    class="green"
+    id="tp"
+  >
+    —
+  </b>
+
+</div>
+
+
+<div class="metric">
+
+  <small>
+    TP2
+  </small>
+
+  <b
+    class="green"
+    id="tp2"
+  >
+    —
+  </b>
+
+</div>
+
+
+</div>
+
+
+<div class="tradeTrack">
+
+  <div
+    class="marker"
+    id="tradeMarker"
+  ></div>
+
+</div>
+
+
+<div class="labels">
+
+  <span>
+    SL
+  </span>
+
+  <span>
+    ENTRY
+  </span>
+
+  <span>
+    TP
+  </span>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- SCORE BREAKDOWN -->
+
+<div class="card">
+
+<div class="pad">
+
+  <div class="section">
+    SCORE BREAKDOWN
+  </div>
+
+  <div
+    class="grid4"
+    id="components"
+  ></div>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<!-- RIGHT SIDE -->
+
+<div class="stack">
+
+
+<div class="card">
+
+<div class="pad">
+
+  <div class="section">
+    TIMEFRAME BIAS
+  </div>
+
+  <div class="grid4">
+
+
+    <div class="metric">
+
+      <small>
+        4H
+      </small>
+
+      <b
+        class="tf NEUTRAL"
+        id="bH4"
       >
         —
-      </span>
+      </b>
 
     </div>
 
 
-    <div class="tradeGrid">
+    <div class="metric">
 
-      <div class="tradeMetric">
+      <small>
+        1H
+      </small>
 
-        <small>
-          Entry
-        </small>
-
-        <b
-          class="blue"
-          id="entry"
-        >
-          —
-        </b>
-
-      </div>
-
-      <div class="tradeMetric">
-
-        <small>
-          Stop
-        </small>
-
-        <b
-          class="red"
-          id="stopLoss"
-        >
-          —
-        </b>
-
-      </div>
-
-      <div class="tradeMetric">
-
-        <small>
-          TP1 · 1.5R
-        </small>
-
-        <b
-          class="green"
-          id="tp1"
-        >
-          —
-        </b>
-
-      </div>
-
-      <div class="tradeMetric">
-
-        <small>
-          TP · 3R
-        </small>
-
-        <b
-          class="green"
-          id="takeProfit"
-        >
-          —
-        </b>
-
-      </div>
-
-      <div class="tradeMetric">
-
-        <small>
-          TP2 · 4R
-        </small>
-
-        <b
-          class="green"
-          id="tp2"
-        >
-          —
-        </b>
-
-      </div>
+      <b
+        class="tf NEUTRAL"
+        id="bH1"
+      >
+        —
+      </b>
 
     </div>
 
 
-    <div class="progressPanel">
+    <div class="metric">
 
-      <div class="progressHeader">
+      <small>
+        15M
+      </small>
 
-        <span>
-          SL → ENTRY → 3R TARGET
-        </span>
-
-        <span id="tradeStatus">
-          NO ACTIVE TRADE
-        </span>
-
-      </div>
-
-      <div class="tradeTrack">
-
-        <div
-          class="tradeMarker"
-          id="tradeMarker"
-        ></div>
-
-      </div>
-
-      <div class="progressLabels">
-
-        <span>
-          SL
-        </span>
-
-        <span>
-          ENTRY
-        </span>
-
-        <span>
-          TP
-        </span>
-
-      </div>
+      <b
+        class="tf NEUTRAL"
+        id="bM15"
+      >
+        —
+      </b>
 
     </div>
+
+
+    <div class="metric">
+
+      <small>
+        5M
+      </small>
+
+      <b
+        class="tf NEUTRAL"
+        id="bM5"
+      >
+        —
+      </b>
+
+    </div>
+
 
   </div>
+
+</div>
 
 </div>
 
 
 <div class="card">
 
-  <div class="pad">
+<div class="pad">
 
-    <div class="sectionTitle">
-      SCORE BREAKDOWN
-    </div>
+  <div class="section">
+    CONFIRMATIONS
+  </div>
 
-    <div class="componentGrid">
+  <div id="reasons">
 
-      <div class="component">
-
-        <small>
-          4H Trend
-        </small>
-
-        <b id="cH4">
-          0 / 15
-        </b>
-
-        <div class="componentBar">
-          <div
-            class="componentFill"
-            id="barH4"
-          ></div>
-        </div>
-
-      </div>
-
-
-      <div class="component">
-
-        <small>
-          1H Trend
-        </small>
-
-        <b id="cH1">
-          0 / 15
-        </b>
-
-        <div class="componentBar">
-          <div
-            class="componentFill"
-            id="barH1"
-          ></div>
-        </div>
-
-      </div>
-
-
-      <div class="component">
-
-        <small>
-          Liquidity Sweep
-        </small>
-
-        <b id="cSweep">
-          0 / 20
-        </b>
-
-        <div class="componentBar">
-          <div
-            class="componentFill"
-            id="barSweep"
-          ></div>
-        </div>
-
-      </div>
-
-
-      <div class="component">
-
-        <small>
-          15M BOS
-        </small>
-
-        <b id="cBos">
-          0 / 15
-        </b>
-
-        <div class="componentBar">
-          <div
-            class="componentFill"
-            id="barBos"
-          ></div>
-        </div>
-
-      </div>
-
-
-      <div class="component">
-
-        <small>
-          Displacement
-        </small>
-
-        <b id="cDisp">
-          0 / 10
-        </b>
-
-        <div class="componentBar">
-          <div
-            class="componentFill"
-            id="barDisp"
-          ></div>
-        </div>
-
-      </div>
-
-
-      <div class="component">
-
-        <small>
-          Volume
-        </small>
-
-        <b id="cVolume">
-          0 / 10
-        </b>
-
-        <div class="componentBar">
-          <div
-            class="componentFill"
-            id="barVolume"
-          ></div>
-        </div>
-
-      </div>
-
-
-      <div class="component">
-
-        <small>
-          5M Precision
-        </small>
-
-        <b id="cPrecision">
-          0 / 10
-        </b>
-
-        <div class="componentBar">
-          <div
-            class="componentFill"
-            id="barPrecision"
-          ></div>
-        </div>
-
-      </div>
-
-
-      <div class="component">
-
-        <small>
-          Session
-        </small>
-
-        <b id="cSession">
-          0 / 5
-        </b>
-
-        <div class="componentBar">
-          <div
-            class="componentFill"
-            id="barSession"
-          ></div>
-        </div>
-
-      </div>
-
+    <div class="reason muted">
+      Waiting.
     </div>
 
   </div>
 
 </div>
-
-
-</div>
-
-
-<!-- RIGHT -->
-
-<div class="stack">
-
-
-<div class="card">
-
-  <div class="pad">
-
-    <div class="sectionTitle">
-      TIMEFRAME BIAS
-    </div>
-
-    <div class="structureGrid">
-
-      <div class="structureCard">
-
-        <small>
-          4H
-        </small>
-
-        <b
-          class="tfBias NEUTRAL"
-          id="biasH4"
-        >
-          —
-        </b>
-
-      </div>
-
-      <div class="structureCard">
-
-        <small>
-          1H
-        </small>
-
-        <b
-          class="tfBias NEUTRAL"
-          id="biasH1"
-        >
-          —
-        </b>
-
-      </div>
-
-      <div class="structureCard">
-
-        <small>
-          15M
-        </small>
-
-        <b
-          class="tfBias NEUTRAL"
-          id="biasM15"
-        >
-          —
-        </b>
-
-      </div>
-
-      <div class="structureCard">
-
-        <small>
-          5M
-        </small>
-
-        <b
-          class="tfBias NEUTRAL"
-          id="biasM5"
-        >
-          —
-        </b>
-
-      </div>
-
-    </div>
-
-  </div>
 
 </div>
 
 
 <div class="card">
 
-  <div class="pad">
+<div class="pad">
 
-    <div class="sectionTitle">
-      WHY THIS SETUP
-    </div>
+  <div class="section">
+    BLOCKERS
+  </div>
 
-    <div id="reasons">
+  <div id="blockers">
 
-      <div class="empty">
-        Waiting for analysis.
-      </div>
-
+    <div class="reason muted">
+      Waiting.
     </div>
 
   </div>
 
 </div>
-
-
-<div class="card">
-
-  <div class="pad">
-
-    <div class="sectionTitle">
-      BLOCKERS
-    </div>
-
-    <div id="blockers">
-
-      <div class="empty">
-        No blocker information yet.
-      </div>
-
-    </div>
-
-  </div>
 
 </div>
 
@@ -2925,10 +2331,10 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
 
 <section
   class="view"
-  id="structureView"
+  id="structure"
 >
 
-<div class="layoutGrid">
+<div class="layout">
 
 
 <div class="stack">
@@ -2936,196 +2342,144 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
 
 <div class="card">
 
-  <div class="pad">
+<div class="pad">
 
-    <div class="sectionTitle">
-      HIGHER TIMEFRAME STRUCTURE
-    </div>
+  <div class="section">
+    HIGHER TIMEFRAME
+  </div>
 
-    <div class="structureGrid">
 
-      <div class="structureCard">
+  <div class="grid2">
 
-        <small>
-          4H Bias
-        </small>
 
-        <b
-          id="h4BiasFull"
-          class="tfBias NEUTRAL"
-        >
-          —
-        </b>
+    <div class="metric">
 
-        <div
-          class="sub"
-          id="h4Structure"
-        >
-          Structure —
-        </div>
+      <small>
+        4H Bias / Structure
+      </small>
 
-      </div>
+      <b id="h4State">
+        —
+      </b>
 
-      <div class="structureCard">
-
-        <small>
-          1H Bias
-        </small>
-
-        <b
-          id="h1BiasFull"
-          class="tfBias NEUTRAL"
-        >
-          —
-        </b>
-
-        <div
-          class="sub"
-          id="h1Structure"
-        >
-          Structure —
-        </div>
-
+      <div
+        class="sub"
+        id="h4Ema"
+      >
+        —
       </div>
 
     </div>
 
 
-    <div
-      class="techGrid"
-      style="margin-top:8px"
-    >
+    <div class="metric">
 
-      <div class="techCard">
+      <small>
+        1H Bias / Structure
+      </small>
 
-        <small>
-          4H EMA20
-        </small>
+      <b id="h1State">
+        —
+      </b>
 
-        <b id="h4Ema20">
-          —
-        </b>
-
-      </div>
-
-      <div class="techCard">
-
-        <small>
-          4H EMA50
-        </small>
-
-        <b id="h4Ema50">
-          —
-        </b>
-
-      </div>
-
-      <div class="techCard">
-
-        <small>
-          1H EMA20
-        </small>
-
-        <b id="h1Ema20">
-          —
-        </b>
-
-      </div>
-
-      <div class="techCard">
-
-        <small>
-          1H EMA50
-        </small>
-
-        <b id="h1Ema50">
-          —
-        </b>
-
+      <div
+        class="sub"
+        id="h1Ema"
+      >
+        —
       </div>
 
     </div>
+
 
   </div>
+
+</div>
 
 </div>
 
 
 <div class="card">
 
-  <div class="pad">
+<div class="pad">
 
-    <div class="sectionTitle">
-      15M SETUP ENGINE
-    </div>
+  <div class="section">
+    15M SETUP
+  </div>
 
-    <div class="techGrid">
 
-      <div class="techCard">
+  <div class="grid2">
 
-        <small>
-          BOS
-        </small>
 
-        <b id="bosStatus">
-          —
-        </b>
+    <div class="metric">
 
-        <div
-          class="sub"
-          id="bosLevel"
-        >
-          Level —
-        </div>
+      <small>
+        BOS
+      </small>
 
-      </div>
+      <b id="bos">
+        —
+      </b>
 
-      <div class="techCard">
-
-        <small>
-          Displacement
-        </small>
-
-        <b id="dispStatus">
-          —
-        </b>
-
-        <div
-          class="sub"
-          id="dispBody"
-        >
-          —
-        </div>
-
-      </div>
-
-      <div class="techCard">
-
-        <small>
-          Volume Ratio
-        </small>
-
-        <b id="volumeRatio">
-          —
-        </b>
-
-      </div>
-
-      <div class="techCard">
-
-        <small>
-          Entry Extension
-        </small>
-
-        <b id="extensionAtr">
-          —
-        </b>
-
+      <div
+        class="sub"
+        id="bosLevel"
+      >
+        —
       </div>
 
     </div>
+
+
+    <div class="metric">
+
+      <small>
+        Displacement
+      </small>
+
+      <b id="disp">
+        —
+      </b>
+
+      <div
+        class="sub"
+        id="dispInfo"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Volume Ratio
+      </small>
+
+      <b id="volRatio">
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Entry Extension
+      </small>
+
+      <b id="extension">
+        —
+      </b>
+
+    </div>
+
 
   </div>
+
+</div>
 
 </div>
 
@@ -3138,106 +2492,116 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
 
 <div class="card">
 
-  <div class="pad">
+<div class="pad">
 
-    <div class="sectionTitle">
-      5M PRECISION
-    </div>
+  <div class="section">
+    5M PRECISION
+  </div>
 
-    <div class="techGrid">
 
-      <div class="techCard">
+  <div class="grid2">
 
-        <small>
-          Bias
-        </small>
 
-        <b id="precisionBias">
-          —
-        </b>
+    <div class="metric">
 
-      </div>
+      <small>
+        Bias
+      </small>
 
-      <div class="techCard">
-
-        <small>
-          Retest
-        </small>
-
-        <b id="precisionRetest">
-          —
-        </b>
-
-      </div>
-
-      <div class="techCard">
-
-        <small>
-          Rejection
-        </small>
-
-        <b id="precisionRejection">
-          —
-        </b>
-
-      </div>
-
-      <div class="techCard">
-
-        <small>
-          FVG
-        </small>
-
-        <b id="precisionFvg">
-          —
-        </b>
-
-      </div>
+      <b id="pBias">
+        —
+      </b>
 
     </div>
+
+
+    <div class="metric">
+
+      <small>
+        Retest
+      </small>
+
+      <b id="pRetest">
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Rejection
+      </small>
+
+      <b id="pReject">
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        FVG
+      </small>
+
+      <b id="pFvg">
+        —
+      </b>
+
+    </div>
+
 
   </div>
+
+</div>
 
 </div>
 
 
 <div class="card">
 
-  <div class="pad">
+<div class="pad">
 
-    <div class="sectionTitle">
-      VOLATILITY
-    </div>
+  <div class="section">
+    VOLATILITY
+  </div>
 
-    <div class="techGrid">
 
-      <div class="techCard">
+  <div class="grid2">
 
-        <small>
-          15M ATR
-        </small>
 
-        <b id="atr15">
-          —
-        </b>
+    <div class="metric">
 
-      </div>
+      <small>
+        15M ATR
+      </small>
 
-      <div class="techCard">
-
-        <small>
-          1H ATR
-        </small>
-
-        <b id="atr1h">
-          —
-        </b>
-
-      </div>
+      <b id="atr15">
+        —
+      </b>
 
     </div>
+
+
+    <div class="metric">
+
+      <small>
+        1H ATR
+      </small>
+
+      <b id="atr1h">
+        —
+      </b>
+
+    </div>
+
 
   </div>
+
+</div>
 
 </div>
 
@@ -3256,10 +2620,10 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
 
 <section
   class="view"
-  id="liquidityView"
+  id="liquidity"
 >
 
-<div class="layoutGrid">
+<div class="layout">
 
 
 <div class="stack">
@@ -3267,121 +2631,133 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
 
 <div class="card">
 
-  <div class="pad">
+<div class="pad">
 
-    <div class="sectionTitle">
-      ACTIVE LIQUIDITY SWEEP
+  <div class="section">
+    ACTIVE SWEEP
+  </div>
+
+
+  <div class="metric">
+
+    <small>
+      Swept Level
+    </small>
+
+    <b id="sweepName">
+      NONE
+    </b>
+
+    <div
+      class="sub"
+      id="sweepInfo"
+    >
+      Waiting for sweep.
     </div>
 
-    <div class="sweepHero">
+  </div>
+
+
+  <div
+    class="grid3"
+    style="margin-top:8px"
+  >
+
+
+    <div class="metric">
 
       <small>
-        Swept Level
+        PDH
       </small>
 
-      <strong id="sweptLevel">
-        NONE
-      </strong>
-
-      <div
-        class="sub"
-        id="sweptDetails"
-      >
-        Waiting for a sweep.
-      </div>
+      <b id="pdh">
+        —
+      </b>
 
     </div>
 
 
-    <div class="liquidityGrid">
+    <div class="metric">
 
-      <div class="liquidityCard">
+      <small>
+        PDL
+      </small>
 
-        <small>
-          Previous Day High
-        </small>
-
-        <b id="pdh">
-          —
-        </b>
-
-      </div>
-
-      <div class="liquidityCard">
-
-        <small>
-          Previous Day Low
-        </small>
-
-        <b id="pdl">
-          —
-        </b>
-
-      </div>
-
-      <div class="liquidityCard">
-
-        <small>
-          Weekly Open
-        </small>
-
-        <b id="weeklyOpen">
-          —
-        </b>
-
-      </div>
-
-      <div class="liquidityCard">
-
-        <small>
-          Previous 4H High
-        </small>
-
-        <b id="prev4hHigh">
-          —
-        </b>
-
-      </div>
-
-      <div class="liquidityCard">
-
-        <small>
-          Previous 4H Low
-        </small>
-
-        <b id="prev4hLow">
-          —
-        </b>
-
-      </div>
-
-      <div class="liquidityCard">
-
-        <small>
-          Asian High
-        </small>
-
-        <b id="asianHigh">
-          —
-        </b>
-
-      </div>
-
-      <div class="liquidityCard">
-
-        <small>
-          Asian Low
-        </small>
-
-        <b id="asianLow">
-          —
-        </b>
-
-      </div>
+      <b id="pdl">
+        —
+      </b>
 
     </div>
+
+
+    <div class="metric">
+
+      <small>
+        Weekly Open
+      </small>
+
+      <b id="wo">
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Prev 4H High
+      </small>
+
+      <b id="h4h">
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Prev 4H Low
+      </small>
+
+      <b id="h4l">
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Asian High
+      </small>
+
+      <b id="ah">
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Asian Low
+      </small>
+
+      <b id="al">
+        —
+      </b>
+
+    </div>
+
 
   </div>
+
+</div>
 
 </div>
 
@@ -3394,57 +2770,51 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
 
 <div class="card">
 
-  <div class="pad">
+<div class="pad">
 
-    <div class="sectionTitle">
-      RECENT SWING HIGHS
-    </div>
-
-    <div
-      class="levelList"
-      id="swingHighs"
-    ></div>
-
+  <div class="section">
+    SWING HIGHS
   </div>
+
+  <div
+    class="levelList"
+    id="swingHighs"
+  ></div>
+
+</div>
 
 </div>
 
 
 <div class="card">
 
-  <div class="pad">
+<div class="pad">
 
-    <div class="sectionTitle">
-      RECENT SWING LOWS
-    </div>
-
-    <div
-      class="levelList"
-      id="swingLows"
-    ></div>
-
+  <div class="section">
+    SWING LOWS
   </div>
+
+  <div
+    class="levelList"
+    id="swingLows"
+  ></div>
+
+</div>
 
 </div>
 
 
 <div class="card">
 
-  <div class="pad">
+<div class="pad">
 
-    <div class="sectionTitle">
-      EQUAL HIGHS / LOWS
-    </div>
-
-    <div id="equalLevels">
-
-      <div class="empty">
-        Waiting for liquidity map.
-      </div>
-
-    </div>
-
+  <div class="section">
+    EQUAL LEVELS
   </div>
+
+  <div id="equals"></div>
+
+</div>
 
 </div>
 
@@ -3463,10 +2833,10 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
 
 <section
   class="view"
-  id="monitorView"
+  id="monitor"
 >
 
-<div class="layoutGrid">
+<div class="layout">
 
 
 <div class="stack">
@@ -3474,100 +2844,81 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
 
 <div class="card">
 
-  <div class="pad">
+<div class="pad">
 
-    <div class="sectionTitle">
+  <div class="section">
+    LIVE PRICE MONITOR
+  </div>
 
-      <span>
-        LIVE BTC PRICE MONITOR
-      </span>
 
-      <span id="monitorStatus">
+  <div class="canvasWrap">
+
+    <canvas id="priceChart"></canvas>
+
+  </div>
+
+
+  <div
+    class="grid4"
+    style="margin-top:8px"
+  >
+
+
+    <div class="metric">
+
+      <small>
+        Current
+      </small>
+
+      <b id="mPrice">
         —
-      </span>
+      </b>
 
     </div>
 
 
-    <div class="monitorCanvasWrap">
+    <div class="metric">
 
-      <canvas id="priceChart"></canvas>
+      <small>
+        Current R
+      </small>
 
-      <div class="monitorLegend">
-
-        <span class="chip">
-          BTC/USD
-        </span>
-
-        <span class="chip">
-          15 SEC PRICE CHECK
-        </span>
-
-        <span
-          class="chip"
-          id="monitorTradeChip"
-        >
-          NO LOCK
-        </span>
-
-      </div>
+      <b id="mR">
+        —
+      </b>
 
     </div>
 
 
-    <div class="monitorStats">
+    <div class="metric">
 
-      <div class="statCard">
+      <small>
+        Best R
+      </small>
 
-        <small>
-          Current
-        </small>
-
-        <b id="monitorPrice">
-          —
-        </b>
-
-      </div>
-
-      <div class="statCard">
-
-        <small>
-          Current R
-        </small>
-
-        <b id="monitorR">
-          —
-        </b>
-
-      </div>
-
-      <div class="statCard">
-
-        <small>
-          Best R
-        </small>
-
-        <b id="bestR">
-          —
-        </b>
-
-      </div>
-
-      <div class="statCard">
-
-        <small>
-          Worst R
-        </small>
-
-        <b id="worstR">
-          —
-        </b>
-
-      </div>
+      <b id="mBest">
+        —
+      </b>
 
     </div>
+
+
+    <div class="metric">
+
+      <small>
+        Worst R
+      </small>
+
+      <b id="mWorst">
+        —
+      </b>
+
+    </div>
+
 
   </div>
+
+</div>
 
 </div>
 
@@ -3580,46 +2931,46 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
 
 <div class="card">
 
-  <div class="pad">
+<div class="pad">
 
-    <div class="sectionTitle">
-      ACTIVE TRADE
-    </div>
+  <div class="section">
+    ACTIVE TRADE
+  </div>
 
-    <div id="monitorTrade">
+  <div id="monitorTrade">
 
-      <div class="empty">
-        No hard-locked trade.
-      </div>
-
+    <div class="reason muted">
+      No hard lock.
     </div>
 
   </div>
 
 </div>
 
+</div>
+
 
 <div class="card">
 
-  <div class="pad">
+<div class="pad">
 
-    <div class="sectionTitle">
-      ENGINE INFORMATION
-    </div>
-
-    <div class="reason">
-      Full strategy analysis runs separately from live price monitoring.
-    </div>
-
-    <div class="reason">
-      Once a trade locks, new signals cannot replace it.
-    </div>
-
-    <div class="reason">
-      Live price monitoring checks whether BTC reaches the locked stop or 3R target.
-    </div>
-
+  <div class="section">
+    MONITOR RULES
   </div>
+
+  <div class="reason">
+    Live price checks do not recalculate the strategy.
+  </div>
+
+  <div class="reason">
+    The hard lock stays until SL, main 3R TP, or manual clear.
+  </div>
+
+  <div class="reason">
+    The journal records closed trades locally on your device.
+  </div>
+
+</div>
 
 </div>
 
@@ -3633,15 +2984,15 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
 
 
 <!-- ======================================================
-     JOURNAL VIEW
+     BACKTEST VIEW
 ======================================================= -->
 
 <section
   class="view"
-  id="journalView"
+  id="backtest"
 >
 
-<div class="layoutGrid">
+<div class="layout">
 
 
 <div class="stack">
@@ -3649,126 +3000,672 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
 
 <div class="card">
 
-  <div class="pad">
+<div class="pad">
 
-    <div class="sectionTitle">
-      BTC TRADE JOURNAL
-    </div>
+  <div class="section">
+    BTC HISTORICAL REPLAY
+  </div>
 
-    <div class="statsGrid">
 
-      <div class="statCard">
+  <div class="periods">
 
-        <small>
-          Trades
-        </small>
 
-        <b id="journalTrades">
-          0
-        </b>
+    <button
+      class="period"
+      data-days="3"
+    >
+      3 DAYS
+    </button>
 
-      </div>
 
-      <div class="statCard">
+    <button
+      class="period active"
+      data-days="7"
+    >
+      7 DAYS
+    </button>
 
-        <small>
-          Wins
-        </small>
 
-        <b
-          class="green"
-          id="journalWins"
-        >
-          0
-        </b>
+    <button
+      class="period"
+      data-days="14"
+    >
+      14 DAYS
+    </button>
 
-      </div>
 
-      <div class="statCard">
+    <button
+      class="period"
+      data-days="30"
+    >
+      30 DAYS
+    </button>
 
-        <small>
-          Losses
-        </small>
 
-        <b
-          class="red"
-          id="journalLosses"
-        >
-          0
-        </b>
+  </div>
 
-      </div>
 
-      <div class="statCard">
+  <button
+    class="runBT"
+    id="runBT"
+  >
+    RUN 7-DAY BTC BACKTEST
+  </button>
 
-        <small>
-          Win Rate
-        </small>
 
-        <b id="journalWR">
-          0%
-        </b>
+  <div
+    class="tiny"
+    id="btStatus"
+  >
+    Uses next 5M open. Same-candle TP/SL = stop first.
+  </div>
 
-      </div>
 
-      <div class="statCard">
+  <div
+    class="grid2"
+    style="margin-top:10px"
+  >
 
-        <small>
-          Net R
-        </small>
 
-        <b id="journalNet">
-          0R
-        </b>
+    <div class="metric">
 
-      </div>
+      <small>
+        Net Result
+      </small>
 
-      <div class="statCard">
-
-        <small>
-          Expectancy
-        </small>
-
-        <b id="journalExpectancy">
-          0R
-        </b>
-
-      </div>
+      <b id="btNet">
+        —
+      </b>
 
     </div>
 
 
-    <div
-      id="history"
-      style="margin-top:10px"
+    <div class="metric">
+
+      <small>
+        Win Rate
+      </small>
+
+      <b id="btWR">
+        —
+      </b>
+
+    </div>
+
+
+  </div>
+
+
+  <div
+    class="grid4"
+    style="margin-top:8px"
+  >
+
+
+    <div class="metric">
+
+      <small>
+        Trades
+      </small>
+
+      <b id="btTrades">
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Wins
+      </small>
+
+      <b
+        class="green"
+        id="btWins"
+      >
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Losses
+      </small>
+
+      <b
+        class="red"
+        id="btLosses"
+      >
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Open
+      </small>
+
+      <b id="btOpen">
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Profit Factor
+      </small>
+
+      <b id="btPF">
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Expectancy
+      </small>
+
+      <b id="btExp">
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Max DD
+      </small>
+
+      <b
+        class="red"
+        id="btDD"
+      >
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Loss Streak
+      </small>
+
+      <b id="btLS">
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Avg Hold
+      </small>
+
+      <b id="btHold">
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Break-even WR
+      </small>
+
+      <b id="btBE">
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        WR Edge
+      </small>
+
+      <b id="btEdge">
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Sniper Trades
+      </small>
+
+      <b id="btSnipers">
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Avg Score
+      </small>
+
+      <b id="btAvgScore">
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Best Score
+      </small>
+
+      <b id="btBestScore">
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        TP1 Hit Rate
+      </small>
+
+      <b id="btTp1">
+        —
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Ambiguous
+      </small>
+
+      <b id="btAmb">
+        —
+      </b>
+
+    </div>
+
+
+  </div>
+
+
+  <div
+    class="tiny"
+    id="btInfo"
+    style="margin-top:9px"
+  >
+    No backtest loaded.
+  </div>
+
+
+</div>
+
+</div>
+
+
+<!-- EQUITY -->
+
+<div class="card">
+
+<div class="pad">
+
+  <div class="section">
+    EQUITY CURVE
+  </div>
+
+  <div class="canvasWrap small">
+
+    <canvas id="equity"></canvas>
+
+  </div>
+
+</div>
+
+</div>
+
+
+<!-- DRAWDOWN -->
+
+<div class="card">
+
+<div class="pad">
+
+  <div class="section">
+    DRAWDOWN CURVE
+  </div>
+
+  <div class="canvasWrap small">
+
+    <canvas id="drawdown"></canvas>
+
+  </div>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<div class="stack">
+
+
+<div class="card">
+
+<div class="pad">
+
+  <div class="section">
+    BUY VS SELL
+  </div>
+
+  <div id="sideStats">
+
+    <div class="reason muted">
+      Run backtest.
+    </div>
+
+  </div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="pad">
+
+  <div class="section">
+    SESSION PERFORMANCE
+  </div>
+
+  <div id="sessionStats">
+
+    <div class="reason muted">
+      Run backtest.
+    </div>
+
+  </div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="pad">
+
+  <div class="section">
+    SCORE BUCKETS
+  </div>
+
+  <div id="scoreBuckets">
+
+    <div class="reason muted">
+      Run backtest.
+    </div>
+
+  </div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="pad">
+
+  <div class="section">
+    RECENT BACKTEST TRADES
+  </div>
+
+
+  <div class="filters">
+
+
+    <select
+      class="select"
+      id="fDir"
     >
 
-      <div class="empty">
-        No completed BTC trades yet.
-      </div>
+      <option value="ALL">
+        All Directions
+      </option>
 
-    </div>
+      <option value="BUY">
+        BUY
+      </option>
+
+      <option value="SELL">
+        SELL
+      </option>
+
+    </select>
 
 
-    <div class="buttonGrid">
+    <select
+      class="select"
+      id="fResult"
+    >
 
-      <button
-        class="smallButton"
-        id="exportButton"
-      >
-        EXPORT CSV
-      </button>
+      <option value="ALL">
+        All Results
+      </option>
 
-      <button
-        class="smallButton danger"
-        id="clearHistoryButton"
-      >
-        CLEAR JOURNAL
-      </button>
+      <option value="WIN">
+        WIN
+      </option>
 
+      <option value="LOSS">
+        LOSS
+      </option>
+
+      <option value="OPEN">
+        OPEN
+      </option>
+
+    </select>
+
+
+    <select
+      class="select"
+      id="fSession"
+    >
+
+      <option value="ALL">
+        All Sessions
+      </option>
+
+      <option value="ASIA">
+        Asia
+      </option>
+
+      <option value="LONDON">
+        London
+      </option>
+
+      <option value="LONDON_NY_OVERLAP">
+        Overlap
+      </option>
+
+      <option value="NEW_YORK">
+        New York
+      </option>
+
+      <option value="OFF_HOURS">
+        Off-hours
+      </option>
+
+    </select>
+
+
+  </div>
+
+
+  <div id="btHistory">
+
+    <div class="reason muted">
+      Run backtest.
     </div>
 
   </div>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+     JOURNAL
+======================================================= -->
+
+<section
+  class="view"
+  id="journal"
+>
+
+<div class="layout">
+
+
+<div class="stack">
+
+
+<div class="card">
+
+<div class="pad">
+
+  <div class="section">
+    LIVE BTC JOURNAL
+  </div>
+
+
+  <div class="grid3">
+
+
+    <div class="metric">
+
+      <small>
+        Trades
+      </small>
+
+      <b id="jTrades">
+        0
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Win Rate
+      </small>
+
+      <b id="jWR">
+        0%
+      </b>
+
+    </div>
+
+
+    <div class="metric">
+
+      <small>
+        Net R
+      </small>
+
+      <b id="jNet">
+        0R
+      </b>
+
+    </div>
+
+
+  </div>
+
+
+  <div
+    id="journalList"
+    style="margin-top:10px"
+  >
+
+    <div class="reason muted">
+      No completed trades.
+    </div>
+
+  </div>
+
+
+  <div
+    class="actions"
+    style="
+      grid-template-columns:1fr 1fr;
+      margin-top:9px;
+    "
+  >
+
+    <button
+      class="primary"
+      id="export"
+    >
+      EXPORT CSV
+    </button>
+
+    <button
+      class="primary danger"
+      id="clearJournal"
+    >
+      CLEAR JOURNAL
+    </button>
+
+  </div>
+
+
+</div>
 
 </div>
 
@@ -3781,141 +3678,24 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
 
 <div class="card">
 
-  <div class="pad">
+<div class="pad">
 
-    <div class="sectionTitle">
-      ENGINE SETTINGS
-    </div>
-
-    <div class="settingsGrid">
-
-      <div class="settingCell">
-
-        <small>
-          Macro
-        </small>
-
-        <b id="settingMacro">
-          4H
-        </b>
-
-      </div>
-
-      <div class="settingCell">
-
-        <small>
-          Confirmation
-        </small>
-
-        <b id="settingConfirmation">
-          1H
-        </b>
-
-      </div>
-
-      <div class="settingCell">
-
-        <small>
-          Setup
-        </small>
-
-        <b id="settingSetup">
-          15M
-        </b>
-
-      </div>
-
-      <div class="settingCell">
-
-        <small>
-          Precision
-        </small>
-
-        <b id="settingPrecision">
-          5M
-        </b>
-
-      </div>
-
-      <div class="settingCell">
-
-        <small>
-          Min Score
-        </small>
-
-        <b id="settingMinScore">
-          70
-        </b>
-
-      </div>
-
-      <div class="settingCell">
-
-        <small>
-          Sniper
-        </small>
-
-        <b id="settingSniper">
-          80
-        </b>
-
-      </div>
-
-      <div class="settingCell">
-
-        <small>
-          Main RR
-        </small>
-
-        <b id="settingRR">
-          1:3
-        </b>
-
-      </div>
-
-      <div class="settingCell">
-
-        <small>
-          Stop ATR Buffer
-        </small>
-
-        <b id="settingAtrBuffer">
-          0.20
-        </b>
-
-      </div>
-
-    </div>
-
+  <div class="section">
+    APP SETTINGS
   </div>
 
-</div>
+
+  <div class="grid2">
 
 
-<div class="card">
+    <div class="metric">
 
-  <div class="pad">
-
-    <div class="sectionTitle">
-      APP SETTINGS
-    </div>
-
-    <div class="controlRow">
-
-      <div class="controlText">
-
-        <strong>
-          Analysis Refresh
-        </strong>
-
-        <small>
-          How often a completely new strategy analysis runs.
-        </small>
-
-      </div>
+      <small>
+        Analysis refresh
+      </small>
 
       <select
-        class="miniSelect"
+        class="select"
         id="analysisRefresh"
       >
 
@@ -3944,22 +3724,14 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
     </div>
 
 
-    <div class="controlRow">
+    <div class="metric">
 
-      <div class="controlText">
-
-        <strong>
-          Price Monitoring
-        </strong>
-
-        <small>
-          Live price check interval while the app is open.
-        </small>
-
-      </div>
+      <small>
+        Price refresh
+      </small>
 
       <select
-        class="miniSelect"
+        class="select"
         id="priceRefresh"
       >
 
@@ -3984,58 +3756,41 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
     </div>
 
 
-    <div class="controlRow">
+    <div class="metric">
 
-      <div class="controlText">
+      <small>
+        Alerts
+      </small>
 
-        <strong>
-          Signal Alerts
-        </strong>
-
-        <small>
-          Sound and vibration for locks and exits.
-        </small>
-
-      </div>
-
-      <div
-        class="switch"
-        id="alertSwitch"
+      <button
+        class="primary"
+        id="alerts"
       >
-
-        <div class="switchKnob"></div>
-
-      </div>
+        TOGGLE
+      </button>
 
     </div>
 
 
-    <div class="controlRow">
+    <div class="metric">
 
-      <div class="controlText">
+      <small>
+        AMOLED
+      </small>
 
-        <strong>
-          AMOLED Mode
-        </strong>
-
-        <small>
-          Pure black OLED background.
-        </small>
-
-      </div>
-
-      <div
-        class="switch"
-        id="amoledSwitch"
+      <button
+        class="primary"
+        id="amoled"
       >
-
-        <div class="switchKnob"></div>
-
-      </div>
+        TOGGLE
+      </button>
 
     </div>
+
 
   </div>
+
+</div>
 
 </div>
 
@@ -4056,21 +3811,18 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
 ======================================================= -->
 
 <div
-  class="floatingTrade"
-  id="floatingTrade"
+  class="floating"
+  id="floating"
 >
 
   <div>
 
-    <div
-      class="floatTitle"
-      id="floatTitle"
-    >
+    <b id="floatTitle">
       🔒 BTC/USD
-    </div>
+    </b>
 
     <div
-      class="floatSub"
+      class="tiny"
       id="floatSub"
     >
       —
@@ -4097,15 +3849,12 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
   id="toast"
 >
 
-  <div
-    class="toastTitle"
-    id="toastTitle"
-  >
+  <b id="toastTitle">
     MKAYFX
-  </div>
+  </b>
 
   <div
-    class="toastBody"
+    class="tiny"
     id="toastBody"
   >
     —
@@ -4118,45 +3867,54 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
      MOBILE NAV
 ======================================================= -->
 
-<div class="bottomNav">
+<div class="bottom">
 
   <button
-    class="bottomButton active"
-    data-view="homeView"
+    class="active"
+    data-view="home"
   >
-    <span>⌂</span>
+    ⌂
+    <br>
     HOME
   </button>
 
   <button
-    class="bottomButton"
-    data-view="structureView"
+    data-view="structure"
   >
-    <span>⌁</span>
+    ⌁
+    <br>
     STRUCT
   </button>
 
   <button
-    class="bottomButton"
-    data-view="liquidityView"
+    data-view="liquidity"
   >
-    <span>◎</span>
+    ◎
+    <br>
     LIQUID
   </button>
 
   <button
-    class="bottomButton"
-    data-view="monitorView"
+    data-view="monitor"
   >
-    <span>↗</span>
+    ↗
+    <br>
     LIVE
   </button>
 
   <button
-    class="bottomButton"
-    data-view="journalView"
+    data-view="backtest"
   >
-    <span>☷</span>
+    ▥
+    <br>
+    TEST
+  </button>
+
+  <button
+    data-view="journal"
+  >
+    ☷
+    <br>
     JOURNAL
   </button>
 
@@ -4164,48 +3922,6 @@ STALE DATA — displaying the last successful BTC analysis stored on this device
 
 
 <script>
-
-/* =========================================================
-   CONSTANTS
-========================================================= */
-
-const SYMBOL =
-  "BTC/USD";
-
-const ANALYSIS_ENDPOINT =
-  "/api/sr";
-
-const STORAGE = {
-
-  lock:
-    "mkayfx_btc_sniper_lock_v1",
-
-  history:
-    "mkayfx_btc_sniper_history_v1",
-
-  cache:
-    "mkayfx_btc_sniper_cache_v1",
-
-  prices:
-    "mkayfx_btc_sniper_prices_v1",
-
-  analysisRefresh:
-    "mkayfx_btc_analysis_refresh_v1",
-
-  priceRefresh:
-    "mkayfx_btc_price_refresh_v1",
-
-  alerts:
-    "mkayfx_btc_alerts_v1",
-
-  amoled:
-    "mkayfx_btc_amoled_v1",
-
-  pauseLockUntil:
-    "mkayfx_btc_pause_lock_until_v1"
-
-};
-
 
 /* =========================================================
    HELPERS
@@ -4227,175 +3943,51 @@ const $$ =
     );
 
 
-function number(
-  value
-) {
-
-  const n =
-    Number(
-      value
-    );
-
-  return Number.isFinite(
-    n
-  )
-    ? n
-    : null;
-
-}
+const SYMBOL =
+  "BTC/USD";
 
 
-function fmt(
-  value,
-  digits = 2
-) {
-
-  const n =
-    number(
-      value
-    );
-
-  if (
-    n ===
-    null
-  ) {
-
-    return "—";
-
-  }
-
-  return n.toLocaleString(
-
-    undefined,
-
-    {
-
-      minimumFractionDigits:
-        digits,
-
-      maximumFractionDigits:
-        digits
-
-    }
-
-  );
-
-}
+const API =
+  "/api/sr";
 
 
-function formatR(
-  value
-) {
-
-  const n =
-    number(
-      value
-    );
-
-  if (
-    n ===
-    null
-  ) {
-
-    return "—";
-
-  }
-
-  return `${n >= 0 ? "+" : ""}${n.toFixed(2)}R`;
-
-}
+const BTAPI =
+  "/api/backtest";
 
 
-function esc(
-  value
-) {
+const K = {
 
-  return String(
-    value ??
-    ""
-  )
+  lock:
+    "mkayfx_btc_lock_v2",
 
-    .replace(
-      /&/g,
-      "&amp;"
-    )
+  history:
+    "mkayfx_btc_history_v2",
 
-    .replace(
-      /</g,
-      "&lt;"
-    )
+  cache:
+    "mkayfx_btc_cache_v2",
 
-    .replace(
-      />/g,
-      "&gt;"
-    )
+  prices:
+    "mkayfx_btc_prices_v2",
 
-    .replace(
-      /"/g,
-      "&quot;"
-    )
+  bt:
+    "mkayfx_btc_backtest_v2",
 
-    .replace(
-      /'/g,
-      "&#039;"
-    );
+  analysis:
+    "mkayfx_btc_analysis_refresh_v2",
 
-}
+  price:
+    "mkayfx_btc_price_refresh_v2",
 
+  alerts:
+    "mkayfx_btc_alerts_v2",
 
-function displayTime(
-  value
-) {
+  amoled:
+    "mkayfx_btc_amoled_v2",
 
-  if (
-    !value
-  ) {
+  pause:
+    "mkayfx_btc_pause_v2"
 
-    return "—";
-
-  }
-
-  const date =
-    new Date(
-      value
-    );
-
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
-
-    return "—";
-
-  }
-
-  return date.toLocaleString(
-
-    undefined,
-
-    {
-
-      month:
-        "short",
-
-      day:
-        "numeric",
-
-      hour:
-        "2-digit",
-
-      minute:
-        "2-digit",
-
-      second:
-        "2-digit"
-
-    }
-
-  );
-
-}
+};
 
 
 /* =========================================================
@@ -4405,23 +3997,37 @@ function displayTime(
 let lastData =
   null;
 
+
+let lastBT =
+  null;
+
+
 let currentPrice =
   null;
+
 
 let analysing =
   false;
 
+
 let priceLoading =
   false;
 
+
 let currentView =
-  "homeView";
+  "home";
+
 
 let lastAnalysisAt =
   0;
 
+
 let lastPriceAt =
   0;
+
+
+let btDays =
+  7;
 
 
 let analysisRefresh =
@@ -4429,7 +4035,7 @@ let analysisRefresh =
   Number(
 
     localStorage.getItem(
-      STORAGE.analysisRefresh
+      K.analysis
     )
 
     ||
@@ -4444,7 +4050,7 @@ let priceRefresh =
   Number(
 
     localStorage.getItem(
-      STORAGE.priceRefresh
+      K.price
     )
 
     ||
@@ -4457,7 +4063,7 @@ let priceRefresh =
 let alertsEnabled =
 
   localStorage.getItem(
-    STORAGE.alerts
+    K.alerts
   )
 
   ===
@@ -4468,7 +4074,7 @@ let alertsEnabled =
 let amoledEnabled =
 
   localStorage.getItem(
-    STORAGE.amoled
+    K.amoled
   )
 
   ===
@@ -4477,35 +4083,228 @@ let amoledEnabled =
 
 
 /* =========================================================
-   STORAGE
+   BASIC HELPERS
+========================================================= */
+
+const n =
+  value => {
+
+    const number =
+      Number(
+        value
+      );
+
+
+    return Number.isFinite(
+      number
+    )
+
+      ? number
+
+      : null;
+
+  };
+
+
+const fmt =
+  (
+    value,
+    digits = 2
+  ) => {
+
+    const number =
+      n(
+        value
+      );
+
+
+    if (
+      number ===
+      null
+    ) {
+
+      return "—";
+
+    }
+
+
+    return number.toLocaleString(
+
+      undefined,
+
+      {
+
+        minimumFractionDigits:
+          digits,
+
+        maximumFractionDigits:
+          digits
+
+      }
+
+    );
+
+  };
+
+
+const rfmt =
+  value => {
+
+    const number =
+      n(
+        value
+      );
+
+
+    if (
+      number ===
+      null
+    ) {
+
+      return "—";
+
+    }
+
+
+    return `${number >= 0 ? "+" : ""}${number.toFixed(2)}R`;
+
+  };
+
+
+const esc =
+  value =>
+
+    String(
+      value ??
+      ""
+    )
+
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+
+      .replace(
+        /</g,
+        "&lt;"
+      )
+
+      .replace(
+        />/g,
+        "&gt;"
+      )
+
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+
+      .replace(
+        /'/g,
+        "&#039;"
+      );
+
+
+const time =
+  value => {
+
+    if (
+      !value
+    ) {
+
+      return "—";
+
+    }
+
+
+    const date =
+      new Date(
+        value
+      );
+
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+
+      return "—";
+
+    }
+
+
+    return date.toLocaleString(
+
+      undefined,
+
+      {
+
+        month:
+          "short",
+
+        day:
+          "numeric",
+
+        hour:
+          "2-digit",
+
+        minute:
+          "2-digit"
+
+      }
+
+    );
+
+  };
+
+
+/* =========================================================
+   JSON STORAGE
+========================================================= */
+
+function getJSON(
+  key,
+  fallback
+) {
+
+  try {
+
+    return JSON.parse(
+
+      localStorage.getItem(
+        key
+      )
+
+      ||
+
+      JSON.stringify(
+        fallback
+      )
+
+    );
+
+  }
+
+  catch {
+
+    return fallback;
+
+  }
+
+}
+
+
+/* =========================================================
+   LOCK STORAGE
 ========================================================= */
 
 function getLock() {
 
-  try {
-
-    const raw =
-      localStorage.getItem(
-        STORAGE.lock
-      );
-
-    if (
-      !raw
-    ) {
-
-      return null;
-
-    }
-
-    return JSON.parse(
-      raw
-    );
-
-  } catch {
-
-    return null;
-
-  }
+  return getJSON(
+    K.lock,
+    null
+  );
 
 }
 
@@ -4516,7 +4315,7 @@ function saveLock(
 
   localStorage.setItem(
 
-    STORAGE.lock,
+    K.lock,
 
     JSON.stringify(
       trade
@@ -4530,40 +4329,32 @@ function saveLock(
 function clearLock() {
 
   localStorage.removeItem(
-    STORAGE.lock
+    K.lock
   );
 
 }
 
 
+/* =========================================================
+   HISTORY
+========================================================= */
+
 function getHistory() {
 
-  try {
+  const history =
+    getJSON(
+      K.history,
+      []
+    );
 
-    const parsed =
-      JSON.parse(
 
-        localStorage.getItem(
-          STORAGE.history
-        )
+  return Array.isArray(
+    history
+  )
 
-        ||
+    ? history
 
-        "[]"
-
-      );
-
-    return Array.isArray(
-      parsed
-    )
-      ? parsed
-      : [];
-
-  } catch {
-
-    return [];
-
-  }
+    : [];
 
 }
 
@@ -4575,13 +4366,15 @@ function saveHistory(
   const history =
     getHistory();
 
+
   history.unshift(
     trade
   );
 
+
   localStorage.setItem(
 
-    STORAGE.history,
+    K.history,
 
     JSON.stringify(
 
@@ -4597,101 +4390,42 @@ function saveHistory(
 }
 
 
-function saveCache(
-  data
-) {
-
-  try {
-
-    localStorage.setItem(
-
-      STORAGE.cache,
-
-      JSON.stringify({
-
-        savedAt:
-          new Date()
-            .toISOString(),
-
-        data
-
-      })
-
-    );
-
-  } catch {}
-
-}
-
-
-function getCache() {
-
-  try {
-
-    return JSON.parse(
-
-      localStorage.getItem(
-        STORAGE.cache
-      )
-
-    );
-
-  } catch {
-
-    return null;
-
-  }
-
-}
-
-
 /* =========================================================
-   PRICE HISTORY
+   PRICE SAMPLES
 ========================================================= */
 
 function getPrices() {
 
-  try {
+  const prices =
+    getJSON(
+      K.prices,
+      []
+    );
 
-    const parsed =
-      JSON.parse(
 
-        localStorage.getItem(
-          STORAGE.prices
-        )
+  return Array.isArray(
+    prices
+  )
 
-        ||
+    ? prices
 
-        "[]"
-
-      );
-
-    return Array.isArray(
-      parsed
-    )
-      ? parsed
-      : [];
-
-  } catch {
-
-    return [];
-
-  }
+    : [];
 
 }
 
 
-function appendPrice(
+function addPrice(
   price
 ) {
 
-  const p =
-    number(
+  price =
+    n(
       price
     );
 
+
   if (
-    p ===
+    price ===
     null
   ) {
 
@@ -4699,14 +4433,17 @@ function appendPrice(
 
   }
 
+
   const prices =
     getPrices();
+
 
   const previous =
     prices[
       prices.length -
       1
     ];
+
 
   if (
 
@@ -4715,7 +4452,7 @@ function appendPrice(
     &&
 
     Date.now() -
-    previous.time <
+    previous.t <
     5000
 
   ) {
@@ -4724,20 +4461,21 @@ function appendPrice(
 
   }
 
+
   prices.push({
 
-    time:
+    t:
       Date.now(),
 
-    price:
-      p
+    p:
+      price
 
   });
 
 
   localStorage.setItem(
 
-    STORAGE.prices,
+    K.prices,
 
     JSON.stringify(
 
@@ -4756,7 +4494,7 @@ function appendPrice(
    CURRENT R
 ========================================================= */
 
-function calculateR(
+function currentR(
   lock,
   price
 ) {
@@ -4769,19 +4507,22 @@ function calculateR(
 
   }
 
-  const p =
-    number(
+
+  price =
+    n(
       price
     );
 
+
   const risk =
-    number(
+    n(
       lock.risk
     );
 
+
   if (
 
-    p ===
+    price ===
     null
 
     ||
@@ -4800,28 +4541,29 @@ function calculateR(
 
   }
 
-  if (
-    lock.signal ===
+
+  return lock.signal ===
     "BUY"
-  ) {
 
-    return (
+    ?
 
-      p -
+    (
+      price -
       lock.entry
+    )
 
-    ) /
+    /
+    risk
+
+    :
+
+    (
+      lock.entry -
+      price
+    )
+
+    /
     risk;
-
-  }
-
-  return (
-
-    lock.entry -
-    p
-
-  ) /
-  risk;
 
 }
 
@@ -4830,42 +4572,15 @@ function calculateR(
    CREATE HARD LOCK
 ========================================================= */
 
-function maybeCreateLock(
+function maybeLock(
   data
 ) {
 
-  const existing =
-    getLock();
-
   if (
-    existing
+    getLock()
   ) {
 
-    return existing;
-
-  }
-
-
-  const pauseUntil =
-    Number(
-
-      localStorage.getItem(
-        STORAGE.pauseLockUntil
-      )
-
-      ||
-
-      0
-
-    );
-
-
-  if (
-    Date.now() <
-    pauseUntil
-  ) {
-
-    return null;
+    return;
 
   }
 
@@ -4882,54 +4597,68 @@ function maybeCreateLock(
 
   ) {
 
-    return null;
+    return;
 
   }
 
 
-  const entry =
-    number(
-      data.entry
+  const pauseUntil =
+
+    Number(
+
+      localStorage.getItem(
+        K.pause
+      )
+
+      ||
+
+      0
+
     );
 
-  const stopLoss =
-    number(
-      data.stopLoss
-    );
 
-  const takeProfit =
-    number(
-      data.takeProfit
-    );
+  if (
+    Date.now() <
+    pauseUntil
+  ) {
 
-  const risk =
-    number(
-      data.risk
+    return;
+
+  }
+
+
+  const values = [
+
+    data.entry,
+
+    data.stopLoss,
+
+    data.takeProfit,
+
+    data.risk
+
+  ]
+    .map(
+      n
     );
 
 
   if (
 
-    [
-      entry,
-      stopLoss,
-      takeProfit,
-      risk
-    ]
-      .some(
-        value =>
-          value ===
-          null
-      )
+    values.some(
+      value =>
+        value ===
+        null
+    )
 
     ||
 
-    risk <=
+    values[3] <=
     0
 
   ) {
 
-    return null;
+    return;
 
   }
 
@@ -4938,9 +4667,7 @@ function maybeCreateLock(
 
     id:
       data.signalId
-
       ||
-
       `BTC-${Date.now()}`,
 
     symbol:
@@ -4949,53 +4676,50 @@ function maybeCreateLock(
     signal:
       data.signal,
 
-    entry,
+    entry:
+      values[0],
 
-    stopLoss,
+    stopLoss:
+      values[1],
+
+    takeProfit:
+      n(
+        data.takeProfit
+      ),
 
     takeProfit1:
-      number(
+      n(
         data.takeProfit1
       ),
 
-    takeProfit,
-
     takeProfit2:
-      number(
+      n(
         data.takeProfit2
       ),
 
-    risk,
+    risk:
+      values[3],
 
     rr:
-      number(
+      n(
         data.rr
       )
       ||
       3,
 
     score:
-      number(
+      n(
         data.signalScore
       ),
 
     confidence:
-      number(
+      n(
         data.confidence
       ),
 
-    trigger:
-      data.trigger,
-
     createdAt:
       data.createdAt
-
       ||
-
-      new Date()
-        .toISOString(),
-
-    lockedAt:
       new Date()
         .toISOString(),
 
@@ -5020,26 +4744,26 @@ function maybeCreateLock(
 
     `${trade.signal} HARD LOCK`,
 
-    `BTC/USD · Entry ${fmt(trade.entry)} · SL ${fmt(trade.stopLoss)} · TP ${fmt(trade.takeProfit)}`,
+    `Entry ${fmt(trade.entry)} · SL ${fmt(trade.stopLoss)} · TP ${fmt(trade.takeProfit)}`,
 
     trade.signal
 
   );
 
-
-  return trade;
-
 }
 
 
 /* =========================================================
-   UPDATE TRADE PERFORMANCE
+   UPDATE LOCK PERFORMANCE
 ========================================================= */
 
-function updateTradePerformance(
-  lock,
+function updateLock(
   price
 ) {
+
+  const lock =
+    getLock();
+
 
   if (
     !lock
@@ -5049,54 +4773,54 @@ function updateTradePerformance(
 
   }
 
-  const r =
-    calculateR(
+
+  const current =
+    currentR(
       lock,
       price
     );
 
+
   if (
-    !Number.isFinite(
-      r
+    Number.isFinite(
+      current
     )
   ) {
 
-    return lock;
+    lock.bestR =
+      Math.max(
+
+        Number(
+          lock.bestR
+          ||
+          0
+        ),
+
+        current
+
+      );
+
+
+    lock.worstR =
+      Math.min(
+
+        Number(
+          lock.worstR
+          ||
+          0
+        ),
+
+        current
+
+      );
+
+
+    saveLock(
+      lock
+    );
 
   }
 
-
-  lock.bestR =
-    Math.max(
-
-      number(
-        lock.bestR
-      )
-      ??
-      0,
-
-      r
-
-    );
-
-
-  lock.worstR =
-    Math.min(
-
-      number(
-        lock.worstR
-      )
-      ??
-      0,
-
-      r
-
-    );
-
-
-  saveLock(
-    lock
-  );
 
   return lock;
 
@@ -5104,35 +4828,38 @@ function updateTradePerformance(
 
 
 /* =========================================================
-   CHECK TP / SL
+   EXIT CHECK
 ========================================================= */
 
-function checkTradeExit(
+function checkExit(
   price
 ) {
 
-  const lock =
+  let lock =
     getLock();
+
 
   if (
     !lock
   ) {
 
-    return null;
+    return;
 
   }
 
-  const p =
-    number(
+
+  price =
+    n(
       price
     );
 
+
   if (
-    p ===
+    price ===
     null
   ) {
 
-    return lock;
+    return;
 
   }
 
@@ -5147,7 +4874,7 @@ function checkTradeExit(
   ) {
 
     if (
-      p >=
+      price >=
       lock.takeProfit
     ) {
 
@@ -5157,7 +4884,7 @@ function checkTradeExit(
     }
 
     else if (
-      p <=
+      price <=
       lock.stopLoss
     ) {
 
@@ -5171,7 +4898,7 @@ function checkTradeExit(
   else {
 
     if (
-      p <=
+      price <=
       lock.takeProfit
     ) {
 
@@ -5181,7 +4908,7 @@ function checkTradeExit(
     }
 
     else if (
-      p >=
+      price >=
       lock.stopLoss
     ) {
 
@@ -5197,10 +4924,11 @@ function checkTradeExit(
     !status
   ) {
 
-    return updateTradePerformance(
-      lock,
-      p
+    updateLock(
+      price
     );
+
+    return;
 
   }
 
@@ -5212,6 +4940,7 @@ function checkTradeExit(
     status,
 
     resultR:
+
       status ===
       "WIN"
 
@@ -5220,7 +4949,7 @@ function checkTradeExit(
         : -1,
 
     exitPrice:
-      p,
+      price,
 
     exitTime:
       new Date()
@@ -5241,11 +4970,13 @@ function checkTradeExit(
 
     `BTC TRADE ${status}`,
 
-    `${lock.signal} · ${formatR(completed.resultR)} · Exit ${fmt(p)}`,
+    `${lock.signal} · ${rfmt(completed.resultR)} · Exit ${fmt(price)}`,
 
     status ===
     "WIN"
+
       ? "BUY"
+
       : "SELL"
 
   );
@@ -5253,40 +4984,29 @@ function checkTradeExit(
 
   renderJournal();
 
-
-  return null;
-
 }
 
 
 /* =========================================================
-   API
+   URLS
 ========================================================= */
 
-function analysisUrl() {
+function analysisURL() {
 
-  return (
-
-    `${ANALYSIS_ENDPOINT}?symbol=${encodeURIComponent(SYMBOL)}&t=${Date.now()}`
-
-  );
+  return `${API}?symbol=${encodeURIComponent(SYMBOL)}&t=${Date.now()}`;
 
 }
 
 
-function priceUrl() {
+function priceURL() {
 
-  return (
-
-    `${ANALYSIS_ENDPOINT}?mode=price&symbol=${encodeURIComponent(SYMBOL)}&t=${Date.now()}`
-
-  );
+  return `${API}?mode=price&symbol=${encodeURIComponent(SYMBOL)}&t=${Date.now()}`;
 
 }
 
 
 /* =========================================================
-   FULL ANALYSIS
+   LIVE ANALYSIS
 ========================================================= */
 
 async function runAnalysis() {
@@ -5304,18 +5024,15 @@ async function runAnalysis() {
     true;
 
 
-  $("app")
-    .classList
-    .add(
-      "loading"
-    );
+  $("app").style.opacity =
+    .6;
 
 
-  $("runButton").textContent =
+  $("run").textContent =
     "ANALYSING BTC...";
 
 
-  $("errorBox").style.display =
+  $("error").style.display =
     "none";
 
 
@@ -5324,7 +5041,7 @@ async function runAnalysis() {
     const response =
       await fetch(
 
-        analysisUrl(),
+        analysisURL(),
 
         {
           cache:
@@ -5334,7 +5051,7 @@ async function runAnalysis() {
       );
 
 
-    const text =
+    const raw =
       await response.text();
 
 
@@ -5345,14 +5062,16 @@ async function runAnalysis() {
 
       data =
         JSON.parse(
-          text
+          raw
         );
 
-    } catch {
+    }
+
+    catch {
 
       throw new Error(
 
-        `Server returned non-JSON:\n${text.slice(0,500)}`
+        `Server returned non-JSON:\n${raw.slice(0,500)}`
 
       );
 
@@ -5392,7 +5111,7 @@ async function runAnalysis() {
 
 
     currentPrice =
-      number(
+      n(
         data.price
       );
 
@@ -5401,47 +5120,53 @@ async function runAnalysis() {
       Date.now();
 
 
-    appendPrice(
+    addPrice(
       currentPrice
     );
 
 
-    checkTradeExit(
+    checkExit(
       currentPrice
     );
 
 
-    if (
-      !getLock()
-    ) {
-
-      maybeCreateLock(
-        data
-      );
-
-    }
-
-
-    saveCache(
+    maybeLock(
       data
+    );
+
+
+    localStorage.setItem(
+
+      K.cache,
+
+      JSON.stringify({
+
+        savedAt:
+          new Date()
+            .toISOString(),
+
+        data
+
+      })
+
     );
 
 
     renderAll();
 
 
-    $("offlineBanner")
+    $("offline")
       .classList
       .remove(
         "show"
       );
 
 
-    $("engineBadge").textContent =
+    $("engine").textContent =
       "ENGINE LIVE";
 
 
-    $("healthDot").style.background =
+    $("dot").style.background =
       "var(--green)";
 
   }
@@ -5451,7 +5176,10 @@ async function runAnalysis() {
   ) {
 
     const cache =
-      getCache();
+      getJSON(
+        K.cache,
+        null
+      );
 
 
     if (
@@ -5469,7 +5197,7 @@ async function runAnalysis() {
 
 
       currentPrice =
-        number(
+        n(
           lastData.price
         );
 
@@ -5477,7 +5205,7 @@ async function runAnalysis() {
       renderAll();
 
 
-      $("offlineBanner")
+      $("offline")
         .classList
         .add(
           "show"
@@ -5486,25 +5214,23 @@ async function runAnalysis() {
     }
 
 
-    $("engineBadge").textContent =
+    $("engine").textContent =
       "ENGINE ERROR";
 
 
-    $("healthDot").style.background =
+    $("dot").style.background =
       "var(--red)";
 
 
-    $("errorBox").textContent =
-      error?.message
-
+    $("error").textContent =
+      error.message
       ||
-
       String(
         error
       );
 
 
-    $("errorBox").style.display =
+    $("error").style.display =
       "block";
 
   }
@@ -5515,14 +5241,11 @@ async function runAnalysis() {
       false;
 
 
-    $("app")
-      .classList
-      .remove(
-        "loading"
-      );
+    $("app").style.opacity =
+      1;
 
 
-    $("runButton").textContent =
+    $("run").textContent =
       "RUN BTC ANALYSIS";
 
   }
@@ -5531,7 +5254,7 @@ async function runAnalysis() {
 
 
 /* =========================================================
-   PRICE MONITOR
+   LIVE PRICE
 ========================================================= */
 
 async function updatePrice() {
@@ -5554,7 +5277,7 @@ async function updatePrice() {
     const response =
       await fetch(
 
-        priceUrl(),
+        priceURL(),
 
         {
           cache:
@@ -5585,7 +5308,7 @@ async function updatePrice() {
 
         ||
 
-        "Price feed failed."
+        "Price feed failed"
 
       );
 
@@ -5593,7 +5316,7 @@ async function updatePrice() {
 
 
     currentPrice =
-      number(
+      n(
         data.price
       );
 
@@ -5602,20 +5325,20 @@ async function updatePrice() {
       Date.now();
 
 
-    appendPrice(
+    addPrice(
       currentPrice
     );
 
 
-    checkTradeExit(
+    checkExit(
       currentPrice
     );
 
 
-    renderLivePrice();
+    renderLive();
 
 
-    drawPriceChart();
+    drawPrice();
 
   }
 
@@ -5640,7 +5363,32 @@ async function updatePrice() {
 
 
 /* =========================================================
-   RENDER EVERYTHING
+   BIAS
+========================================================= */
+
+function setBias(
+  id,
+  value
+) {
+
+  value =
+    value
+    ||
+    "NEUTRAL";
+
+
+  $(id).textContent =
+    value;
+
+
+  $(id).className =
+    `tf ${value}`;
+
+}
+
+
+/* =========================================================
+   FULL RENDER
 ========================================================= */
 
 function renderAll() {
@@ -5654,44 +5402,19 @@ function renderAll() {
   }
 
 
-  renderHero();
-  renderScore();
-  renderComponents();
-  renderStructure();
-  renderLiquidity();
-  renderReasons();
-  renderSettings();
-  renderLivePrice();
-  renderJournal();
-  drawPriceChart();
-
-}
-
-
-/* =========================================================
-   HERO
-========================================================= */
-
-function renderHero() {
-
   const data =
     lastData;
+
 
   const lock =
     getLock();
 
 
   const shownSignal =
-
-    lock
-      ?.signal
-
+    lock?.signal
     ||
-
     data.signal
-
     ||
-
     "WAIT";
 
 
@@ -5715,8 +5438,7 @@ function renderHero() {
     `$${fmt(currentPrice ?? data.price)}`;
 
 
-  $("topSpread").textContent =
-
+  $("spread").textContent =
     `BID ${fmt(data.bid)} · ASK ${fmt(data.ask)}`;
 
 
@@ -5724,49 +5446,40 @@ function renderHero() {
 
     data.stale
 
-      ? "STALE CACHED ANALYSIS"
+      ? "STALE CACHE"
 
-      : `${displayTime(data.createdAt)} · Coinbase BTC-USD`;
+      : `${time(data.createdAt)} · Coinbase BTC-USD`;
 
 
-  if (
+  $("desc").textContent =
+
     lock
-  ) {
 
-    $("signalDescription").textContent =
+      ? `${lock.signal} is hard locked until SL or main TP.`
 
-      `${lock.signal} is hard locked. New strategy signals are ignored until TP, SL or manual clear.`;
+      : data.signal ===
+        "BUY"
 
-
-    $("lockBadge").textContent =
-      `🔒 HARD LOCK · ${lock.signal}`;
-
-  }
-
-  else {
-
-    $("signalDescription").textContent =
-
-      data.signal ===
-      "BUY"
-
-        ? "Bullish liquidity sweep + BOS + displacement confirmed."
+        ? "Bullish sweep + BOS + displacement confirmed."
 
         : data.signal ===
           "SELL"
 
-          ? "Bearish liquidity sweep + BOS + displacement confirmed."
+          ? "Bearish sweep + BOS + displacement confirmed."
 
-          : "Waiting for a qualified liquidity sweep, 15M BOS and displacement.";
-
-
-    $("lockBadge").textContent =
-      "UNLOCKED · SCANNING";
-
-  }
+          : "Waiting for liquidity sweep + BOS + displacement.";
 
 
-  $("signalScore").textContent =
+  $("lockBadge").textContent =
+
+    lock
+
+      ? `🔒 HARD LOCK · ${lock.signal}`
+
+      : "UNLOCKED · SCANNING";
+
+
+  $("score").textContent =
     `${data.signalScore ?? 0}/100`;
 
 
@@ -5775,17 +5488,15 @@ function renderHero() {
 
 
   $("session").textContent =
-    data.session
-      ?.label
-    ??
+    data.session?.label
+    ||
     "—";
 
 
   $("trigger").textContent =
-
     String(
       data.trigger
-      ??
+      ||
       "NONE"
     )
       .replaceAll(
@@ -5794,7 +5505,7 @@ function renderHero() {
       );
 
 
-  $("sniperStatus").textContent =
+  $("sniper").textContent =
 
     data.sniper
 
@@ -5806,35 +5517,6 @@ function renderHero() {
         ? "WAIT"
 
         : "VALID";
-
-
-  $("sniperStatus").className =
-
-    data.sniper
-
-      ? "green"
-
-      : data.signal ===
-        "WAIT"
-
-        ? "gold"
-
-        : "blue";
-
-
-  renderTrade();
-
-}
-
-
-/* =========================================================
-   SCORE
-========================================================= */
-
-function renderScore() {
-
-  const data =
-    lastData;
 
 
   const score =
@@ -5849,17 +5531,13 @@ function renderScore() {
 
         Number(
           data.signalScore
-          ??
+          ||
           0
         )
 
       )
 
     );
-
-
-  $("scoreNumber").textContent =
-    score;
 
 
   const scoreColor =
@@ -5880,6 +5558,10 @@ function renderScore() {
           ? "var(--gold)"
 
           : "var(--red)";
+
+
+  $("scoreN").textContent =
+    score;
 
 
   $("scoreCircle").style.background =
@@ -5912,55 +5594,25 @@ function renderScore() {
           : "NO EDGE";
 
 
-  $("scoreLabel").className =
+  $("scoreInfo").textContent =
 
-    score >=
-    80
-
-      ? "green"
-
-      : score >=
-        70
-
-        ? "blue"
-
-        : score >=
-          50
-
-          ? "gold"
-
-          : "red";
+    `Minimum ${data.scores?.threshold ?? 70} · Sniper ${data.scores?.sniperThreshold ?? 80} · Gap ${data.scores?.gap ?? 0}`;
 
 
-  $("scoreText").textContent =
-
-    `Minimum ${data.scores?.threshold ?? 70} · Sniper ${data.scores?.sniperThreshold ?? 80} · Score gap ${data.scores?.gap ?? 0}`;
-
-
-  const buy =
+  const buyScore =
     Number(
-      data.scores
-        ?.buy
-      ??
+      data.scores?.buy
+      ||
       0
     );
 
 
-  const sell =
+  const sellScore =
     Number(
-      data.scores
-        ?.sell
-      ??
+      data.scores?.sell
+      ||
       0
     );
-
-
-  $("buyScore").textContent =
-    buy;
-
-
-  $("sellScore").textContent =
-    sell;
 
 
   const total =
@@ -5968,174 +5620,33 @@ function renderScore() {
 
       1,
 
-      buy +
-      sell
+      buyScore +
+      sellScore
 
     );
+
+
+  $("buyScore").textContent =
+    buyScore;
+
+
+  $("sellScore").textContent =
+    sellScore;
 
 
   $("buyBar").style.width =
-    `${buy / total * 100}%`;
+    `${buyScore / total * 100}%`;
 
 
   $("sellBar").style.width =
-    `${sell / total * 100}%`;
-
-}
+    `${sellScore / total * 100}%`;
 
 
-/* =========================================================
-   COMPONENTS
-========================================================= */
-
-function setComponent(
-  valueId,
-  barId,
-  value,
-  maximum
-) {
-
-  const score =
-    Number(
-      value
-      ??
-      0
-    );
-
-
-  $(valueId).textContent =
-    `${score} / ${maximum}`;
-
-
-  $(barId).style.width =
-    `${Math.min(100,score / maximum * 100)}%`;
-
-
-  $(barId).style.background =
-
-    score >=
-    maximum
-
-      ? "var(--green)"
-
-      : score >=
-        maximum *
-        .5
-
-        ? "var(--blue)"
-
-        : "var(--red)";
-
-}
-
-
-function renderComponents() {
-
-  const c =
-    lastData.components
+  renderComponents(
+    data.components
     ||
-    {};
-
-
-  setComponent(
-    "cH4",
-    "barH4",
-    c.h4Trend,
-    15
+    {}
   );
-
-
-  setComponent(
-    "cH1",
-    "barH1",
-    c.h1Trend,
-    15
-  );
-
-
-  setComponent(
-    "cSweep",
-    "barSweep",
-    c.liquiditySweep,
-    20
-  );
-
-
-  setComponent(
-    "cBos",
-    "barBos",
-    c.bos15m,
-    15
-  );
-
-
-  setComponent(
-    "cDisp",
-    "barDisp",
-    c.displacement,
-    10
-  );
-
-
-  setComponent(
-    "cVolume",
-    "barVolume",
-    c.volumeExpansion,
-    10
-  );
-
-
-  setComponent(
-    "cPrecision",
-    "barPrecision",
-    c.precision5m,
-    10
-  );
-
-
-  setComponent(
-    "cSession",
-    "barSession",
-    c.session,
-    5
-  );
-
-}
-
-
-/* =========================================================
-   BIAS
-========================================================= */
-
-function setBias(
-  id,
-  value
-) {
-
-  const bias =
-    value
-    ||
-    "NEUTRAL";
-
-
-  $(id).textContent =
-    bias;
-
-
-  $(id).className =
-    `tfBias ${bias}`;
-
-}
-
-
-/* =========================================================
-   STRUCTURE
-========================================================= */
-
-function renderStructure() {
-
-  const data =
-    lastData;
 
 
   const bias =
@@ -6145,568 +5656,201 @@ function renderStructure() {
 
 
   setBias(
-    "biasH4",
+    "bH4",
     bias.H4
   );
 
+
   setBias(
-    "biasH1",
+    "bH1",
     bias.H1
   );
 
+
   setBias(
-    "biasM15",
+    "bM15",
     bias.M15
   );
 
+
   setBias(
-    "biasM5",
+    "bM5",
     bias.M5
   );
 
 
-  setBias(
-    "h4BiasFull",
-    bias.H4
-  );
+  renderTrade();
 
+  renderStructure();
 
-  setBias(
-    "h1BiasFull",
-    bias.H1
-  );
+  renderLiquidity();
 
+  renderReasons();
 
-  const h4 =
-    data.structure
-      ?.H4
-    ||
-    {};
+  renderLive();
 
-
-  const h1 =
-    data.structure
-      ?.H1
-    ||
-    {};
-
-
-  $("h4Structure").textContent =
-    `Structure ${h4.structure ?? "—"} · Close ${fmt(h4.close)}`;
-
-
-  $("h1Structure").textContent =
-    `Structure ${h1.structure ?? "—"} · Close ${fmt(h1.close)}`;
-
-
-  $("h4Ema20").textContent =
-    fmt(
-      h4.ema20
-    );
-
-
-  $("h4Ema50").textContent =
-    fmt(
-      h4.ema50
-    );
-
-
-  $("h1Ema20").textContent =
-    fmt(
-      h1.ema20
-    );
-
-
-  $("h1Ema50").textContent =
-    fmt(
-      h1.ema50
-    );
-
-
-  const tech =
-    data.technical
-    ||
-    {};
-
-
-  $("bosStatus").textContent =
-
-    tech.bos
-      ?.confirmed
-
-      ? "CONFIRMED"
-
-      : tech.bos
-          ?.soft
-
-          ? "NEAR BOS"
-
-          : "NO BOS";
-
-
-  $("bosStatus").className =
-
-    tech.bos
-      ?.confirmed
-
-      ? "green"
-
-      : tech.bos
-          ?.soft
-
-          ? "gold"
-
-          : "red";
-
-
-  $("bosLevel").textContent =
-
-    `Level ${fmt(tech.bos?.level)}`;
-
-
-  $("dispStatus").textContent =
-
-    tech.displacement
-      ?.confirmed
-
-      ? "CONFIRMED"
-
-      : tech.displacement
-          ?.partial
-
-          ? "PARTIAL"
-
-          : "NONE";
-
-
-  $("dispStatus").className =
-
-    tech.displacement
-      ?.confirmed
-
-      ? "green"
-
-      : tech.displacement
-          ?.partial
-
-          ? "gold"
-
-          : "red";
-
-
-  $("dispBody").textContent =
-
-    `${fmt(tech.displacement?.bodyAtr,2)} ATR body · Efficiency ${fmt(tech.displacement?.efficiency,2)}`;
-
-
-  $("volumeRatio").textContent =
-    `${fmt(tech.volumeRatio,2)}×`;
-
-
-  $("extensionAtr").textContent =
-    `${fmt(tech.extensionAtr,2)} ATR`;
-
-
-  $("extensionAtr").className =
-
-    tech.extended
-
-      ? "red"
-
-      : "green";
-
-
-  $("precisionBias").textContent =
-    bias.M5
-    ??
-    "—";
-
-
-  $("precisionBias").className =
-
-    bias.M5 ===
-    "BUY"
-
-      ? "green"
-
-      : bias.M5 ===
-        "SELL"
-
-        ? "red"
-
-        : "gold";
-
-
-  $("precisionRetest").textContent =
-    tech.retest
-      ? "YES"
-      : "NO";
-
-
-  $("precisionRetest").className =
-    tech.retest
-      ? "green"
-      : "muted";
-
-
-  $("precisionRejection").textContent =
-    tech.rejection
-      ? "YES"
-      : "NO";
-
-
-  $("precisionRejection").className =
-    tech.rejection
-      ? "green"
-      : "muted";
-
-
-  const fvg =
-    tech.fvg;
-
-
-  $("precisionFvg").textContent =
-
-    fvg
-
-      ? `${fmt(fvg.low)} → ${fmt(fvg.high)}`
-
-      : "NONE";
-
-
-  $("atr15").textContent =
-    fmt(
-      tech.atr15
-    );
-
-
-  $("atr1h").textContent =
-    fmt(
-      tech.atr1h
-    );
-
-}
-
-
-/* =========================================================
-   LIQUIDITY
-========================================================= */
-
-function renderLevelChips(
-  id,
-  values
-) {
-
-  const list =
-    Array.isArray(
-      values
-    )
-      ? values
-      : [];
-
-
-  $(id).innerHTML =
-
-    list.length
-
-      ? list
-          .map(
-            value => `
-
-              <span class="levelChip">
-
-                ${fmt(value)}
-
-              </span>
-
-            `
-          )
-          .join("")
-
-      : `
-
-          <span class="empty">
-            No levels detected.
-          </span>
-
-        `;
-
-}
-
-
-function renderLiquidity() {
-
-  const liquidity =
-    lastData.liquidity
-    ||
-    {};
-
-
-  const sweep =
-    liquidity.sweptLevel;
+  renderJournal();
 
 
   if (
-    sweep
+    currentView ===
+    "monitor"
   ) {
 
-    $("sweptLevel").textContent =
-      sweep.name
-      ??
-      sweep.type
-      ??
-      "LIQUIDITY";
-
-
-    $("sweptLevel").className =
-      lastData.signal ===
-      "BUY"
-
-        ? "green"
-
-        : lastData.signal ===
-          "SELL"
-
-          ? "red"
-
-          : "blue";
-
-
-    $("sweptDetails").textContent =
-
-      `Level ${fmt(sweep.levelPrice)} · Extreme ${fmt(sweep.sweepExtreme)} · Reclaimed ${sweep.reclaimed ? "YES" : "NO"}`;
+    drawPrice();
 
   }
-
-  else {
-
-    $("sweptLevel").textContent =
-      "NONE";
-
-
-    $("sweptLevel").className =
-      "gold";
-
-
-    $("sweptDetails").textContent =
-      "No valid recent liquidity sweep.";
-
-  }
-
-
-  $("pdh").textContent =
-    fmt(
-      liquidity.previousDayHigh
-    );
-
-
-  $("pdl").textContent =
-    fmt(
-      liquidity.previousDayLow
-    );
-
-
-  $("weeklyOpen").textContent =
-    fmt(
-      liquidity.weeklyOpen
-    );
-
-
-  $("prev4hHigh").textContent =
-    fmt(
-      liquidity.previous4hHigh
-    );
-
-
-  $("prev4hLow").textContent =
-    fmt(
-      liquidity.previous4hLow
-    );
-
-
-  $("asianHigh").textContent =
-    fmt(
-      liquidity.asianHigh
-    );
-
-
-  $("asianLow").textContent =
-    fmt(
-      liquidity.asianLow
-    );
-
-
-  renderLevelChips(
-
-    "swingHighs",
-
-    liquidity.recentSwingHighs
-
-  );
-
-
-  renderLevelChips(
-
-    "swingLows",
-
-    liquidity.recentSwingLows
-
-  );
-
-
-  const eqh =
-    Array.isArray(
-      liquidity.equalHighs
-    )
-      ? liquidity.equalHighs
-      : [];
-
-
-  const eql =
-    Array.isArray(
-      liquidity.equalLows
-    )
-      ? liquidity.equalLows
-      : [];
-
-
-  $("equalLevels").innerHTML = `
-
-    <div class="reason">
-
-      <b class="red">
-        EQUAL HIGHS
-      </b>
-
-      <div class="levelList">
-
-        ${
-          eqh.length
-
-            ? eqh
-                .map(
-                  value =>
-                    `<span class="levelChip">${fmt(value)}</span>`
-                )
-                .join("")
-
-            : `<span class="muted">None</span>`
-        }
-
-      </div>
-
-    </div>
-
-    <div class="reason">
-
-      <b class="green">
-        EQUAL LOWS
-      </b>
-
-      <div class="levelList">
-
-        ${
-          eql.length
-
-            ? eql
-                .map(
-                  value =>
-                    `<span class="levelChip">${fmt(value)}</span>`
-                )
-                .join("")
-
-            : `<span class="muted">None</span>`
-        }
-
-      </div>
-
-    </div>
-
-  `;
 
 }
 
 
 /* =========================================================
-   REASONS
+   SCORE BREAKDOWN
 ========================================================= */
 
-function renderReasons() {
+function renderComponents(
+  components
+) {
 
-  const reasons =
-    Array.isArray(
-      lastData.reasons
-    )
-      ? lastData.reasons
-      : [];
+  const items = [
+
+    [
+      "4H Trend",
+      "h4Trend",
+      15
+    ],
+
+    [
+      "1H Trend",
+      "h1Trend",
+      15
+    ],
+
+    [
+      "Liquidity Sweep",
+      "liquiditySweep",
+      20
+    ],
+
+    [
+      "15M BOS",
+      "bos15m",
+      15
+    ],
+
+    [
+      "Displacement",
+      "displacement",
+      10
+    ],
+
+    [
+      "Volume",
+      "volumeExpansion",
+      10
+    ],
+
+    [
+      "5M Precision",
+      "precision5m",
+      10
+    ],
+
+    [
+      "Session",
+      "session",
+      5
+    ]
+
+  ];
 
 
-  const blockers =
-    Array.isArray(
-      lastData.blockers
-    )
-      ? lastData.blockers
-      : [];
+  $("components").innerHTML =
+
+    items
+      .map(
+        (
+          [
+            label,
+            key,
+            maximum
+          ]
+        ) => {
+
+          const value =
+            Number(
+              components[key]
+              ||
+              0
+            );
 
 
-  $("reasons").innerHTML =
+          const percentage =
 
-    reasons.length
+            Math.min(
 
-      ? reasons
-          .map(
-            reason => `
+              100,
 
-              <div class="reason reasonGood">
+              value /
+              maximum *
+              100
 
-                ✓ ${esc(reason)}
+            );
+
+
+          const color =
+
+            value >=
+            maximum
+
+              ? "var(--green)"
+
+              : value >=
+                maximum *
+                .5
+
+                ? "var(--blue)"
+
+                : "var(--red)";
+
+
+          return `
+
+            <div class="metric">
+
+              <small>
+                ${label}
+              </small>
+
+              <b>
+                ${value} / ${maximum}
+              </b>
+
+              <div class="componentBar">
+
+                <div
+                  class="fill"
+                  style="
+                    width:${percentage}%;
+                    background:${color};
+                  "
+                ></div>
 
               </div>
 
-            `
-          )
-          .join("")
+            </div>
 
-      : `
+          `;
 
-          <div class="empty">
-            No positive confirmations yet.
-          </div>
-
-        `;
-
-
-  $("blockers").innerHTML =
-
-    blockers.length
-
-      ? blockers
-          .map(
-            blocker => `
-
-              <div class="reason blocker">
-
-                • ${esc(blocker)}
-
-              </div>
-
-            `
-          )
-          .join("")
-
-      : `
-
-          <div class="reason green">
-            No major blockers.
-          </div>
-
-        `;
+        }
+      )
+      .join("");
 
 }
 
 
 /* =========================================================
-   TRADE
+   TRADE RENDER
 ========================================================= */
 
 function renderTrade() {
@@ -6720,37 +5864,38 @@ function renderTrade() {
   ) {
 
     $("entry").textContent =
-      lastData.signal ===
+
+      lastData?.signal ===
       "WAIT"
 
         ? "WAIT"
 
         : fmt(
-            lastData.entry
+            lastData?.entry
           );
 
 
-    $("stopLoss").textContent =
+    $("sl").textContent =
       fmt(
-        lastData.stopLoss
+        lastData?.stopLoss
       );
 
 
     $("tp1").textContent =
       fmt(
-        lastData.takeProfit1
+        lastData?.takeProfit1
       );
 
 
-    $("takeProfit").textContent =
+    $("tp").textContent =
       fmt(
-        lastData.takeProfit
+        lastData?.takeProfit
       );
 
 
     $("tp2").textContent =
       fmt(
-        lastData.takeProfit2
+        lastData?.takeProfit2
       );
 
 
@@ -6758,18 +5903,14 @@ function renderTrade() {
       "—";
 
 
-    $("tradeStatus").textContent =
-      "NO ACTIVE TRADE";
-
-
     $("tradeMarker").style.left =
       "25%";
 
 
-    $("floatingTrade")
+    $("floating")
       .classList
       .remove(
-        "show"
+        "active"
       );
 
 
@@ -6778,13 +5919,20 @@ function renderTrade() {
   }
 
 
+  const current =
+    currentR(
+      lock,
+      currentPrice
+    );
+
+
   $("entry").textContent =
     fmt(
       lock.entry
     );
 
 
-  $("stopLoss").textContent =
+  $("sl").textContent =
     fmt(
       lock.stopLoss
     );
@@ -6796,7 +5944,7 @@ function renderTrade() {
     );
 
 
-  $("takeProfit").textContent =
+  $("tp").textContent =
     fmt(
       lock.takeProfit
     );
@@ -6808,118 +5956,10 @@ function renderTrade() {
     );
 
 
-  const r =
-    calculateR(
-      lock,
-      currentPrice
-    );
-
-
   $("currentR").textContent =
-    formatR(
-      r
+    rfmt(
+      current
     );
-
-
-  $("currentR").className =
-
-    Number.isFinite(
-      r
-    )
-
-      ? r >=
-        0
-
-        ? "currentR green"
-
-        : "currentR red"
-
-      : "currentR";
-
-
-  $("tradeStatus").textContent =
-    `${lock.signal} · ${formatR(r)}`;
-
-
-  const progress =
-    tradeProgress(
-      lock,
-      currentPrice
-    );
-
-
-  $("tradeMarker").style.left =
-    `${progress}%`;
-
-
-  $("floatingTrade")
-    .classList
-    .add(
-      "show"
-    );
-
-
-  $("floatTitle").textContent =
-    `🔒 BTC/USD ${lock.signal}`;
-
-
-  $("floatSub").textContent =
-    `ENTRY ${fmt(lock.entry)} · SL ${fmt(lock.stopLoss)} · TP ${fmt(lock.takeProfit)}`;
-
-
-  $("floatR").textContent =
-    formatR(
-      r
-    );
-
-
-  $("floatR").className =
-
-    Number.isFinite(
-      r
-    )
-
-    &&
-
-    r >=
-    0
-
-      ? "floatR green"
-
-      : "floatR red";
-
-}
-
-
-/* =========================================================
-   PROGRESS
-========================================================= */
-
-function tradeProgress(
-  lock,
-  price
-) {
-
-  const p =
-    number(
-      price
-    );
-
-
-  if (
-
-    !lock
-
-    ||
-
-    p ===
-    null
-
-  ) {
-
-    return 25;
-
-  }
 
 
   let progress;
@@ -6933,7 +5973,7 @@ function tradeProgress(
     progress =
 
       (
-        p -
+        currentPrice -
         lock.stopLoss
       )
 
@@ -6955,7 +5995,7 @@ function tradeProgress(
 
       (
         lock.stopLoss -
-        p
+        currentPrice
       )
 
       /
@@ -6971,28 +6011,433 @@ function tradeProgress(
   }
 
 
-  return Math.max(
+  progress =
 
-    0,
+    Math.max(
 
-    Math.min(
+      0,
 
-      100,
+      Math.min(
 
-      progress
+        100,
 
-    )
+        progress
 
-  );
+      )
+
+    );
+
+
+  $("tradeMarker").style.left =
+    `${progress}%`;
+
+
+  $("floating")
+    .classList
+    .add(
+      "active"
+    );
+
+
+  $("floatTitle").textContent =
+    `🔒 BTC/USD ${lock.signal}`;
+
+
+  $("floatSub").textContent =
+    `SL ${fmt(lock.stopLoss)} · TP ${fmt(lock.takeProfit)}`;
+
+
+  $("floatR").textContent =
+    rfmt(
+      current
+    );
 
 }
 
 
 /* =========================================================
-   LIVE PRICE RENDER
+   STRUCTURE
 ========================================================= */
 
-function renderLivePrice() {
+function renderStructure() {
+
+  const data =
+    lastData;
+
+
+  const h4 =
+    data.structure?.H4
+    ||
+    {};
+
+
+  const h1 =
+    data.structure?.H1
+    ||
+    {};
+
+
+  const technical =
+    data.technical
+    ||
+    {};
+
+
+  $("h4State").textContent =
+    `${h4.bias || "—"} · ${h4.structure || "—"}`;
+
+
+  $("h4Ema").textContent =
+    `EMA20 ${fmt(h4.ema20)} · EMA50 ${fmt(h4.ema50)}`;
+
+
+  $("h1State").textContent =
+    `${h1.bias || "—"} · ${h1.structure || "—"}`;
+
+
+  $("h1Ema").textContent =
+    `EMA20 ${fmt(h1.ema20)} · EMA50 ${fmt(h1.ema50)}`;
+
+
+  $("bos").textContent =
+
+    technical.bos?.confirmed
+
+      ? "CONFIRMED"
+
+      : technical.bos?.soft
+
+        ? "NEAR BOS"
+
+        : "NO BOS";
+
+
+  $("bosLevel").textContent =
+    `Level ${fmt(technical.bos?.level)}`;
+
+
+  $("disp").textContent =
+
+    technical.displacement?.confirmed
+
+      ? "CONFIRMED"
+
+      : technical.displacement?.partial
+
+        ? "PARTIAL"
+
+        : "NONE";
+
+
+  $("dispInfo").textContent =
+
+    `${fmt(technical.displacement?.bodyAtr,2)} ATR · Efficiency ${fmt(technical.displacement?.efficiency,2)}`;
+
+
+  $("volRatio").textContent =
+    `${fmt(technical.volumeRatio,2)}×`;
+
+
+  $("extension").textContent =
+    `${fmt(technical.extensionAtr,2)} ATR`;
+
+
+  $("pBias").textContent =
+    data.timeframeBias?.M5
+    ||
+    "—";
+
+
+  $("pRetest").textContent =
+    technical.retest
+
+      ? "YES"
+
+      : "NO";
+
+
+  $("pReject").textContent =
+    technical.rejection
+
+      ? "YES"
+
+      : "NO";
+
+
+  $("pFvg").textContent =
+
+    technical.fvg
+
+      ? `${fmt(technical.fvg.low)} → ${fmt(technical.fvg.high)}`
+
+      : "NONE";
+
+
+  $("atr15").textContent =
+    fmt(
+      technical.atr15
+    );
+
+
+  $("atr1h").textContent =
+    fmt(
+      technical.atr1h
+    );
+
+}
+
+
+/* =========================================================
+   LIQUIDITY
+========================================================= */
+
+function chips(
+  id,
+  values
+) {
+
+  values =
+    Array.isArray(
+      values
+    )
+
+      ? values
+
+      : [];
+
+
+  $(id).innerHTML =
+
+    values.length
+
+      ? values
+          .map(
+            value =>
+
+              `<span class="chip">${fmt(value)}</span>`
+
+          )
+          .join("")
+
+      : `<span class="muted">None</span>`;
+
+}
+
+
+function renderLiquidity() {
+
+  const liquidity =
+    lastData.liquidity
+    ||
+    {};
+
+
+  const sweep =
+    liquidity.sweptLevel;
+
+
+  $("sweepName").textContent =
+    sweep?.name
+    ||
+    "NONE";
+
+
+  $("sweepInfo").textContent =
+
+    sweep
+
+      ? `Level ${fmt(sweep.levelPrice)} · Extreme ${fmt(sweep.sweepExtreme)} · Reclaimed ${sweep.reclaimed ? "YES" : "NO"}`
+
+      : "No recent valid sweep.";
+
+
+  $("pdh").textContent =
+    fmt(
+      liquidity.previousDayHigh
+    );
+
+
+  $("pdl").textContent =
+    fmt(
+      liquidity.previousDayLow
+    );
+
+
+  $("wo").textContent =
+    fmt(
+      liquidity.weeklyOpen
+    );
+
+
+  $("h4h").textContent =
+    fmt(
+      liquidity.previous4hHigh
+    );
+
+
+  $("h4l").textContent =
+    fmt(
+      liquidity.previous4hLow
+    );
+
+
+  $("ah").textContent =
+    fmt(
+      liquidity.asianHigh
+    );
+
+
+  $("al").textContent =
+    fmt(
+      liquidity.asianLow
+    );
+
+
+  chips(
+    "swingHighs",
+    liquidity.recentSwingHighs
+  );
+
+
+  chips(
+    "swingLows",
+    liquidity.recentSwingLows
+  );
+
+
+  $("equals").innerHTML = `
+
+    <div class="reason">
+
+      <b class="red">
+        Equal Highs
+      </b>
+
+      <div class="levelList">
+
+        ${
+          (
+            liquidity.equalHighs
+            ||
+            []
+          )
+            .map(
+              value =>
+                `<span class="chip">${fmt(value)}</span>`
+            )
+            .join("")
+
+          ||
+
+          `<span class="muted">None</span>`
+        }
+
+      </div>
+
+    </div>
+
+
+    <div class="reason">
+
+      <b class="green">
+        Equal Lows
+      </b>
+
+      <div class="levelList">
+
+        ${
+          (
+            liquidity.equalLows
+            ||
+            []
+          )
+            .map(
+              value =>
+                `<span class="chip">${fmt(value)}</span>`
+            )
+            .join("")
+
+          ||
+
+          `<span class="muted">None</span>`
+        }
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   REASONS
+========================================================= */
+
+function renderReasons() {
+
+  const reasons =
+
+    Array.isArray(
+      lastData.reasons
+    )
+
+      ? lastData.reasons
+
+      : [];
+
+
+  const blockers =
+
+    Array.isArray(
+      lastData.blockers
+    )
+
+      ? lastData.blockers
+
+      : [];
+
+
+  $("reasons").innerHTML =
+
+    reasons.length
+
+      ? reasons
+          .map(
+            reason =>
+
+              `<div class="reason good">✓ ${esc(reason)}</div>`
+
+          )
+          .join("")
+
+      : `<div class="reason muted">No confirmations yet.</div>`;
+
+
+  $("blockers").innerHTML =
+
+    blockers.length
+
+      ? blockers
+          .map(
+            blocker =>
+
+              `<div class="reason bad">• ${esc(blocker)}</div>`
+
+          )
+          .join("")
+
+      : `<div class="reason green">No major blockers.</div>`;
+
+}
+
+
+/* =========================================================
+   LIVE MONITOR
+========================================================= */
+
+function renderLive() {
 
   if (
     currentPrice ===
@@ -7014,7 +6459,7 @@ function renderLivePrice() {
     `$${fmt(currentPrice)}`;
 
 
-  $("monitorPrice").textContent =
+  $("mPrice").textContent =
     fmt(
       currentPrice
     );
@@ -7028,40 +6473,28 @@ function renderLivePrice() {
     !lock
   ) {
 
-    $("monitorR").textContent =
+    $("mR").textContent =
       "—";
 
 
-    $("bestR").textContent =
+    $("mBest").textContent =
       "—";
 
 
-    $("worstR").textContent =
+    $("mWorst").textContent =
       "—";
-
-
-    $("monitorTradeChip").textContent =
-      "NO LOCK";
 
 
     $("monitorTrade").innerHTML =
+      `<div class="reason muted">No hard lock.</div>`;
 
-      `
-        <div class="empty">
-          No hard-locked BTC trade.
-        </div>
-      `;
-
-
-    renderTrade();
 
     return;
 
   }
 
 
-  updateTradePerformance(
-    lock,
+  updateLock(
     currentPrice
   );
 
@@ -7072,95 +6505,66 @@ function renderLivePrice() {
     lock;
 
 
-  const r =
-    calculateR(
+  const current =
+    currentR(
       updated,
       currentPrice
     );
 
 
-  $("monitorR").textContent =
-    formatR(
-      r
+  $("mR").textContent =
+    rfmt(
+      current
     );
 
 
-  $("monitorR").className =
-
-    r >=
-    0
-      ? "green"
-      : "red";
-
-
-  $("bestR").textContent =
-    formatR(
+  $("mBest").textContent =
+    rfmt(
       updated.bestR
     );
 
 
-  $("worstR").textContent =
-    formatR(
+  $("mWorst").textContent =
+    rfmt(
       updated.worstR
     );
-
-
-  $("monitorTradeChip").textContent =
-    `🔒 ${updated.signal}`;
 
 
   $("monitorTrade").innerHTML = `
 
     <div class="reason">
 
-      <b class="${
-        updated.signal ===
-        "BUY"
-          ? "green"
-          : "red"
-      }">
+      <b class="${updated.signal === "BUY" ? "green" : "red"}">
 
-        ${updated.signal}
+        ${updated.signal} HARD LOCK
 
-      </b>
-
-      · HARD LOCK
-
-    </div>
-
-    <div class="reason">
-
-      Entry:
-      <b class="blue">
-        ${fmt(updated.entry)}
       </b>
 
     </div>
 
     <div class="reason">
 
-      Stop:
-      <b class="red">
-        ${fmt(updated.stopLoss)}
-      </b>
+      Entry ${fmt(updated.entry)}
+
+    </div>
+
+    <div class="reason red">
+
+      SL ${fmt(updated.stopLoss)}
+
+    </div>
+
+    <div class="reason green">
+
+      TP ${fmt(updated.takeProfit)}
 
     </div>
 
     <div class="reason">
 
-      Target:
-      <b class="green">
-        ${fmt(updated.takeProfit)}
-      </b>
-
-    </div>
-
-    <div class="reason">
-
-      Current:
-      ${fmt(currentPrice)}
+      Current ${fmt(currentPrice)}
       ·
-      ${formatR(r)}
+      ${rfmt(current)}
 
     </div>
 
@@ -7173,10 +6577,10 @@ function renderLivePrice() {
 
 
 /* =========================================================
-   PRICE CHART
+   CANVAS
 ========================================================= */
 
-function prepareCanvas(
+function prep(
   canvas
 ) {
 
@@ -7202,7 +6606,7 @@ function prepareCanvas(
 
 
   const ratio =
-    window.devicePixelRatio
+    devicePixelRatio
     ||
     1;
 
@@ -7221,13 +6625,13 @@ function prepareCanvas(
     );
 
 
-  const ctx =
+  const context =
     canvas.getContext(
       "2d"
     );
 
 
-  ctx.setTransform(
+  context.setTransform(
 
     ratio,
     0,
@@ -7239,7 +6643,7 @@ function prepareCanvas(
   );
 
 
-  ctx.clearRect(
+  context.clearRect(
 
     0,
     0,
@@ -7251,12 +6655,13 @@ function prepareCanvas(
 
   return {
 
-    ctx,
+    c:
+      context,
 
-    width:
+    w:
       rect.width,
 
-    height:
+    h:
       rect.height
 
   };
@@ -7264,15 +6669,15 @@ function prepareCanvas(
 }
 
 
-function drawPriceChart() {
+/* =========================================================
+   LIVE PRICE CHART
+========================================================= */
 
-  const canvas =
-    $("priceChart");
-
+function drawPrice() {
 
   const prepared =
-    prepareCanvas(
-      canvas
+    prep(
+      $("priceChart")
     );
 
 
@@ -7285,17 +6690,7 @@ function drawPriceChart() {
   }
 
 
-  const {
-
-    ctx,
-    width,
-    height
-
-  } =
-    prepared;
-
-
-  const samples =
+  const prices =
     getPrices()
       .slice(
         -120
@@ -7303,21 +6698,17 @@ function drawPriceChart() {
 
 
   if (
-    samples.length <
+    prices.length <
     2
   ) {
 
-    ctx.fillStyle =
+    prepared.c.fillStyle =
       "rgba(255,255,255,.35)";
 
 
-    ctx.font =
-      "10px -apple-system";
+    prepared.c.fillText(
 
-
-    ctx.fillText(
-
-      "Collecting live BTC price samples...",
+      "Collecting price samples...",
 
       15,
 
@@ -7336,10 +6727,9 @@ function drawPriceChart() {
 
 
   const values =
-
-    samples.map(
+    prices.map(
       item =>
-        item.price
+        item.p
     );
 
 
@@ -7348,9 +6738,13 @@ function drawPriceChart() {
   ) {
 
     values.push(
+
       lock.entry,
+
       lock.stopLoss,
+
       lock.takeProfit
+
     );
 
   }
@@ -7369,12 +6763,9 @@ function drawPriceChart() {
 
 
   const range =
-
     max -
     min
-
     ||
-
     1;
 
 
@@ -7388,55 +6779,42 @@ function drawPriceChart() {
     .1;
 
 
-  const left =
-    10;
-
-  const right =
-    55;
-
-  const top =
-    20;
-
-  const bottom =
-    20;
-
-
   const x =
     index =>
 
-      left
+      10
 
       +
 
       index /
       Math.max(
         1,
-        samples.length -
+        prices.length -
         1
       )
 
       *
       (
-        width -
-        left -
-        right
+        prepared.w -
+        65
       );
 
 
   const y =
-    price =>
+    value =>
 
-      height -
-      bottom
+      prepared.h -
+      20
 
       -
 
       (
-        price -
+        value -
         min
       )
 
       /
+
       (
         max -
         min
@@ -7444,79 +6822,37 @@ function drawPriceChart() {
 
       *
       (
-        height -
-        top -
-        bottom
+        prepared.h -
+        40
       );
 
 
-  /* GRID */
-
-  ctx.strokeStyle =
-    "rgba(255,255,255,.04)";
-
-
-  for (
-    let i = 1;
-    i < 6;
-    i++
-  ) {
-
-    const yy =
-      height *
-      i /
-      6;
-
-
-    ctx.beginPath();
-
-
-    ctx.moveTo(
-      0,
-      yy
-    );
-
-
-    ctx.lineTo(
-      width,
-      yy
-    );
-
-
-    ctx.stroke();
-
-  }
-
-
-  /* PRICE LINE */
-
-  ctx.lineWidth =
-    2;
-
-
-  ctx.strokeStyle =
+  prepared.c.strokeStyle =
     "#7995ff";
 
 
-  ctx.beginPath();
+  prepared.c.lineWidth =
+    2;
 
 
-  samples.forEach(
+  prepared.c.beginPath();
+
+
+  prices.forEach(
     (
       item,
       index
     ) => {
 
       if (
-        index ===
-        0
+        index
       ) {
 
-        ctx.moveTo(
+        prepared.c.lineTo(
 
           x(index),
 
-          y(item.price)
+          y(item.p)
 
         );
 
@@ -7524,11 +6860,11 @@ function drawPriceChart() {
 
       else {
 
-        ctx.lineTo(
+        prepared.c.moveTo(
 
           x(index),
 
-          y(item.price)
+          y(item.p)
 
         );
 
@@ -7538,47 +6874,7 @@ function drawPriceChart() {
   );
 
 
-  ctx.stroke();
-
-
-  /* CURRENT DOT */
-
-  const latest =
-    samples[
-      samples.length -
-      1
-    ];
-
-
-  ctx.beginPath();
-
-
-  ctx.arc(
-
-    x(
-      samples.length -
-      1
-    ),
-
-    y(
-      latest.price
-    ),
-
-    4,
-
-    0,
-
-    Math.PI *
-    2
-
-  );
-
-
-  ctx.fillStyle =
-    "#7995ff";
-
-
-  ctx.fill();
+  prepared.c.stroke();
 
 
   function horizontal(
@@ -7587,14 +6883,14 @@ function drawPriceChart() {
     color
   ) {
 
-    const p =
-      number(
+    value =
+      n(
         value
       );
 
 
     if (
-      p ===
+      value ===
       null
     ) {
 
@@ -7605,19 +6901,15 @@ function drawPriceChart() {
 
     const yy =
       y(
-        p
+        value
       );
 
 
-    ctx.strokeStyle =
+    prepared.c.strokeStyle =
       color;
 
 
-    ctx.fillStyle =
-      color;
-
-
-    ctx.setLineDash(
+    prepared.c.setLineDash(
       [
         4,
         4
@@ -7625,40 +6917,44 @@ function drawPriceChart() {
     );
 
 
-    ctx.beginPath();
+    prepared.c.beginPath();
 
 
-    ctx.moveTo(
+    prepared.c.moveTo(
       0,
       yy
     );
 
 
-    ctx.lineTo(
-      width,
+    prepared.c.lineTo(
+      prepared.w,
       yy
     );
 
 
-    ctx.stroke();
+    prepared.c.stroke();
 
 
-    ctx.setLineDash(
+    prepared.c.setLineDash(
       []
     );
 
 
-    ctx.font =
+    prepared.c.fillStyle =
+      color;
+
+
+    prepared.c.font =
       "7px -apple-system";
 
 
-    ctx.fillText(
+    prepared.c.fillText(
 
-      `${label} ${fmt(p)}`,
+      `${label} ${fmt(value)}`,
 
       Math.max(
         4,
-        width -
+        prepared.w -
         110
       ),
 
@@ -7711,79 +7007,6 @@ function drawPriceChart() {
 
   }
 
-
-  $("monitorStatus").textContent =
-
-    lastPriceAt
-
-      ? new Date(
-          lastPriceAt
-        )
-          .toLocaleTimeString()
-
-      : "COLLECTING";
-
-}
-
-
-/* =========================================================
-   SETTINGS
-========================================================= */
-
-function renderSettings() {
-
-  const settings =
-    lastData
-      ?.settings
-    ||
-    {};
-
-
-  $("settingMacro").textContent =
-    settings.macro
-    ??
-    "4H";
-
-
-  $("settingConfirmation").textContent =
-    settings.confirmation
-    ??
-    "1H";
-
-
-  $("settingSetup").textContent =
-    settings.setup
-    ??
-    "15M";
-
-
-  $("settingPrecision").textContent =
-    settings.precision
-    ??
-    "5M";
-
-
-  $("settingMinScore").textContent =
-    settings.minSignalScore
-    ??
-    70;
-
-
-  $("settingSniper").textContent =
-    settings.sniperScore
-    ??
-    80;
-
-
-  $("settingRR").textContent =
-    `1:${settings.targetR ?? 3}`;
-
-
-  $("settingAtrBuffer").textContent =
-    settings.stopAtrBuffer
-    ??
-    .20;
-
 }
 
 
@@ -7823,14 +7046,14 @@ function renderJournal() {
     history.reduce(
 
       (
-        total,
+        sum,
         trade
       ) =>
 
-        total +
+        sum +
         Number(
           trade.resultR
-          ??
+          ||
           0
         ),
 
@@ -7839,76 +7062,22 @@ function renderJournal() {
     );
 
 
-  const winRate =
-
-    closed
-
-      ? wins.length /
-        closed *
-        100
-
-      : 0;
-
-
-  const expectancy =
-
-    closed
-
-      ? net /
-        closed
-
-      : 0;
-
-
-  $("journalTrades").textContent =
+  $("jTrades").textContent =
     closed;
 
 
-  $("journalWins").textContent =
-    wins.length;
+  $("jWR").textContent =
+
+    `${closed ? (wins.length / closed * 100).toFixed(1) : "0.0"}%`;
 
 
-  $("journalLosses").textContent =
-    losses.length;
-
-
-  $("journalWR").textContent =
-    `${winRate.toFixed(1)}%`;
-
-
-  $("journalNet").textContent =
-    formatR(
+  $("jNet").textContent =
+    rfmt(
       net
     );
 
 
-  $("journalNet").className =
-
-    net > 0
-      ? "green"
-
-      : net < 0
-        ? "red"
-        : "";
-
-
-  $("journalExpectancy").textContent =
-    formatR(
-      expectancy
-    );
-
-
-  $("journalExpectancy").className =
-
-    expectancy > 0
-      ? "green"
-
-      : expectancy < 0
-        ? "red"
-        : "";
-
-
-  $("history").innerHTML =
+  $("journalList").innerHTML =
 
     history.length
 
@@ -7916,33 +7085,23 @@ function renderJournal() {
           .map(
             trade => `
 
-              <div class="historyRow">
+              <div class="history">
 
                 <div class="historyTop">
 
-                  <span class="historyDirection ${
-                    trade.signal ===
-                    "BUY"
-                      ? "green"
-                      : "red"
-                  }">
+                  <b class="${trade.signal === "BUY" ? "green" : "red"}">
 
-                    BTC/USD · ${esc(trade.signal)}
+                    ${trade.signal}
 
-                  </span>
+                  </b>
 
-                  <span class="historyResult ${
-                    trade.status ===
-                    "WIN"
-                      ? "green"
-                      : "red"
-                  }">
+                  <b class="${trade.status === "WIN" ? "green" : "red"}">
 
-                    ${esc(trade.status)}
+                    ${trade.status}
                     ·
-                    ${formatR(trade.resultR)}
+                    ${rfmt(trade.resultR)}
 
-                  </span>
+                  </b>
 
                 </div>
 
@@ -7962,15 +7121,15 @@ function renderJournal() {
 
                   <br>
 
-                  ${displayTime(trade.lockedAt)}
+                  ${time(trade.createdAt)}
                   →
-                  ${displayTime(trade.exitTime)}
+                  ${time(trade.exitTime)}
 
                   <br>
 
-                  Best ${formatR(trade.bestR)}
+                  Best ${rfmt(trade.bestR)}
                   ·
-                  Worst ${formatR(trade.worstR)}
+                  Worst ${rfmt(trade.worstR)}
 
                 </div>
 
@@ -7980,22 +7139,951 @@ function renderJournal() {
           )
           .join("")
 
-      : `
-
-          <div class="empty">
-            No completed BTC trades yet.
-          </div>
-
-        `;
+      : `<div class="reason muted">No completed trades.</div>`;
 
 }
 
 
 /* =========================================================
-   EXPORT CSV
+   RUN BACKTEST
 ========================================================= */
 
-function exportCsv() {
+async function runBacktest() {
+
+  const button =
+    $("runBT");
+
+
+  button.disabled =
+    true;
+
+
+  button.textContent =
+    `RUNNING ${btDays}-DAY BACKTEST...`;
+
+
+  $("btStatus").textContent =
+    "Downloading candles and replaying strategy...";
+
+
+  try {
+
+    const response =
+      await fetch(
+
+        `${BTAPI}?days=${btDays}&t=${Date.now()}`,
+
+        {
+          cache:
+            "no-store"
+        }
+
+      );
+
+
+    const raw =
+      await response.text();
+
+
+    let data;
+
+
+    try {
+
+      data =
+        JSON.parse(
+          raw
+        );
+
+    }
+
+    catch {
+
+      throw new Error(
+
+        `Backtester returned non-JSON:\n${raw.slice(0,400)}`
+
+      );
+
+    }
+
+
+    if (
+
+      !response.ok
+
+      ||
+
+      data.success !==
+      true
+
+    ) {
+
+      throw new Error(
+
+        data.error
+
+        ||
+
+        `HTTP ${response.status}`
+
+      );
+
+    }
+
+
+    lastBT =
+      data;
+
+
+    localStorage.setItem(
+
+      K.bt,
+
+      JSON.stringify(
+        data
+      )
+
+    );
+
+
+    renderBT();
+
+  }
+
+  catch (
+    error
+  ) {
+
+    $("btStatus").textContent =
+      `ERROR: ${error.message || error}`;
+
+
+    showToast(
+
+      "Backtest error",
+
+      error.message
+      ||
+      String(
+        error
+      )
+
+    );
+
+  }
+
+  finally {
+
+    button.disabled =
+      false;
+
+
+    button.textContent =
+      `RUN ${btDays}-DAY BTC BACKTEST`;
+
+  }
+
+}
+
+
+/* =========================================================
+   GROUP STATS ROW
+========================================================= */
+
+function groupRow(
+  name,
+  stats
+) {
+
+  return `
+
+    <div class="reason">
+
+      <b>
+        ${esc(name)}
+      </b>
+
+      ·
+      ${stats?.trades ?? 0} trades
+
+      ·
+      WR ${fmt(stats?.winRate,1)}%
+
+      ·
+
+      <span class="${Number(stats?.netR) >= 0 ? "green" : "red"}">
+
+        ${rfmt(stats?.netR)}
+
+      </span>
+
+      ·
+      Exp ${rfmt(stats?.expectancyR)}
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   BACKTEST RENDER
+========================================================= */
+
+function renderBT() {
+
+  const data =
+    lastBT;
+
+
+  if (
+    !data
+  ) {
+
+    return;
+
+  }
+
+
+  $("btNet").textContent =
+    rfmt(
+      data.netR
+    );
+
+
+  $("btNet").className =
+
+    Number(
+      data.netR
+    ) >=
+    0
+
+      ? "green"
+
+      : "red";
+
+
+  $("btWR").textContent =
+    `${fmt(data.winRate,1)}%`;
+
+
+  $("btTrades").textContent =
+    data.trades
+    ??
+    0;
+
+
+  $("btWins").textContent =
+    data.wins
+    ??
+    0;
+
+
+  $("btLosses").textContent =
+    data.losses
+    ??
+    0;
+
+
+  $("btOpen").textContent =
+    data.openTrades
+    ??
+    0;
+
+
+  $("btPF").textContent =
+
+    data.profitFactor ===
+    999
+
+      ? "∞"
+
+      : fmt(
+          data.profitFactor,
+          2
+        );
+
+
+  $("btExp").textContent =
+    rfmt(
+      data.expectancyR
+    );
+
+
+  $("btDD").textContent =
+    rfmt(
+      data.maxDrawdownR
+    );
+
+
+  $("btLS").textContent =
+    data.maxLossStreak
+    ??
+    0;
+
+
+  $("btHold").textContent =
+    `${fmt(data.averageHoldMinutes,1)}m`;
+
+
+  $("btBE").textContent =
+    `${fmt(data.breakEvenWinRate,1)}%`;
+
+
+  $("btEdge").textContent =
+
+    `${Number(data.winRateEdge) >= 0 ? "+" : ""}${fmt(data.winRateEdge,1)}%`;
+
+
+  $("btSnipers").textContent =
+    data.sniperTrades
+    ??
+    0;
+
+
+  $("btAvgScore").textContent =
+    fmt(
+      data.averageScore,
+      1
+    );
+
+
+  $("btBestScore").textContent =
+    fmt(
+      data.bestScore,
+      0
+    );
+
+
+  $("btTp1").textContent =
+    `${fmt(data.tp1HitRate,1)}%`;
+
+
+  $("btAmb").textContent =
+    data.ambiguousCandles
+    ??
+    0;
+
+
+  $("btInfo").textContent =
+
+    `${time(data.period?.start)} → ${time(data.period?.end)} · ${data.candleCounts?.M5 ?? 0} M5 candles · ${data.signalCandidates ?? 0} evaluated states · next-5M-open entry · stop-first ambiguity rule.`;
+
+
+  $("sideStats").innerHTML =
+
+    groupRow(
+      "BUY",
+      data.buy
+    )
+
+    +
+
+    groupRow(
+      "SELL",
+      data.sell
+    );
+
+
+  const sessions =
+    data.sessions
+    ||
+    {};
+
+
+  $("sessionStats").innerHTML =
+
+    [
+
+      "ASIA",
+
+      "LONDON",
+
+      "LONDON_NY_OVERLAP",
+
+      "NEW_YORK",
+
+      "OFF_HOURS"
+
+    ]
+      .map(
+        key =>
+
+          groupRow(
+
+            key.replaceAll(
+              "_",
+              " "
+            ),
+
+            sessions[key]
+
+          )
+
+      )
+      .join("");
+
+
+  const buckets =
+    data.scoreBuckets
+    ||
+    {};
+
+
+  $("scoreBuckets").innerHTML =
+
+    [
+
+      "70-79",
+
+      "80-89",
+
+      "90-100"
+
+    ]
+      .map(
+        key =>
+
+          groupRow(
+
+            `SCORE ${key}`,
+
+            buckets[key]
+
+          )
+
+      )
+      .join("");
+
+
+  renderBTHistory();
+
+
+  setTimeout(
+
+    () => {
+
+      drawCurve(
+
+        $("equity"),
+
+        data.equityCurve
+        ||
+        [],
+
+        "equityR",
+
+        "#38e7a2"
+
+      );
+
+
+      drawCurve(
+
+        $("drawdown"),
+
+        data.drawdownCurve
+        ||
+        [],
+
+        "drawdownR",
+
+        "#ff647c"
+
+      );
+
+    },
+
+    30
+
+  );
+
+}
+
+
+/* =========================================================
+   FILTERED BACKTEST HISTORY
+========================================================= */
+
+function renderBTHistory() {
+
+  const trades =
+
+    Array.isArray(
+      lastBT?.recentTrades
+    )
+
+      ? lastBT.recentTrades
+
+      : [];
+
+
+  const direction =
+    $("fDir").value;
+
+
+  const result =
+    $("fResult").value;
+
+
+  const session =
+    $("fSession").value;
+
+
+  const filtered =
+
+    trades.filter(
+      trade =>
+
+        (
+          direction ===
+          "ALL"
+
+          ||
+
+          trade.signal ===
+          direction
+        )
+
+        &&
+
+        (
+          result ===
+          "ALL"
+
+          ||
+
+          trade.result ===
+          result
+        )
+
+        &&
+
+        (
+          session ===
+          "ALL"
+
+          ||
+
+          trade.session ===
+          session
+        )
+
+    );
+
+
+  $("btHistory").innerHTML =
+
+    filtered.length
+
+      ? filtered
+          .map(
+            trade => `
+
+              <div class="history">
+
+                <div class="historyTop">
+
+                  <b class="${trade.signal === "BUY" ? "green" : "red"}">
+
+                    ${trade.signal}
+                    ·
+                    SCORE ${trade.score}
+
+                  </b>
+
+                  <b class="${
+                    trade.result ===
+                    "WIN"
+
+                      ? "green"
+
+                      : trade.result ===
+                        "LOSS"
+
+                        ? "red"
+
+                        : "gold"
+                  }">
+
+                    ${trade.result}
+
+                    ${
+                      trade.resultR ==
+                      null
+
+                        ? ""
+
+                        : ` · ${rfmt(trade.resultR)}`
+                    }
+
+                  </b>
+
+                </div>
+
+
+                <div class="historyBody">
+
+                  Entry ${fmt(trade.entry)}
+                  ·
+                  SL ${fmt(trade.stopLoss)}
+                  ·
+                  TP ${fmt(trade.takeProfit)}
+
+                  <br>
+
+                  ${esc(trade.sweptLevel || "Liquidity")}
+                  @
+                  ${fmt(trade.sweptPrice)}
+
+                  ·
+                  ${esc(trade.trigger || "")}
+
+                  <br>
+
+                  ${esc(trade.session || "—")}
+
+                  ·
+                  Hold ${fmt(trade.holdMinutes,1)}m
+
+                  ·
+                  Best ${rfmt(trade.bestR)}
+
+                  ·
+                  Worst ${rfmt(trade.worstR)}
+
+                  <br>
+
+                  ${time(trade.entryTime)}
+
+                </div>
+
+              </div>
+
+            `
+          )
+          .join("")
+
+      : `<div class="reason muted">No trades match filters.</div>`;
+
+}
+
+
+/* =========================================================
+   CURVE CHART
+========================================================= */
+
+function drawCurve(
+  canvas,
+  points,
+  key,
+  color
+) {
+
+  const prepared =
+    prep(
+      canvas
+    );
+
+
+  if (
+    !prepared
+  ) {
+
+    return;
+
+  }
+
+
+  const values =
+
+    points
+      .map(
+        point =>
+          Number(
+            point[key]
+          )
+      )
+      .filter(
+        Number.isFinite
+      );
+
+
+  if (
+    values.length <
+    2
+  ) {
+
+    prepared.c.fillStyle =
+      "rgba(255,255,255,.35)";
+
+
+    prepared.c.fillText(
+
+      "No closed trades",
+
+      15,
+
+      30
+
+    );
+
+
+    return;
+
+  }
+
+
+  let min =
+    Math.min(
+      ...values
+    );
+
+
+  let max =
+    Math.max(
+      ...values
+    );
+
+
+  if (
+    min ===
+    max
+  ) {
+
+    min -=
+      1;
+
+
+    max +=
+      1;
+
+  }
+
+
+  const x =
+    index =>
+
+      14
+
+      +
+
+      index /
+      Math.max(
+        1,
+        values.length -
+        1
+      )
+
+      *
+      (
+        prepared.w -
+        28
+      );
+
+
+  const y =
+    value =>
+
+      prepared.h -
+      14
+
+      -
+
+      (
+        value -
+        min
+      )
+
+      /
+
+      (
+        max -
+        min
+      )
+
+      *
+      (
+        prepared.h -
+        28
+      );
+
+
+  prepared.c.strokeStyle =
+    color;
+
+
+  prepared.c.lineWidth =
+    2;
+
+
+  prepared.c.beginPath();
+
+
+  values.forEach(
+    (
+      value,
+      index
+    ) => {
+
+      if (
+        index
+      ) {
+
+        prepared.c.lineTo(
+
+          x(index),
+
+          y(value)
+
+        );
+
+      }
+
+      else {
+
+        prepared.c.moveTo(
+
+          x(index),
+
+          y(value)
+
+        );
+
+      }
+
+    }
+  );
+
+
+  prepared.c.stroke();
+
+}
+
+
+/* =========================================================
+   COPY / SHARE
+========================================================= */
+
+function signalText() {
+
+  if (
+    !lastData
+  ) {
+
+    return "";
+
+  }
+
+
+  const lock =
+    getLock();
+
+
+  if (
+    lock
+  ) {
+
+    return `MKAYFX BTC/USD
+
+${lock.signal} HARD LOCK
+
+Entry ${fmt(lock.entry)}
+SL ${fmt(lock.stopLoss)}
+TP ${fmt(lock.takeProfit)}
+
+Score ${lock.score}/100
+Current ${fmt(currentPrice)}
+R ${rfmt(currentR(lock,currentPrice))}`;
+
+  }
+
+
+  return `MKAYFX BTC/USD
+
+Signal ${lastData.signal}
+Score ${lastData.signalScore}/100
+Confidence ${lastData.confidence}%
+
+Price ${fmt(currentPrice ?? lastData.price)}
+
+4H ${lastData.timeframeBias?.H4 ?? "—"}
+1H ${lastData.timeframeBias?.H1 ?? "—"}
+15M ${lastData.timeframeBias?.M15 ?? "—"}
+5M ${lastData.timeframeBias?.M5 ?? "—"}`;
+
+}
+
+
+async function copySignal() {
+
+  try {
+
+    await navigator
+      .clipboard
+      .writeText(
+        signalText()
+      );
+
+
+    showToast(
+
+      "Copied",
+
+      "BTC signal copied."
+
+    );
+
+  }
+
+  catch {}
+
+}
+
+
+async function shareSignal() {
+
+  const text =
+    signalText();
+
+
+  if (
+    navigator.share
+  ) {
+
+    try {
+
+      await navigator.share({
+
+        title:
+          "MKAYFX BTC Signal",
+
+        text
+
+      });
+
+
+      return;
+
+    }
+
+    catch {}
+
+  }
+
+
+  copySignal();
+
+}
+
+
+/* =========================================================
+   EXPORT JOURNAL
+========================================================= */
+
+function exportCSV() {
 
   const history =
     getHistory();
@@ -8009,9 +8097,10 @@ function exportCsv() {
 
       "No trades",
 
-      "The BTC journal is empty."
+      "Journal empty."
 
     );
+
 
     return;
 
@@ -8030,20 +8119,15 @@ function exportCsv() {
       "TakeProfit",
       "Score",
       "Confidence",
-      "LockedAt",
+      "CreatedAt",
       "ExitTime",
       "ExitPrice",
       "BestR",
       "WorstR"
-    ]
+    ],
 
-  ];
-
-
-  history.forEach(
-    trade => {
-
-      rows.push([
+    ...history.map(
+      trade => [
 
         trade.symbol,
 
@@ -8063,7 +8147,7 @@ function exportCsv() {
 
         trade.confidence,
 
-        trade.lockedAt,
+        trade.createdAt,
 
         trade.exitTime,
 
@@ -8073,10 +8157,10 @@ function exportCsv() {
 
         trade.worstR
 
-      ]);
+      ]
+    )
 
-    }
-  );
+  ];
 
 
   const csv =
@@ -8084,12 +8168,16 @@ function exportCsv() {
     rows
       .map(
         row =>
+
           row
             .map(
               value =>
+
                 `"${String(value ?? "").replace(/"/g,'""')}"`
+
             )
             .join(",")
+
       )
       .join("\n");
 
@@ -8115,29 +8203,21 @@ function exportCsv() {
     );
 
 
-  const link =
+  const anchor =
     document.createElement(
       "a"
     );
 
 
-  link.href =
+  anchor.href =
     url;
 
 
-  link.download =
+  anchor.download =
     "mkayfx-btc-journal.csv";
 
 
-  document.body.appendChild(
-    link
-  );
-
-
-  link.click();
-
-
-  link.remove();
+  anchor.click();
 
 
   URL.revokeObjectURL(
@@ -8148,234 +8228,41 @@ function exportCsv() {
 
 
 /* =========================================================
-   SIGNAL TEXT
+   TOAST / ALERT
 ========================================================= */
 
-function signalText() {
-
-  if (
-    !lastData
-  ) {
-
-    return "";
-  }
-
-
-  const lock =
-    getLock();
-
-
-  if (
-    lock
-  ) {
-
-    return `MKAYFX BTC/USD
-
-${lock.signal} 🔒 HARD LOCK
-
-Entry: ${fmt(lock.entry)}
-SL: ${fmt(lock.stopLoss)}
-TP1: ${fmt(lock.takeProfit1)}
-TP: ${fmt(lock.takeProfit)}
-TP2: ${fmt(lock.takeProfit2)}
-
-R:R: 1:${lock.rr}
-Score: ${lock.score}/100
-Confidence: ${lock.confidence}%
-
-Current Price: ${fmt(currentPrice)}
-Current R: ${formatR(calculateR(lock,currentPrice))}
-Best R: ${formatR(lock.bestR)}
-Worst R: ${formatR(lock.worstR)}`;
-
-  }
-
-
-  return `MKAYFX BTC/USD
-
-Signal: ${lastData.signal}
-Score: ${lastData.signalScore}/100
-Confidence: ${lastData.confidence}%
-
-Price: ${fmt(currentPrice ?? lastData.price)}
-
-4H: ${lastData.timeframeBias?.H4 ?? "—"}
-1H: ${lastData.timeframeBias?.H1 ?? "—"}
-15M: ${lastData.timeframeBias?.M15 ?? "—"}
-5M: ${lastData.timeframeBias?.M5 ?? "—"}
-
-Trigger: ${lastData.trigger ?? "NONE"}`;
-
-}
-
-
-/* =========================================================
-   COPY / SHARE
-========================================================= */
-
-async function copySignal() {
-
-  const text =
-    signalText();
-
-
-  if (
-    !text
-  ) {
-
-    return;
-
-  }
-
-
-  try {
-
-    await navigator
-      .clipboard
-      .writeText(
-        text
-      );
-
-
-    showToast(
-
-      "Copied",
-
-      "BTC signal copied."
-
-    );
-
-  } catch {}
-
-}
-
-
-async function shareSignal() {
-
-  const text =
-    signalText();
-
-
-  if (
-    !text
-  ) {
-
-    return;
-
-  }
-
-
-  if (
-    navigator.share
-  ) {
-
-    try {
-
-      await navigator.share({
-
-        title:
-          "MKAYFX BTC Signal",
-
-        text
-
-      });
-
-      return;
-
-    } catch {}
-
-  }
-
-
-  copySignal();
-
-}
-
-
-/* =========================================================
-   ALERTS
-========================================================= */
-
-function playTone(
-  type
+function showToast(
+  title,
+  body
 ) {
 
-  if (
-    !alertsEnabled
-  ) {
-
-    return;
-
-  }
+  $("toastTitle").textContent =
+    title;
 
 
-  try {
-
-    const AudioContextClass =
-
-      window.AudioContext
-
-      ||
-
-      window.webkitAudioContext;
+  $("toastBody").textContent =
+    body;
 
 
-    if (
-      !AudioContextClass
-    ) {
-
-      return;
-
-    }
-
-
-    const ctx =
-      new AudioContextClass();
-
-
-    const oscillator =
-      ctx.createOscillator();
-
-
-    const gain =
-      ctx.createGain();
-
-
-    oscillator.frequency.value =
-
-      type ===
-      "BUY"
-
-        ? 780
-
-        : 440;
-
-
-    gain.gain.value =
-      .045;
-
-
-    oscillator.connect(
-      gain
+  $("toast")
+    .classList
+    .add(
+      "active"
     );
 
 
-    gain.connect(
-      ctx.destination
-    );
+  setTimeout(
 
+    () =>
+      $("toast")
+        .classList
+        .remove(
+          "active"
+        ),
 
-    oscillator.start();
+    4000
 
-
-    oscillator.stop(
-
-      ctx.currentTime +
-      .15
-
-    );
-
-  } catch {}
+  );
 
 }
 
@@ -8401,11 +8288,6 @@ function notify(
   }
 
 
-  playTone(
-    type
-  );
-
-
   if (
     navigator.vibrate
   ) {
@@ -8424,59 +8306,6 @@ function notify(
 
 
 /* =========================================================
-   TOAST
-========================================================= */
-
-let toastTimer =
-  null;
-
-
-function showToast(
-  title,
-  body
-) {
-
-  $("toastTitle").textContent =
-    title;
-
-
-  $("toastBody").textContent =
-    body;
-
-
-  $("toast")
-    .classList
-    .add(
-      "show"
-    );
-
-
-  clearTimeout(
-    toastTimer
-  );
-
-
-  toastTimer =
-    setTimeout(
-
-      () => {
-
-        $("toast")
-          .classList
-          .remove(
-            "show"
-          );
-
-      },
-
-      4000
-
-    );
-
-}
-
-
-/* =========================================================
    NAVIGATION
 ========================================================= */
 
@@ -8490,7 +8319,7 @@ function showView(
 
   $$(".view")
     .forEach(
-      view => {
+      view =>
 
         view.classList.toggle(
 
@@ -8499,15 +8328,14 @@ function showView(
           view.id ===
           id
 
-        );
+        )
 
-      }
     );
 
 
   $$("[data-view]")
     .forEach(
-      button => {
+      button =>
 
         button.classList.toggle(
 
@@ -8516,20 +8344,72 @@ function showView(
           button.dataset.view ===
           id
 
-        );
+        )
 
-      }
     );
 
 
   if (
     id ===
-    "monitorView"
+    "monitor"
   ) {
 
     setTimeout(
 
-      drawPriceChart,
+      drawPrice,
+
+      30
+
+    );
+
+  }
+
+
+  if (
+
+    id ===
+    "backtest"
+
+    &&
+
+    lastBT
+
+  ) {
+
+    setTimeout(
+
+      () => {
+
+        drawCurve(
+
+          $("equity"),
+
+          lastBT.equityCurve
+          ||
+          [],
+
+          "equityR",
+
+          "#38e7a2"
+
+        );
+
+
+        drawCurve(
+
+          $("drawdown"),
+
+          lastBT.drawdownCurve
+          ||
+          [],
+
+          "drawdownR",
+
+          "#ff647c"
+
+        );
+
+      },
 
       30
 
@@ -8542,7 +8422,7 @@ function showView(
 
 $$("[data-view]")
   .forEach(
-    button => {
+    button =>
 
       button.addEventListener(
 
@@ -8553,341 +8433,271 @@ $$("[data-view]")
             button.dataset.view
           )
 
-      );
+      )
 
-    }
   );
 
 
 /* =========================================================
-   MANUAL CLEAR
+   BACKTEST PERIOD BUTTONS
 ========================================================= */
 
-function manualClear() {
+$$("[data-days]")
+  .forEach(
+    button =>
 
-  const lock =
-    getLock();
+      button.addEventListener(
 
+        "click",
 
-  if (
-    !lock
-  ) {
+        () => {
 
-    showToast(
-
-      "No active trade",
-
-      "There is no BTC hard lock to clear."
-
-    );
-
-    return;
-
-  }
+          btDays =
+            Number(
+              button.dataset.days
+            );
 
 
-  clearLock();
+          $$("[data-days]")
+            .forEach(
+              item =>
+
+                item.classList.toggle(
+
+                  "active",
+
+                  item ===
+                  button
+
+                )
+
+            );
 
 
-  /*
-    Prevent immediate re-locking from the same market
-    conditions for 15 minutes.
-  */
+          $("runBT").textContent =
+            `RUN ${btDays}-DAY BTC BACKTEST`;
 
-  localStorage.setItem(
+        }
 
-    STORAGE.pauseLockUntil,
-
-    String(
-
-      Date.now()
-
-      +
-
-      15 *
-      60 *
-      1000
-
-    )
+      )
 
   );
-
-
-  showToast(
-
-    "Lock cleared",
-
-    "New trade locks paused for 15 minutes."
-
-  );
-
-
-  renderAll();
-
-}
 
 
 /* =========================================================
-   SETTINGS
+   BUTTON EVENTS
 ========================================================= */
 
-function applyUiSettings() {
-
-  document.body
-    .classList
-    .toggle(
-
-      "amoled",
-
-      amoledEnabled
-
-    );
+$("run").onclick =
+  runAnalysis;
 
 
-  $("alertSwitch")
-    .classList
-    .toggle(
-
-      "on",
-
-      alertsEnabled
-
-    );
+$("copy").onclick =
+  copySignal;
 
 
-  $("amoledSwitch")
-    .classList
-    .toggle(
-
-      "on",
-
-      amoledEnabled
-
-    );
+$("share").onclick =
+  shareSignal;
 
 
-  $("analysisRefresh").value =
-    String(
-      analysisRefresh
-    );
+$("clear").onclick =
+  () => {
 
-
-  $("priceRefresh").value =
-    String(
-      priceRefresh
-    );
-
-}
-
-
-/* =========================================================
-   EVENTS
-========================================================= */
-
-$("runButton")
-  .addEventListener(
-
-    "click",
-
-    runAnalysis
-
-  );
-
-
-$("copyButton")
-  .addEventListener(
-
-    "click",
-
-    copySignal
-
-  );
-
-
-$("shareButton")
-  .addEventListener(
-
-    "click",
-
-    shareSignal
-
-  );
-
-
-$("clearButton")
-  .addEventListener(
-
-    "click",
-
-    manualClear
-
-  );
-
-
-$("exportButton")
-  .addEventListener(
-
-    "click",
-
-    exportCsv
-
-  );
-
-
-$("clearHistoryButton")
-  .addEventListener(
-
-    "click",
-
-    () => {
-
-      localStorage.removeItem(
-        STORAGE.history
-      );
-
-
-      renderJournal();
-
+    if (
+      !getLock()
+    ) {
 
       showToast(
 
-        "Journal cleared",
+        "No active trade",
 
-        "Local BTC trade history has been cleared."
+        "No lock to clear."
 
       );
 
+
+      return;
+
     }
+
+
+    clearLock();
+
+
+    localStorage.setItem(
+
+      K.pause,
+
+      String(
+
+        Date.now()
+
+        +
+
+        15 *
+        60 *
+        1000
+
+      )
+
+    );
+
+
+    renderAll();
+
+
+    showToast(
+
+      "Lock cleared",
+
+      "New locks paused for 15 minutes."
+
+    );
+
+  };
+
+
+$("runBT").onclick =
+  runBacktest;
+
+
+$("export").onclick =
+  exportCSV;
+
+
+$("clearJournal").onclick =
+  () => {
+
+    localStorage.removeItem(
+      K.history
+    );
+
+
+    renderJournal();
+
+  };
+
+
+[
+  "fDir",
+  "fResult",
+  "fSession"
+]
+  .forEach(
+    id =>
+
+      $(id).onchange =
+        renderBTHistory
 
   );
 
 
-$("analysisRefresh")
-  .addEventListener(
+$("analysisRefresh").onchange =
+  () => {
 
-    "change",
-
-    () => {
-
-      analysisRefresh =
-        Number(
-          $("analysisRefresh").value
-        );
-
-
-      localStorage.setItem(
-
-        STORAGE.analysisRefresh,
-
-        String(
-          analysisRefresh
-        )
-
-      );
-
-    }
-
-  );
-
-
-$("priceRefresh")
-  .addEventListener(
-
-    "change",
-
-    () => {
-
-      priceRefresh =
-        Number(
-          $("priceRefresh").value
-        );
-
-
-      localStorage.setItem(
-
-        STORAGE.priceRefresh,
-
-        String(
-          priceRefresh
-        )
-
-      );
-
-    }
-
-  );
-
-
-$("alertSwitch")
-  .addEventListener(
-
-    "click",
-
-    () => {
-
-      alertsEnabled =
-        !alertsEnabled;
-
-
-      localStorage.setItem(
-
-        STORAGE.alerts,
-
-        String(
-          alertsEnabled
-        )
-
+    analysisRefresh =
+      Number(
+        $("analysisRefresh").value
       );
 
 
-      applyUiSettings();
+    localStorage.setItem(
+
+      K.analysis,
+
+      String(
+        analysisRefresh
+      )
+
+    );
+
+  };
 
 
-      if (
+$("priceRefresh").onchange =
+  () => {
+
+    priceRefresh =
+      Number(
+        $("priceRefresh").value
+      );
+
+
+    localStorage.setItem(
+
+      K.price,
+
+      String(
+        priceRefresh
+      )
+
+    );
+
+  };
+
+
+$("alerts").onclick =
+  () => {
+
+    alertsEnabled =
+      !alertsEnabled;
+
+
+    localStorage.setItem(
+
+      K.alerts,
+
+      String(
         alertsEnabled
-      ) {
+      )
 
-        playTone(
-          "BUY"
-        );
-
-      }
-
-    }
-
-  );
+    );
 
 
-$("amoledSwitch")
-  .addEventListener(
+    showToast(
 
-    "click",
+      "Alerts",
 
-    () => {
+      alertsEnabled
 
-      amoledEnabled =
-        !amoledEnabled;
+        ? "Enabled"
+
+        : "Disabled"
+
+    );
+
+  };
 
 
-      localStorage.setItem(
+$("amoled").onclick =
+  () => {
 
-        STORAGE.amoled,
+    amoledEnabled =
+      !amoledEnabled;
 
-        String(
-          amoledEnabled
-        )
+
+    localStorage.setItem(
+
+      K.amoled,
+
+      String(
+        amoledEnabled
+      )
+
+    );
+
+
+    document.body
+      .classList
+      .toggle(
+
+        "amoled",
+
+        amoledEnabled
 
       );
 
-
-      applyUiSettings();
-
-
-      drawPriceChart();
-
-    }
-
-  );
+  };
 
 
 /* =========================================================
@@ -8896,39 +8706,28 @@ $("amoledSwitch")
 
 window.addEventListener(
 
-  "offline",
+  "online",
 
-  () => {
-
-    $("offlineBanner")
-      .classList
-      .add(
-        "show"
-      );
-
-
-    $("healthDot").style.background =
-      "var(--red)";
-
-  }
+  runAnalysis
 
 );
 
 
 window.addEventListener(
 
-  "online",
+  "offline",
 
   () => {
 
-    $("offlineBanner")
+    $("offline")
       .classList
-      .remove(
+      .add(
         "show"
       );
 
 
-    runAnalysis();
+    $("dot").style.background =
+      "var(--red)";
 
   }
 
@@ -8947,10 +8746,26 @@ window.addEventListener(
 
     if (
       currentView ===
-      "monitorView"
+      "monitor"
     ) {
 
-      drawPriceChart();
+      drawPrice();
+
+    }
+
+
+    if (
+
+      currentView ===
+      "backtest"
+
+      &&
+
+      lastBT
+
+    ) {
+
+      renderBT();
 
     }
 
@@ -8960,7 +8775,7 @@ window.addEventListener(
 
 
 /* =========================================================
-   AUTOMATIC LOOP
+   TIMER LOOP
 ========================================================= */
 
 function tick() {
@@ -9024,14 +8839,37 @@ function tick() {
 
 function start() {
 
-  applyUiSettings();
+  document.body
+    .classList
+    .toggle(
+
+      "amoled",
+
+      amoledEnabled
+
+    );
+
+
+  $("analysisRefresh").value =
+    String(
+      analysisRefresh
+    );
+
+
+  $("priceRefresh").value =
+    String(
+      priceRefresh
+    );
 
 
   renderJournal();
 
 
   const cache =
-    getCache();
+    getJSON(
+      K.cache,
+      null
+    );
 
 
   if (
@@ -9049,12 +8887,65 @@ function start() {
 
 
     currentPrice =
-      number(
+      n(
         lastData.price
       );
 
 
     renderAll();
+
+  }
+
+
+  const savedBacktest =
+    getJSON(
+      K.bt,
+      null
+    );
+
+
+  if (
+    savedBacktest?.success
+  ) {
+
+    lastBT =
+      savedBacktest;
+
+
+    btDays =
+      Number(
+        savedBacktest.days
+      )
+      ||
+      7;
+
+
+    $$("[data-days]")
+      .forEach(
+        button =>
+
+          button.classList.toggle(
+
+            "active",
+
+            Number(
+              button.dataset.days
+            )
+
+            ===
+
+            btDays
+
+          )
+
+      );
+
+
+    $("runBT").textContent =
+      `RUN ${btDays}-DAY BTC BACKTEST`;
+
+
+    renderBT();
 
   }
 
@@ -9082,5 +8973,4 @@ start();
 
 
 </body>
-
 </html>
