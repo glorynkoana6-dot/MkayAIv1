@@ -91,11 +91,11 @@ const MACRO_MINUTES =
 
 
 const VOLUME_MA_LENGTH =
-  14;
+  10;
 
 
 const SPIKE_MULTIPLIER =
-  1.7;
+  2.0;
 
 
 const VP_ROWS =
