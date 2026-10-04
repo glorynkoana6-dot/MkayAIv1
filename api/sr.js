@@ -1,174 +1,94 @@
 /* =========================================================
-   MKAYFX TOTT 5M ENGINE
+   MKAYFX 5M HTF VOLUME SPIKE + IMBALANCE ENGINE
    /api/sr.js
 
-   SIGNAL ENGINE
-   -------------
-   Based on:
-   Twin Optimized Trend Tracker (TOTT)
+   Based on the user-provided:
+   "HTF Volume Spike & Imbalance Projection [LuxAlgo]"
+   © LuxAlgo — CC BY-NC-SA 4.0
 
-   Pine defaults used:
-   Source                = close
-   OTT Period            = 40
-   Optimization Constant = 1.0
-   Twin OTT Coefficient  = 0.001
-   Moving Average Type   = VAR
+   5M chart => Auto HTF = 1H, Auto LTF = 1M
 
-   MARKETS
-   -------
-   XAU/USD
-   BTC/USD
+   Original indicator mechanics kept:
+   - 1M volume SMA(20)
+   - spike when volume > SMA20 * 1.2
+   - bullish spike when close >= open
+   - bearish spike when close < open
+   - 40 price rows inside the live 1H anchor
+   - stacked imbalance when >= 3 spikes dominate a row
+   - volume profile from 1M closes/volume
 
-   TIMEFRAME
-   ---------
-   5 minutes
+   Trading rules added for this app:
+   BUY  = completed 5M close crosses above a bullish stacked zone
+          while the current 1H anchor is bullish/neutral-bullish
+   SELL = completed 5M close crosses below a bearish stacked zone
+          while the current 1H anchor is bearish/neutral-bearish
 
-   SIGNALS
-   -------
-   BUY:
-   MAvg crosses above OTTup[2]
-
-   SELL:
-   MAvg crosses below OTTdn[2]
-
-   CUSTOM TRADE MANAGEMENT
-   -----------------------
-   BUY SL  = opposite TOTT lower band
-   SELL SL = opposite TOTT upper band
+   BUY SL  = bottom of signal imbalance zone
+   SELL SL = top of signal imbalance zone
    TP      = 3R
 
-   HARD LOCK
-   ---------
-   Once a trade is active:
-   - opposite signals are ignored
-   - WAIT is ignored
-   - trade stays locked until SL or TP
+   HARD LOCK:
+   - one active trade per symbol
+   - ignore all later signals until SL or TP
 
-   BACKTEST
-   --------
-   One trade at a time.
-   No overlapping trades.
-   SL wins if TP + SL are both touched in one candle.
-
-   ENV
-   ---
+   Vercel env:
    TWELVE_DATA_API_KEY
 ========================================================= */
 
-
-const API_KEY =
-  process.env.TWELVE_DATA_API_KEY;
-
-
-const BASE_URL =
-  "https://api.twelvedata.com";
-
-
-/* =========================================================
-   MARKETS
-========================================================= */
+const API_KEY = process.env.TWELVE_DATA_API_KEY;
+const BASE_URL = "https://api.twelvedata.com";
 
 const MARKETS = {
-
   "XAU/USD": {
-
-    name:
-      "GOLD",
-
-    short:
-      "XAU",
-
-    digits:
-      2
-
+    name: "GOLD",
+    short: "XAU",
+    digits: 2
   },
 
   "BTC/USD": {
-
-    name:
-      "BITCOIN",
-
-    short:
-      "BTC",
-
-    digits:
-      2
-
+    name: "BITCOIN",
+    short: "BTC",
+    digits: 2
   }
-
 };
 
 
 /* =========================================================
-   TOTT SETTINGS
+   SETTINGS
 ========================================================= */
 
-const INTERVAL =
-  "1min";
+const EXECUTION_MINUTES = 5;
+const HTF_MINUTES = 60;
 
+const VOLUME_MA_LENGTH = 20;
+const SPIKE_MULTIPLIER = 1.2;
 
-const OTT_PERIOD =
-  40;
+const VP_ROWS = 40;
 
+const MIN_STACKED_SPIKES = 3;
 
-const OPTIMIZATION_PERCENT =
-  1.0;
+const RISK_REWARD = 3;
 
+const OUTPUT_SIZE = 5000;
 
-const TWIN_COEFFICIENT =
-  0.001;
+const BACKTEST_WARMUP_STATES = 30;
 
+const RECENT_SIGNAL_LIMIT = 20;
 
-const MA_TYPE =
-  "VAR";
-
-
-const OTT_SHIFT =
-  2;
-
-
-/* =========================================================
-   TRADE SETTINGS
-========================================================= */
-
-const RISK_REWARD =
-  3;
-
-
-const OUTPUT_SIZE =
-  5000;
-
-
-const WARMUP_BARS =
-  100;
-
-
-const RECENT_SIGNAL_LIMIT =
-  20;
-
-
-const RECENT_BACKTEST_LIMIT =
-  15;
+const RECENT_BACKTEST_LIMIT = 15;
 
 
 /* =========================================================
    HELPERS
 ========================================================= */
 
-function num(
-  value
-) {
+function n(value) {
 
-  const n =
-    Number(
-      value
-    );
+  const out =
+    Number(value);
 
-
-  return Number.isFinite(
-    n
-  )
-    ? n
+  return Number.isFinite(out)
+    ? out
     : null;
 
 }
@@ -179,33 +99,19 @@ function round(
   digits = 2
 ) {
 
-  const n =
-    num(
-      value
-    );
+  const out =
+    n(value);
 
-
-  if (
-    n === null
-  ) {
-
-    return null;
-
-  }
-
-
-  return Number(
-    n.toFixed(
-      digits
-    )
-  );
+  return out === null
+    ? null
+    : Number(
+        out.toFixed(digits)
+      );
 
 }
 
 
-function safeError(
-  value
-) {
+function errText(value) {
 
   if (
     value == null
@@ -217,8 +123,7 @@ function safeError(
 
 
   if (
-    typeof value ===
-    "string"
+    typeof value === "string"
   ) {
 
     return value;
@@ -230,42 +135,30 @@ function safeError(
     value instanceof Error
   ) {
 
-    return (
-      value.message ||
-      String(
-        value
-      )
-    );
+    return value.message ||
+      String(value);
 
   }
 
 
   if (
-    typeof value ===
-    "object"
+    typeof value === "object"
   ) {
 
-    const nested =
+    if (
+      typeof value.message === "string"
+    ) {
 
-      value.message
+      return value.message;
 
-      ??
-
-      value.error
-
-      ??
-
-      value.detail;
+    }
 
 
     if (
-      nested !== undefined &&
-      nested !== value
+      typeof value.error === "string"
     ) {
 
-      return safeError(
-        nested
-      );
+      return value.error;
 
     }
 
@@ -276,20 +169,12 @@ function safeError(
         value
       );
 
-    } catch {
-
-      return String(
-        value
-      );
-
-    }
+    } catch {}
 
   }
 
 
-  return String(
-    value
-  );
+  return String(value);
 
 }
 
@@ -298,9 +183,7 @@ function safeError(
    SYMBOL
 ========================================================= */
 
-function normalizeSymbol(
-  value
-) {
+function normalizeSymbol(value) {
 
   const raw =
     String(
@@ -335,16 +218,11 @@ function normalizeSymbol(
 
 
   const symbol =
-    aliases[
-      raw
-    ]
-    ||
+    aliases[raw] ||
     raw;
 
 
-  return MARKETS[
-    symbol
-  ]
+  return MARKETS[symbol]
     ? symbol
     : "XAU/USD";
 
@@ -355,9 +233,7 @@ function normalizeSymbol(
    TIME
 ========================================================= */
 
-function parseTime(
-  value
-) {
+function parseTime(value) {
 
   if (
     !value
@@ -369,9 +245,7 @@ function parseTime(
 
 
   const text =
-    String(
-      value
-    )
+    String(value)
       .trim()
       .replace(
         " ",
@@ -381,9 +255,7 @@ function parseTime(
 
   return new Date(
 
-    /Z$|[+-]\d\d:\d\d$/.test(
-      text
-    )
+    /Z$|[+-]\d\d:\d\d$/.test(text)
 
       ? text
 
@@ -394,39 +266,51 @@ function parseTime(
 }
 
 
-function minutesOld(
-  value
+function iso(ms) {
+
+  return new Date(ms)
+    .toISOString();
+
+}
+
+
+function bucketStart(
+  ts,
+  minutes
 ) {
 
-  const timestamp =
-    parseTime(
-      value
-    );
+  const size =
+    minutes *
+    60_000;
 
 
-  if (
-    !Number.isFinite(
-      timestamp
-    )
-  ) {
+  return Math.floor(
+    ts /
+    size
+  ) * size;
 
-    return null;
-
-  }
+}
 
 
-  return Math.max(
+function minutesOld(value) {
 
-    0,
+  const ts =
+    parseTime(value);
 
-    (
-      Date.now() -
-      timestamp
-    )
-    /
-    60000
 
-  );
+  return Number.isFinite(ts)
+
+    ? Math.max(
+        0,
+        (
+          Date.now() -
+          ts
+        )
+        /
+        60_000
+      )
+
+    : null;
 
 }
 
@@ -446,12 +330,9 @@ async function getJSON(
 
   const timer =
     setTimeout(
-
       () =>
         controller.abort(),
-
       timeout
-
     );
 
 
@@ -494,9 +375,7 @@ async function getJSON(
       try {
 
         data =
-          JSON.parse(
-            raw
-          );
+          JSON.parse(raw);
 
       } catch {
 
@@ -518,13 +397,13 @@ async function getJSON(
 
       throw new Error(
 
-        safeError(
+        errText(
           data?.message
         )
 
         ||
 
-        safeError(
+        errText(
           data?.error
         )
 
@@ -539,9 +418,7 @@ async function getJSON(
 
     return data;
 
-  } catch (
-    error
-  ) {
+  } catch (error) {
 
     if (
       error?.name ===
@@ -569,12 +446,10 @@ async function getJSON(
 
 
 /* =========================================================
-   FETCH 5M CANDLES
+   FETCH 1M
 ========================================================= */
 
-async function fetch5m(
-  symbol
-) {
+async function fetch1m(symbol) {
 
   if (
     !API_KEY
@@ -589,13 +464,13 @@ async function fetch5m(
   }
 
 
-  const query =
+  const q =
     new URLSearchParams({
 
       symbol,
 
       interval:
-        INTERVAL,
+        "1min",
 
       outputsize:
         String(
@@ -617,7 +492,7 @@ async function fetch5m(
   const data =
     await getJSON(
 
-      `${BASE_URL}/time_series?${query.toString()}`
+      `${BASE_URL}/time_series?${q.toString()}`
 
     );
 
@@ -630,7 +505,7 @@ async function fetch5m(
 
     throw new Error(
 
-      `${symbol}: no 5-minute candles returned.`
+      `${symbol}: no 1-minute candles returned.`
 
     );
 
@@ -642,49 +517,77 @@ async function fetch5m(
     data.values
 
       .map(
-        item => ({
+        v => ({
 
           time:
             String(
-              item.datetime ||
+              v.datetime ||
               ""
+            ),
+
+          timestamp:
+            parseTime(
+              v.datetime
             ),
 
           open:
             Number(
-              item.open
+              v.open
             ),
 
           high:
             Number(
-              item.high
+              v.high
             ),
 
           low:
             Number(
-              item.low
+              v.low
             ),
 
           close:
             Number(
-              item.close
+              v.close
+            ),
+
+          volume:
+            Number(
+              v.volume
             )
 
         })
       )
 
       .filter(
-        bar =>
+        b =>
 
-          [
-            bar.open,
-            bar.high,
-            bar.low,
-            bar.close
-          ]
-            .every(
-              Number.isFinite
-            )
+          Number.isFinite(
+            b.timestamp
+          )
+
+          &&
+
+          Number.isFinite(
+            b.open
+          )
+
+          &&
+
+          Number.isFinite(
+            b.high
+          )
+
+          &&
+
+          Number.isFinite(
+            b.low
+          )
+
+          &&
+
+          Number.isFinite(
+            b.close
+          )
       )
 
       .sort(
@@ -692,27 +595,19 @@ async function fetch5m(
           a,
           b
         ) =>
-
-          parseTime(
-            a.time
-          )
-
-          -
-
-          parseTime(
-            b.time
-          )
+          a.timestamp -
+          b.timestamp
       );
 
 
   if (
     bars.length <
-    150
+    200
   ) {
 
     throw new Error(
 
-      `${symbol}: not enough 5-minute candles returned.`
+      `${symbol}: not enough 1-minute history.`
 
     );
 
@@ -725,808 +620,1133 @@ async function fetch5m(
 
 
 /* =========================================================
-   COMPLETED CANDLES
-
-   TOTT signals should be generated from finished 5M bars.
+   COMPLETED 1M
 ========================================================= */
 
-function completedBars(
-  bars
-) {
+function completed1m(bars) {
 
   const now =
     Date.now();
 
 
   return bars.filter(
-    bar => {
-
-      const start =
-        parseTime(
-          bar.time
-        );
-
-
-      if (
-        !Number.isFinite(
-          start
-        )
-      ) {
-
-        return false;
-
-      }
-
-
-      return (
-
-        start +
-        5 * 60 * 1000
-
-      )
-      <=
-      now;
-
-    }
+    b =>
+      b.timestamp +
+      60_000 <=
+      now
   );
 
 }
 
 
 /* =========================================================
-   VAR MOVING AVERAGE
-
-   Pine:
-
-   valpha = 2 / (length + 1)
-
-   vud1 =
-       src > src[1]
-       ? src - src[1]
-       : 0
-
-   vdd1 =
-       src < src[1]
-       ? src[1] - src
-       : 0
-
-   vUD = math.sum(vud1, 9)
-   vDD = math.sum(vdd1, 9)
-
-   vCMO =
-       nz(
-         (vUD - vDD)
-         /
-         (vUD + vDD)
-       )
-
-   VAR :=
-       valpha
-       * abs(vCMO)
-       * src
-
-       +
-
-       (
-         1 -
-         valpha
-         * abs(vCMO)
-       )
-       * nz(VAR[1])
+   VOLUME SMA + SPIKES
 ========================================================= */
 
-function varSeries(
-  values,
-  length
-) {
+function addVolumeStats(bars) {
 
-  const result =
-    new Array(
-      values.length
-    ).fill(
-      0
-    );
-
-
-  const ups =
-    new Array(
-      values.length
-    ).fill(
-      0
-    );
-
-
-  const downs =
-    new Array(
-      values.length
-    ).fill(
-      0
-    );
-
-
-  const alpha =
-    2 /
-    (
-      length +
-      1
-    );
-
-
-  let sumUp =
-    0;
-
-
-  let sumDown =
-    0;
-
-
-  for (
-    let i = 0;
-
-    i <
-      values.length;
-
-    i++
-  ) {
-
-    if (
-      i >
-      0
-    ) {
-
-      const difference =
-
-        values[i]
-
-        -
-
-        values[
-          i - 1
-        ];
-
-
-      if (
-        difference >
-        0
-      ) {
-
-        ups[i] =
-          difference;
-
-      } else if (
-        difference <
-        0
-      ) {
-
-        downs[i] =
-          Math.abs(
-            difference
-          );
-
-      }
-
-    }
-
-
-    sumUp +=
-      ups[i];
-
-
-    sumDown +=
-      downs[i];
-
-
-    if (
-      i >=
-      9
-    ) {
-
-      sumUp -=
-        ups[
-          i - 9
-        ];
-
-
-      sumDown -=
-        downs[
-          i - 9
-        ];
-
-    }
-
-
-    let cmo =
-      0;
-
-
-    /*
-       math.sum(..., 9) effectively
-       requires a 9-value window.
-    */
-
-    if (
-      i >=
-      8
-    ) {
-
-      const denominator =
-        sumUp +
-        sumDown;
-
-
-      if (
-        denominator !==
-        0
-      ) {
-
-        cmo =
-
-          (
-            sumUp -
-            sumDown
-          )
-
-          /
-
-          denominator;
-
-      }
-
-    }
-
-
-    const weighting =
-
-      alpha
-
-      *
-
-      Math.abs(
-        cmo
-      );
-
-
-    const previous =
-
-      i >
-      0
-
-        ? result[
-            i - 1
-          ]
-
-        : 0;
-
-
-    result[i] =
-
-      weighting *
-      values[i]
-
-      +
-
-      (
-        1 -
-        weighting
-      )
-      *
-      previous;
-
-  }
-
-
-  return result;
-
-}
-
-
-/* =========================================================
-   BUILD TOTT SERIES
-========================================================= */
-
-function buildTottStates(
-  bars
-) {
-
-  const source =
-    bars.map(
-      bar =>
-        bar.close
-    );
-
-
-  const mavg =
-    varSeries(
-      source,
-      OTT_PERIOD
-    );
-
-
-  const longStop =
-    new Array(
-      bars.length
-    ).fill(
-      null
-    );
-
-
-  const shortStop =
-    new Array(
-      bars.length
-    ).fill(
-      null
-    );
-
-
-  const direction =
-    new Array(
-      bars.length
-    ).fill(
-      1
-    );
-
-
-  const ott =
-    new Array(
-      bars.length
-    ).fill(
-      null
-    );
-
-
-  const ottUp =
-    new Array(
-      bars.length
-    ).fill(
-      null
-    );
-
-
-  const ottDown =
-    new Array(
-      bars.length
-    ).fill(
-      null
-    );
-
-
-  const states =
+  const out =
     [];
 
 
+  let rolling =
+    0;
+
+
+  let usable =
+    0;
+
+
   for (
     let i = 0;
-
-    i <
-      bars.length;
-
+    i < bars.length;
     i++
   ) {
 
-    const ma =
-      mavg[i];
+    const vol =
 
-
-    /*
-       fark =
-         MAvg
-         * percent
-         * 0.01
-    */
-
-    const difference =
-
-      ma
-
-      *
-
-      OPTIMIZATION_PERCENT
-
-      *
-
-      0.01;
-
-
-    const rawLongStop =
-      ma -
-      difference;
-
-
-    const rawShortStop =
-      ma +
-      difference;
-
-
-    /*
-       longStopPrev =
-         nz(
-           longStop[1],
-           longStop
-         )
-    */
-
-    const longStopPrevious =
-
-      i >
-      0
-
-        ? longStop[
-            i - 1
-          ]
-
-        : rawLongStop;
-
-
-    /*
-       longStop :=
-         MAvg > longStopPrev
-         ? max(longStop, longStopPrev)
-         : longStop
-    */
-
-    longStop[i] =
-
-      ma >
-      longStopPrevious
-
-        ? Math.max(
-            rawLongStop,
-            longStopPrevious
-          )
-
-        : rawLongStop;
-
-
-    const shortStopPrevious =
-
-      i >
-      0
-
-        ? shortStop[
-            i - 1
-          ]
-
-        : rawShortStop;
-
-
-    shortStop[i] =
-
-      ma <
-      shortStopPrevious
-
-        ? Math.min(
-            rawShortStop,
-            shortStopPrevious
-          )
-
-        : rawShortStop;
-
-
-    const previousDirection =
-
-      i >
-      0
-
-        ? direction[
-            i - 1
-          ]
-
-        : 1;
-
-
-    let currentDirection =
-      previousDirection;
-
-
-    if (
-
-      previousDirection ===
-      -1
+      Number.isFinite(
+        bars[i].volume
+      )
 
       &&
 
-      ma >
-      shortStopPrevious
+      bars[i].volume >
+      0
 
-    ) {
-
-      currentDirection =
-        1;
-
-    } else if (
-
-      previousDirection ===
-      1
-
-      &&
-
-      ma <
-      longStopPrevious
-
-    ) {
-
-      currentDirection =
-        -1;
-
-    }
-
-
-    direction[i] =
-      currentDirection;
-
-
-    const mt =
-
-      currentDirection ===
-      1
-
-        ? longStop[i]
-
-        : shortStop[i];
-
-
-    /*
-       OTT =
-         MAvg > MT
-         ? MT * (200 + percent) / 200
-         : MT * (200 - percent) / 200
-    */
-
-    ott[i] =
-
-      ma >
-      mt
-
-        ?
-
-        mt
-
-        *
-
-        (
-          200 +
-          OPTIMIZATION_PERCENT
-        )
-
-        /
-
-        200
-
-        :
-
-        mt
-
-        *
-
-        (
-          200 -
-          OPTIMIZATION_PERCENT
-        )
-
-        /
-
-        200;
-
-
-    ottUp[i] =
-
-      ott[i]
-
-      *
-
-      (
-        1 +
-        TWIN_COEFFICIENT
-      );
-
-
-    ottDown[i] =
-
-      ott[i]
-
-      *
-
-      (
-        1 -
-        TWIN_COEFFICIENT
-      );
-
-
-    /*
-       Pine plots and signals use:
-       OTTup[2]
-       OTTdn[2]
-    */
-
-    const shiftedUpper =
-
-      i >=
-      OTT_SHIFT
-
-        ? ottUp[
-            i -
-            OTT_SHIFT
-          ]
+        ? bars[i].volume
 
         : null;
 
 
-    const shiftedLower =
-
-      i >=
-      OTT_SHIFT
-
-        ? ottDown[
-            i -
-            OTT_SHIFT
-          ]
-
-        : null;
-
-
-    let buySignal =
-      false;
-
-
-    let sellSignal =
-      false;
-
-
-    /*
-       ta.crossover(
-         MAvg,
-         OTTup[2]
-       )
-
-       Current:
-       MAvg > OTTup[2]
-
-       Previous:
-       MAvg[1] <= OTTup[3]
-    */
-
     if (
-      i >=
-      OTT_SHIFT + 1
+      vol !== null
     ) {
 
-      const previousMA =
-        mavg[
-          i - 1
-        ];
-
-
-      const previousShiftedUpper =
-
-        ottUp[
-          i -
-          OTT_SHIFT -
-          1
-        ];
-
-
-      const previousShiftedLower =
-
-        ottDown[
-          i -
-          OTT_SHIFT -
-          1
-        ];
-
-
-      buySignal =
-
-        ma >
-        shiftedUpper
-
-        &&
-
-        previousMA <=
-        previousShiftedUpper;
-
-
-      sellSignal =
-
-        ma <
-        shiftedLower
-
-        &&
-
-        previousMA >=
-        previousShiftedLower;
+      usable++;
 
     }
 
 
-    states.push({
+    rolling +=
+      vol ??
+      0;
 
-      index:
-        i,
 
-      time:
-        bars[i].time,
+    if (
+      i >=
+      VOLUME_MA_LENGTH
+    ) {
 
-      open:
-        bars[i].open,
+      const old =
 
-      high:
-        bars[i].high,
+        Number.isFinite(
+          bars[
+            i -
+            VOLUME_MA_LENGTH
+          ].volume
+        )
 
-      low:
-        bars[i].low,
+        &&
 
-      close:
-        bars[i].close,
+        bars[
+          i -
+          VOLUME_MA_LENGTH
+        ].volume >
+        0
 
-      mavg:
-        ma,
+          ? bars[
+              i -
+              VOLUME_MA_LENGTH
+            ].volume
 
-      longStop:
-        longStop[i],
+          : 0;
 
-      shortStop:
-        shortStop[i],
 
-      direction:
-        currentDirection,
+      rolling -=
+        old;
 
-      ott:
-        ott[i],
+    }
 
-      ottUpper:
-        shiftedUpper,
 
-      ottLower:
-        shiftedLower,
+    const volumeMA =
 
-      buySignal,
+      i >=
+      VOLUME_MA_LENGTH -
+      1
 
-      sellSignal,
+        ? rolling /
+          VOLUME_MA_LENGTH
 
-      signal:
+        : null;
 
-        buySignal
 
-          ? "BUY"
+    out.push({
 
-          : sellSignal
+      ...bars[i],
 
-            ? "SELL"
+      volumeMA,
 
-            : "WAIT"
+      isSpike:
+
+        vol !==
+        null
+
+        &&
+
+        volumeMA !==
+        null
+
+        &&
+
+        volumeMA >
+        0
+
+        &&
+
+        vol >
+        volumeMA *
+        SPIKE_MULTIPLIER,
+
+      delta:
+
+        bars[i].close >=
+        bars[i].open
+
+          ? 1
+
+          : -1
 
     });
 
   }
 
 
-  return states;
+  return {
+
+    bars:
+      out,
+
+    usableVolumeBars:
+      usable,
+
+    volumeAvailable:
+
+      usable >=
+      VOLUME_MA_LENGTH *
+      2
+
+  };
 
 }
 
 
 /* =========================================================
-   CUSTOM TRADE PLAN
-
-   We use the OPPOSITE Twin OTT band as the stop.
-
-   BUY:
-     Entry = signal close
-     SL    = OTT lower
-     TP    = Entry + 3R
-
-   SELL:
-     Entry = signal close
-     SL    = OTT upper
-     TP    = Entry - 3R
+   RESAMPLE
 ========================================================= */
 
-function tradePlan(
-  state
+function resample(
+  bars,
+  minutes
+) {
+
+  const map =
+    new Map();
+
+
+  const size =
+    minutes *
+    60_000;
+
+
+  for (
+    const b
+    of bars
+  ) {
+
+    const start =
+      bucketStart(
+        b.timestamp,
+        minutes
+      );
+
+
+    let g =
+      map.get(
+        start
+      );
+
+
+    if (
+      !g
+    ) {
+
+      g = {
+
+        timestamp:
+          start,
+
+        time:
+          iso(
+            start
+          ),
+
+        closeTimestamp:
+          start +
+          size,
+
+        closeTime:
+          iso(
+            start +
+            size
+          ),
+
+        open:
+          b.open,
+
+        high:
+          b.high,
+
+        low:
+          b.low,
+
+        close:
+          b.close,
+
+        volume:
+
+          Number.isFinite(
+            b.volume
+          )
+
+            ? b.volume
+
+            : 0
+
+      };
+
+
+      map.set(
+        start,
+        g
+      );
+
+    } else {
+
+      g.high =
+        Math.max(
+          g.high,
+          b.high
+        );
+
+
+      g.low =
+        Math.min(
+          g.low,
+          b.low
+        );
+
+
+      g.close =
+        b.close;
+
+
+      if (
+        Number.isFinite(
+          b.volume
+        )
+      ) {
+
+        g.volume +=
+          b.volume;
+
+      }
+
+    }
+
+  }
+
+
+  return [
+    ...map.values()
+  ]
+    .sort(
+      (
+        a,
+        b
+      ) =>
+        a.timestamp -
+        b.timestamp
+    );
+
+}
+
+
+/* =========================================================
+   BUILD 1H ANCHOR
+========================================================= */
+
+function buildAnchor(
+  oneMinuteBars,
+  stateCloseTs
+) {
+
+  const start =
+    bucketStart(
+      stateCloseTs -
+      1,
+      HTF_MINUTES
+    );
+
+
+  const anchorBars =
+
+    oneMinuteBars.filter(
+      b =>
+        b.timestamp >=
+        start
+
+        &&
+
+        b.timestamp <
+        stateCloseTs
+    );
+
+
+  if (
+    !anchorBars.length
+  ) {
+
+    return null;
+
+  }
+
+
+  const open =
+    anchorBars[0].open;
+
+
+  let high =
+    -Infinity;
+
+
+  let low =
+    Infinity;
+
+
+  let close =
+    anchorBars.at(-1).close;
+
+
+  for (
+    const b
+    of anchorBars
+  ) {
+
+    high =
+      Math.max(
+        high,
+        b.high
+      );
+
+
+    low =
+      Math.min(
+        low,
+        b.low
+      );
+
+
+    close =
+      b.close;
+
+  }
+
+
+  const spikes =
+
+    anchorBars
+
+      .filter(
+        b =>
+          b.isSpike
+      )
+
+      .map(
+        b => ({
+
+          time:
+            b.time,
+
+          timestamp:
+            b.timestamp,
+
+          price:
+            b.close,
+
+          volume:
+            b.volume,
+
+          volumeMA:
+            b.volumeMA,
+
+          delta:
+            b.delta
+
+        })
+      );
+
+
+  const bullSpikes =
+
+    spikes.filter(
+      s =>
+        s.delta >
+        0
+    ).length;
+
+
+  const bearSpikes =
+
+    spikes.filter(
+      s =>
+        s.delta <
+        0
+    ).length;
+
+
+  const zones =
+    [];
+
+
+  const profile =
+    [];
+
+
+  let poc =
+    null;
+
+
+  if (
+    high >
+    low
+  ) {
+
+    const step =
+
+      (
+        high -
+        low
+      )
+
+      /
+
+      VP_ROWS;
+
+
+    const bins =
+
+      Array.from(
+        {
+          length:
+            VP_ROWS
+        },
+        (
+          _,
+          i
+        ) => ({
+
+          index:
+            i,
+
+          low:
+            low +
+            i *
+            step,
+
+          high:
+            low +
+            (
+              i +
+              1
+            )
+            *
+            step,
+
+          bullCount:
+            0,
+
+          bearCount:
+            0,
+
+          volume:
+            0
+
+        })
+      );
+
+
+    /* VOLUME PROFILE */
+
+    for (
+      const b
+      of anchorBars
+    ) {
+
+      let idx =
+        Math.floor(
+
+          (
+            b.close -
+            low
+          )
+
+          /
+
+          step
+
+        );
+
+
+      idx =
+        Math.max(
+          0,
+          Math.min(
+            VP_ROWS -
+            1,
+            idx
+          )
+        );
+
+
+      if (
+        Number.isFinite(
+          b.volume
+        )
+
+        &&
+
+        b.volume >
+        0
+      ) {
+
+        bins[idx].volume +=
+          b.volume;
+
+      }
+
+    }
+
+
+    /* SPIKES INTO ROWS */
+
+    for (
+      const s
+      of spikes
+    ) {
+
+      let idx =
+        Math.floor(
+
+          (
+            s.price -
+            low
+          )
+
+          /
+
+          step
+
+        );
+
+
+      idx =
+        Math.max(
+          0,
+          Math.min(
+            VP_ROWS -
+            1,
+            idx
+          )
+        );
+
+
+      if (
+        s.delta >
+        0
+      ) {
+
+        bins[idx].bullCount++;
+
+      } else {
+
+        bins[idx].bearCount++;
+
+      }
+
+    }
+
+
+    let maxProfileVol =
+      0;
+
+
+    for (
+      const bin
+      of bins
+    ) {
+
+      if (
+        bin.volume >
+        maxProfileVol
+      ) {
+
+        maxProfileVol =
+          bin.volume;
+
+
+        poc =
+
+          (
+            bin.low +
+            bin.high
+          )
+
+          /
+          2;
+
+      }
+
+
+      const bull =
+
+        bin.bullCount >=
+        MIN_STACKED_SPIKES
+
+        &&
+
+        bin.bullCount >
+        bin.bearCount;
+
+
+      const bear =
+
+        bin.bearCount >=
+        MIN_STACKED_SPIKES
+
+        &&
+
+        bin.bearCount >
+        bin.bullCount;
+
+
+      if (
+        bull ||
+        bear
+      ) {
+
+        zones.push({
+
+          low:
+            bin.low,
+
+          high:
+            bin.high,
+
+          bullCount:
+            bin.bullCount,
+
+          bearCount:
+            bin.bearCount,
+
+          direction:
+
+            bull
+
+              ? "BULLISH"
+
+              : "BEARISH",
+
+          strength:
+
+            bull
+
+              ? bin.bullCount -
+                bin.bearCount
+
+              : bin.bearCount -
+                bin.bullCount
+
+        });
+
+      }
+
+    }
+
+
+    for (
+      const bin
+      of bins
+    ) {
+
+      profile.push({
+
+        low:
+          bin.low,
+
+        high:
+          bin.high,
+
+        volume:
+          bin.volume,
+
+        relative:
+
+          maxProfileVol >
+          0
+
+            ? bin.volume /
+              maxProfileVol
+
+            : 0
+
+      });
+
+    }
+
+  }
+
+
+  const strongestBullish =
+
+    zones
+
+      .filter(
+        z =>
+          z.direction ===
+          "BULLISH"
+      )
+
+      .sort(
+        (
+          a,
+          b
+        ) =>
+
+          b.strength -
+          a.strength
+
+          ||
+
+          b.bullCount -
+          a.bullCount
+      )[0]
+
+    ||
+
+    null;
+
+
+  const strongestBearish =
+
+    zones
+
+      .filter(
+        z =>
+          z.direction ===
+          "BEARISH"
+      )
+
+      .sort(
+        (
+          a,
+          b
+        ) =>
+
+          b.strength -
+          a.strength
+
+          ||
+
+          b.bearCount -
+          a.bearCount
+      )[0]
+
+    ||
+
+    null;
+
+
+  return {
+
+    startTime:
+      iso(
+        start
+      ),
+
+    endTime:
+      iso(
+        stateCloseTs
+      ),
+
+    open,
+
+    high,
+
+    low,
+
+    close,
+
+    spikes,
+
+    bullSpikes,
+
+    bearSpikes,
+
+    totalSpikes:
+      spikes.length,
+
+    dominance:
+
+      bullSpikes >
+      bearSpikes
+
+        ? "BULLISH"
+
+        : bearSpikes >
+          bullSpikes
+
+          ? "BEARISH"
+
+          : "BALANCED",
+
+    zones,
+
+    strongestBullish,
+
+    strongestBearish,
+
+    profile,
+
+    poc
+
+  };
+
+}
+
+
+/* =========================================================
+   SIGNAL ZONE
+========================================================= */
+
+function selectCrossedZone(
+  previousClose,
+  currentClose,
+  anchor
 ) {
 
   if (
-    !state
+    !anchor
+
+    ||
+
+    !Number.isFinite(
+      previousClose
+    )
+
+    ||
+
+    !Number.isFinite(
+      currentClose
+    )
+  ) {
+
+    return null;
+
+  }
+
+
+  const buyCandidates =
+
+    anchor.zones
+
+      .filter(
+        z =>
+
+          z.direction ===
+          "BULLISH"
+
+          &&
+
+          previousClose <=
+          z.high
+
+          &&
+
+          currentClose >
+          z.high
+      )
+
+      .sort(
+        (
+          a,
+          b
+        ) =>
+
+          b.strength -
+          a.strength
+
+          ||
+
+          b.high -
+          a.high
+      );
+
+
+  const sellCandidates =
+
+    anchor.zones
+
+      .filter(
+        z =>
+
+          z.direction ===
+          "BEARISH"
+
+          &&
+
+          previousClose >=
+          z.low
+
+          &&
+
+          currentClose <
+          z.low
+      )
+
+      .sort(
+        (
+          a,
+          b
+        ) =>
+
+          b.strength -
+          a.strength
+
+          ||
+
+          a.low -
+          b.low
+      );
+
+
+  const buyAllowed =
+
+    currentClose >
+    previousClose
+
+    &&
+
+    anchor.close >=
+    anchor.open;
+
+
+  const sellAllowed =
+
+    currentClose <
+    previousClose
+
+    &&
+
+    anchor.close <=
+    anchor.open;
+
+
+  if (
+    buyAllowed
+
+    &&
+
+    buyCandidates.length
+
+    &&
+
+    !sellCandidates.length
+  ) {
+
+    return {
+
+      signal:
+        "BUY",
+
+      zone:
+        buyCandidates[0]
+
+    };
+
+  }
+
+
+  if (
+    sellAllowed
+
+    &&
+
+    sellCandidates.length
+
+    &&
+
+    !buyCandidates.length
+  ) {
+
+    return {
+
+      signal:
+        "SELL",
+
+      zone:
+        sellCandidates[0]
+
+    };
+
+  }
+
+
+  if (
+    buyAllowed
+
+    &&
+
+    buyCandidates.length
+
+    &&
+
+    sellAllowed
+
+    &&
+
+    sellCandidates.length
+  ) {
+
+    return (
+
+      buyCandidates[0].strength >=
+      sellCandidates[0].strength
+
+        ? {
+
+            signal:
+              "BUY",
+
+            zone:
+              buyCandidates[0]
+
+          }
+
+        : {
+
+            signal:
+              "SELL",
+
+            zone:
+              sellCandidates[0]
+
+          }
+
+    );
+
+  }
+
+
+  return null;
+
+}
+
+
+/* =========================================================
+   TRADE PLAN
+========================================================= */
+
+function buildTradePlan(
+  signal,
+  entry,
+  zone
+) {
+
+  if (
+    !zone
+
+    ||
+
+    (
+      signal !==
+      "BUY"
+
+      &&
+
+      signal !==
+      "SELL"
+    )
   ) {
 
     return {
@@ -1554,186 +1774,90 @@ function tradePlan(
   }
 
 
-  const signal =
-    state.signal;
+  const stopLoss =
 
-
-  let entry =
-    null;
-
-
-  let stopLoss =
-    null;
-
-
-  let takeProfit =
-    null;
-
-
-  let risk =
-    null;
-
-
-  if (
     signal ===
     "BUY"
-  ) {
 
-    entry =
-      state.close;
+      ? zone.low
 
-
-    stopLoss =
-      state.ottLower;
+      : zone.high;
 
 
-    if (
-      Number.isFinite(
-        entry
-      )
+  const risk =
 
-      &&
-
-      Number.isFinite(
-        stopLoss
-      )
-    ) {
-
-      risk =
-        entry -
-        stopLoss;
-
-
-      if (
-        risk >
-        0
-      ) {
-
-        takeProfit =
-
-          entry
-
-          +
-
-          risk *
-          RISK_REWARD;
-
-      }
-
-    }
-
-  }
-
-
-  if (
     signal ===
-    "SELL"
-  ) {
+    "BUY"
 
-    entry =
-      state.close;
-
-
-    stopLoss =
-      state.ottUpper;
-
-
-    if (
-      Number.isFinite(
-        entry
-      )
-
-      &&
-
-      Number.isFinite(
+      ? entry -
         stopLoss
-      )
-    ) {
 
-      risk =
-        stopLoss -
+      : stopLoss -
         entry;
 
 
-      if (
-        risk >
-        0
-      ) {
+  if (
+    !Number.isFinite(
+      risk
+    )
 
-        takeProfit =
+    ||
 
-          entry
+    risk <=
+    0
+  ) {
 
-          -
+    return {
 
-          risk *
-          RISK_REWARD;
+      valid:
+        false,
 
-      }
+      entry:
+        null,
 
-    }
+      stopLoss:
+        null,
+
+      takeProfit:
+        null,
+
+      risk:
+        null,
+
+      rr:
+        RISK_REWARD
+
+    };
 
   }
 
 
-  const valid =
+  const takeProfit =
 
-    signal !==
-    "WAIT"
+    signal ===
+    "BUY"
 
-    &&
+      ? entry +
+        risk *
+        RISK_REWARD
 
-    Number.isFinite(
-      entry
-    )
-
-    &&
-
-    Number.isFinite(
-      stopLoss
-    )
-
-    &&
-
-    Number.isFinite(
-      takeProfit
-    )
-
-    &&
-
-    Number.isFinite(
-      risk
-    )
-
-    &&
-
-    risk >
-    0;
+      : entry -
+        risk *
+        RISK_REWARD;
 
 
   return {
 
-    valid,
+    valid:
+      true,
 
-    entry:
-      valid
-        ? entry
-        : null,
+    entry,
 
-    stopLoss:
-      valid
-        ? stopLoss
-        : null,
+    stopLoss,
 
-    takeProfit:
-      valid
-        ? takeProfit
-        : null,
+    takeProfit,
 
-    risk:
-      valid
-        ? risk
-        : null,
+    risk,
 
     rr:
       RISK_REWARD
@@ -1744,38 +1868,128 @@ function tradePlan(
 
 
 /* =========================================================
-   CURRENT ANALYSIS
+   BUILD ALL 5M STATES
 ========================================================= */
 
-function analyse(
-  bars
+function buildStates(
+  oneMinuteBars,
+  fiveMinuteBars
 ) {
 
   const states =
-    buildTottStates(
-      bars
-    );
+    [];
 
 
-  const current =
-    states.at(-1);
+  for (
+    let i = 0;
+    i < fiveMinuteBars.length;
+    i++
+  ) {
+
+    const bar =
+      fiveMinuteBars[i];
 
 
-  const plan =
-    tradePlan(
-      current
-    );
+    const anchor =
+      buildAnchor(
+        oneMinuteBars,
+        bar.closeTimestamp
+      );
 
 
-  return {
+    const previousClose =
 
-    ...current,
+      i >
+      0
 
-    ...plan,
+        ? fiveMinuteBars[
+            i -
+            1
+          ].close
 
-    states
+        : null;
 
-  };
+
+    const crossed =
+      selectCrossedZone(
+
+        previousClose,
+
+        bar.close,
+
+        anchor
+
+      );
+
+
+    let signal =
+      crossed?.signal ||
+      "WAIT";
+
+
+    let zone =
+      crossed?.zone ||
+      null;
+
+
+    let plan =
+      buildTradePlan(
+
+        signal,
+
+        bar.close,
+
+        zone
+
+      );
+
+
+    if (
+      !plan.valid
+    ) {
+
+      signal =
+        "WAIT";
+
+
+      zone =
+        null;
+
+
+      plan =
+        buildTradePlan(
+
+          "WAIT",
+
+          bar.close,
+
+          null
+
+        );
+
+    }
+
+
+    states.push({
+
+      ...bar,
+
+      previousClose,
+
+      anchor,
+
+      signal,
+
+      zone,
+
+      ...plan
+
+    });
+
+  }
+
+
+  return states;
 
 }
 
@@ -1784,110 +1998,37 @@ function analyse(
    RECENT SIGNALS
 ========================================================= */
 
-function recentSignals(
-  states,
-  limit =
-    RECENT_SIGNAL_LIMIT
-) {
+function recentSignals(states) {
 
-  const signals =
-    [];
+  return states
 
+    .filter(
+      s =>
+        s.signal ===
+        "BUY"
 
-  for (
-    let i =
-      WARMUP_BARS;
+        ||
 
-    i <
-      states.length;
-
-    i++
-  ) {
-
-    const state =
-      states[i];
-
-
-    if (
-      state.signal ===
-      "WAIT"
-    ) {
-
-      continue;
-
-    }
-
-
-    const plan =
-      tradePlan(
-        state
-      );
-
-
-    if (
-      !plan.valid
-    ) {
-
-      continue;
-
-    }
-
-
-    signals.push({
-
-      signal:
-        state.signal,
-
-      time:
-        state.time,
-
-      entry:
-        plan.entry,
-
-      stopLoss:
-        plan.stopLoss,
-
-      takeProfit:
-        plan.takeProfit,
-
-      risk:
-        plan.risk,
-
-      rr:
-        plan.rr,
-
-      mavg:
-        state.mavg,
-
-      ottUpper:
-        state.ottUpper,
-
-      ottLower:
-        state.ottLower
-
-    });
-
-  }
-
-
-  return signals
-    .slice(
-      -limit
+        s.signal ===
+        "SELL"
     )
+
+    .slice(
+      -RECENT_SIGNAL_LIMIT
+    )
+
     .reverse();
 
 }
 
 
 /* =========================================================
-   SIMULATE LOCKED TRADE
+   SIMULATE TRADE ON 1M DATA
 ========================================================= */
 
-function simulateTrade(
-  bars,
-  signalIndex,
-  signal,
-  plan
+function simulateTrade1m(
+  oneMinuteBars,
+  state
 ) {
 
   let result =
@@ -1906,53 +2047,47 @@ function simulateTrade(
     null;
 
 
-  let exitIndex =
+  let exitTimestamp =
     null;
 
 
-  /*
-     Entry occurs at signal candle close.
-
-     Therefore TP/SL testing starts
-     on the NEXT candle.
-  */
-
   for (
-    let i =
-      signalIndex +
-      1;
-
-    i <
-      bars.length;
-
-    i++
+    const b
+    of oneMinuteBars
   ) {
 
-    const candle =
-      bars[i];
+    if (
+      b.timestamp <
+      state.closeTimestamp
+    ) {
+
+      continue;
+
+    }
 
 
     if (
-      signal ===
+      state.signal ===
       "BUY"
     ) {
 
       const stopHit =
 
-        candle.low <=
-        plan.stopLoss;
+        b.low <=
+        state.stopLoss;
 
 
       const targetHit =
 
-        candle.high >=
-        plan.takeProfit;
+        b.high >=
+        state.takeProfit;
 
 
       /*
-         Conservative rule:
-         if both TP and SL occurred
-         inside one candle, count SL.
+         Conservative:
+         if TP and SL both hit
+         inside same 1M candle,
+         SL wins.
       */
 
       if (
@@ -1968,15 +2103,15 @@ function simulateTrade(
 
 
         exitPrice =
-          plan.stopLoss;
+          state.stopLoss;
 
 
         exitTime =
-          candle.time;
+          b.time;
 
 
-        exitIndex =
-          i;
+        exitTimestamp =
+          b.timestamp;
 
 
         break;
@@ -1997,15 +2132,15 @@ function simulateTrade(
 
 
         exitPrice =
-          plan.takeProfit;
+          state.takeProfit;
 
 
         exitTime =
-          candle.time;
+          b.time;
 
 
-        exitIndex =
-          i;
+        exitTimestamp =
+          b.timestamp;
 
 
         break;
@@ -2016,20 +2151,20 @@ function simulateTrade(
 
 
     if (
-      signal ===
+      state.signal ===
       "SELL"
     ) {
 
       const stopHit =
 
-        candle.high >=
-        plan.stopLoss;
+        b.high >=
+        state.stopLoss;
 
 
       const targetHit =
 
-        candle.low <=
-        plan.takeProfit;
+        b.low <=
+        state.takeProfit;
 
 
       if (
@@ -2045,15 +2180,15 @@ function simulateTrade(
 
 
         exitPrice =
-          plan.stopLoss;
+          state.stopLoss;
 
 
         exitTime =
-          candle.time;
+          b.time;
 
 
-        exitIndex =
-          i;
+        exitTimestamp =
+          b.timestamp;
 
 
         break;
@@ -2074,15 +2209,15 @@ function simulateTrade(
 
 
         exitPrice =
-          plan.takeProfit;
+          state.takeProfit;
 
 
         exitTime =
-          candle.time;
+          b.time;
 
 
-        exitIndex =
-          i;
+        exitTimestamp =
+          b.timestamp;
 
 
         break;
@@ -2105,19 +2240,29 @@ function simulateTrade(
 
     exitTime,
 
-    exitIndex,
+    exitTimestamp,
 
-    holdBars:
+    holdMinutes:
 
-      exitIndex ===
+      exitTimestamp ===
       null
 
-        ? bars.length -
-          1 -
-          signalIndex
+        ? null
 
-        : exitIndex -
-          signalIndex
+        : Math.max(
+
+            0,
+
+            (
+              exitTimestamp -
+              state.closeTimestamp
+            )
+
+            /
+
+            60_000
+
+          )
 
   };
 
@@ -2125,11 +2270,11 @@ function simulateTrade(
 
 
 /* =========================================================
-   HARD-LOCK BACKTEST
+   HARD LOCK BACKTEST
 ========================================================= */
 
 function backtest(
-  bars,
+  oneMinuteBars,
   states
 ) {
 
@@ -2137,23 +2282,28 @@ function backtest(
     [];
 
 
-  let index =
-    Math.max(
-      WARMUP_BARS,
-      OTT_PERIOD + 20
+  let i =
+
+    Math.min(
+
+      BACKTEST_WARMUP_STATES,
+
+      Math.max(
+        0,
+        states.length -
+        1
+      )
+
     );
 
 
   while (
-    index <
-    states.length -
-    1
+    i <
+    states.length
   ) {
 
     const state =
-      states[
-        index
-      ];
+      states[i];
 
 
     if (
@@ -2161,40 +2311,19 @@ function backtest(
       "WAIT"
     ) {
 
-      index++;
+      i++;
 
       continue;
 
     }
 
 
-    const plan =
-      tradePlan(
+    const sim =
+      simulateTrade1m(
+
+        oneMinuteBars,
+
         state
-      );
-
-
-    if (
-      !plan.valid
-    ) {
-
-      index++;
-
-      continue;
-
-    }
-
-
-    const simulation =
-      simulateTrade(
-
-        bars,
-
-        index,
-
-        state.signal,
-
-        plan
 
       );
 
@@ -2205,106 +2334,112 @@ function backtest(
         state.signal,
 
       entryTime:
-        state.time,
+        state.closeTime,
 
       entry:
-        plan.entry,
+        state.entry,
 
       stopLoss:
-        plan.stopLoss,
+        state.stopLoss,
 
       takeProfit:
-        plan.takeProfit,
+        state.takeProfit,
 
       risk:
-        plan.risk,
+        state.risk,
 
       rr:
-        plan.rr,
+        state.rr,
+
+      zone:
+        state.zone,
 
       result:
-        simulation.result,
+        sim.result,
 
       r:
-        simulation.r,
+        sim.r,
 
       exitPrice:
-        simulation.exitPrice,
+        sim.exitPrice,
 
       exitTime:
-        simulation.exitTime,
+        sim.exitTime,
 
-      exitIndex:
-        simulation.exitIndex,
+      exitTimestamp:
+        sim.exitTimestamp,
 
-      holdBars:
-        simulation.holdBars
+      holdMinutes:
+        sim.holdMinutes
 
     });
 
 
     /*
-       HARD LOCK.
-
-       No new BUY / SELL signal is taken
-       while this trade is active.
+       Hard lock:
+       no other signal while trade active.
     */
 
     if (
-      simulation.exitIndex !==
+      sim.exitTimestamp ===
       null
     ) {
 
-      index =
-        simulation.exitIndex +
-        1;
-
-    } else {
-
       break;
+
+    }
+
+
+    i++;
+
+
+    while (
+
+      i <
+      states.length
+
+      &&
+
+      states[i].closeTimestamp <=
+      sim.exitTimestamp
+
+    ) {
+
+      i++;
 
     }
 
   }
 
 
-  const closedTrades =
+  const closed =
 
     trades.filter(
-      trade =>
-        trade.result ===
+      t =>
+        t.result ===
         "WIN"
 
         ||
 
-        trade.result ===
+        t.result ===
         "LOSS"
-    );
-
-
-  const openTrades =
-
-    trades.filter(
-      trade =>
-        trade.result ===
-        "OPEN"
     );
 
 
   const wins =
 
-    closedTrades.filter(
-      trade =>
-        trade.result ===
+    closed.filter(
+      t =>
+        t.result ===
         "WIN"
     );
 
 
   const losses =
 
-    closedTrades.filter(
-      trade =>
-        trade.result ===
+    closed.filter(
+      t =>
+        t.result ===
         "LOSS"
     );
 
@@ -2313,11 +2448,11 @@ function backtest(
 
     wins.reduce(
       (
-        total,
-        trade
+        s,
+        t
       ) =>
-        total +
-        trade.r,
+        s +
+        t.r,
       0
     );
 
@@ -2328,11 +2463,11 @@ function backtest(
 
       losses.reduce(
         (
-          total,
-          trade
+          s,
+          t
         ) =>
-          total +
-          trade.r,
+          s +
+          t.r,
         0
       )
 
@@ -2341,44 +2476,36 @@ function backtest(
 
   const netR =
 
-    closedTrades.reduce(
+    closed.reduce(
       (
-        total,
-        trade
+        s,
+        t
       ) =>
-        total +
-        trade.r,
+        s +
+        t.r,
       0
     );
 
 
   const winRate =
 
-    closedTrades.length
+    closed.length
 
-      ?
+      ? wins.length /
+        closed.length *
+        100
 
-      wins.length /
-      closedTrades.length *
-      100
-
-      :
-
-      0;
+      : 0;
 
 
   const expectancyR =
 
-    closedTrades.length
+    closed.length
 
-      ?
+      ? netR /
+        closed.length
 
-      netR /
-      closedTrades.length
-
-      :
-
-      0;
+      : 0;
 
 
   const profitFactor =
@@ -2405,11 +2532,11 @@ function backtest(
     0;
 
 
-  let maxDrawdown =
+  let maxDrawdownR =
     0;
 
 
-  let currentLossStreak =
+  let lossStreak =
     0;
 
 
@@ -2418,12 +2545,12 @@ function backtest(
 
 
   for (
-    const trade
-    of closedTrades
+    const t
+    of closed
   ) {
 
     equity +=
-      trade.r;
+      t.r;
 
 
     peak =
@@ -2433,10 +2560,10 @@ function backtest(
       );
 
 
-    maxDrawdown =
+    maxDrawdownR =
       Math.max(
 
-        maxDrawdown,
+        maxDrawdownR,
 
         peak -
         equity
@@ -2445,11 +2572,11 @@ function backtest(
 
 
     if (
-      trade.result ===
+      t.result ===
       "LOSS"
     ) {
 
-      currentLossStreak++;
+      lossStreak++;
 
 
       maxLossStreak =
@@ -2457,13 +2584,13 @@ function backtest(
 
           maxLossStreak,
 
-          currentLossStreak
+          lossStreak
 
         );
 
     } else {
 
-      currentLossStreak =
+      lossStreak =
         0;
 
     }
@@ -2471,29 +2598,37 @@ function backtest(
   }
 
 
-  const averageHoldBars =
+  const holdValues =
 
-    closedTrades.length
+    closed
 
-      ?
-
-      closedTrades.reduce(
-        (
-          total,
-          trade
-        ) =>
-          total +
-          trade.holdBars,
-        0
+      .map(
+        t =>
+          t.holdMinutes
       )
 
-      /
+      .filter(
+        Number.isFinite
+      );
 
-      closedTrades.length
 
-      :
+  const avgHoldMinutes =
 
-      0;
+    holdValues.length
+
+      ? holdValues.reduce(
+          (
+            s,
+            v
+          ) =>
+            s +
+            v,
+          0
+        )
+        /
+        holdValues.length
+
+      : 0;
 
 
   return {
@@ -2502,45 +2637,21 @@ function backtest(
       "HARD LOCK",
 
     strategy:
-      "TOTT",
+      "HTF Volume Spike + Stacked Imbalance",
 
-    timeframe:
-      "5min",
-
-    maType:
-      MA_TYPE,
-
-    period:
-      OTT_PERIOD,
-
-    percent:
-      OPTIMIZATION_PERCENT,
-
-    coefficient:
-      TWIN_COEFFICIENT,
-
-    targetR:
-      RISK_REWARD,
-
-    barsTested:
-      bars.length,
-
-    firstCandle:
-      bars[0]?.time ??
-      null,
-
-    lastCandle:
-      bars.at(-1)?.time ??
-      null,
-
-    signalsTaken:
+    tradesTaken:
       trades.length,
 
     closedTrades:
-      closedTrades.length,
+      closed.length,
 
     openTrades:
-      openTrades.length,
+
+      trades.filter(
+        t =>
+          t.result ===
+          "OPEN"
+      ).length,
 
     wins:
       wins.length,
@@ -2552,18 +2663,6 @@ function backtest(
       round(
         winRate,
         1
-      ),
-
-    grossProfitR:
-      round(
-        grossProfitR,
-        2
-      ),
-
-    grossLossR:
-      round(
-        grossLossR,
-        2
       ),
 
     profitFactor:
@@ -2592,31 +2691,34 @@ function backtest(
 
     maxDrawdownR:
       round(
-        maxDrawdown,
+        maxDrawdownR,
         2
       ),
 
     maxLossStreak,
 
-    averageHoldBars:
+    averageHoldMinutes:
       round(
-        averageHoldBars,
+        avgHoldMinutes,
         1
       ),
 
-    averageHoldMinutes:
-      round(
-        averageHoldBars *
-        5,
-        1
-      ),
+    firstCandle:
+      states[0]?.time ??
+      null,
+
+    lastCandle:
+      states.at(-1)?.closeTime ??
+      null,
 
     recentTrades:
 
       trades
+
         .slice(
           -RECENT_BACKTEST_LIMIT
         )
+
         .reverse()
 
   };
@@ -2625,22 +2727,10 @@ function backtest(
 
 
 /* =========================================================
-   OPTIONAL FRONTEND HARD LOCK CHECK
-
-   Frontend sends:
-   lockSignal
-   lockEntry
-   lockSL
-   lockTP
-   lockTime
-
-   This allows the server to check the full fetched
-   history instead of only the chart window.
+   LOCK QUERY
 ========================================================= */
 
-function getRequestedLock(
-  req
-) {
+function getRequestedLock(req) {
 
   const signal =
     String(
@@ -2667,19 +2757,19 @@ function getRequestedLock(
 
 
   const entry =
-    num(
+    n(
       req.query?.lockEntry
     );
 
 
   const stopLoss =
-    num(
+    n(
       req.query?.lockSL
     );
 
 
   const takeProfit =
-    num(
+    n(
       req.query?.lockTP
     );
 
@@ -2692,9 +2782,21 @@ function getRequestedLock(
 
 
   if (
-    entry === null ||
-    stopLoss === null ||
-    takeProfit === null ||
+    entry ===
+    null
+
+    ||
+
+    stopLoss ===
+    null
+
+    ||
+
+    takeProfit ===
+    null
+
+    ||
+
     !time
   ) {
 
@@ -2721,11 +2823,11 @@ function getRequestedLock(
 
 
 /* =========================================================
-   CHECK LIVE HARD LOCK
+   CHECK LIVE LOCK
 ========================================================= */
 
 function checkRequestedLock(
-  bars,
+  raw1m,
   lock
 ) {
 
@@ -2738,7 +2840,7 @@ function checkRequestedLock(
   }
 
 
-  const startTime =
+  const start =
     parseTime(
       lock.time
     );
@@ -2746,7 +2848,7 @@ function checkRequestedLock(
 
   if (
     !Number.isFinite(
-      startTime
+      start
     )
   ) {
 
@@ -2761,30 +2863,13 @@ function checkRequestedLock(
 
 
   for (
-    const candle
-    of bars
+    const b
+    of raw1m
   ) {
 
-    const candleTime =
-      parseTime(
-        candle.time
-      );
-
-
-    /*
-       Entry occurs at signal candle close,
-       so never test that same candle.
-    */
-
     if (
-      !Number.isFinite(
-        candleTime
-      )
-
-      ||
-
-      candleTime <=
-      startTime
+      b.timestamp <
+      start
     ) {
 
       continue;
@@ -2797,20 +2882,9 @@ function checkRequestedLock(
       "BUY"
     ) {
 
-      const stopHit =
-
-        candle.low <=
-        lock.stopLoss;
-
-
-      const targetHit =
-
-        candle.high >=
-        lock.takeProfit;
-
-
       if (
-        stopHit
+        b.low <=
+        lock.stopLoss
       ) {
 
         return {
@@ -2825,7 +2899,7 @@ function checkRequestedLock(
             lock.stopLoss,
 
           exitTime:
-            candle.time
+            b.time
 
         };
 
@@ -2833,7 +2907,8 @@ function checkRequestedLock(
 
 
       if (
-        targetHit
+        b.high >=
+        lock.takeProfit
       ) {
 
         return {
@@ -2848,34 +2923,17 @@ function checkRequestedLock(
             lock.takeProfit,
 
           exitTime:
-            candle.time
+            b.time
 
         };
 
       }
 
-    }
-
-
-    if (
-      lock.signal ===
-      "SELL"
-    ) {
-
-      const stopHit =
-
-        candle.high >=
-        lock.stopLoss;
-
-
-      const targetHit =
-
-        candle.low <=
-        lock.takeProfit;
-
+    } else {
 
       if (
-        stopHit
+        b.high >=
+        lock.stopLoss
       ) {
 
         return {
@@ -2890,7 +2948,7 @@ function checkRequestedLock(
             lock.stopLoss,
 
           exitTime:
-            candle.time
+            b.time
 
         };
 
@@ -2898,7 +2956,8 @@ function checkRequestedLock(
 
 
       if (
-        targetHit
+        b.low <=
+        lock.takeProfit
       ) {
 
         return {
@@ -2913,7 +2972,7 @@ function checkRequestedLock(
             lock.takeProfit,
 
           exitTime:
-            candle.time
+            b.time
 
         };
 
@@ -2935,7 +2994,126 @@ function checkRequestedLock(
 
 
 /* =========================================================
-   API HANDLER
+   MAP ZONE
+========================================================= */
+
+function mapZone(
+  zone,
+  digits
+) {
+
+  if (
+    !zone
+  ) {
+
+    return null;
+
+  }
+
+
+  return {
+
+    low:
+      round(
+        zone.low,
+        digits
+      ),
+
+    high:
+      round(
+        zone.high,
+        digits
+      ),
+
+    bullCount:
+      zone.bullCount,
+
+    bearCount:
+      zone.bearCount,
+
+    direction:
+      zone.direction,
+
+    strength:
+      zone.strength
+
+  };
+
+}
+
+
+/* =========================================================
+   MAP SIGNAL
+========================================================= */
+
+function mapTradeState(
+  state,
+  digits
+) {
+
+  return {
+
+    signal:
+      state.signal,
+
+    time:
+      state.time,
+
+    signalTime:
+      state.closeTime,
+
+    entry:
+      round(
+        state.entry,
+        digits
+      ),
+
+    stopLoss:
+      round(
+        state.stopLoss,
+        digits
+      ),
+
+    takeProfit:
+      round(
+        state.takeProfit,
+        digits
+      ),
+
+    risk:
+      round(
+        state.risk,
+        digits
+      ),
+
+    rr:
+      state.rr,
+
+    zone:
+      mapZone(
+        state.zone,
+        digits
+      ),
+
+    bullSpikes:
+      state.anchor?.bullSpikes ??
+      0,
+
+    bearSpikes:
+      state.anchor?.bearSpikes ??
+      0,
+
+    dominance:
+      state.anchor?.dominance ??
+      "BALANCED"
+
+  };
+
+}
+
+
+/* =========================================================
+   HANDLER
 ========================================================= */
 
 export default async function handler(
@@ -2944,38 +3122,26 @@ export default async function handler(
 ) {
 
   res.setHeader(
-
     "Cache-Control",
-
     "no-store, no-cache, must-revalidate"
-
   );
 
 
   res.setHeader(
-
     "Access-Control-Allow-Origin",
-
     "*"
-
   );
 
 
   res.setHeader(
-
     "Access-Control-Allow-Methods",
-
     "GET,OPTIONS"
-
   );
 
 
   res.setHeader(
-
     "Access-Control-Allow-Headers",
-
     "Content-Type"
-
   );
 
 
@@ -3036,65 +3202,197 @@ export default async function handler(
       ];
 
 
-    /*
-       Raw bars include the current
-       forming candle.
+    /* =====================================================
+       GET 1M
+    ===================================================== */
 
-       They are useful for checking
-       TP / SL intrabar.
-    */
-
-    const rawBars =
-      await fetch5m(
+    const raw1m =
+      await fetch1m(
         symbol
       );
 
 
-    /*
-       TOTT signals only use
-       completed 5M candles.
-    */
-
-    const bars =
-      completedBars(
-        rawBars
+    const completed =
+      completed1m(
+        raw1m
       );
 
 
+    const volumePacket =
+      addVolumeStats(
+        completed
+      );
+
+
+    const oneMinuteBars =
+      volumePacket.bars;
+
+
+    /* =====================================================
+       BUILD 5M
+    ===================================================== */
+
+    const fiveMinuteBars =
+
+      resample(
+        oneMinuteBars,
+        EXECUTION_MINUTES
+      )
+
+        .filter(
+          b =>
+            b.closeTimestamp <=
+            Date.now()
+        );
+
+
     if (
-      bars.length <
-      150
+      fiveMinuteBars.length <
+      40
     ) {
 
       throw new Error(
 
-        `${symbol}: not enough completed 5M candles.`
+        `${symbol}: not enough completed 5-minute candles.`
 
       );
 
     }
 
 
-    const analysis =
-      analyse(
-        bars
+    /* =====================================================
+       STATES
+    ===================================================== */
+
+    const states =
+      buildStates(
+
+        oneMinuteBars,
+
+        fiveMinuteBars
+
       );
 
 
-    const recent =
-      recentSignals(
-        analysis.states
+    const current =
+      states.at(-1);
+
+
+    if (
+      !current ||
+      !current.anchor
+    ) {
+
+      throw new Error(
+
+        `${symbol}: could not build current 1H anchor.`
+
       );
 
+    }
+
+
+    /* =====================================================
+       SIGNAL
+    ===================================================== */
+
+    const signal =
+
+      volumePacket.volumeAvailable
+
+        ? current.signal
+
+        : "WAIT";
+
+
+    /* =====================================================
+       BACKTEST
+    ===================================================== */
 
     const bt =
-      backtest(
-        bars,
-        analysis.states
-      );
+
+      volumePacket.volumeAvailable
+
+        ?
+
+        backtest(
+
+          oneMinuteBars,
+
+          states
+
+        )
+
+        :
+
+        {
+
+          mode:
+            "HARD LOCK",
+
+          strategy:
+            "HTF Volume Spike + Stacked Imbalance",
+
+          unavailable:
+            true,
+
+          reason:
+            "Provider did not return enough usable 1-minute volume data.",
+
+          tradesTaken:
+            0,
+
+          closedTrades:
+            0,
+
+          openTrades:
+            0,
+
+          wins:
+            0,
+
+          losses:
+            0,
+
+          winRate:
+            0,
+
+          profitFactor:
+            0,
+
+          netR:
+            0,
+
+          expectancyR:
+            0,
+
+          maxDrawdownR:
+            0,
+
+          maxLossStreak:
+            0,
+
+          averageHoldMinutes:
+            0,
+
+          firstCandle:
+            states[0]?.time ??
+            null,
+
+          lastCandle:
+            current.closeTime,
+
+          recentTrades:
+            []
+
+        };
 
 
-    const requestedLock =
+    /* =====================================================
+       LOCK
+    ===================================================== */
+
+    const lock =
       getRequestedLock(
         req
       );
@@ -3103,35 +3401,158 @@ export default async function handler(
     const lockCheck =
       checkRequestedLock(
 
-        rawBars,
+        raw1m,
 
-        requestedLock
+        lock
 
       );
 
 
-    /*
-       Latest raw close is used as
-       current market price.
+    /* =====================================================
+       LIVE PRICE
+    ===================================================== */
 
-       Signal itself still comes from
-       completed candle.
-    */
+    const livePrice =
 
-    const liveBar =
-      rawBars.at(-1);
+      raw1m.at(-1)?.close
 
+      ??
 
-    const currentPrice =
-      liveBar?.close ??
-      analysis.close;
+      current.close;
 
 
-    const candleAge =
-      minutesOld(
-        analysis.time
+    /* =====================================================
+       REASONS
+    ===================================================== */
+
+    const reasons =
+      [];
+
+
+    if (
+      !volumePacket.volumeAvailable
+    ) {
+
+      reasons.push(
+
+        "1-minute volume is unavailable or too sparse from the current provider."
+
       );
 
+
+      reasons.push(
+
+        "The engine stays on WAIT instead of inventing volume data."
+
+      );
+
+    } else if (
+      signal ===
+      "BUY"
+    ) {
+
+      reasons.push(
+
+        "Bullish stacked imbalance detected inside the current 1H anchor."
+
+      );
+
+
+      reasons.push(
+
+        "The completed 5M candle crossed above that bullish imbalance zone."
+
+      );
+
+
+      reasons.push(
+
+        "The current 1H anchor is bullish/neutral-bullish."
+
+      );
+
+
+      reasons.push(
+
+        "SL = bottom of the imbalance zone; TP = 3R."
+
+      );
+
+    } else if (
+      signal ===
+      "SELL"
+    ) {
+
+      reasons.push(
+
+        "Bearish stacked imbalance detected inside the current 1H anchor."
+
+      );
+
+
+      reasons.push(
+
+        "The completed 5M candle crossed below that bearish imbalance zone."
+
+      );
+
+
+      reasons.push(
+
+        "The current 1H anchor is bearish/neutral-bearish."
+
+      );
+
+
+      reasons.push(
+
+        "SL = top of the imbalance zone; TP = 3R."
+
+      );
+
+    } else {
+
+      reasons.push(
+
+        "No fresh 5M cross of a qualified stacked imbalance zone."
+
+      );
+
+
+      reasons.push(
+
+        `Current 1H spike pressure: ${current.anchor.bullSpikes} bullish vs ${current.anchor.bearSpikes} bearish.`
+
+      );
+
+    }
+
+
+    /* =====================================================
+       SPIKE SCALE
+    ===================================================== */
+
+    const maxSpikeVolume =
+
+      Math.max(
+
+        0,
+
+        ...current.anchor.spikes.map(
+          s =>
+            Number(
+              s.volume
+            )
+            ||
+            0
+        )
+
+      );
+
+
+    /* =====================================================
+       RESPONSE
+    ===================================================== */
 
     return res
       .status(200)
@@ -3141,10 +3562,10 @@ export default async function handler(
           true,
 
         engine:
-          "MKAYFX TOTT 5M HARD LOCK",
+          "MKAYFX 5M HTF VOLUME IMBALANCE",
 
-        strategy:
-          "Twin Optimized Trend Tracker",
+        sourceModel:
+          "HTF Volume Spike & Imbalance Projection concept",
 
         symbol,
 
@@ -3161,25 +3582,101 @@ export default async function handler(
           new Date()
             .toISOString(),
 
+        candleTime:
+          current.time,
+
+        signalTime:
+          current.closeTime,
+
+        candleAgeMinutes:
+          round(
+            minutesOld(
+              current.closeTime
+            ),
+            1
+          ),
+
+        price:
+          round(
+            livePrice,
+            market.digits
+          ),
+
+        signal,
+
+        entry:
+
+          signal ===
+          "WAIT"
+
+            ? null
+
+            : round(
+                current.entry,
+                market.digits
+              ),
+
+        stopLoss:
+
+          signal ===
+          "WAIT"
+
+            ? null
+
+            : round(
+                current.stopLoss,
+                market.digits
+              ),
+
+        takeProfit:
+
+          signal ===
+          "WAIT"
+
+            ? null
+
+            : round(
+                current.takeProfit,
+                market.digits
+              ),
+
+        risk:
+
+          signal ===
+          "WAIT"
+
+            ? null
+
+            : round(
+                current.risk,
+                market.digits
+              ),
+
+        rr:
+          RISK_REWARD,
+
         settings: {
 
-          source:
-            "close",
+          executionTimeframe:
+            "5min",
 
-          maType:
-            MA_TYPE,
+          htfAnchor:
+            "60min",
 
-          ottPeriod:
-            OTT_PERIOD,
+          spikeGranularity:
+            "1min",
 
-          optimizationConstant:
-            OPTIMIZATION_PERCENT,
+          spikeMultiplier:
+            SPIKE_MULTIPLIER,
 
-          twinCoefficient:
-            TWIN_COEFFICIENT,
+          volumeMALength:
+            VOLUME_MA_LENGTH,
 
-          ottShift:
-            OTT_SHIFT,
+          vpRows:
+            VP_ROWS,
+
+          minimumStackedSpikes:
+            MIN_STACKED_SPIKES,
 
           riskReward:
             RISK_REWARD,
@@ -3189,180 +3686,208 @@ export default async function handler(
 
         },
 
-        signal:
-          analysis.signal,
+        volume: {
 
-        signalTime:
-          analysis.time,
+          available:
+            volumePacket.volumeAvailable,
 
-        candleTime:
-          analysis.time,
+          usableBars:
+            volumePacket.usableVolumeBars,
 
-        candleAgeMinutes:
-          round(
-            candleAge,
-            1
-          ),
+          totalBars:
+            oneMinuteBars.length
 
-        price:
-          round(
-            currentPrice,
-            market.digits
-          ),
+        },
 
-        signalClose:
-          round(
-            analysis.close,
-            market.digits
-          ),
+        anchor: {
 
-        direction:
+          startTime:
+            current.anchor.startTime,
 
-          analysis.direction ===
-          1
+          endTime:
+            current.anchor.endTime,
 
-            ? "UP"
+          open:
+            round(
+              current.anchor.open,
+              market.digits
+            ),
 
-            : "DOWN",
+          high:
+            round(
+              current.anchor.high,
+              market.digits
+            ),
 
-        mavg:
-          round(
-            analysis.mavg,
-            market.digits
-          ),
+          low:
+            round(
+              current.anchor.low,
+              market.digits
+            ),
 
-        ott:
-          round(
-            analysis.ott,
-            market.digits
-          ),
+          close:
+            round(
+              current.anchor.close,
+              market.digits
+            ),
 
-        ottUpper:
-          round(
-            analysis.ottUpper,
-            market.digits
-          ),
+          bullSpikes:
+            current.anchor.bullSpikes,
 
-        ottLower:
-          round(
-            analysis.ottLower,
-            market.digits
-          ),
+          bearSpikes:
+            current.anchor.bearSpikes,
 
-        entry:
-          round(
-            analysis.entry,
-            market.digits
-          ),
+          totalSpikes:
+            current.anchor.totalSpikes,
 
-        stopLoss:
-          round(
-            analysis.stopLoss,
-            market.digits
-          ),
+          dominance:
+            current.anchor.dominance,
 
-        takeProfit:
-          round(
-            analysis.takeProfit,
-            market.digits
-          ),
+          poc:
+            round(
+              current.anchor.poc,
+              market.digits
+            ),
 
-        risk:
-          round(
-            analysis.risk,
-            market.digits
-          ),
+          strongestBullish:
+            mapZone(
+              current.anchor.strongestBullish,
+              market.digits
+            ),
 
-        rr:
-          analysis.rr,
+          strongestBearish:
+            mapZone(
+              current.anchor.strongestBearish,
+              market.digits
+            ),
+
+          imbalances:
+
+            current.anchor.zones
+
+              .slice()
+
+              .sort(
+                (
+                  a,
+                  b
+                ) =>
+                  b.strength -
+                  a.strength
+              )
+
+              .slice(
+                0,
+                12
+              )
+
+              .map(
+                z =>
+                  mapZone(
+                    z,
+                    market.digits
+                  )
+              ),
+
+          profile:
+
+            current.anchor.profile
+
+              .map(
+                p => ({
+
+                  low:
+                    round(
+                      p.low,
+                      market.digits
+                    ),
+
+                  high:
+                    round(
+                      p.high,
+                      market.digits
+                    ),
+
+                  relative:
+                    round(
+                      p.relative,
+                      4
+                    )
+
+                })
+              ),
+
+          spikes:
+
+            current.anchor.spikes
+
+              .slice(
+                -120
+              )
+
+              .map(
+                s => ({
+
+                  time:
+                    s.time,
+
+                  price:
+                    round(
+                      s.price,
+                      market.digits
+                    ),
+
+                  delta:
+                    s.delta,
+
+                  volume:
+                    round(
+                      s.volume,
+                      2
+                    ),
+
+                  relative:
+
+                    maxSpikeVolume >
+                    0
+
+                      ? round(
+                          s.volume /
+                          maxSpikeVolume,
+                          4
+                        )
+
+                      : 0
+
+                })
+              )
+
+        },
+
+        reasons,
 
         lockCheck,
 
-        reasons:
-
-          analysis.signal ===
-          "BUY"
-
-            ? [
-
-                "VAR crossed above the shifted upper TOTT line.",
-                "BUY signal generated from the TOTT strategy.",
-                "Stop Loss uses the opposite lower TOTT band.",
-                "Take Profit is stretched to 3R.",
-                "Once locked, later WAIT or SELL signals are ignored until exit."
-
-              ]
-
-            : analysis.signal ===
-              "SELL"
-
-              ? [
-
-                  "VAR crossed below the shifted lower TOTT line.",
-                  "SELL signal generated from the TOTT strategy.",
-                  "Stop Loss uses the opposite upper TOTT band.",
-                  "Take Profit is stretched to 3R.",
-                  "Once locked, later WAIT or BUY signals are ignored until exit."
-
-                ]
-
-              : [
-
-                  "No new TOTT crossover on the latest completed 5M candle."
-
-                ],
-
         recentSignals:
 
-          recent.map(
-            trade => ({
+          volumePacket.volumeAvailable
 
-              ...trade,
+            ?
 
-              entry:
-                round(
-                  trade.entry,
-                  market.digits
-                ),
+            recentSignals(
+              states
+            )
+              .map(
+                s =>
+                  mapTradeState(
+                    s,
+                    market.digits
+                  )
+              )
 
-              stopLoss:
-                round(
-                  trade.stopLoss,
-                  market.digits
-                ),
+            :
 
-              takeProfit:
-                round(
-                  trade.takeProfit,
-                  market.digits
-                ),
-
-              risk:
-                round(
-                  trade.risk,
-                  market.digits
-                ),
-
-              mavg:
-                round(
-                  trade.mavg,
-                  market.digits
-                ),
-
-              ottUpper:
-                round(
-                  trade.ottUpper,
-                  market.digits
-                ),
-
-              ottLower:
-                round(
-                  trade.ottLower,
-                  market.digits
-                )
-
-            })
-          ),
+            [],
 
         backtest: {
 
@@ -3370,115 +3895,108 @@ export default async function handler(
 
           recentTrades:
 
-            bt.recentTrades.map(
-              trade => ({
+            (
+              bt.recentTrades ||
+              []
+            )
 
-                ...trade,
+              .map(
+                t => ({
 
-                entry:
+                  ...t,
+
+                  entry:
+                    round(
+                      t.entry,
+                      market.digits
+                    ),
+
+                  stopLoss:
+                    round(
+                      t.stopLoss,
+                      market.digits
+                    ),
+
+                  takeProfit:
+                    round(
+                      t.takeProfit,
+                      market.digits
+                    ),
+
+                  risk:
+                    round(
+                      t.risk,
+                      market.digits
+                    ),
+
+                  exitPrice:
+                    round(
+                      t.exitPrice,
+                      market.digits
+                    ),
+
+                  zone:
+                    mapZone(
+                      t.zone,
+                      market.digits
+                    )
+
+                })
+              )
+
+        },
+
+        chart:
+
+          fiveMinuteBars
+
+            .slice(
+              -180
+            )
+
+            .map(
+              b => ({
+
+                time:
+                  b.time,
+
+                closeTime:
+                  b.closeTime,
+
+                open:
                   round(
-                    trade.entry,
+                    b.open,
                     market.digits
                   ),
 
-                stopLoss:
+                high:
                   round(
-                    trade.stopLoss,
+                    b.high,
                     market.digits
                   ),
 
-                takeProfit:
+                low:
                   round(
-                    trade.takeProfit,
+                    b.low,
                     market.digits
                   ),
 
-                risk:
+                close:
                   round(
-                    trade.risk,
-                    market.digits
-                  ),
-
-                exitPrice:
-                  round(
-                    trade.exitPrice,
+                    b.close,
                     market.digits
                   )
 
               })
             )
 
-        },
-
-        chart:
-
-          analysis.states
-            .slice(
-              -180
-            )
-            .map(
-              state => ({
-
-                time:
-                  state.time,
-
-                open:
-                  round(
-                    state.open,
-                    market.digits
-                  ),
-
-                high:
-                  round(
-                    state.high,
-                    market.digits
-                  ),
-
-                low:
-                  round(
-                    state.low,
-                    market.digits
-                  ),
-
-                close:
-                  round(
-                    state.close,
-                    market.digits
-                  ),
-
-                mavg:
-                  round(
-                    state.mavg,
-                    market.digits
-                  ),
-
-                ottUpper:
-                  round(
-                    state.ottUpper,
-                    market.digits
-                  ),
-
-                ottLower:
-                  round(
-                    state.ottLower,
-                    market.digits
-                  ),
-
-                signal:
-                  state.signal
-
-              })
-            )
-
       });
 
-  } catch (
-    error
-  ) {
+  } catch (error) {
 
     console.error(
 
-      "MKAYFX TOTT ERROR",
+      "MKAYFX VOLUME IMBALANCE ERROR",
 
       error
 
@@ -3493,17 +4011,17 @@ export default async function handler(
           false,
 
         engine:
-          "MKAYFX TOTT 5M HARD LOCK",
+          "MKAYFX 5M HTF VOLUME IMBALANCE",
 
         error:
 
-          safeError(
+          errText(
             error
           )
 
           ||
 
-          "Unknown TOTT engine error."
+          "Unknown volume-imbalance engine error."
 
       });
 
