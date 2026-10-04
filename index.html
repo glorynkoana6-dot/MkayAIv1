@@ -27,7 +27,7 @@
 >
 
 <title>
-MKAYFX MULTI-ASSET S&R
+MKAYFX 5M S&R
 </title>
 
 
@@ -41,7 +41,6 @@ MKAYFX MULTI-ASSET S&R
 
   --bg:#05070b;
   --panel:#0a1119;
-  --panel2:#070d14;
   --border:rgba(255,255,255,.085);
 
   --text:#f6f8fb;
@@ -58,7 +57,6 @@ html,
 body{
 
   margin:0;
-
   min-height:100%;
 
   background:
@@ -68,8 +66,7 @@ body{
       #05070b 42%
     );
 
-  color:
-    var(--text);
+  color:var(--text);
 
   font-family:
     -apple-system,
@@ -96,22 +93,17 @@ button{
 .app{
 
   max-width:1050px;
-
   margin:auto;
 
 }
 
 
-/* =========================================================
-   HEADER
-========================================================= */
+/* HEADER */
 
 .header{
 
   display:flex;
-
   align-items:center;
-
   justify-content:space-between;
 
   gap:12px;
@@ -123,7 +115,6 @@ button{
 .brand{
 
   font-size:27px;
-
   font-weight:950;
 
 }
@@ -165,9 +156,7 @@ button{
 }
 
 
-/* =========================================================
-   ASSET SELECTOR
-========================================================= */
+/* ASSETS */
 
 .assets{
 
@@ -203,17 +192,6 @@ button{
 
   align-items:center;
 
-  transition:
-    border-color .15s ease,
-    background .15s ease,
-    transform .15s ease;
-
-}
-
-.asset:active{
-
-  transform:scale(.99);
-
 }
 
 .asset.active{
@@ -233,7 +211,6 @@ button{
 .assetIcon{
 
   width:48px;
-
   height:48px;
 
   border-radius:13px;
@@ -243,7 +220,6 @@ button{
   place-items:center;
 
   font-size:19px;
-
   font-weight:950;
 
   flex-shrink:0;
@@ -279,7 +255,6 @@ button{
 .assetName{
 
   font-size:14px;
-
   font-weight:900;
 
 }
@@ -295,9 +270,7 @@ button{
 }
 
 
-/* =========================================================
-   RUN BUTTON
-========================================================= */
+/* RUN */
 
 .run{
 
@@ -321,21 +294,12 @@ button{
   color:white;
 
   font-size:16px;
-
   font-weight:950;
 
 }
 
-.run:active{
 
-  transform:scale(.995);
-
-}
-
-
-/* =========================================================
-   ERROR
-========================================================= */
+/* ERROR */
 
 .error{
 
@@ -365,9 +329,7 @@ button{
 }
 
 
-/* =========================================================
-   LAYOUT
-========================================================= */
+/* GRID */
 
 .grid{
 
@@ -392,9 +354,7 @@ button{
       rgba(5,10,15,.98)
     );
 
-  border:
-    1px solid
-    var(--border);
+  border:1px solid var(--border);
 
   border-radius:20px;
 
@@ -421,9 +381,7 @@ button{
 }
 
 
-/* =========================================================
-   SIGNAL
-========================================================= */
+/* SIGNAL */
 
 .signalTop{
 
@@ -450,21 +408,15 @@ button{
 }
 
 .signal.WAIT{
-
   color:var(--gold);
-
 }
 
 .signal.BUY{
-
   color:var(--green);
-
 }
 
 .signal.SELL{
-
   color:var(--red);
-
 }
 
 .price{
@@ -488,9 +440,7 @@ button{
 }
 
 
-/* =========================================================
-   S&R METRICS
-========================================================= */
+/* SUPPORT / RESISTANCE */
 
 .metrics{
 
@@ -526,8 +476,6 @@ button{
 
   text-transform:uppercase;
 
-  letter-spacing:.5px;
-
 }
 
 .metric strong{
@@ -541,16 +489,13 @@ button{
 }
 
 
-/* =========================================================
-   TRADE PLAN
-========================================================= */
+/* TRADE */
 
 .tradeGrid{
 
   display:grid;
 
-  grid-template-columns:
-    repeat(2,1fr);
+  grid-template-columns:repeat(2,1fr);
 
   gap:8px;
 
@@ -586,11 +531,63 @@ button{
 
   display:block;
 
-  font-size:17px;
-
   margin-top:7px;
 
+  font-size:17px;
+
 }
+
+
+/* SETTINGS */
+
+.settingsGrid{
+
+  display:grid;
+
+  grid-template-columns:repeat(4,1fr);
+
+  gap:8px;
+
+  margin-top:14px;
+
+}
+
+.setting{
+
+  padding:10px;
+
+  border:1px solid var(--border);
+
+  border-radius:13px;
+
+  background:#070d14;
+
+}
+
+.setting small{
+
+  display:block;
+
+  color:var(--muted);
+
+  font-size:7px;
+
+  text-transform:uppercase;
+
+}
+
+.setting b{
+
+  display:block;
+
+  margin-top:6px;
+
+  font-size:13px;
+
+}
+
+
+/* COLORS */
 
 .green{
   color:var(--green);
@@ -609,61 +606,7 @@ button{
 }
 
 
-/* =========================================================
-   SETTINGS
-========================================================= */
-
-.settingsGrid{
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(4,1fr);
-
-  gap:8px;
-
-  margin-top:14px;
-
-}
-
-.setting{
-
-  padding:10px;
-
-  border-radius:13px;
-
-  border:1px solid var(--border);
-
-  background:#070d14;
-
-}
-
-.setting small{
-
-  display:block;
-
-  color:var(--muted);
-
-  text-transform:uppercase;
-
-  font-size:7px;
-
-}
-
-.setting b{
-
-  display:block;
-
-  margin-top:6px;
-
-  font-size:13px;
-
-}
-
-
-/* =========================================================
-   CHART
-========================================================= */
+/* CHART */
 
 .chart{
 
@@ -682,7 +625,6 @@ canvas{
   display:block;
 
   width:100%;
-
   height:100%;
 
 }
@@ -692,7 +634,6 @@ canvas{
   position:absolute;
 
   left:10px;
-
   top:10px;
 
   display:flex;
@@ -723,9 +664,7 @@ canvas{
 }
 
 
-/* =========================================================
-   SIDE PANELS
-========================================================= */
+/* SIDE */
 
 .sectionTitle{
 
@@ -764,9 +703,7 @@ canvas{
 }
 
 
-/* =========================================================
-   ACTIVE LEVELS
-========================================================= */
+/* LEVEL LISTS */
 
 .levelLists{
 
@@ -775,12 +712,6 @@ canvas{
   grid-template-columns:1fr 1fr;
 
   gap:10px;
-
-}
-
-.levelColumn{
-
-  min-width:0;
 
 }
 
@@ -814,14 +745,14 @@ canvas{
 
 }
 
-.levelRow.newestSupport{
+.newestSupport{
 
   border-color:
     rgba(55,230,161,.5);
 
 }
 
-.levelRow.newestResistance{
+.newestResistance{
 
   border-color:
     rgba(255,98,121,.5);
@@ -829,9 +760,7 @@ canvas{
 }
 
 
-/* =========================================================
-   RECENT SIGNALS
-========================================================= */
+/* HISTORY */
 
 .tradeRow{
 
@@ -842,12 +771,6 @@ canvas{
     rgba(255,255,255,.05);
 
   font-size:10px;
-
-}
-
-.tradeRow:last-child{
-
-  border-bottom:0;
 
 }
 
@@ -875,11 +798,6 @@ canvas{
 
 }
 
-
-/* =========================================================
-   LOADING
-========================================================= */
-
 .loading{
 
   opacity:.55;
@@ -889,28 +807,20 @@ canvas{
 }
 
 
-/* =========================================================
-   RESPONSIVE
-========================================================= */
+/* MOBILE */
 
 @media(max-width:800px){
 
   .grid{
-
     grid-template-columns:1fr;
-
   }
 
   .signal{
-
     font-size:48px;
-
   }
 
   .chart{
-
     height:350px;
-
   }
 
 }
@@ -919,22 +829,7 @@ canvas{
 @media(max-width:430px){
 
   .settingsGrid{
-
-    grid-template-columns:
-      repeat(2,1fr);
-
-  }
-
-  .metric strong{
-
-    font-size:16px;
-
-  }
-
-  .price{
-
-    font-size:26px;
-
+    grid-template-columns:repeat(2,1fr);
   }
 
 }
@@ -953,35 +848,27 @@ canvas{
 >
 
 
-<!-- ======================================================
-     HEADER
-======================================================= -->
+<!-- HEADER -->
 
 <div class="header">
 
-
 <div>
-
 
 <div class="brand">
 
 MKAYFX
 
 <span>
-
 S&R
-
 </span>
 
 </div>
 
-
 <div class="subtitle">
 
-1-Min Multi-Asset Support & Resistance Scalper
+5-Min Multi-Asset Support & Resistance Scalper
 
 </div>
-
 
 </div>
 
@@ -995,87 +882,58 @@ CHECKING
 
 </div>
 
-
 </div>
 
 
-<!-- ======================================================
-     ASSETS
-======================================================= -->
+<!-- ASSETS -->
 
 <div class="assets">
 
 
 <button
   class="asset active"
-  id="goldAsset"
   data-symbol="XAU/USD"
 >
 
-
 <div class="assetIcon goldIcon">
-
 Au
-
 </div>
-
 
 <div>
 
-
 <div class="assetName">
-
 GOLD
-
 </div>
-
 
 <div class="assetSymbol">
-
-XAU/USD
-
+XAU/USD · 5M
 </div>
 
-
 </div>
-
 
 </button>
 
 
 <button
   class="asset"
-  id="btcAsset"
   data-symbol="BTC/USD"
 >
 
-
 <div class="assetIcon btcIcon">
-
 ₿
-
 </div>
-
 
 <div>
 
-
 <div class="assetName">
-
 BITCOIN
-
 </div>
-
 
 <div class="assetSymbol">
-
-BTC/USD
-
+BTC/USD · 5M
 </div>
 
-
 </div>
-
 
 </button>
 
@@ -1083,9 +941,7 @@ BTC/USD
 </div>
 
 
-<!-- ======================================================
-     RUN BUTTON
-======================================================= -->
+<!-- RUN -->
 
 <button
   class="run"
@@ -1104,16 +960,12 @@ RUN GOLD ANALYSIS
 </div>
 
 
-<!-- ======================================================
-     MAIN GRID
-======================================================= -->
+<!-- GRID -->
 
 <div class="grid">
 
 
-<!-- ======================================================
-     MAIN PANEL
-======================================================= -->
+<!-- LEFT -->
 
 <div class="card">
 
@@ -1126,13 +978,12 @@ RUN GOLD ANALYSIS
 
 <div>
 
-
 <div
   class="label"
   id="decisionTitle"
 >
 
-XAU/USD SIGNAL ENGINE
+XAU/USD · 5M SIGNAL
 
 </div>
 
@@ -1152,16 +1003,14 @@ WAIT
   id="signalDescription"
 >
 
-Waiting for S&R crossover
+Waiting for 5M S&R crossover
 
 </div>
-
 
 </div>
 
 
 <div>
-
 
 <div
   class="price"
@@ -1178,7 +1027,9 @@ Waiting for S&R crossover
   id="candleTime"
 >
 
-Latest M1 candle
+Latest 5M candle
+
+</div>
 
 </div>
 
@@ -1186,25 +1037,16 @@ Latest M1 candle
 </div>
 
 
-</div>
-
-
-<!-- ======================================================
-     SUPPORT / RESISTANCE
-======================================================= -->
+<!-- S/R -->
 
 <div class="metrics">
 
 
 <div class="metric">
 
-
 <small>
-
 Newest Support
-
 </small>
-
 
 <strong
   class="green"
@@ -1215,19 +1057,14 @@ Newest Support
 
 </strong>
 
-
 </div>
 
 
 <div class="metric">
 
-
 <small>
-
 Newest Resistance
-
 </small>
-
 
 <strong
   class="red"
@@ -1238,29 +1075,22 @@ Newest Resistance
 
 </strong>
 
-
 </div>
 
 
 </div>
 
 
-<!-- ======================================================
-     TRADE PLAN
-======================================================= -->
+<!-- TRADE PLAN -->
 
 <div class="tradeGrid">
 
 
 <div class="level">
 
-
 <small>
-
 Entry
-
 </small>
-
 
 <b
   class="blue"
@@ -1271,19 +1101,14 @@ Entry
 
 </b>
 
-
 </div>
 
 
 <div class="level">
 
-
 <small>
-
 Stop Loss
-
 </small>
-
 
 <b
   class="red"
@@ -1294,19 +1119,14 @@ Stop Loss
 
 </b>
 
-
 </div>
 
 
 <div class="level">
 
-
 <small>
-
 Take Profit · 2R
-
 </small>
-
 
 <b
   class="green"
@@ -1317,38 +1137,28 @@ Take Profit · 2R
 
 </b>
 
-
 </div>
 
 
 <div class="level">
 
-
 <small>
-
 Risk Distance
-
 </small>
 
-
-<b
-  id="risk"
->
+<b id="risk">
 
 —
 
 </b>
 
-
 </div>
 
 
 </div>
 
 
-<!-- ======================================================
-     SETTINGS
-======================================================= -->
+<!-- SETTINGS -->
 
 <div class="settingsGrid">
 
@@ -1356,15 +1166,24 @@ Risk Distance
 <div class="setting">
 
 <small>
+Timeframe
+</small>
 
+<b>
+5M
+</b>
+
+</div>
+
+
+<div class="setting">
+
+<small>
 Pivot
-
 </small>
 
 <b id="pivotLength">
-
 9
-
 </b>
 
 </div>
@@ -1373,15 +1192,11 @@ Pivot
 <div class="setting">
 
 <small>
-
 Max Levels
-
 </small>
 
 <b id="maxLevels">
-
 5
-
 </b>
 
 </div>
@@ -1390,35 +1205,11 @@ Max Levels
 <div class="setting">
 
 <small>
-
 R:R
-
 </small>
 
 <b id="rr">
-
 1:2
-
-</b>
-
-</div>
-
-
-<div class="setting">
-
-<small>
-
-S&R Lines
-
-</small>
-
-<b
-  class="green"
-  id="showLines"
->
-
-ON
-
 </b>
 
 </div>
@@ -1430,16 +1221,12 @@ ON
 </div>
 
 
-<!-- ======================================================
-     CHART
-======================================================= -->
+<!-- CHART -->
 
 <div class="chart">
 
-
 <canvas id="chart">
 </canvas>
-
 
 <div
   class="chartLegend"
@@ -1447,176 +1234,133 @@ ON
 >
 </div>
 
-
 </div>
 
 
 </div>
 
 
-<!-- ======================================================
-     RIGHT SIDE
-======================================================= -->
+<!-- RIGHT -->
 
 <div>
 
 
-<!-- ======================================================
-     ACTIVE LEVELS
-======================================================= -->
-
 <div class="card pad">
 
-
 <div class="sectionTitle">
-
-Active S&R Levels
-
+Active 5M S&R Levels
 </div>
 
 
 <div class="levelLists">
 
 
-<div class="levelColumn">
-
+<div>
 
 <div class="levelTitle">
-
 Supports
-
 </div>
-
 
 <div id="supportLevels">
 
-
 <div class="reason">
-
 Waiting for data.
+</div>
+
+</div>
 
 </div>
 
 
-</div>
-
-
-</div>
-
-
-<div class="levelColumn">
-
+<div>
 
 <div class="levelTitle">
-
 Resistances
-
 </div>
-
 
 <div id="resistanceLevels">
 
-
 <div class="reason">
-
 Waiting for data.
+</div>
+
+</div>
 
 </div>
 
 
 </div>
 
-
 </div>
 
-
-</div>
-
-
-</div>
-
-
-<!-- ======================================================
-     CURRENT SIGNAL
-======================================================= -->
 
 <div
   class="card pad"
   style="margin-top:12px"
 >
 
-
 <div class="sectionTitle">
-
 Current Signal
-
 </div>
-
 
 <div id="reasons">
 
-
 <div class="reason">
-
 Waiting for analysis.
+</div>
 
 </div>
 
-
 </div>
 
-
-</div>
-
-
-<!-- ======================================================
-     RECENT SIGNALS
-======================================================= -->
 
 <div
   class="card pad"
   style="margin-top:12px"
 >
 
-
 <div class="sectionTitle">
-
-Recent S&R Signals
-
+Recent 5M Signals
 </div>
-
 
 <div id="recentSignals">
 
-
 <div class="reason">
-
 No signals loaded.
-
 </div>
-
 
 </div>
 
 
 <div class="note">
 
-Strategy logic:
+5M strategy only.
 
 <br><br>
 
-BUY = 1-minute close crosses above the newest confirmed pivot support.
+BUY = 5-minute close crosses above newest confirmed support.
+
+<br><br>
+
+SELL = 5-minute close crosses below newest confirmed resistance.
+
+<br><br>
+
+Pivot length = 9.
 
 <br>
 
-SELL = 1-minute close crosses below the newest confirmed pivot resistance.
+Maximum active S&R levels = 5.
 
-<br><br>
+<br>
 
-Stop Loss uses the S&R level and Take Profit is calculated at 2R.
+Stop Loss = S&R level.
+
+<br>
+
+Take Profit = 2R.
 
 </div>
-
 
 </div>
 
@@ -1657,9 +1401,7 @@ let analysing =
 
 const $ =
   id =>
-    document.getElementById(
-      id
-    );
+    document.getElementById(id);
 
 
 /* =========================================================
@@ -1672,15 +1414,11 @@ function fmt(
 ) {
 
   const n =
-    Number(
-      value
-    );
+    Number(value);
 
 
   if (
-    !Number.isFinite(
-      n
-    )
+    !Number.isFinite(n)
   ) {
 
     return "—";
@@ -1693,13 +1431,11 @@ function fmt(
     undefined,
 
     {
-
       minimumFractionDigits:
         digits,
 
       maximumFractionDigits:
         digits
-
     }
 
   );
@@ -1708,12 +1444,10 @@ function fmt(
 
 
 /* =========================================================
-   ESCAPE HTML
+   ESCAPE
 ========================================================= */
 
-function escapeHtml(
-  value
-) {
+function escapeHtml(value) {
 
   return String(
     value ?? ""
@@ -1751,9 +1485,7 @@ function escapeHtml(
    TIME
 ========================================================= */
 
-function displayTime(
-  value
-) {
+function displayTime(value) {
 
   if (
     !value
@@ -1765,10 +1497,7 @@ function displayTime(
 
 
   const text =
-
-    String(
-      value
-    )
+    String(value)
       .trim()
       .replace(
         " ",
@@ -1779,9 +1508,7 @@ function displayTime(
   const date =
     new Date(
 
-      /Z$|[+-]\d\d:\d\d$/.test(
-        text
-      )
+      /Z$|[+-]\d\d:\d\d$/.test(text)
 
         ? text
 
@@ -1827,7 +1554,7 @@ function displayTime(
 
 
 /* =========================================================
-   ASSET NAME
+   ASSET
 ========================================================= */
 
 function assetName() {
@@ -1841,10 +1568,6 @@ function assetName() {
 
 }
 
-
-/* =========================================================
-   UPDATE ASSETS
-========================================================= */
 
 function updateAssetButtons() {
 
@@ -1873,13 +1596,13 @@ function updateAssetButtons() {
 
 
   $("decisionTitle").textContent =
-    `${selectedSymbol} SIGNAL ENGINE`;
+    `${selectedSymbol} · 5M SIGNAL`;
 
 }
 
 
 /* =========================================================
-   ASSET CLICKS
+   ASSET CLICK
 ========================================================= */
 
 document
@@ -1910,7 +1633,6 @@ document
 
           updateAssetButtons();
 
-
           runAnalysis();
 
         }
@@ -1922,7 +1644,7 @@ document
 
 
 /* =========================================================
-   RUN ANALYSIS
+   FETCH
 ========================================================= */
 
 async function runAnalysis() {
@@ -1966,10 +1688,8 @@ async function runAnalysis() {
         endpoint,
 
         {
-
           cache:
             "no-store"
-
         }
 
       );
@@ -1985,9 +1705,7 @@ async function runAnalysis() {
     try {
 
       data =
-        JSON.parse(
-          raw
-        );
+        JSON.parse(raw);
 
     } catch {
 
@@ -2019,13 +1737,9 @@ async function runAnalysis() {
       data;
 
 
-    render(
-      data
-    );
+    render(data);
 
-  } catch (
-    error
-  ) {
+  } catch (error) {
 
     $("engineBadge").textContent =
       "ENGINE ERROR";
@@ -2033,13 +1747,8 @@ async function runAnalysis() {
 
     $("errorBox").textContent =
 
-      error?.message
-
-      ||
-
-      String(
-        error
-      );
+      error?.message ||
+      String(error);
 
 
     $("errorBox").style.display =
@@ -2068,35 +1777,20 @@ async function runAnalysis() {
    RENDER
 ========================================================= */
 
-function render(
-  data
-) {
-
-  /* =======================================================
-     SYMBOL
-  ======================================================= */
+function render(data) {
 
   $("decisionTitle").textContent =
-    `${data.symbol} SIGNAL ENGINE`;
+    `${data.symbol} · 5M SIGNAL`;
 
-
-  /* =======================================================
-     BADGE
-  ======================================================= */
 
   $("engineBadge").textContent =
 
-    data.symbol ===
-    "BTC/USD"
+    data.symbol === "BTC/USD"
 
-      ? "BTC · 24/7"
+      ? "BTC · 5M · 24/7"
 
-      : "GOLD · M1";
+      : "GOLD · 5M";
 
-
-  /* =======================================================
-     SIGNAL
-  ======================================================= */
 
   const signal =
     data.signal ||
@@ -2111,19 +1805,9 @@ function render(
     `signal ${signal}`;
 
 
-  /* =======================================================
-     PRICE
-  ======================================================= */
-
   $("price").textContent =
-    fmt(
-      data.price
-    );
+    fmt(data.price);
 
-
-  /* =======================================================
-     CANDLE
-  ======================================================= */
 
   const age =
     Number(
@@ -2137,7 +1821,7 @@ function render(
 
       ?
 
-      `${displayTime(data.candleTime)}${
+      `5M · ${displayTime(data.candleTime)}${
         Number.isFinite(age)
           ? ` · ${age.toFixed(1)}m old`
           : ""
@@ -2145,56 +1829,38 @@ function render(
 
       :
 
-      "Latest M1 candle";
+      "Latest 5M candle";
 
-
-  /* =======================================================
-     DESCRIPTION
-  ======================================================= */
 
   if (
-    signal ===
-    "BUY"
+    signal === "BUY"
   ) {
 
     $("signalDescription").textContent =
-      "Close crossed above newest confirmed support.";
+      "5M close crossed above newest confirmed support.";
 
   } else if (
-    signal ===
-    "SELL"
+    signal === "SELL"
   ) {
 
     $("signalDescription").textContent =
-      "Close crossed below newest confirmed resistance.";
+      "5M close crossed below newest confirmed resistance.";
 
   } else {
 
     $("signalDescription").textContent =
-      "Waiting for the next S&R crossover.";
+      "Waiting for 5M S&R crossover.";
 
   }
 
 
-  /* =======================================================
-     SUPPORT / RESISTANCE
-  ======================================================= */
-
   $("support").textContent =
-    fmt(
-      data.support
-    );
+    fmt(data.support);
 
 
   $("resistance").textContent =
-    fmt(
-      data.resistance
-    );
+    fmt(data.resistance);
 
-
-  /* =======================================================
-     ENTRY
-  ======================================================= */
 
   $("entry").textContent =
 
@@ -2202,14 +1868,8 @@ function render(
 
       ? "WAIT"
 
-      : fmt(
-          data.entry
-        );
+      : fmt(data.entry);
 
-
-  /* =======================================================
-     STOP
-  ======================================================= */
 
   $("sl").textContent =
 
@@ -2217,14 +1877,8 @@ function render(
 
       ? "—"
 
-      : fmt(
-          data.stopLoss
-        );
+      : fmt(data.stopLoss);
 
-
-  /* =======================================================
-     TP
-  ======================================================= */
 
   $("tp").textContent =
 
@@ -2232,14 +1886,8 @@ function render(
 
       ? "—"
 
-      : fmt(
-          data.takeProfit
-        );
+      : fmt(data.takeProfit);
 
-
-  /* =======================================================
-     RISK
-  ======================================================= */
 
   $("risk").textContent =
 
@@ -2247,14 +1895,8 @@ function render(
 
       ? "—"
 
-      : fmt(
-          data.risk
-        );
+      : fmt(data.risk);
 
-
-  /* =======================================================
-     SETTINGS
-  ======================================================= */
 
   $("pivotLength").textContent =
 
@@ -2289,74 +1931,33 @@ function render(
 
   $("rr").textContent =
 
-    Number.isFinite(
-      rr
-    )
+    Number.isFinite(rr)
 
       ? `1:${rr}`
 
       : "1:2";
 
 
-  const showLines =
-
-    data.settings
-      ?.showSRLines
-
-    !== false;
-
-
-  $("showLines").textContent =
-
-    showLines
-
-      ? "ON"
-
-      : "OFF";
-
-
-  $("showLines").className =
-
-    showLines
-
-      ? "green"
-
-      : "red";
-
-
-  /* =======================================================
-     PANELS
-  ======================================================= */
-
-  renderLevels(
-    data
-  );
-
+  renderLevels(data);
 
   renderReasons(
     data.reasons
   );
 
-
   renderRecentSignals(
     data.recentSignals
   );
 
-
-  drawChart(
-    data
-  );
+  drawChart(data);
 
 }
 
 
 /* =========================================================
-   ACTIVE LEVELS
+   LEVEL LISTS
 ========================================================= */
 
-function renderLevels(
-  data
-) {
+function renderLevels(data) {
 
   const supports =
 
@@ -2401,11 +2002,7 @@ function renderLevels(
 
               <span class="green">
 
-                ${
-                  index === 0
-                    ? "S1 · "
-                    : `S${index + 1} · `
-                }
+                S${index + 1} ·
 
               </span>
 
@@ -2419,7 +2016,9 @@ function renderLevels(
 
       :
 
-      `<div class="reason">No confirmed support yet.</div>`;
+      `<div class="reason">
+         No confirmed support yet.
+       </div>`;
 
 
   $("resistanceLevels").innerHTML =
@@ -2443,11 +2042,7 @@ function renderLevels(
 
               <span class="red">
 
-                ${
-                  index === 0
-                    ? "R1 · "
-                    : `R${index + 1} · `
-                }
+                R${index + 1} ·
 
               </span>
 
@@ -2461,7 +2056,9 @@ function renderLevels(
 
       :
 
-      `<div class="reason">No confirmed resistance yet.</div>`;
+      `<div class="reason">
+         No confirmed resistance yet.
+       </div>`;
 
 }
 
@@ -2470,15 +2067,11 @@ function renderLevels(
    REASONS
 ========================================================= */
 
-function renderReasons(
-  reasons
-) {
+function renderReasons(reasons) {
 
   const list =
 
-    Array.isArray(
-      reasons
-    )
+    Array.isArray(reasons)
 
       ? reasons
 
@@ -2495,14 +2088,18 @@ function renderReasons(
         .map(
           reason =>
 
-            `<div class="reason">${escapeHtml(reason)}</div>`
+            `<div class="reason">
+               ${escapeHtml(reason)}
+             </div>`
 
         )
         .join("")
 
       :
 
-      `<div class="reason">No signal information returned.</div>`;
+      `<div class="reason">
+         No signal information returned.
+       </div>`;
 
 }
 
@@ -2511,15 +2108,11 @@ function renderReasons(
    RECENT SIGNALS
 ========================================================= */
 
-function renderRecentSignals(
-  signals
-) {
+function renderRecentSignals(signals) {
 
   const list =
 
-    Array.isArray(
-      signals
-    )
+    Array.isArray(signals)
 
       ? signals
 
@@ -2548,25 +2141,36 @@ function renderRecentSignals(
 
               </b>
 
-              · Entry ${fmt(trade.entry ?? trade.price)}
+              · Entry ${fmt(
+                trade.entry ??
+                trade.price
+              )}
 
               <br>
 
               <span class="tradeTime">
 
-                Level ${fmt(trade.level)}
+                S/R ${fmt(trade.level)}
 
                 <br>
 
                 SL ${fmt(trade.stopLoss)}
+
                 ·
+
                 TP ${fmt(trade.takeProfit)}
+
                 ·
-                RR 1:${trade.rr ?? 2}
+
+                1:${trade.rr ?? 2}
 
                 <br>
 
-                ${escapeHtml(displayTime(trade.time))}
+                ${escapeHtml(
+                  displayTime(
+                    trade.time
+                  )
+                )}
 
               </span>
 
@@ -2578,7 +2182,9 @@ function renderRecentSignals(
 
       :
 
-      `<div class="reason">No recent crossover signals in loaded history.</div>`;
+      `<div class="reason">
+         No recent 5M crossover signals.
+       </div>`;
 
 }
 
@@ -2587,9 +2193,7 @@ function renderRecentSignals(
    CHART
 ========================================================= */
 
-function drawChart(
-  data
-) {
+function drawChart(data) {
 
   const bars =
 
@@ -2674,17 +2278,14 @@ function drawChart(
   ) {
 
     $("chartLegend").innerHTML =
-
-      `<span class="chip">No chart data</span>`;
+      `<span class="chip">
+         No chart data
+       </span>`;
 
     return;
 
   }
 
-
-  /* =======================================================
-     ACTIVE LEVELS
-  ======================================================= */
 
   const supports =
 
@@ -2693,12 +2294,8 @@ function drawChart(
     )
 
       ? data.levels.supports
-          .map(
-            Number
-          )
-          .filter(
-            Number.isFinite
-          )
+          .map(Number)
+          .filter(Number.isFinite)
 
       : [];
 
@@ -2710,19 +2307,11 @@ function drawChart(
     )
 
       ? data.levels.resistances
-          .map(
-            Number
-          )
-          .filter(
-            Number.isFinite
-          )
+          .map(Number)
+          .filter(Number.isFinite)
 
       : [];
 
-
-  /* =======================================================
-     TRADE PRICES
-  ======================================================= */
 
   const tradePrices =
 
@@ -2731,15 +2320,11 @@ function drawChart(
       data.stopLoss,
       data.takeProfit
     ]
-      .map(
-        Number
-      )
-      .filter(
-        Number.isFinite
-      );
+      .map(Number)
+      .filter(Number.isFinite);
 
 
-  const importantPrices =
+  const important =
 
     [
       ...supports,
@@ -2753,13 +2338,9 @@ function drawChart(
     bars
       .map(
         bar =>
-          Number(
-            bar.high
-          )
+          Number(bar.high)
       )
-      .filter(
-        Number.isFinite
-      );
+      .filter(Number.isFinite);
 
 
   const lows =
@@ -2767,13 +2348,9 @@ function drawChart(
     bars
       .map(
         bar =>
-          Number(
-            bar.low
-          )
+          Number(bar.low)
       )
-      .filter(
-        Number.isFinite
-      );
+      .filter(Number.isFinite);
 
 
   if (
@@ -2788,21 +2365,15 @@ function drawChart(
 
   let high =
     Math.max(
-
       ...highs,
-
-      ...importantPrices
-
+      ...important
     );
 
 
   let low =
     Math.min(
-
       ...lows,
-
-      ...importantPrices
-
+      ...important
     );
 
 
@@ -2811,11 +2382,7 @@ function drawChart(
     (
       high -
       low
-    )
-
-    *
-
-    0.08
+    ) * .08
 
     ||
 
@@ -2888,16 +2455,10 @@ function drawChart(
       );
 
 
-  /* =======================================================
-     GRID
-  ======================================================= */
+  /* GRID */
 
   ctx.strokeStyle =
     "rgba(255,255,255,.045)";
-
-
-  ctx.lineWidth =
-    1;
 
 
   for (
@@ -2916,49 +2477,37 @@ function drawChart(
 
     ctx.beginPath();
 
-
     ctx.moveTo(
       0,
       yy
     );
-
 
     ctx.lineTo(
       W,
       yy
     );
 
-
     ctx.stroke();
 
   }
 
 
-  /* =======================================================
-     HORIZONTAL LINE
-  ======================================================= */
+  /* LINE FUNCTION */
 
   function horizontal(
     price,
     label,
     color,
-    dash = [
-      6,
-      6
-    ],
+    solid = false,
     width = 1
   ) {
 
     const number =
-      Number(
-        price
-      );
+      Number(price);
 
 
     if (
-      !Number.isFinite(
-        number
-      )
+      !Number.isFinite(number)
     ) {
 
       return;
@@ -2967,9 +2516,7 @@ function drawChart(
 
 
     const yy =
-      y(
-        number
-      );
+      y(number);
 
 
     ctx.save();
@@ -2988,31 +2535,35 @@ function drawChart(
 
 
     ctx.setLineDash(
-      dash
+
+      solid
+
+        ? []
+
+        : [
+            6,
+            6
+          ]
+
     );
 
 
     ctx.beginPath();
-
 
     ctx.moveTo(
       0,
       yy
     );
 
-
     ctx.lineTo(
       W,
       yy
     );
 
-
     ctx.stroke();
 
 
-    ctx.setLineDash(
-      []
-    );
+    ctx.setLineDash([]);
 
 
     ctx.font =
@@ -3038,9 +2589,7 @@ function drawChart(
   }
 
 
-  /* =======================================================
-     SUPPORTS
-  ======================================================= */
+  /* SUPPORTS */
 
   supports.forEach(
     (
@@ -3060,10 +2609,7 @@ function drawChart(
 
           : "rgba(55,230,161,.38)",
 
-        [
-          6,
-          6
-        ],
+        false,
 
         index === 0
           ? 1.5
@@ -3075,9 +2621,7 @@ function drawChart(
   );
 
 
-  /* =======================================================
-     RESISTANCES
-  ======================================================= */
+  /* RESISTANCES */
 
   resistances.forEach(
     (
@@ -3097,10 +2641,7 @@ function drawChart(
 
           : "rgba(255,98,121,.38)",
 
-        [
-          6,
-          6
-        ],
+        false,
 
         index === 0
           ? 1.5
@@ -3112,9 +2653,7 @@ function drawChart(
   );
 
 
-  /* =======================================================
-     TRADE PLAN
-  ======================================================= */
+  /* TRADE PLAN */
 
   horizontal(
 
@@ -3124,7 +2663,7 @@ function drawChart(
 
     "rgba(121,148,255,.98)",
 
-    [],
+    true,
 
     1.5
 
@@ -3139,7 +2678,7 @@ function drawChart(
 
     "rgba(255,98,121,.98)",
 
-    [],
+    true,
 
     1.5
 
@@ -3154,16 +2693,14 @@ function drawChart(
 
     "rgba(55,230,161,.98)",
 
-    [],
+    true,
 
     1.5
 
   );
 
 
-  /* =======================================================
-     CANDLES
-  ======================================================= */
+  /* CANDLES */
 
   const candleWidth =
 
@@ -3173,16 +2710,12 @@ function drawChart(
 
       Math.min(
 
-        4.5,
+        5,
 
         (
           W /
           bars.length
-        )
-
-        *
-
-        0.65
+        ) * .68
 
       )
 
@@ -3196,27 +2729,16 @@ function drawChart(
     ) => {
 
       const open =
-        Number(
-          bar.open
-        );
-
+        Number(bar.open);
 
       const highPrice =
-        Number(
-          bar.high
-        );
-
+        Number(bar.high);
 
       const lowPrice =
-        Number(
-          bar.low
-        );
-
+        Number(bar.low);
 
       const close =
-        Number(
-          bar.close
-        );
+        Number(bar.close);
 
 
       if (
@@ -3226,9 +2748,7 @@ function drawChart(
           lowPrice,
           close
         ]
-          .every(
-            Number.isFinite
-          )
+          .every(Number.isFinite)
       ) {
 
         return;
@@ -3237,14 +2757,11 @@ function drawChart(
 
 
       const xx =
-        x(
-          index
-        );
+        x(index);
 
 
       const bullish =
-        close >=
-        open;
+        close >= open;
 
 
       const color =
@@ -3262,34 +2779,17 @@ function drawChart(
         color;
 
 
-      ctx.lineWidth =
-        1;
-
-
       ctx.beginPath();
 
-
       ctx.moveTo(
-
         xx,
-
-        y(
-          lowPrice
-        )
-
+        y(lowPrice)
       );
-
 
       ctx.lineTo(
-
         xx,
-
-        y(
-          highPrice
-        )
-
+        y(highPrice)
       );
-
 
       ctx.stroke();
 
@@ -3301,38 +2801,20 @@ function drawChart(
 
 
       const bodyTop =
-
         Math.min(
-
-          y(
-            open
-          ),
-
-          y(
-            close
-          )
-
+          y(open),
+          y(close)
         );
 
 
       const bodyHeight =
-
         Math.max(
 
           1,
 
           Math.abs(
-
-            y(
-              open
-            )
-
-            -
-
-            y(
-              close
-            )
-
+            y(open) -
+            y(close)
           )
 
         );
@@ -3341,8 +2823,7 @@ function drawChart(
       ctx.fillRect(
 
         xx -
-        candleWidth /
-        2,
+        candleWidth / 2,
 
         bodyTop,
 
@@ -3356,9 +2837,7 @@ function drawChart(
   );
 
 
-  /* =======================================================
-     LEGEND
-  ======================================================= */
+  /* LEGEND */
 
   $("chartLegend").innerHTML = `
 
@@ -3368,69 +2847,41 @@ function drawChart(
 
     </span>
 
-
     <span class="chip">
 
-      M1 · ${bars.length} candles
+      5M · ${bars.length} candles
 
     </span>
 
-
     ${
-      Number.isFinite(
-        Number(
-          data.support
-        )
-      )
+      data.support != null
 
-        ?
+        ? `<span class="chip">
+             S1 ${fmt(data.support)}
+           </span>`
 
-        `<span class="chip">
-          S1 ${fmt(data.support)}
-        </span>`
-
-        :
-
-        ""
+        : ""
     }
 
-
     ${
-      Number.isFinite(
-        Number(
-          data.resistance
-        )
-      )
+      data.resistance != null
 
-        ?
+        ? `<span class="chip">
+             R1 ${fmt(data.resistance)}
+           </span>`
 
-        `<span class="chip">
-          R1 ${fmt(data.resistance)}
-        </span>`
-
-        :
-
-        ""
+        : ""
     }
-
 
     ${
       data.signal !== "WAIT" &&
-      Number.isFinite(
-        Number(
-          data.takeProfit
-        )
-      )
+      data.takeProfit != null
 
-        ?
+        ? `<span class="chip">
+             TP ${fmt(data.takeProfit)}
+           </span>`
 
-        `<span class="chip">
-          TP ${fmt(data.takeProfit)}
-        </span>`
-
-        :
-
-        ""
+        : ""
     }
 
   `;
@@ -3439,16 +2890,13 @@ function drawChart(
 
 
 /* =========================================================
-   MANUAL RUN
+   RUN BUTTON
 ========================================================= */
 
 $("runButton")
   .addEventListener(
-
     "click",
-
     runAnalysis
-
   );
 
 
@@ -3479,6 +2927,9 @@ window.addEventListener(
 
 /* =========================================================
    AUTO REFRESH
+
+   Check once per minute even though the chart is 5M.
+   That lets the UI see the latest 5M candle update.
 ========================================================= */
 
 setInterval(
