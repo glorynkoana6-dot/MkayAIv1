@@ -27,7 +27,7 @@
 >
 
 <title>
-MKAYFX GOLD S&R
+MKAYFX MULTI-ASSET S&R
 </title>
 
 
@@ -43,8 +43,10 @@ MKAYFX GOLD S&R
   --panel:#0a1119;
   --panel2:#070d14;
   --border:rgba(255,255,255,.085);
+
   --text:#f6f8fb;
   --muted:#788698;
+
   --gold:#f4c85d;
   --green:#37e6a1;
   --red:#ff6279;
@@ -56,6 +58,7 @@ html,
 body{
 
   margin:0;
+
   min-height:100%;
 
   background:
@@ -65,7 +68,8 @@ body{
       #05070b 42%
     );
 
-  color:var(--text);
+  color:
+    var(--text);
 
   font-family:
     -apple-system,
@@ -92,6 +96,7 @@ button{
 .app{
 
   max-width:1050px;
+
   margin:auto;
 
 }
@@ -104,8 +109,11 @@ button{
 .header{
 
   display:flex;
-  justify-content:space-between;
+
   align-items:center;
+
+  justify-content:space-between;
+
   gap:12px;
 
   margin-bottom:16px;
@@ -115,12 +123,15 @@ button{
 .brand{
 
   font-size:27px;
+
   font-weight:950;
 
 }
 
 .brand span{
+
   color:var(--gold);
+
 }
 
 .subtitle{
@@ -155,52 +166,91 @@ button{
 
 
 /* =========================================================
-   ASSET
+   ASSET SELECTOR
 ========================================================= */
 
-.asset{
+.assets{
 
-  width:100%;
+  display:grid;
 
-  border:1px solid
-    rgba(244,200,93,.28);
+  grid-template-columns:1fr 1fr;
 
-  background:
-    linear-gradient(
-      135deg,
-      rgba(32,28,17,.95),
-      rgba(9,14,21,.98)
-    );
-
-  border-radius:18px;
-
-  min-height:78px;
-
-  padding:13px;
-
-  display:flex;
-
-  align-items:center;
-
-  gap:12px;
+  gap:9px;
 
   margin-bottom:10px;
 
 }
 
+.asset{
+
+  border:1px solid var(--border);
+
+  background:#080e15;
+
+  border-radius:17px;
+
+  min-height:76px;
+
+  color:white;
+
+  text-align:left;
+
+  padding:12px;
+
+  display:flex;
+
+  gap:10px;
+
+  align-items:center;
+
+  transition:
+    border-color .15s ease,
+    background .15s ease,
+    transform .15s ease;
+
+}
+
+.asset:active{
+
+  transform:scale(.99);
+
+}
+
+.asset.active{
+
+  border-color:
+    rgba(121,148,255,.65);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(33,52,86,.95),
+      rgba(11,18,31,.98)
+    );
+
+}
+
 .assetIcon{
 
-  width:50px;
-  height:50px;
+  width:48px;
 
-  border-radius:14px;
+  height:48px;
+
+  border-radius:13px;
 
   display:grid;
+
   place-items:center;
 
-  font-size:20px;
+  font-size:19px;
 
   font-weight:950;
+
+  flex-shrink:0;
+
+}
+
+.goldIcon{
 
   background:
     linear-gradient(
@@ -213,9 +263,23 @@ button{
 
 }
 
+.btcIcon{
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffb34d,
+      #f7931a
+    );
+
+  color:white;
+
+}
+
 .assetName{
 
-  font-size:15px;
+  font-size:14px;
+
   font-weight:900;
 
 }
@@ -224,15 +288,15 @@ button{
 
   color:var(--muted);
 
-  font-size:9px;
+  font-size:8px;
 
-  margin-top:4px;
+  margin-top:3px;
 
 }
 
 
 /* =========================================================
-   BUTTON
+   RUN BUTTON
 ========================================================= */
 
 .run{
@@ -263,7 +327,9 @@ button{
 }
 
 .run:active{
+
   transform:scale(.995);
+
 }
 
 
@@ -337,7 +403,9 @@ button{
 }
 
 .pad{
+
   padding:16px;
+
 }
 
 .label{
@@ -354,7 +422,7 @@ button{
 
 
 /* =========================================================
-   MAIN SIGNAL
+   SIGNAL
 ========================================================= */
 
 .signalTop{
@@ -382,15 +450,21 @@ button{
 }
 
 .signal.WAIT{
+
   color:var(--gold);
+
 }
 
 .signal.BUY{
+
   color:var(--green);
+
 }
 
 .signal.SELL{
+
   color:var(--red);
+
 }
 
 .price{
@@ -415,15 +489,14 @@ button{
 
 
 /* =========================================================
-   MAIN METRICS
+   S&R METRICS
 ========================================================= */
 
 .metrics{
 
   display:grid;
 
-  grid-template-columns:
-    repeat(2,1fr);
+  grid-template-columns:repeat(2,1fr);
 
   gap:8px;
 
@@ -467,6 +540,58 @@ button{
 
 }
 
+
+/* =========================================================
+   TRADE PLAN
+========================================================= */
+
+.tradeGrid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(2,1fr);
+
+  gap:8px;
+
+  margin-top:14px;
+
+}
+
+.level{
+
+  border:1px solid var(--border);
+
+  background:#070d14;
+
+  border-radius:14px;
+
+  padding:12px;
+
+  min-height:82px;
+
+}
+
+.level small{
+
+  color:var(--muted);
+
+  font-size:8px;
+
+  text-transform:uppercase;
+
+}
+
+.level b{
+
+  display:block;
+
+  font-size:17px;
+
+  margin-top:7px;
+
+}
+
 .green{
   color:var(--green);
 }
@@ -493,7 +618,7 @@ button{
   display:grid;
 
   grid-template-columns:
-    repeat(3,1fr);
+    repeat(4,1fr);
 
   gap:8px;
 
@@ -503,9 +628,9 @@ button{
 
 .setting{
 
-  padding:11px;
+  padding:10px;
 
-  border-radius:14px;
+  border-radius:13px;
 
   border:1px solid var(--border);
 
@@ -531,7 +656,7 @@ button{
 
   margin-top:6px;
 
-  font-size:14px;
+  font-size:13px;
 
 }
 
@@ -546,9 +671,7 @@ button{
 
   height:390px;
 
-  border-top:
-    1px solid
-    var(--border);
+  border-top:1px solid var(--border);
 
   background:#050b11;
 
@@ -559,6 +682,7 @@ canvas{
   display:block;
 
   width:100%;
+
   height:100%;
 
 }
@@ -568,6 +692,7 @@ canvas{
   position:absolute;
 
   left:10px;
+
   top:10px;
 
   display:flex;
@@ -599,7 +724,7 @@ canvas{
 
 
 /* =========================================================
-   RIGHT PANEL
+   SIDE PANELS
 ========================================================= */
 
 .sectionTitle{
@@ -633,7 +758,9 @@ canvas{
 }
 
 .reason:last-child{
+
   border-bottom:0;
+
 }
 
 
@@ -645,8 +772,7 @@ canvas{
 
   display:grid;
 
-  grid-template-columns:
-    1fr 1fr;
+  grid-template-columns:1fr 1fr;
 
   gap:10px;
 
@@ -691,20 +817,20 @@ canvas{
 .levelRow.newestSupport{
 
   border-color:
-    rgba(55,230,161,.4);
+    rgba(55,230,161,.5);
 
 }
 
 .levelRow.newestResistance{
 
   border-color:
-    rgba(255,98,121,.4);
+    rgba(255,98,121,.5);
 
 }
 
 
 /* =========================================================
-   SIGNAL HISTORY
+   RECENT SIGNALS
 ========================================================= */
 
 .tradeRow{
@@ -720,7 +846,9 @@ canvas{
 }
 
 .tradeRow:last-child{
+
   border-bottom:0;
+
 }
 
 .tradeTime{
@@ -731,12 +859,9 @@ canvas{
 
   margin-top:4px;
 
+  line-height:1.5;
+
 }
-
-
-/* =========================================================
-   NOTE
-========================================================= */
 
 .note{
 
@@ -765,38 +890,51 @@ canvas{
 
 
 /* =========================================================
-   MOBILE
+   RESPONSIVE
 ========================================================= */
 
 @media(max-width:800px){
 
   .grid{
+
     grid-template-columns:1fr;
+
   }
 
   .signal{
+
     font-size:48px;
+
   }
 
   .chart{
+
     height:350px;
+
   }
 
 }
 
 
-@media(max-width:420px){
+@media(max-width:430px){
 
   .settingsGrid{
-    grid-template-columns:repeat(3,1fr);
+
+    grid-template-columns:
+      repeat(2,1fr);
+
   }
 
   .metric strong{
+
     font-size:16px;
+
   }
 
   .price{
+
     font-size:26px;
+
   }
 
 }
@@ -821,23 +959,29 @@ canvas{
 
 <div class="header">
 
+
 <div>
+
 
 <div class="brand">
 
 MKAYFX
 
 <span>
+
 S&R
+
 </span>
 
 </div>
 
+
 <div class="subtitle">
 
-1-Min Gold Support & Resistance Signals
+1-Min Multi-Asset Support & Resistance Scalper
 
 </div>
+
 
 </div>
 
@@ -851,16 +995,25 @@ CHECKING
 
 </div>
 
+
 </div>
 
 
 <!-- ======================================================
-     GOLD
+     ASSETS
 ======================================================= -->
 
-<div class="asset">
+<div class="assets">
 
-<div class="assetIcon">
+
+<button
+  class="asset active"
+  id="goldAsset"
+  data-symbol="XAU/USD"
+>
+
+
+<div class="assetIcon goldIcon">
 
 Au
 
@@ -869,25 +1022,69 @@ Au
 
 <div>
 
+
 <div class="assetName">
 
 GOLD
 
 </div>
 
+
 <div class="assetSymbol">
 
-XAU/USD · 1 MINUTE
+XAU/USD
 
 </div>
 
+
 </div>
+
+
+</button>
+
+
+<button
+  class="asset"
+  id="btcAsset"
+  data-symbol="BTC/USD"
+>
+
+
+<div class="assetIcon btcIcon">
+
+₿
+
+</div>
+
+
+<div>
+
+
+<div class="assetName">
+
+BITCOIN
+
+</div>
+
+
+<div class="assetSymbol">
+
+BTC/USD
+
+</div>
+
+
+</div>
+
+
+</button>
+
 
 </div>
 
 
 <!-- ======================================================
-     RUN
+     RUN BUTTON
 ======================================================= -->
 
 <button
@@ -915,7 +1112,7 @@ RUN GOLD ANALYSIS
 
 
 <!-- ======================================================
-     LEFT
+     MAIN PANEL
 ======================================================= -->
 
 <div class="card">
@@ -929,11 +1126,13 @@ RUN GOLD ANALYSIS
 
 <div>
 
+
 <div
   class="label"
+  id="decisionTitle"
 >
 
-XAU/USD SIGNAL
+XAU/USD SIGNAL ENGINE
 
 </div>
 
@@ -957,10 +1156,12 @@ Waiting for S&R crossover
 
 </div>
 
+
 </div>
 
 
 <div>
+
 
 <div
   class="price"
@@ -981,6 +1182,7 @@ Latest M1 candle
 
 </div>
 
+
 </div>
 
 
@@ -996,11 +1198,13 @@ Latest M1 candle
 
 <div class="metric">
 
+
 <small>
 
 Newest Support
 
 </small>
+
 
 <strong
   class="green"
@@ -1011,16 +1215,19 @@ Newest Support
 
 </strong>
 
+
 </div>
 
 
 <div class="metric">
+
 
 <small>
 
 Newest Resistance
 
 </small>
+
 
 <strong
   class="red"
@@ -1030,6 +1237,108 @@ Newest Resistance
 —
 
 </strong>
+
+
+</div>
+
+
+</div>
+
+
+<!-- ======================================================
+     TRADE PLAN
+======================================================= -->
+
+<div class="tradeGrid">
+
+
+<div class="level">
+
+
+<small>
+
+Entry
+
+</small>
+
+
+<b
+  class="blue"
+  id="entry"
+>
+
+—
+
+</b>
+
+
+</div>
+
+
+<div class="level">
+
+
+<small>
+
+Stop Loss
+
+</small>
+
+
+<b
+  class="red"
+  id="sl"
+>
+
+—
+
+</b>
+
+
+</div>
+
+
+<div class="level">
+
+
+<small>
+
+Take Profit · 2R
+
+</small>
+
+
+<b
+  class="green"
+  id="tp"
+>
+
+—
+
+</b>
+
+
+</div>
+
+
+<div class="level">
+
+
+<small>
+
+Risk Distance
+
+</small>
+
+
+<b
+  id="risk"
+>
+
+—
+
+</b>
+
 
 </div>
 
@@ -1048,7 +1357,7 @@ Newest Resistance
 
 <small>
 
-Pivot Length
+Pivot
 
 </small>
 
@@ -1072,6 +1381,23 @@ Max Levels
 <b id="maxLevels">
 
 5
+
+</b>
+
+</div>
+
+
+<div class="setting">
+
+<small>
+
+R:R
+
+</small>
+
+<b id="rr">
+
+1:2
 
 </b>
 
@@ -1129,13 +1455,15 @@ ON
 
 
 <!-- ======================================================
-     RIGHT
+     RIGHT SIDE
 ======================================================= -->
 
 <div>
 
 
-<!-- ACTIVE LEVELS -->
+<!-- ======================================================
+     ACTIVE LEVELS
+======================================================= -->
 
 <div class="card pad">
 
@@ -1152,13 +1480,16 @@ Active S&R Levels
 
 <div class="levelColumn">
 
+
 <div class="levelTitle">
 
 Supports
 
 </div>
 
+
 <div id="supportLevels">
+
 
 <div class="reason">
 
@@ -1166,12 +1497,15 @@ Waiting for data.
 
 </div>
 
+
 </div>
+
 
 </div>
 
 
 <div class="levelColumn">
+
 
 <div class="levelTitle">
 
@@ -1179,7 +1513,9 @@ Resistances
 
 </div>
 
+
 <div id="resistanceLevels">
+
 
 <div class="reason">
 
@@ -1187,7 +1523,6 @@ Waiting for data.
 
 </div>
 
-</div>
 
 </div>
 
@@ -1198,7 +1533,12 @@ Waiting for data.
 </div>
 
 
-<!-- WHY -->
+</div>
+
+
+<!-- ======================================================
+     CURRENT SIGNAL
+======================================================= -->
 
 <div
   class="card pad"
@@ -1215,19 +1555,23 @@ Current Signal
 
 <div id="reasons">
 
+
 <div class="reason">
 
 Waiting for analysis.
 
 </div>
 
-</div>
-
 
 </div>
 
 
-<!-- RECENT SIGNALS -->
+</div>
+
+
+<!-- ======================================================
+     RECENT SIGNALS
+======================================================= -->
 
 <div
   class="card pad"
@@ -1244,22 +1588,32 @@ Recent S&R Signals
 
 <div id="recentSignals">
 
+
 <div class="reason">
 
 No signals loaded.
 
 </div>
 
+
 </div>
 
 
 <div class="note">
 
-Signals use confirmed pivot highs and pivot lows only.
+Strategy logic:
 
-BUY = close crosses above the newest confirmed support.
+<br><br>
 
-SELL = close crosses below the newest confirmed resistance.
+BUY = 1-minute close crosses above the newest confirmed pivot support.
+
+<br>
+
+SELL = 1-minute close crosses below the newest confirmed pivot resistance.
+
+<br><br>
+
+Stop Loss uses the S&R level and Take Profit is calculated at 2R.
 
 </div>
 
@@ -1282,6 +1636,17 @@ SELL = close crosses below the newest confirmed resistance.
    STATE
 ========================================================= */
 
+let selectedSymbol =
+
+  localStorage.getItem(
+    "mkayfx_sr_symbol"
+  )
+
+  ||
+
+  "XAU/USD";
+
+
 let lastData =
   null;
 
@@ -1298,7 +1663,7 @@ const $ =
 
 
 /* =========================================================
-   FORMAT PRICE
+   FORMAT
 ========================================================= */
 
 function fmt(
@@ -1319,6 +1684,7 @@ function fmt(
   ) {
 
     return "—";
+
   }
 
 
@@ -1342,7 +1708,7 @@ function fmt(
 
 
 /* =========================================================
-   HTML ESCAPE
+   ESCAPE HTML
 ========================================================= */
 
 function escapeHtml(
@@ -1352,22 +1718,27 @@ function escapeHtml(
   return String(
     value ?? ""
   )
+
     .replace(
       /&/g,
       "&amp;"
     )
+
     .replace(
       /</g,
       "&lt;"
     )
+
     .replace(
       />/g,
       "&gt;"
     )
+
     .replace(
       /"/g,
       "&quot;"
     )
+
     .replace(
       /'/g,
       "&#039;"
@@ -1377,7 +1748,7 @@ function escapeHtml(
 
 
 /* =========================================================
-   TIME DISPLAY
+   TIME
 ========================================================= */
 
 function displayTime(
@@ -1389,13 +1760,16 @@ function displayTime(
   ) {
 
     return "—";
+
   }
 
 
   const text =
+
     String(
       value
     )
+      .trim()
       .replace(
         " ",
         "T"
@@ -1423,6 +1797,7 @@ function displayTime(
   ) {
 
     return value;
+
   }
 
 
@@ -1452,6 +1827,101 @@ function displayTime(
 
 
 /* =========================================================
+   ASSET NAME
+========================================================= */
+
+function assetName() {
+
+  return selectedSymbol ===
+    "BTC/USD"
+
+    ? "BITCOIN"
+
+    : "GOLD";
+
+}
+
+
+/* =========================================================
+   UPDATE ASSETS
+========================================================= */
+
+function updateAssetButtons() {
+
+  document
+    .querySelectorAll(
+      ".asset"
+    )
+    .forEach(
+      button => {
+
+        button.classList.toggle(
+
+          "active",
+
+          button.dataset.symbol ===
+          selectedSymbol
+
+        );
+
+      }
+    );
+
+
+  $("runButton").textContent =
+    `RUN ${assetName()} ANALYSIS`;
+
+
+  $("decisionTitle").textContent =
+    `${selectedSymbol} SIGNAL ENGINE`;
+
+}
+
+
+/* =========================================================
+   ASSET CLICKS
+========================================================= */
+
+document
+  .querySelectorAll(
+    ".asset"
+  )
+  .forEach(
+    button => {
+
+      button.addEventListener(
+
+        "click",
+
+        () => {
+
+          selectedSymbol =
+            button.dataset.symbol;
+
+
+          localStorage.setItem(
+
+            "mkayfx_sr_symbol",
+
+            selectedSymbol
+
+          );
+
+
+          updateAssetButtons();
+
+
+          runAnalysis();
+
+        }
+
+      );
+
+    }
+  );
+
+
+/* =========================================================
    RUN ANALYSIS
 ========================================================= */
 
@@ -1462,6 +1932,7 @@ async function runAnalysis() {
   ) {
 
     return;
+
   }
 
 
@@ -1479,14 +1950,14 @@ async function runAnalysis() {
 
 
   $("runButton").textContent =
-    "ANALYSING GOLD...";
+    `ANALYSING ${assetName()}...`;
 
 
   try {
 
     const endpoint =
 
-      `/api/sr?t=${Date.now()}`;
+      `/api/sr?symbol=${encodeURIComponent(selectedSymbol)}&t=${Date.now()}`;
 
 
     const response =
@@ -1522,7 +1993,7 @@ async function runAnalysis() {
 
       throw new Error(
 
-        `Server returned non-JSON:\n${raw.slice(0, 500)}`
+        `Server returned non-JSON:\n${raw.slice(0,500)}`
 
       );
 
@@ -1562,7 +2033,10 @@ async function runAnalysis() {
 
     $("errorBox").textContent =
 
-      error?.message ||
+      error?.message
+
+      ||
+
       String(
         error
       );
@@ -1583,7 +2057,7 @@ async function runAnalysis() {
 
 
     $("runButton").textContent =
-      "RUN GOLD ANALYSIS";
+      `RUN ${assetName()} ANALYSIS`;
 
   }
 
@@ -1598,13 +2072,31 @@ function render(
   data
 ) {
 
-  /* ENGINE */
+  /* =======================================================
+     SYMBOL
+  ======================================================= */
+
+  $("decisionTitle").textContent =
+    `${data.symbol} SIGNAL ENGINE`;
+
+
+  /* =======================================================
+     BADGE
+  ======================================================= */
 
   $("engineBadge").textContent =
-    "LIVE · M1";
+
+    data.symbol ===
+    "BTC/USD"
+
+      ? "BTC · 24/7"
+
+      : "GOLD · M1";
 
 
-  /* SIGNAL */
+  /* =======================================================
+     SIGNAL
+  ======================================================= */
 
   const signal =
     data.signal ||
@@ -1619,7 +2111,9 @@ function render(
     `signal ${signal}`;
 
 
-  /* PRICE */
+  /* =======================================================
+     PRICE
+  ======================================================= */
 
   $("price").textContent =
     fmt(
@@ -1627,18 +2121,36 @@ function render(
     );
 
 
-  /* TIME */
+  /* =======================================================
+     CANDLE
+  ======================================================= */
+
+  const age =
+    Number(
+      data.candleAgeMinutes
+    );
+
 
   $("candleTime").textContent =
 
     data.candleTime
 
-      ? `M1 · ${displayTime(data.candleTime)}`
+      ?
 
-      : "Latest M1 candle";
+      `${displayTime(data.candleTime)}${
+        Number.isFinite(age)
+          ? ` · ${age.toFixed(1)}m old`
+          : ""
+      }`
+
+      :
+
+      "Latest M1 candle";
 
 
-  /* SIGNAL DESCRIPTION */
+  /* =======================================================
+     DESCRIPTION
+  ======================================================= */
 
   if (
     signal ===
@@ -1659,12 +2171,14 @@ function render(
   } else {
 
     $("signalDescription").textContent =
-      "Waiting for S&R crossover.";
+      "Waiting for the next S&R crossover.";
 
   }
 
 
-  /* SUPPORT */
+  /* =======================================================
+     SUPPORT / RESISTANCE
+  ======================================================= */
 
   $("support").textContent =
     fmt(
@@ -1672,15 +2186,75 @@ function render(
     );
 
 
-  /* RESISTANCE */
-
   $("resistance").textContent =
     fmt(
       data.resistance
     );
 
 
-  /* SETTINGS */
+  /* =======================================================
+     ENTRY
+  ======================================================= */
+
+  $("entry").textContent =
+
+    data.entry == null
+
+      ? "WAIT"
+
+      : fmt(
+          data.entry
+        );
+
+
+  /* =======================================================
+     STOP
+  ======================================================= */
+
+  $("sl").textContent =
+
+    data.stopLoss == null
+
+      ? "—"
+
+      : fmt(
+          data.stopLoss
+        );
+
+
+  /* =======================================================
+     TP
+  ======================================================= */
+
+  $("tp").textContent =
+
+    data.takeProfit == null
+
+      ? "—"
+
+      : fmt(
+          data.takeProfit
+        );
+
+
+  /* =======================================================
+     RISK
+  ======================================================= */
+
+  $("risk").textContent =
+
+    data.risk == null
+
+      ? "—"
+
+      : fmt(
+          data.risk
+        );
+
+
+  /* =======================================================
+     SETTINGS
+  ======================================================= */
 
   $("pivotLength").textContent =
 
@@ -1702,7 +2276,29 @@ function render(
     5;
 
 
-  const linesOn =
+  const rr =
+
+    Number(
+      data.rr
+      ??
+      data.settings?.riskReward
+      ??
+      2
+    );
+
+
+  $("rr").textContent =
+
+    Number.isFinite(
+      rr
+    )
+
+      ? `1:${rr}`
+
+      : "1:2";
+
+
+  const showLines =
 
     data.settings
       ?.showSRLines
@@ -1711,16 +2307,26 @@ function render(
 
 
   $("showLines").textContent =
-    linesOn
+
+    showLines
+
       ? "ON"
+
       : "OFF";
 
 
   $("showLines").className =
-    linesOn
+
+    showLines
+
       ? "green"
+
       : "red";
 
+
+  /* =======================================================
+     PANELS
+  ======================================================= */
 
   renderLevels(
     data
@@ -1795,7 +2401,11 @@ function renderLevels(
 
               <span class="green">
 
-                ${index === 0 ? "NEW · " : ""}
+                ${
+                  index === 0
+                    ? "S1 · "
+                    : `S${index + 1} · `
+                }
 
               </span>
 
@@ -1833,7 +2443,11 @@ function renderLevels(
 
               <span class="red">
 
-                ${index === 0 ? "NEW · " : ""}
+                ${
+                  index === 0
+                    ? "R1 · "
+                    : `R${index + 1} · `
+                }
 
               </span>
 
@@ -1861,10 +2475,13 @@ function renderReasons(
 ) {
 
   const list =
+
     Array.isArray(
       reasons
     )
+
       ? reasons
+
       : [];
 
 
@@ -1899,10 +2516,13 @@ function renderRecentSignals(
 ) {
 
   const list =
+
     Array.isArray(
       signals
     )
+
       ? signals
+
       : [];
 
 
@@ -1914,29 +2534,39 @@ function renderRecentSignals(
 
       list
         .map(
-          signal => `
+          trade => `
 
             <div class="tradeRow">
 
               <b class="${
-                signal.signal === "BUY"
+                trade.signal === "BUY"
                   ? "green"
                   : "red"
               }">
 
-                ${escapeHtml(signal.signal)}
+                ${escapeHtml(trade.signal)}
 
               </b>
 
-              · ${fmt(signal.price)}
+              · Entry ${fmt(trade.entry ?? trade.price)}
 
               <br>
 
               <span class="tradeTime">
 
-                Level ${fmt(signal.level)}
+                Level ${fmt(trade.level)}
+
+                <br>
+
+                SL ${fmt(trade.stopLoss)}
                 ·
-                ${escapeHtml(displayTime(signal.time))}
+                TP ${fmt(trade.takeProfit)}
+                ·
+                RR 1:${trade.rr ?? 2}
+
+                <br>
+
+                ${escapeHtml(displayTime(trade.time))}
 
               </span>
 
@@ -1962,10 +2592,13 @@ function drawChart(
 ) {
 
   const bars =
+
     Array.isArray(
       data.chart
     )
+
       ? data.chart
+
       : [];
 
 
@@ -2041,11 +2674,17 @@ function drawChart(
   ) {
 
     $("chartLegend").innerHTML =
+
       `<span class="chip">No chart data</span>`;
 
     return;
+
   }
 
+
+  /* =======================================================
+     ACTIVE LEVELS
+  ======================================================= */
 
   const supports =
 
@@ -2081,11 +2720,31 @@ function drawChart(
       : [];
 
 
-  const levels =
+  /* =======================================================
+     TRADE PRICES
+  ======================================================= */
+
+  const tradePrices =
+
+    [
+      data.entry,
+      data.stopLoss,
+      data.takeProfit
+    ]
+      .map(
+        Number
+      )
+      .filter(
+        Number.isFinite
+      );
+
+
+  const importantPrices =
 
     [
       ...supports,
-      ...resistances
+      ...resistances,
+      ...tradePrices
     ];
 
 
@@ -2123,6 +2782,7 @@ function drawChart(
   ) {
 
     return;
+
   }
 
 
@@ -2131,7 +2791,7 @@ function drawChart(
 
       ...highs,
 
-      ...levels
+      ...importantPrices
 
     );
 
@@ -2141,7 +2801,7 @@ function drawChart(
 
       ...lows,
 
-      ...levels
+      ...importantPrices
 
     );
 
@@ -2152,7 +2812,9 @@ function drawChart(
       high -
       low
     )
+
     *
+
     0.08
 
     ||
@@ -2240,7 +2902,9 @@ function drawChart(
 
   for (
     let row = 1;
+
     row < 6;
+
     row++
   ) {
 
@@ -2271,13 +2935,17 @@ function drawChart(
 
 
   /* =======================================================
-     S&R LINE FUNCTION
+     HORIZONTAL LINE
   ======================================================= */
 
   function horizontal(
     price,
     label,
     color,
+    dash = [
+      6,
+      6
+    ],
     width = 1
   ) {
 
@@ -2294,6 +2962,7 @@ function drawChart(
     ) {
 
       return;
+
     }
 
 
@@ -2319,10 +2988,7 @@ function drawChart(
 
 
     ctx.setLineDash(
-      [
-        6,
-        6
-      ]
+      dash
     );
 
 
@@ -2373,10 +3039,7 @@ function drawChart(
 
 
   /* =======================================================
-     DRAW ALL ACTIVE SUPPORTS
-
-     Equivalent to Pine showZones:
-     up to 5 active lines.
+     SUPPORTS
   ======================================================= */
 
   supports.forEach(
@@ -2389,15 +3052,18 @@ function drawChart(
 
         level,
 
-        index === 0
-          ? "S1"
-          : `S${index + 1}`,
+        `S${index + 1}`,
 
         index === 0
 
           ? "rgba(55,230,161,.95)"
 
-          : "rgba(55,230,161,.40)",
+          : "rgba(55,230,161,.38)",
+
+        [
+          6,
+          6
+        ],
 
         index === 0
           ? 1.5
@@ -2410,7 +3076,7 @@ function drawChart(
 
 
   /* =======================================================
-     DRAW ALL ACTIVE RESISTANCES
+     RESISTANCES
   ======================================================= */
 
   resistances.forEach(
@@ -2423,15 +3089,18 @@ function drawChart(
 
         level,
 
-        index === 0
-          ? "R1"
-          : `R${index + 1}`,
+        `R${index + 1}`,
 
         index === 0
 
           ? "rgba(255,98,121,.95)"
 
-          : "rgba(255,98,121,.40)",
+          : "rgba(255,98,121,.38)",
+
+        [
+          6,
+          6
+        ],
 
         index === 0
           ? 1.5
@@ -2440,6 +3109,55 @@ function drawChart(
       );
 
     }
+  );
+
+
+  /* =======================================================
+     TRADE PLAN
+  ======================================================= */
+
+  horizontal(
+
+    data.entry,
+
+    "ENTRY",
+
+    "rgba(121,148,255,.98)",
+
+    [],
+
+    1.5
+
+  );
+
+
+  horizontal(
+
+    data.stopLoss,
+
+    "SL",
+
+    "rgba(255,98,121,.98)",
+
+    [],
+
+    1.5
+
+  );
+
+
+  horizontal(
+
+    data.takeProfit,
+
+    "TP",
+
+    "rgba(55,230,161,.98)",
+
+    [],
+
+    1.5
+
   );
 
 
@@ -2461,7 +3179,9 @@ function drawChart(
           W /
           bars.length
         )
+
         *
+
         0.65
 
       )
@@ -2512,6 +3232,7 @@ function drawChart(
       ) {
 
         return;
+
       }
 
 
@@ -2642,12 +3363,18 @@ function drawChart(
   $("chartLegend").innerHTML = `
 
     <span class="chip">
-      XAU/USD
+
+      ${escapeHtml(data.symbol)}
+
     </span>
 
+
     <span class="chip">
+
       M1 · ${bars.length} candles
+
     </span>
+
 
     ${
       Number.isFinite(
@@ -2667,6 +3394,7 @@ function drawChart(
         ""
     }
 
+
     ${
       Number.isFinite(
         Number(
@@ -2685,13 +3413,33 @@ function drawChart(
         ""
     }
 
+
+    ${
+      data.signal !== "WAIT" &&
+      Number.isFinite(
+        Number(
+          data.takeProfit
+        )
+      )
+
+        ?
+
+        `<span class="chip">
+          TP ${fmt(data.takeProfit)}
+        </span>`
+
+        :
+
+        ""
+    }
+
   `;
 
 }
 
 
 /* =========================================================
-   MANUAL ANALYSIS
+   MANUAL RUN
 ========================================================= */
 
 $("runButton")
@@ -2731,8 +3479,6 @@ window.addEventListener(
 
 /* =========================================================
    AUTO REFRESH
-
-   Re-check every 60 seconds.
 ========================================================= */
 
 setInterval(
@@ -2757,6 +3503,8 @@ setInterval(
 /* =========================================================
    START
 ========================================================= */
+
+updateAssetButtons();
 
 runAnalysis();
 
