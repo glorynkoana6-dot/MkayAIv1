@@ -40,25 +40,17 @@ MKAYFX Volume Imbalance
 :root{
 
   --bg:#05070b;
-
   --panel:#0a1119;
-
   --card:#070d14;
-
   --line:rgba(255,255,255,.085);
 
   --text:#f6f8fb;
-
   --muted:#788698;
 
   --gold:#f4c85d;
-
   --green:#37e6a1;
-
   --red:#ff6279;
-
   --blue:#7994ff;
-
   --purple:#9d83ff;
 
 }
@@ -77,7 +69,8 @@ body{
       #05070b 42%
     );
 
-  color:var(--text);
+  color:
+    var(--text);
 
   font-family:
     -apple-system,
@@ -110,9 +103,7 @@ button{
 }
 
 
-/* =========================================================
-   HEADER
-========================================================= */
+/* HEADER */
 
 .header{
 
@@ -158,9 +149,12 @@ button{
 
   border-radius:999px;
 
-  border:1px solid var(--line);
+  border:
+    1px solid
+    var(--line);
 
-  background:var(--panel);
+  background:
+    var(--panel);
 
   font-size:9px;
 
@@ -173,15 +167,14 @@ button{
 }
 
 
-/* =========================================================
-   ASSETS
-========================================================= */
+/* ASSETS */
 
 .assets{
 
   display:grid;
 
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:
+    1fr 1fr;
 
   gap:9px;
 
@@ -191,7 +184,9 @@ button{
 
 .asset{
 
-  border:1px solid var(--line);
+  border:
+    1px solid
+    var(--line);
 
   background:#080e15;
 
@@ -292,9 +287,7 @@ button{
 }
 
 
-/* =========================================================
-   BUTTONS
-========================================================= */
+/* BUTTONS */
 
 .run{
 
@@ -349,9 +342,7 @@ button{
 }
 
 
-/* =========================================================
-   ERROR
-========================================================= */
+/* ERROR */
 
 .error{
 
@@ -381,9 +372,7 @@ button{
 }
 
 
-/* =========================================================
-   GRID
-========================================================= */
+/* GRID */
 
 .grid{
 
@@ -437,9 +426,7 @@ button{
 }
 
 
-/* =========================================================
-   SIGNAL
-========================================================= */
+/* SIGNAL */
 
 .signalTop{
 
@@ -523,9 +510,7 @@ button{
 }
 
 
-/* =========================================================
-   METRICS
-========================================================= */
+/* METRICS */
 
 .metrics{
 
@@ -593,9 +578,7 @@ button{
 }
 
 
-/* =========================================================
-   TRADE
-========================================================= */
+/* TRADE */
 
 .tradeGrid{
 
@@ -611,9 +594,7 @@ button{
 }
 
 
-/* =========================================================
-   SETTINGS
-========================================================= */
+/* SETTINGS */
 
 .settings{
 
@@ -629,9 +610,7 @@ button{
 }
 
 
-/* =========================================================
-   COLORS
-========================================================= */
+/* COLORS */
 
 .green{
   color:var(--green);
@@ -654,9 +633,7 @@ button{
 }
 
 
-/* =========================================================
-   CHART
-========================================================= */
+/* CHART */
 
 .chart{
 
@@ -720,9 +697,7 @@ canvas{
 }
 
 
-/* =========================================================
-   RIGHT PANEL
-========================================================= */
+/* SIDE PANELS */
 
 .sectionTitle{
 
@@ -765,9 +740,7 @@ canvas{
 }
 
 
-/* =========================================================
-   BACKTEST
-========================================================= */
+/* BACKTEST */
 
 .btGrid{
 
@@ -803,9 +776,7 @@ canvas{
 }
 
 
-/* =========================================================
-   ZONES
-========================================================= */
+/* ZONES */
 
 .zonePill{
 
@@ -850,9 +821,44 @@ canvas{
 }
 
 
-/* =========================================================
-   LOADING
-========================================================= */
+/* SOURCES */
+
+.sourceRow{
+
+  padding:9px 0;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.05);
+
+  font-size:9px;
+
+  line-height:1.5;
+
+}
+
+.sourceRow:last-child{
+
+  border-bottom:0;
+
+}
+
+.sourceRow small{
+
+  display:block;
+
+  color:var(--muted);
+
+  font-size:7px;
+
+  text-transform:uppercase;
+
+  margin-bottom:4px;
+
+}
+
+
+/* LOADING */
 
 .loading{
 
@@ -863,9 +869,7 @@ canvas{
 }
 
 
-/* =========================================================
-   MOBILE
-========================================================= */
+/* MOBILE */
 
 @media(max-width:820px){
 
@@ -875,6 +879,7 @@ canvas{
 
   }
 
+
   .metrics{
 
     grid-template-columns:
@@ -882,11 +887,13 @@ canvas{
 
   }
 
+
   .signal{
 
     font-size:48px;
 
   }
+
 
   .chart{
 
@@ -922,9 +929,7 @@ canvas{
 >
 
 
-<!-- ======================================================
-     HEADER
-======================================================= -->
+<!-- HEADER -->
 
 <div class="header">
 
@@ -945,7 +950,7 @@ VOLUME
 
 <div class="subtitle">
 
-5M · 1H Anchor · 1M Volume Spike & Imbalance Engine
+5M · 1H Anchor · 1M Real/Proxy Volume Imbalance Engine
 
 </div>
 
@@ -966,9 +971,7 @@ CHECKING
 </div>
 
 
-<!-- ======================================================
-     ASSETS
-======================================================= -->
+<!-- ASSETS -->
 
 <div class="assets">
 
@@ -1048,9 +1051,7 @@ BTC/USD · 5M
 </div>
 
 
-<!-- ======================================================
-     BUTTONS
-======================================================= -->
+<!-- BUTTONS -->
 
 <button
   class="run"
@@ -1079,16 +1080,12 @@ CLEAR LOCKED TRADE
 </div>
 
 
-<!-- ======================================================
-     MAIN GRID
-======================================================= -->
+<!-- MAIN GRID -->
 
 <div class="grid">
 
 
-<!-- ======================================================
-     LEFT PANEL
-======================================================= -->
+<!-- LEFT -->
 
 <div class="card">
 
@@ -1174,9 +1171,7 @@ Latest completed 5M candle
 </div>
 
 
-<!-- ======================================================
-     VOLUME METRICS
-======================================================= -->
+<!-- VOLUME METRICS -->
 
 <div class="metrics">
 
@@ -1253,9 +1248,7 @@ Volume POC
 </div>
 
 
-<!-- ======================================================
-     HARD LOCK TRADE
-======================================================= -->
+<!-- TRADE -->
 
 <div class="tradeGrid">
 
@@ -1332,9 +1325,7 @@ Current R
 </div>
 
 
-<!-- ======================================================
-     SETTINGS
-======================================================= -->
+<!-- SETTINGS -->
 
 <div class="settings">
 
@@ -1457,9 +1448,7 @@ Stack Min
 </div>
 
 
-<!-- ======================================================
-     CHART
-======================================================= -->
+<!-- CHART -->
 
 <div class="chart">
 
@@ -1481,16 +1470,87 @@ Stack Min
 </div>
 
 
-<!-- ======================================================
-     RIGHT PANEL
-======================================================= -->
+<!-- RIGHT -->
 
 <div>
 
 
-<!-- CURRENT 1H ANCHOR -->
+<!-- DATA SOURCES -->
 
 <div class="card pad">
+
+
+<div class="sectionTitle">
+
+Data Sources
+
+</div>
+
+
+<div class="sourceRow">
+
+<small>
+Price
+</small>
+
+<div id="priceSource">
+
+—
+
+</div>
+
+</div>
+
+
+<div class="sourceRow">
+
+<small>
+Volume
+</small>
+
+<div id="volumeSource">
+
+—
+
+</div>
+
+</div>
+
+
+<div class="sourceRow">
+
+<small>
+Volume Mode
+</small>
+
+<div id="volumeMode">
+
+—
+
+</div>
+
+</div>
+
+
+<div
+  class="note"
+  id="volumeStatus"
+>
+
+Waiting for volume data.
+
+</div>
+
+
+</div>
+
+
+<!-- 1H ANCHOR -->
+
+<div
+  class="card pad"
+  style="margin-top:12px"
+>
 
 
 <div class="sectionTitle">
@@ -1572,20 +1632,10 @@ Close
 </div>
 
 
-<div
-  class="note"
-  id="volumeStatus"
->
-
-Waiting for volume data.
-
 </div>
 
 
-</div>
-
-
-<!-- STACKED IMBALANCES -->
+<!-- ZONES -->
 
 <div
   class="card pad"
@@ -1616,7 +1666,7 @@ Waiting for zones.
 </div>
 
 
-<!-- HARD LOCK STATUS -->
+<!-- LOCK STATUS -->
 
 <div
   class="card pad"
@@ -1801,7 +1851,7 @@ Waiting for backtest.
 </div>
 
 
-<!-- RECENT BACKTEST TRADES -->
+<!-- RECENT BACKTEST -->
 
 <div
   class="card pad"
@@ -1862,7 +1912,11 @@ Waiting for signals.
 
 <div class="note">
 
-Signal engine uses only the supplied volume-spike / imbalance mechanics plus the app's 5M entry rule, hard lock, zone SL and 3R TP.
+BTC uses Coinbase BTC-USD traded volume.
+
+Gold keeps XAU/USD spot price but uses GC=F gold-futures volume as a time-aligned proxy.
+
+Signals hard-lock until SL or 3R TP.
 
 </div>
 
@@ -1888,7 +1942,7 @@ Signal engine uses only the supplied volume-spike / imbalance mechanics plus the
 let selectedSymbol =
 
   localStorage.getItem(
-    "mkayfx_volume_symbol"
+    "mkayfx_volume_symbol_v2"
   )
 
   ||
@@ -1920,37 +1974,38 @@ function fmt(
   digits = 2
 ) {
 
-  const n =
+  const x =
     Number(
       value
     );
 
 
-  return Number.isFinite(
-    n
-  )
-
-    ?
-
-    n.toLocaleString(
-
-      undefined,
-
-      {
-
-        minimumFractionDigits:
-          digits,
-
-        maximumFractionDigits:
-          digits
-
-      }
-
+  if (
+    !Number.isFinite(
+      x
     )
+  ) {
 
-    :
+    return "—";
 
-    "—";
+  }
+
+
+  return x.toLocaleString(
+
+    undefined,
+
+    {
+
+      minimumFractionDigits:
+        digits,
+
+      maximumFractionDigits:
+        digits
+
+    }
+
+  );
 
 }
 
@@ -1959,7 +2014,9 @@ function fmt(
    ESCAPE
 ========================================================= */
 
-function esc(value) {
+function esc(
+  value
+) {
 
   return String(
     value ??
@@ -1998,7 +2055,9 @@ function esc(value) {
    TIME
 ========================================================= */
 
-function parseTime(value) {
+function parseTime(
+  value
+) {
 
   if (
     !value
@@ -2035,7 +2094,9 @@ function parseTime(value) {
 }
 
 
-function displayTime(value) {
+function displayTime(
+  value
+) {
 
   const ts =
     parseTime(
@@ -2084,7 +2145,7 @@ function displayTime(value) {
 
 
 /* =========================================================
-   SYMBOL HELPERS
+   ASSET
 ========================================================= */
 
 function assetName() {
@@ -2104,9 +2165,9 @@ function lockKey() {
   return selectedSymbol ===
     "BTC/USD"
 
-    ? "mkayfx_volume_lock_btc_v1"
+    ? "mkayfx_volume_lock_btc_v2"
 
-    : "mkayfx_volume_lock_xau_v1";
+    : "mkayfx_volume_lock_xau_v2";
 
 }
 
@@ -2116,9 +2177,9 @@ function ignoreKey() {
   return selectedSymbol ===
     "BTC/USD"
 
-    ? "mkayfx_volume_ignore_btc_v1"
+    ? "mkayfx_volume_ignore_btc_v2"
 
-    : "mkayfx_volume_ignore_xau_v1";
+    : "mkayfx_volume_ignore_xau_v2";
 
 }
 
@@ -2128,9 +2189,9 @@ function historyKey() {
   return selectedSymbol ===
     "BTC/USD"
 
-    ? "mkayfx_volume_history_btc_v1"
+    ? "mkayfx_volume_history_btc_v2"
 
-    : "mkayfx_volume_history_xau_v1";
+    : "mkayfx_volume_history_xau_v2";
 
 }
 
@@ -2180,7 +2241,9 @@ function getLock() {
 }
 
 
-function saveLock(trade) {
+function saveLock(
+  trade
+) {
 
   localStorage.setItem(
 
@@ -2204,7 +2267,9 @@ function clearLock() {
 }
 
 
-function saveHistory(trade) {
+function saveHistory(
+  trade
+) {
 
   let history =
     [];
@@ -2252,7 +2317,7 @@ function saveHistory(trade) {
 
 
 /* =========================================================
-   ASSETS
+   UPDATE ASSETS
 ========================================================= */
 
 function updateAssets() {
@@ -2262,16 +2327,18 @@ function updateAssets() {
       ".asset"
     )
     .forEach(
-      b =>
+      button => {
 
-        b.classList.toggle(
+        button.classList.toggle(
 
           "active",
 
-          b.dataset.symbol ===
+          button.dataset.symbol ===
           selectedSymbol
 
-        )
+        );
+
+      }
     );
 
 
@@ -2284,6 +2351,10 @@ function updateAssets() {
 
 }
 
+
+/* =========================================================
+   ASSET CLICK
+========================================================= */
 
 document
   .querySelectorAll(
@@ -2304,7 +2375,7 @@ document
 
           localStorage.setItem(
 
-            "mkayfx_volume_symbol",
+            "mkayfx_volume_symbol_v2",
 
             selectedSymbol
 
@@ -2328,7 +2399,9 @@ document
    CREATE HARD LOCK
 ========================================================= */
 
-function maybeCreateLock(data) {
+function maybeCreateLock(
+  data
+) {
 
   const existing =
     getLock();
@@ -2359,6 +2432,7 @@ function maybeCreateLock(data) {
 
 
   if (
+
     localStorage.getItem(
       ignoreKey()
     )
@@ -2366,6 +2440,7 @@ function maybeCreateLock(data) {
     ===
 
     data.signalTime
+
   ) {
 
     return null;
@@ -2485,7 +2560,7 @@ function currentR(
   }
 
 
-  const p =
+  const price =
     Number(
       currentPrice
     );
@@ -2499,7 +2574,7 @@ function currentR(
 
   if (
     !Number.isFinite(
-      p
+      price
     )
 
     ||
@@ -2525,7 +2600,7 @@ function currentR(
     ?
 
     (
-      p -
+      price -
       trade.entry
     )
 
@@ -2536,7 +2611,7 @@ function currentR(
 
     (
       trade.entry -
-      p
+      price
     )
 
     /
@@ -2546,7 +2621,7 @@ function currentR(
 
 
 /* =========================================================
-   ENDPOINT
+   API ENDPOINT
 ========================================================= */
 
 function endpoint() {
@@ -2621,7 +2696,7 @@ function endpoint() {
 
 
 /* =========================================================
-   RUN ANALYSIS
+   RUN
 ========================================================= */
 
 async function runAnalysis() {
@@ -2639,12 +2714,16 @@ async function runAnalysis() {
     true;
 
 
-  $("app").classList.add(
-    "loading"
-  );
+  $("app")
+    .classList
+    .add(
+      "loading"
+    );
 
 
-  $("errorBox").style.display =
+  $("errorBox")
+    .style
+    .display =
     "none";
 
 
@@ -2695,14 +2774,20 @@ async function runAnalysis() {
 
 
     if (
-      !response.ok ||
+      !response.ok
+
+      ||
+
       data.success !==
       true
     ) {
 
       throw new Error(
 
-        data.error ||
+        data.error
+
+        ||
+
         `HTTP ${response.status}`
 
       );
@@ -2714,9 +2799,9 @@ async function runAnalysis() {
       getLock();
 
 
-    /* =====================================================
+    /* ===============================================
        EXISTING LOCK HIT TP / SL
-    ===================================================== */
+    =============================================== */
 
     if (
 
@@ -2777,9 +2862,9 @@ async function runAnalysis() {
     }
 
 
-    /* =====================================================
-       NEW LOCK
-    ===================================================== */
+    /* ===============================================
+       CREATE NEW LOCK
+    =============================================== */
 
     if (
       !lock
@@ -2805,7 +2890,9 @@ async function runAnalysis() {
       data
     );
 
-  } catch (error) {
+  } catch (
+    error
+  ) {
 
     $("engineBadge").textContent =
       "ENGINE ERROR";
@@ -2822,7 +2909,9 @@ async function runAnalysis() {
       );
 
 
-    $("errorBox").style.display =
+    $("errorBox")
+      .style
+      .display =
       "block";
 
   } finally {
@@ -2831,9 +2920,11 @@ async function runAnalysis() {
       false;
 
 
-    $("app").classList.remove(
-      "loading"
-    );
+    $("app")
+      .classList
+      .remove(
+        "loading"
+      );
 
 
     $("runButton").textContent =
@@ -2848,7 +2939,9 @@ async function runAnalysis() {
    RENDER
 ========================================================= */
 
-function render(data) {
+function render(
+  data
+) {
 
   const lock =
     data.lockedTrade;
@@ -2860,10 +2953,8 @@ function render(data) {
 
       ? lock.signal
 
-      : (
-          data.signal ||
-          "WAIT"
-        );
+      : data.signal ||
+        "WAIT";
 
 
   $("decisionTitle").textContent =
@@ -2875,9 +2966,9 @@ function render(data) {
     data.symbol ===
     "BTC/USD"
 
-      ? "BTC · 5M · 24/7"
+      ? "BTC · REAL VOL · 5M"
 
-      : "GOLD · 5M";
+      : "GOLD · GC PROXY · 5M";
 
 
   $("signal").textContent =
@@ -2907,33 +2998,62 @@ function render(data) {
       "Latest completed 5M candle";
 
 
-  /* =====================================================
-     SPIKES
-  ===================================================== */
+  /* SOURCES */
+
+  $("priceSource").textContent =
+    data.dataSources
+      ?.price
+    ||
+    "—";
+
+
+  $("volumeSource").textContent =
+    data.dataSources
+      ?.volume
+    ||
+    "—";
+
+
+  $("volumeMode").textContent =
+    data.dataSources
+      ?.volumeMode
+    ||
+    "—";
+
+
+  /* SPIKES */
 
   $("bullSpikes").textContent =
-    data.anchor?.bullSpikes ??
+    data.anchor
+      ?.bullSpikes
+    ??
     0;
 
 
   $("bearSpikes").textContent =
-    data.anchor?.bearSpikes ??
+    data.anchor
+      ?.bearSpikes
+    ??
     0;
 
 
   $("dominance").textContent =
-    data.anchor?.dominance ??
+    data.anchor
+      ?.dominance
+    ||
     "—";
 
 
   $("dominance").className =
 
-    data.anchor?.dominance ===
+    data.anchor
+      ?.dominance ===
     "BULLISH"
 
       ? "green"
 
-      : data.anchor?.dominance ===
+      : data.anchor
+          ?.dominance ===
         "BEARISH"
 
         ? "red"
@@ -2943,68 +3063,74 @@ function render(data) {
 
   $("poc").textContent =
     fmt(
-      data.anchor?.poc
+      data.anchor
+        ?.poc
     );
 
 
-  /* =====================================================
-     1H ANCHOR
-  ===================================================== */
+  /* ANCHOR */
 
   $("aOpen").textContent =
     fmt(
-      data.anchor?.open
+      data.anchor
+        ?.open
     );
 
 
   $("aHigh").textContent =
     fmt(
-      data.anchor?.high
+      data.anchor
+        ?.high
     );
 
 
   $("aLow").textContent =
     fmt(
-      data.anchor?.low
+      data.anchor
+        ?.low
     );
 
 
   $("aClose").textContent =
     fmt(
-      data.anchor?.close
+      data.anchor
+        ?.close
     );
 
 
-  /* =====================================================
-     SETTINGS
-  ===================================================== */
+  /* SETTINGS */
 
   $("spikeMult").textContent =
     `${data.settings?.spikeMultiplier ?? 1.2}×`;
 
 
   $("volMa").textContent =
-    data.settings?.volumeMALength ??
+    data.settings
+      ?.volumeMALength
+    ??
     20;
 
 
   $("vpRows").textContent =
-    data.settings?.vpRows ??
+    data.settings
+      ?.vpRows
+    ??
     40;
 
 
   $("stackMin").textContent =
-    data.settings?.minimumStackedSpikes ??
+    data.settings
+      ?.minimumStackedSpikes
+    ??
     3;
 
 
-  /* =====================================================
-     VOLUME STATUS
-  ===================================================== */
+  /* VOLUME STATUS */
 
   $("volumeStatus").innerHTML =
 
-    data.volume?.available
+    data.volume
+      ?.available
 
       ?
 
@@ -3012,12 +3138,10 @@ function render(data) {
 
       :
 
-      `Volume feed: <span class="red">UNAVAILABLE / TOO SPARSE</span>. This strategy will stay on WAIT.`;
+      `Volume feed: <span class="red">UNAVAILABLE / TOO SPARSE</span>. Engine stays on WAIT.`;
 
 
-  /* =====================================================
-     HARD LOCK
-  ===================================================== */
+  /* HARD LOCK */
 
   if (
     lock
@@ -3086,7 +3210,7 @@ function render(data) {
       : "—";
 
 
-  const rNow =
+  const currentTradeR =
 
     lock
 
@@ -3101,10 +3225,10 @@ function render(data) {
   $("currentR").textContent =
 
     Number.isFinite(
-      rNow
+      currentTradeR
     )
 
-      ? `${rNow >= 0 ? "+" : ""}${rNow.toFixed(2)}R`
+      ? `${currentTradeR >= 0 ? "+" : ""}${currentTradeR.toFixed(2)}R`
 
       : "—";
 
@@ -3112,24 +3236,26 @@ function render(data) {
   $("currentR").className =
 
     Number.isFinite(
-      rNow
+      currentTradeR
     )
 
-      ? (
-          rNow >=
-          0
+      ? currentTradeR >=
+        0
 
-            ? "green"
+        ? "green"
 
-            : "red"
-        )
+        : "red"
 
       : "";
 
 
   renderZones(
-    data.anchor?.imbalances ||
+
+    data.anchor
+      ?.imbalances
+    ||
     []
+
   );
 
 
@@ -3145,8 +3271,13 @@ function render(data) {
 
 
   renderRecentSignals(
-    data.recentSignals ||
+
+    data.recentSignals
+
+    ||
+
     []
+
   );
 
 
@@ -3162,7 +3293,9 @@ function render(data) {
    ZONES
 ========================================================= */
 
-function renderZones(zones) {
+function renderZones(
+  zones
+) {
 
   $("zones").innerHTML =
 
@@ -3172,33 +3305,33 @@ function renderZones(zones) {
 
       zones
         .map(
-          z => `
+          zone => `
 
             <div class="zoneRow">
 
               <span class="zonePill ${
-                z.direction === "BULLISH"
+                zone.direction === "BULLISH"
                   ? "bullPill"
                   : "bearPill"
               }">
 
-                ${esc(z.direction)}
+                ${esc(zone.direction)}
 
               </span>
 
-              ${fmt(z.low)}
+              ${fmt(zone.low)}
               →
-              ${fmt(z.high)}
+              ${fmt(zone.high)}
 
               <br>
 
               <span class="tradeTime">
 
-                Bull ${z.bullCount}
+                Bull ${zone.bullCount}
                 ·
-                Bear ${z.bearCount}
+                Bear ${zone.bearCount}
                 ·
-                Strength ${z.strength}
+                Strength ${zone.strength}
 
               </span>
 
@@ -3238,6 +3371,7 @@ function renderStatus(
 
       </div>
 
+
       <div class="reason">
 
         <b class="${
@@ -3254,6 +3388,7 @@ function renderStatus(
 
       </div>
 
+
       <div class="reason">
 
         SL ${fmt(lock.stopLoss)}
@@ -3264,11 +3399,13 @@ function renderStatus(
 
       </div>
 
+
       <div class="reason">
 
         New BUY, SELL and WAIT states are ignored until this trade exits.
 
       </div>
+
 
       <div class="reason">
 
@@ -3293,7 +3430,7 @@ function renderStatus(
     data.lastCompletedTrade
   ) {
 
-    const t =
+    const trade =
       data.lastCompletedTrade;
 
 
@@ -3304,24 +3441,26 @@ function renderStatus(
         Previous locked trade completed:
 
         <b class="${
-          t.status === "WIN"
+          trade.status === "WIN"
             ? "green"
             : "red"
         }">
 
-          ${esc(t.status)}
+          ${esc(trade.status)}
 
         </b>
 
       </div>
 
+
       <div class="reason">
 
         Result:
-        ${t.resultR > 0 ? "+" : ""}
-        ${t.resultR}R
+        ${trade.resultR > 0 ? "+" : ""}
+        ${trade.resultR}R
 
       </div>
+
 
       <div class="reason">
 
@@ -3356,11 +3495,11 @@ function renderStatus(
 
       reasons
         .map(
-          r => `
+          reason => `
 
             <div class="reason">
 
-              ${esc(r)}
+              ${esc(reason)}
 
             </div>
 
@@ -3381,10 +3520,12 @@ function renderStatus(
    BACKTEST
 ========================================================= */
 
-function renderBacktest(bt) {
+function renderBacktest(
+  backtest
+) {
 
   if (
-    !bt
+    !backtest
   ) {
 
     return;
@@ -3393,35 +3534,36 @@ function renderBacktest(bt) {
 
 
   $("btTrades").textContent =
-    bt.closedTrades ??
+    backtest.closedTrades
+    ??
     0;
 
 
   $("btWin").textContent =
-    `${fmt(bt.winRate,1)}%`;
+    `${fmt(backtest.winRate,1)}%`;
 
 
   $("btPF").textContent =
 
-    bt.profitFactor ===
+    backtest.profitFactor ===
     999
 
       ? "∞"
 
       : fmt(
-          bt.profitFactor,
+          backtest.profitFactor,
           2
         );
 
 
   $("btNet").textContent =
-    `${fmt(bt.netR,2)}R`;
+    `${fmt(backtest.netR,2)}R`;
 
 
   $("btNet").className =
 
     Number(
-      bt.netR
+      backtest.netR
     ) >=
     0
 
@@ -3431,13 +3573,13 @@ function renderBacktest(bt) {
 
 
   $("btExpectancy").textContent =
-    `${fmt(bt.expectancyR,3)}R`;
+    `${fmt(backtest.expectancyR,3)}R`;
 
 
   $("btExpectancy").className =
 
     Number(
-      bt.expectancyR
+      backtest.expectancyR
     ) >=
     0
 
@@ -3447,21 +3589,22 @@ function renderBacktest(bt) {
 
 
   $("btDD").textContent =
-    `${fmt(bt.maxDrawdownR,2)}R`;
+    `${fmt(backtest.maxDrawdownR,2)}R`;
 
 
   $("btLossStreak").textContent =
-    bt.maxLossStreak ??
+    backtest.maxLossStreak
+    ??
     0;
 
 
   $("btHold").textContent =
-    `${fmt(bt.averageHoldMinutes,1)}m`;
+    `${fmt(backtest.averageHoldMinutes,1)}m`;
 
 
   $("btPeriod").innerHTML =
 
-    bt.unavailable
+    backtest.unavailable
 
       ?
 
@@ -3469,7 +3612,7 @@ function renderBacktest(bt) {
          Backtest unavailable:
        </span>
        ${esc(
-         bt.reason ||
+         backtest.reason ||
          "No usable volume data."
        )}`
 
@@ -3477,22 +3620,22 @@ function renderBacktest(bt) {
 
       `Hard lock · 3R target · Wins
        <span class="green">
-         ${bt.wins ?? 0}
+         ${backtest.wins ?? 0}
        </span>
        · Losses
        <span class="red">
-         ${bt.losses ?? 0}
+         ${backtest.losses ?? 0}
        </span>
        <br><br>
        ${esc(
          displayTime(
-           bt.firstCandle
+           backtest.firstCandle
          )
        )}
        →
        ${esc(
          displayTime(
-           bt.lastCandle
+           backtest.lastCandle
          )
        )}`;
 
@@ -3500,10 +3643,10 @@ function renderBacktest(bt) {
   const trades =
 
     Array.isArray(
-      bt.recentTrades
+      backtest.recentTrades
     )
 
-      ? bt.recentTrades
+      ? backtest.recentTrades
 
       : [];
 
@@ -3516,36 +3659,36 @@ function renderBacktest(bt) {
 
       trades
         .map(
-          t => `
+          trade => `
 
             <div class="tradeRow">
 
               <b class="${
-                t.signal === "BUY"
+                trade.signal === "BUY"
                   ? "green"
                   : "red"
               }">
 
-                ${esc(t.signal)}
+                ${esc(trade.signal)}
 
               </b>
 
               ·
 
               <b class="${
-                t.result === "WIN"
+                trade.result === "WIN"
                   ? "green"
-                  : t.result === "LOSS"
+                  : trade.result === "LOSS"
                     ? "red"
                     : "gold"
               }">
 
-                ${esc(t.result)}
+                ${esc(trade.result)}
 
                 ${
-                  t.r == null
+                  trade.r == null
                     ? ""
-                    : ` · ${t.r > 0 ? "+" : ""}${t.r}R`
+                    : ` · ${trade.r > 0 ? "+" : ""}${trade.r}R`
                 }
 
               </b>
@@ -3554,25 +3697,25 @@ function renderBacktest(bt) {
 
               <span class="tradeTime">
 
-                Entry ${fmt(t.entry)}
+                Entry ${fmt(trade.entry)}
                 ·
-                SL ${fmt(t.stopLoss)}
+                SL ${fmt(trade.stopLoss)}
                 ·
-                TP ${fmt(t.takeProfit)}
+                TP ${fmt(trade.takeProfit)}
 
                 <br>
 
                 ${esc(
                   displayTime(
-                    t.entryTime
+                    trade.entryTime
                   )
                 )}
 
                 ${
-                  t.exitTime
+                  trade.exitTime
                     ? ` → ${esc(
                         displayTime(
-                          t.exitTime
+                          trade.exitTime
                         )
                       )}`
                     : ""
@@ -3599,7 +3742,9 @@ function renderBacktest(bt) {
    RECENT SIGNALS
 ========================================================= */
 
-function renderRecentSignals(signals) {
+function renderRecentSignals(
+  signals
+) {
 
   $("recentSignals").innerHTML =
 
@@ -3609,49 +3754,49 @@ function renderRecentSignals(signals) {
 
       signals
         .map(
-          t => `
+          trade => `
 
             <div class="tradeRow">
 
               <b class="${
-                t.signal === "BUY"
+                trade.signal === "BUY"
                   ? "green"
                   : "red"
               }">
 
-                ${esc(t.signal)}
+                ${esc(trade.signal)}
 
               </b>
 
-              · Entry ${fmt(t.entry)}
+              · Entry ${fmt(trade.entry)}
 
               <br>
 
               <span class="tradeTime">
 
-                SL ${fmt(t.stopLoss)}
+                SL ${fmt(trade.stopLoss)}
                 ·
-                TP ${fmt(t.takeProfit)}
+                TP ${fmt(trade.takeProfit)}
                 ·
-                1:${t.rr ?? 3}
+                1:${trade.rr ?? 3}
 
                 <br>
 
                 Zone
-                ${fmt(t.zone?.low)}
+                ${fmt(trade.zone?.low)}
                 →
-                ${fmt(t.zone?.high)}
+                ${fmt(trade.zone?.high)}
 
-                · Bull ${t.bullSpikes}
+                · Bull ${trade.bullSpikes}
                 /
-                Bear ${t.bearSpikes}
+                Bear ${trade.bearSpikes}
 
                 <br>
 
                 ${esc(
                   displayTime(
-                    t.signalTime ||
-                    t.time
+                    trade.signalTime ||
+                    trade.time
                   )
                 )}
 
@@ -3763,6 +3908,13 @@ function drawChart(
     !bars.length
   ) {
 
+    $("chartLegend").innerHTML =
+
+      `<span class="chip">
+         No chart data
+       </span>`;
+
+
     return;
 
   }
@@ -3792,9 +3944,12 @@ function drawChart(
       lock?.takeProfit,
 
       ...zones.flatMap(
-        z => [
-          z.low,
-          z.high
+        zone => [
+
+          zone.low,
+
+          zone.high
+
         ]
       )
 
@@ -3812,12 +3967,14 @@ function drawChart(
   const highs =
 
     bars
+
       .map(
-        b =>
+        bar =>
           Number(
-            b.high
+            bar.high
           )
       )
+
       .filter(
         Number.isFinite
       );
@@ -3826,32 +3983,50 @@ function drawChart(
   const lows =
 
     bars
+
       .map(
-        b =>
+        bar =>
           Number(
-            b.low
+            bar.low
           )
       )
+
       .filter(
         Number.isFinite
       );
 
 
+  if (
+    !highs.length ||
+    !lows.length
+  ) {
+
+    return;
+
+  }
+
+
   let high =
     Math.max(
+
       ...highs,
+
       ...extra
+
     );
 
 
   let low =
     Math.min(
+
       ...lows,
+
       ...extra
+
     );
 
 
-  const pad =
+  const padding =
 
     (
       high -
@@ -3867,11 +4042,11 @@ function drawChart(
 
 
   high +=
-    pad;
+    padding;
 
 
   low -=
-    pad;
+    padding;
 
 
   const W =
@@ -3883,13 +4058,13 @@ function drawChart(
 
 
   const x =
-    i =>
+    index =>
 
       14
 
       +
 
-      i /
+      index /
       Math.max(
         1,
         bars.length -
@@ -3905,7 +4080,7 @@ function drawChart(
 
 
   const y =
-    p =>
+    price =>
 
       H -
       16
@@ -3913,7 +4088,12 @@ function drawChart(
       -
 
       (
-        Number(p) -
+        Number(
+          price
+        )
+
+        -
+
         low
       )
 
@@ -3933,13 +4113,13 @@ function drawChart(
       );
 
 
-  const firstTs =
+  const firstTimestamp =
     parseTime(
       bars[0].time
     );
 
 
-  const lastTs =
+  const lastTimestamp =
     parseTime(
 
       bars.at(-1).closeTime
@@ -3952,35 +4132,35 @@ function drawChart(
 
 
   const xTime =
-    time => {
+    value => {
 
-      const ts =
+      const timestamp =
         parseTime(
-          time
+          value
         );
 
 
       if (
         !Number.isFinite(
-          ts
+          timestamp
         )
 
         ||
 
         !Number.isFinite(
-          firstTs
+          firstTimestamp
         )
 
         ||
 
         !Number.isFinite(
-          lastTs
+          lastTimestamp
         )
 
         ||
 
-        lastTs ===
-        firstTs
+        lastTimestamp ===
+        firstTimestamp
       ) {
 
         return null;
@@ -3995,15 +4175,15 @@ function drawChart(
         +
 
         (
-          ts -
-          firstTs
+          timestamp -
+          firstTimestamp
         )
 
         /
 
         (
-          lastTs -
-          firstTs
+          lastTimestamp -
+          firstTimestamp
         )
 
         *
@@ -4018,22 +4198,23 @@ function drawChart(
     };
 
 
-  /* =====================================================
-     GRID
-  ===================================================== */
+  /* GRID */
 
   ctx.strokeStyle =
     "rgba(255,255,255,.045)";
 
 
   for (
-    let r = 1;
-    r < 6;
-    r++
+    let row = 1;
+
+    row <
+      6;
+
+    row++
   ) {
 
     const yy =
-      r *
+      row *
       H /
       6;
 
@@ -4058,30 +4239,28 @@ function drawChart(
   }
 
 
-  /* =====================================================
-     IMBALANCE ZONES
-  ===================================================== */
+  /* IMBALANCE ZONES */
 
   for (
-    const z
+    const zone
     of zones
   ) {
 
     const top =
       y(
-        z.high
+        zone.high
       );
 
 
     const bottom =
       y(
-        z.low
+        zone.low
       );
 
 
     ctx.fillStyle =
 
-      z.direction ===
+      zone.direction ===
       "BULLISH"
 
         ? "rgba(55,230,161,.10)"
@@ -4098,9 +4277,12 @@ function drawChart(
       W,
 
       Math.max(
+
         1,
+
         bottom -
         top
+
       )
 
     );
@@ -4108,9 +4290,7 @@ function drawChart(
   }
 
 
-  /* =====================================================
-     CANDLES
-  ===================================================== */
+  /* CANDLES */
 
   const candleWidth =
 
@@ -4122,12 +4302,8 @@ function drawChart(
 
         5,
 
-        (
-          W /
-          bars.length
-        )
-
-        *
+        W /
+        bars.length *
         .67
 
       )
@@ -4137,40 +4313,40 @@ function drawChart(
 
   bars.forEach(
     (
-      b,
-      i
+      bar,
+      index
     ) => {
 
-      const o =
+      const open =
         Number(
-          b.open
+          bar.open
         );
 
 
-      const h =
+      const barHigh =
         Number(
-          b.high
+          bar.high
         );
 
 
-      const l =
+      const barLow =
         Number(
-          b.low
+          bar.low
         );
 
 
-      const c =
+      const close =
         Number(
-          b.close
+          bar.close
         );
 
 
       if (
         ![
-          o,
-          h,
-          l,
-          c
+          open,
+          barHigh,
+          barLow,
+          close
         ]
           .every(
             Number.isFinite
@@ -4184,14 +4360,14 @@ function drawChart(
 
       const xx =
         x(
-          i
+          index
         );
 
 
-      const color =
+      const candleColor =
 
-        c >=
-        o
+        close >=
+        open
 
           ? "#37e6a1"
 
@@ -4199,7 +4375,7 @@ function drawChart(
 
 
       ctx.strokeStyle =
-        color;
+        candleColor;
 
 
       ctx.beginPath();
@@ -4210,7 +4386,7 @@ function drawChart(
         xx,
 
         y(
-          l
+          barLow
         )
 
       );
@@ -4221,7 +4397,7 @@ function drawChart(
         xx,
 
         y(
-          h
+          barHigh
         )
 
       );
@@ -4231,25 +4407,25 @@ function drawChart(
 
 
       ctx.fillStyle =
-        color;
+        candleColor;
 
 
-      const top =
+      const bodyTop =
 
         Math.min(
 
           y(
-            o
+            open
           ),
 
           y(
-            c
+            close
           )
 
         );
 
 
-      const bh =
+      const bodyHeight =
 
         Math.max(
 
@@ -4258,13 +4434,13 @@ function drawChart(
           Math.abs(
 
             y(
-              o
+              open
             )
 
             -
 
             y(
-              c
+              close
             )
 
           )
@@ -4278,11 +4454,11 @@ function drawChart(
         candleWidth /
         2,
 
-        top,
+        bodyTop,
 
         candleWidth,
 
-        bh
+        bodyHeight
 
       );
 
@@ -4290,9 +4466,7 @@ function drawChart(
   );
 
 
-  /* =====================================================
-     SPIKE BUBBLES
-  ===================================================== */
+  /* SPIKE BUBBLES */
 
   const spikes =
 
@@ -4306,11 +4480,11 @@ function drawChart(
 
 
   spikes.forEach(
-    s => {
+    spike => {
 
       const xx =
         xTime(
-          s.time
+          spike.time
         );
 
 
@@ -4326,11 +4500,11 @@ function drawChart(
 
       const yy =
         y(
-          s.price
+          spike.price
         );
 
 
-      const rel =
+      const relative =
 
         Math.max(
 
@@ -4341,7 +4515,7 @@ function drawChart(
             1,
 
             Number(
-              s.relative
+              spike.relative
             )
 
             ||
@@ -4363,7 +4537,7 @@ function drawChart(
         yy,
 
         2 +
-        rel *
+        relative *
         4,
 
         0,
@@ -4376,12 +4550,12 @@ function drawChart(
 
       ctx.fillStyle =
 
-        s.delta >
+        spike.delta >
         0
 
-          ? `rgba(55,230,161,${.35 + rel * .55})`
+          ? `rgba(55,230,161,${.35 + relative * .55})`
 
-          : `rgba(255,98,121,${.35 + rel * .55})`;
+          : `rgba(255,98,121,${.35 + relative * .55})`;
 
 
       ctx.fill();
@@ -4390,18 +4564,16 @@ function drawChart(
   );
 
 
-  /* =====================================================
-     HORIZONTAL LINE
-  ===================================================== */
+  /* HORIZONTAL LINE */
 
-  function line(
+  function horizontal(
     price,
     label,
     color,
     dash = []
   ) {
 
-    const p =
+    const value =
       Number(
         price
       );
@@ -4409,7 +4581,7 @@ function drawChart(
 
     if (
       !Number.isFinite(
-        p
+        value
       )
     ) {
 
@@ -4420,7 +4592,7 @@ function drawChart(
 
     const yy =
       y(
-        p
+        value
       );
 
 
@@ -4469,7 +4641,7 @@ function drawChart(
 
     ctx.fillText(
 
-      `${label} ${fmt(p)}`,
+      `${label} ${fmt(value)}`,
 
       6,
 
@@ -4489,9 +4661,10 @@ function drawChart(
 
   /* POC */
 
-  line(
+  horizontal(
 
-    data.anchor?.poc,
+    data.anchor
+      ?.poc,
 
     "POC",
 
@@ -4511,7 +4684,7 @@ function drawChart(
     lock
   ) {
 
-    line(
+    horizontal(
 
       lock.entry,
 
@@ -4522,7 +4695,7 @@ function drawChart(
     );
 
 
-    line(
+    horizontal(
 
       lock.stopLoss,
 
@@ -4533,7 +4706,7 @@ function drawChart(
     );
 
 
-    line(
+    horizontal(
 
       lock.takeProfit,
 
@@ -4546,9 +4719,7 @@ function drawChart(
   }
 
 
-  /* =====================================================
-     VOLUME PROFILE
-  ===================================================== */
+  /* VOLUME PROFILE */
 
   const profile =
 
@@ -4561,7 +4732,7 @@ function drawChart(
       : [];
 
 
-  const profileMaxWidth =
+  const maxProfileWidth =
 
     Math.min(
 
@@ -4574,18 +4745,20 @@ function drawChart(
 
 
   profile.forEach(
-    p => {
+    row => {
 
-      const rel =
+      const relative =
         Number(
-          p.relative
+          row.relative
         )
+
         ||
+
         0;
 
 
       if (
-        rel <=
+        relative <=
         0
       ) {
 
@@ -4596,13 +4769,13 @@ function drawChart(
 
       const top =
         y(
-          p.high
+          row.high
         );
 
 
       const bottom =
         y(
-          p.low
+          row.low
         );
 
 
@@ -4613,18 +4786,21 @@ function drawChart(
       ctx.fillRect(
 
         W -
-        profileMaxWidth *
-        rel,
+        maxProfileWidth *
+        relative,
 
         top,
 
-        profileMaxWidth *
-        rel,
+        maxProfileWidth *
+        relative,
 
         Math.max(
+
           1,
+
           bottom -
           top
+
         )
 
       );
@@ -4633,9 +4809,7 @@ function drawChart(
   );
 
 
-  /* =====================================================
-     LEGEND
-  ===================================================== */
+  /* LEGEND */
 
   $("chartLegend").innerHTML = `
 
@@ -4645,11 +4819,13 @@ function drawChart(
 
     </span>
 
+
     <span class="chip">
 
       1H ANCHOR
 
     </span>
+
 
     <span class="chip">
 
@@ -4657,11 +4833,13 @@ function drawChart(
 
     </span>
 
+
     <span class="chip">
 
       ${data.anchor?.totalSpikes ?? 0} SPIKES
 
     </span>
+
 
     ${
       lock
