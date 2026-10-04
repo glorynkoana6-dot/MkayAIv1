@@ -1351,4 +1351,2193 @@ function timeframeSnapshot(
 
     ema20:
       round(
-        ema20
+        ema20,
+        2
+      ),
+
+    ema50:
+      round(
+        ema50,
+        2
+      ),
+
+    ema200:
+      round(
+        ema200,
+        2
+      ),
+
+    rsi:
+      round(
+        rsi,
+        1
+      ),
+
+    score,
+
+    bias:
+      score >= 2
+        ? "BULLISH"
+        : score <= -2
+          ? "BEARISH"
+          : "NEUTRAL"
+
+  };
+
+}
+
+
+/* =========================================================
+   M1 SIGNAL ENGINE
+========================================================= */
+
+function analyzeAt(
+  bars,
+  index,
+  higher = null
+) {
+
+  if (
+    index <
+    220
+  ) {
+
+    return null;
+
+  }
+
+  const bar =
+    bars[index];
+
+  const previous =
+    bars[
+      index - 1
+    ];
+
+  const atr =
+    atrAt(
+      bars,
+      index
+    );
+
+  if (
+    !atr ||
+    atr <= 0
+  ) {
+    return null;
+  }
+
+  const levels =
+    confirmedLevels(
+      bars,
+      index,
+      atr
+    );
+
+  const support =
+    nearestSupport(
+      levels.supports,
+      bar.close,
+      atr
+    );
+
+  const resistance =
+    nearestResistance(
+      levels.resistances,
+      bar.close,
+      atr
+    );
+
+  const stats =
+    candleStats(
+      bar
+    );
+
+  const prevStats =
+    candleStats(
+      previous
+    );
+
+  const ema20 =
+    emaAt(
+      bars,
+      index,
+      CFG.EMA_FAST
+    );
+
+  const ema50 =
+    emaAt(
+      bars,
+      index,
+      CFG.EMA_MID
+    );
+
+  const ema200 =
+    emaAt(
+      bars,
+      index,
+      CFG.EMA_SLOW
+    );
+
+  const rsi =
+    rsiAt(
+      bars,
+      index
+    );
+
+
+  /* =======================================================
+     SUPPORT BUY CONDITIONS
+  ======================================================= */
+
+  let supportTouch =
+    false;
+
+  let bullishSweep =
+    false;
+
+  let bullishRejection =
+    false;
+
+  let bullishBreakRetest =
+    false;
+
+
+  if (
+    support
+  ) {
+
+    supportTouch =
+      bar.low <=
+      support.price +
+      atr *
+      CFG.TOUCH_ATR;
+
+
+    const penetration =
+      support.price -
+      bar.low;
+
+
+    bullishSweep =
+
+      penetration >=
+      atr *
+      CFG.SWEEP_MIN_ATR
+
+      &&
+
+      penetration <=
+      atr *
+      CFG.SWEEP_MAX_ATR
+
+      &&
+
+      bar.close >
+      support.price;
+
+
+    bullishRejection =
+
+      supportTouch
+
+      &&
+
+      stats.closePosition >=
+      0.60
+
+      &&
+
+      stats.lowerWick >=
+      stats.body *
+      0.70;
+
+
+    bullishBreakRetest =
+
+      previous.close <
+      support.price
+
+      &&
+
+      bar.close >
+      support.price
+
+      &&
+
+      stats.bullish;
+
+  }
+
+
+  /* =======================================================
+     RESISTANCE SELL CONDITIONS
+  ======================================================= */
+
+  let resistanceTouch =
+    false;
+
+  let bearishSweep =
+    false;
+
+  let bearishRejection =
+    false;
+
+  let bearishBreakRetest =
+    false;
+
+
+  if (
+    resistance
+  ) {
+
+    resistanceTouch =
+      bar.high >=
+      resistance.price -
+      atr *
+      CFG.TOUCH_ATR;
+
+
+    const penetration =
+      bar.high -
+      resistance.price;
+
+
+    bearishSweep =
+
+      penetration >=
+      atr *
+      CFG.SWEEP_MIN_ATR
+
+      &&
+
+      penetration <=
+      atr *
+      CFG.SWEEP_MAX_ATR
+
+      &&
+
+      bar.close <
+      resistance.price;
+
+
+    bearishRejection =
+
+      resistanceTouch
+
+      &&
+
+      stats.closePosition <=
+      0.40
+
+      &&
+
+      stats.upperWick >=
+      stats.body *
+      0.70;
+
+
+    bearishBreakRetest =
+
+      previous.close >
+      resistance.price
+
+      &&
+
+      bar.close <
+      resistance.price
+
+      &&
+
+      stats.bearish;
+
+  }
+
+
+  /* =======================================================
+     TREND
+  ======================================================= */
+
+  const bullishTrend =
+
+    ema20 !== null
+
+    &&
+
+    ema50 !== null
+
+    &&
+
+    bar.close >
+    ema20
+
+    &&
+
+    ema20 >=
+    ema50;
+
+
+  const bearishTrend =
+
+    ema20 !== null
+
+    &&
+
+    ema50 !== null
+
+    &&
+
+    bar.close <
+    ema20
+
+    &&
+
+    ema20 <=
+    ema50;
+
+
+  const majorBull =
+
+    ema200 === null
+
+    ||
+
+    bar.close >
+    ema200;
+
+
+  const majorBear =
+
+    ema200 === null
+
+    ||
+
+    bar.close <
+    ema200;
+
+
+  /* =======================================================
+     SCORE BUY
+  ======================================================= */
+
+  let buyScore =
+    0;
+
+  const buyReasons =
+    [];
+
+
+  if (
+    support
+  ) {
+
+    buyScore +=
+      8;
+
+    buyReasons.push(
+      `Support ${round(support.price, 2)} detected`
+    );
+
+    buyScore +=
+      Math.min(
+        support.touches * 3,
+        12
+      );
+
+  }
+
+
+  if (
+    supportTouch
+  ) {
+
+    buyScore +=
+      10;
+
+    buyReasons.push(
+      "Price tested support"
+    );
+
+  }
+
+
+  if (
+    bullishSweep
+  ) {
+
+    buyScore +=
+      20;
+
+    buyReasons.push(
+      "Sell-side liquidity sweep recovered"
+    );
+
+  }
+
+
+  if (
+    bullishRejection
+  ) {
+
+    buyScore +=
+      14;
+
+    buyReasons.push(
+      "Bullish rejection candle"
+    );
+
+  }
+
+
+  if (
+    bullishBreakRetest
+  ) {
+
+    buyScore +=
+      9;
+
+    buyReasons.push(
+      "Support reclaim confirmed"
+    );
+
+  }
+
+
+  if (
+    bullishTrend
+  ) {
+
+    buyScore +=
+      10;
+
+    buyReasons.push(
+      "M1 trend bullish"
+    );
+
+  }
+
+
+  if (
+    majorBull
+  ) {
+
+    buyScore +=
+      5;
+
+  }
+
+
+  if (
+    rsi >= 50 &&
+    rsi <= 72
+  ) {
+
+    buyScore +=
+      7;
+
+  }
+
+
+  if (
+    stats.bullish &&
+    stats.bodyRatio >= 0.45
+  ) {
+
+    buyScore +=
+      7;
+
+  }
+
+
+  if (
+    previous.close <
+    bar.close
+  ) {
+
+    buyScore +=
+      4;
+
+  }
+
+
+  /* =======================================================
+     SCORE SELL
+  ======================================================= */
+
+  let sellScore =
+    0;
+
+  const sellReasons =
+    [];
+
+
+  if (
+    resistance
+  ) {
+
+    sellScore +=
+      8;
+
+    sellReasons.push(
+      `Resistance ${round(resistance.price, 2)} detected`
+    );
+
+    sellScore +=
+      Math.min(
+        resistance.touches * 3,
+        12
+      );
+
+  }
+
+
+  if (
+    resistanceTouch
+  ) {
+
+    sellScore +=
+      10;
+
+    sellReasons.push(
+      "Price tested resistance"
+    );
+
+  }
+
+
+  if (
+    bearishSweep
+  ) {
+
+    sellScore +=
+      20;
+
+    sellReasons.push(
+      "Buy-side liquidity sweep rejected"
+    );
+
+  }
+
+
+  if (
+    bearishRejection
+  ) {
+
+    sellScore +=
+      14;
+
+    sellReasons.push(
+      "Bearish rejection candle"
+    );
+
+  }
+
+
+  if (
+    bearishBreakRetest
+  ) {
+
+    sellScore +=
+      9;
+
+    sellReasons.push(
+      "Resistance rejection confirmed"
+    );
+
+  }
+
+
+  if (
+    bearishTrend
+  ) {
+
+    sellScore +=
+      10;
+
+    sellReasons.push(
+      "M1 trend bearish"
+    );
+
+  }
+
+
+  if (
+    majorBear
+  ) {
+
+    sellScore +=
+      5;
+
+  }
+
+
+  if (
+    rsi <= 50 &&
+    rsi >= 28
+  ) {
+
+    sellScore +=
+      7;
+
+  }
+
+
+  if (
+    stats.bearish &&
+    stats.bodyRatio >= 0.45
+  ) {
+
+    sellScore +=
+      7;
+
+  }
+
+
+  if (
+    previous.close >
+    bar.close
+  ) {
+
+    sellScore +=
+      4;
+
+  }
+
+
+  /* =======================================================
+     HIGHER TF CONFIRMATION
+  ======================================================= */
+
+  if (
+    higher
+  ) {
+
+    if (
+      higher.m5 ===
+      "BULLISH"
+    ) {
+
+      buyScore +=
+        8;
+
+      sellScore -=
+        5;
+
+      buyReasons.push(
+        "M5 bullish confirmation"
+      );
+
+    }
+
+
+    if (
+      higher.m5 ===
+      "BEARISH"
+    ) {
+
+      sellScore +=
+        8;
+
+      buyScore -=
+        5;
+
+      sellReasons.push(
+        "M5 bearish confirmation"
+      );
+
+    }
+
+
+    if (
+      higher.m15 ===
+      "BULLISH"
+    ) {
+
+      buyScore +=
+        8;
+
+      sellScore -=
+        4;
+
+      buyReasons.push(
+        "M15 bullish confirmation"
+      );
+
+    }
+
+
+    if (
+      higher.m15 ===
+      "BEARISH"
+    ) {
+
+      sellScore +=
+        8;
+
+      buyScore -=
+        4;
+
+      sellReasons.push(
+        "M15 bearish confirmation"
+      );
+
+    }
+
+  }
+
+
+  buyScore =
+    clamp(
+      Math.round(
+        buyScore
+      ),
+      0,
+      100
+    );
+
+
+  sellScore =
+    clamp(
+      Math.round(
+        sellScore
+      ),
+      0,
+      100
+    );
+
+
+  /* =======================================================
+     DECISION
+  ======================================================= */
+
+  let signal =
+    "WAIT";
+
+  let score =
+    Math.max(
+      buyScore,
+      sellScore
+    );
+
+  let reasons =
+    [];
+
+
+  if (
+
+    buyScore >=
+    CFG.MIN_SIGNAL_SCORE
+
+    &&
+
+    buyScore >=
+    sellScore +
+    8
+
+    &&
+
+    support
+
+    &&
+
+    (
+      bullishSweep
+
+      ||
+
+      bullishRejection
+
+      ||
+
+      bullishBreakRetest
+    )
+
+  ) {
+
+    signal =
+      "BUY";
+
+    score =
+      buyScore;
+
+    reasons =
+      buyReasons;
+
+  }
+
+
+  if (
+
+    sellScore >=
+    CFG.MIN_SIGNAL_SCORE
+
+    &&
+
+    sellScore >=
+    buyScore +
+    8
+
+    &&
+
+    resistance
+
+    &&
+
+    (
+      bearishSweep
+
+      ||
+
+      bearishRejection
+
+      ||
+
+      bearishBreakRetest
+    )
+
+  ) {
+
+    signal =
+      "SELL";
+
+    score =
+      sellScore;
+
+    reasons =
+      sellReasons;
+
+  }
+
+
+  if (
+    signal ===
+    "WAIT"
+  ) {
+
+    reasons = [
+
+      `BUY score ${buyScore}/100`,
+
+      `SELL score ${sellScore}/100`,
+
+      "Waiting for a stronger S&R reaction"
+
+    ];
+
+  }
+
+
+  /* =======================================================
+     ENTRY / RISK
+  ======================================================= */
+
+  let entry =
+    null;
+
+  let stopLoss =
+    null;
+
+  let tp1 =
+    null;
+
+  let tp2 =
+    null;
+
+  let risk =
+    null;
+
+
+  if (
+    signal ===
+    "BUY"
+  ) {
+
+    entry =
+      bar.close;
+
+    const structuralStop =
+      Math.min(
+        support.price,
+        bar.low
+      )
+      -
+      atr *
+      CFG.STOP_BUFFER_ATR;
+
+    const minStop =
+      entry -
+      atr *
+      CFG.MIN_STOP_ATR;
+
+    const maxStop =
+      entry -
+      atr *
+      CFG.MAX_STOP_ATR;
+
+    stopLoss =
+      Math.min(
+        structuralStop,
+        minStop
+      );
+
+    stopLoss =
+      Math.max(
+        stopLoss,
+        maxStop
+      );
+
+    risk =
+      entry -
+      stopLoss;
+
+    tp1 =
+      entry +
+      risk *
+      CFG.TP1_R;
+
+    tp2 =
+      entry +
+      risk *
+      CFG.TP2_R;
+
+  }
+
+
+  if (
+    signal ===
+    "SELL"
+  ) {
+
+    entry =
+      bar.close;
+
+    const structuralStop =
+      Math.max(
+        resistance.price,
+        bar.high
+      )
+      +
+      atr *
+      CFG.STOP_BUFFER_ATR;
+
+    const minStop =
+      entry +
+      atr *
+      CFG.MIN_STOP_ATR;
+
+    const maxStop =
+      entry +
+      atr *
+      CFG.MAX_STOP_ATR;
+
+    stopLoss =
+      Math.max(
+        structuralStop,
+        minStop
+      );
+
+    stopLoss =
+      Math.min(
+        stopLoss,
+        maxStop
+      );
+
+    risk =
+      stopLoss -
+      entry;
+
+    tp1 =
+      entry -
+      risk *
+      CFG.TP1_R;
+
+    tp2 =
+      entry -
+      risk *
+      CFG.TP2_R;
+
+  }
+
+
+  return {
+
+    signal,
+
+    score,
+
+    buyScore,
+
+    sellScore,
+
+    reasons,
+
+    entry,
+
+    stopLoss,
+
+    tp1,
+
+    tp2,
+
+    risk,
+
+    atr,
+
+    rsi,
+
+    ema20,
+
+    ema50,
+
+    ema200,
+
+    support,
+
+    resistance,
+
+    supportTouch,
+
+    resistanceTouch,
+
+    bullishSweep,
+
+    bearishSweep,
+
+    bullishRejection,
+
+    bearishRejection,
+
+    bullishBreakRetest,
+
+    bearishBreakRetest
+
+  };
+
+}
+
+
+/* =========================================================
+   BACKTEST ENGINE
+
+   Uses confirmed S&R only.
+
+   To keep the backtest conservative:
+   - One trade at a time
+   - No same-candle TP after entry
+   - If SL and TP2 hit in same future candle,
+     SL is counted first
+   - Estimated cost = 0.05R per trade
+========================================================= */
+
+function backtest(
+  bars
+) {
+
+  const trades =
+    [];
+
+  const lastIndex =
+    bars.length -
+    1;
+
+  const start =
+    Math.max(
+      230,
+      bars.length -
+      CFG.BACKTEST_LOOKBACK
+    );
+
+  let nextAllowed =
+    start;
+
+
+  for (
+    let i =
+      start;
+    i <
+      lastIndex -
+      CFG.BACKTEST_MAX_HOLD;
+    i++
+  ) {
+
+    if (
+      i <
+      nextAllowed
+    ) {
+      continue;
+    }
+
+
+    const setup =
+      analyzeAt(
+        bars,
+        i,
+        null
+      );
+
+
+    if (
+      !setup ||
+      setup.signal ===
+      "WAIT" ||
+      !Number.isFinite(
+        setup.entry
+      ) ||
+      !Number.isFinite(
+        setup.stopLoss
+      ) ||
+      !Number.isFinite(
+        setup.tp2
+      )
+    ) {
+
+      continue;
+
+    }
+
+
+    const direction =
+      setup.signal;
+
+
+    let result =
+      null;
+
+    let exitIndex =
+      null;
+
+    let exitPrice =
+      null;
+
+    let rResult =
+      null;
+
+
+    const risk =
+      Math.abs(
+        setup.entry -
+        setup.stopLoss
+      );
+
+
+    if (
+      risk <=
+      0
+    ) {
+      continue;
+    }
+
+
+    for (
+      let j =
+        i + 1;
+      j <=
+        Math.min(
+          i +
+          CFG.BACKTEST_MAX_HOLD,
+          lastIndex
+        );
+      j++
+    ) {
+
+      const candle =
+        bars[j];
+
+
+      if (
+        direction ===
+        "BUY"
+      ) {
+
+        const stopHit =
+          candle.low <=
+          setup.stopLoss;
+
+        const targetHit =
+          candle.high >=
+          setup.tp2;
+
+
+        if (
+          stopHit
+        ) {
+
+          result =
+            "LOSS";
+
+          exitIndex =
+            j;
+
+          exitPrice =
+            setup.stopLoss;
+
+          rResult =
+            -1 -
+            CFG.BACKTEST_COST_R;
+
+          break;
+
+        }
+
+
+        if (
+          targetHit
+        ) {
+
+          result =
+            "WIN";
+
+          exitIndex =
+            j;
+
+          exitPrice =
+            setup.tp2;
+
+          rResult =
+            CFG.TP2_R -
+            CFG.BACKTEST_COST_R;
+
+          break;
+
+        }
+
+      }
+
+
+      if (
+        direction ===
+        "SELL"
+      ) {
+
+        const stopHit =
+          candle.high >=
+          setup.stopLoss;
+
+        const targetHit =
+          candle.low <=
+          setup.tp2;
+
+
+        if (
+          stopHit
+        ) {
+
+          result =
+            "LOSS";
+
+          exitIndex =
+            j;
+
+          exitPrice =
+            setup.stopLoss;
+
+          rResult =
+            -1 -
+            CFG.BACKTEST_COST_R;
+
+          break;
+
+        }
+
+
+        if (
+          targetHit
+        ) {
+
+          result =
+            "WIN";
+
+          exitIndex =
+            j;
+
+          exitPrice =
+            setup.tp2;
+
+          rResult =
+            CFG.TP2_R -
+            CFG.BACKTEST_COST_R;
+
+          break;
+
+        }
+
+      }
+
+    }
+
+
+    /* =====================================================
+       TIME EXIT
+    ===================================================== */
+
+    if (
+      !result
+    ) {
+
+      exitIndex =
+        Math.min(
+          i +
+          CFG.BACKTEST_MAX_HOLD,
+          lastIndex
+        );
+
+      exitPrice =
+        bars[
+          exitIndex
+        ].close;
+
+
+      let rawR =
+
+        direction ===
+        "BUY"
+
+          ?
+
+          (
+            exitPrice -
+            setup.entry
+          ) /
+          risk
+
+          :
+
+          (
+            setup.entry -
+            exitPrice
+          ) /
+          risk;
+
+
+      rawR =
+        clamp(
+          rawR,
+          -1,
+          CFG.TP2_R
+        );
+
+
+      rResult =
+        rawR -
+        CFG.BACKTEST_COST_R;
+
+
+      result =
+
+        rResult >
+        0
+
+          ?
+
+          "WIN"
+
+          :
+
+          "LOSS";
+
+    }
+
+
+    trades.push({
+
+      signal:
+        direction,
+
+      score:
+        setup.score,
+
+      entryTime:
+        bars[i].time,
+
+      exitTime:
+        bars[
+          exitIndex
+        ].time,
+
+      entry:
+        round(
+          setup.entry,
+          2
+        ),
+
+      stop:
+        round(
+          setup.stopLoss,
+          2
+        ),
+
+      target:
+        round(
+          setup.tp2,
+          2
+        ),
+
+      exit:
+        round(
+          exitPrice,
+          2
+        ),
+
+      result,
+
+      r:
+        round(
+          rResult,
+          2
+        )
+
+    });
+
+
+    nextAllowed =
+      exitIndex +
+      CFG.COOLDOWN_BARS;
+
+  }
+
+
+  /* =======================================================
+     STATS
+  ======================================================= */
+
+  const wins =
+    trades.filter(
+      x =>
+        x.r >
+        0
+    );
+
+  const losses =
+    trades.filter(
+      x =>
+        x.r <=
+        0
+    );
+
+
+  const grossProfit =
+    wins.reduce(
+      (
+        sum,
+        trade
+      ) =>
+        sum +
+        trade.r,
+      0
+    );
+
+
+  const grossLoss =
+    Math.abs(
+
+      losses.reduce(
+        (
+          sum,
+          trade
+        ) =>
+          sum +
+          trade.r,
+        0
+      )
+
+    );
+
+
+  const netR =
+    trades.reduce(
+      (
+        sum,
+        trade
+      ) =>
+        sum +
+        trade.r,
+      0
+    );
+
+
+  const expectancy =
+    trades.length
+      ?
+      netR /
+      trades.length
+      :
+      0;
+
+
+  const profitFactor =
+
+    grossLoss >
+    0
+
+      ?
+
+      grossProfit /
+      grossLoss
+
+      :
+
+      grossProfit >
+      0
+        ? 999
+        : 0;
+
+
+  let equity =
+    0;
+
+  let peak =
+    0;
+
+  let maxDrawdown =
+    0;
+
+
+  for (
+    const trade
+    of trades
+  ) {
+
+    equity +=
+      trade.r;
+
+    peak =
+      Math.max(
+        peak,
+        equity
+      );
+
+    maxDrawdown =
+      Math.max(
+        maxDrawdown,
+        peak -
+        equity
+      );
+
+  }
+
+
+  return {
+
+    trades:
+      trades.length,
+
+    wins:
+      wins.length,
+
+    losses:
+      losses.length,
+
+    winRate:
+      trades.length
+        ?
+        round(
+          wins.length /
+          trades.length *
+          100,
+          1
+        )
+        :
+        0,
+
+    grossProfitR:
+      round(
+        grossProfit,
+        2
+      ),
+
+    grossLossR:
+      round(
+        grossLoss,
+        2
+      ),
+
+    netR:
+      round(
+        netR,
+        2
+      ),
+
+    expectancyR:
+      round(
+        expectancy,
+        3
+      ),
+
+    profitFactor:
+      profitFactor === 999
+        ? 999
+        : round(
+            profitFactor,
+            2
+          ),
+
+    maxDrawdownR:
+      round(
+        maxDrawdown,
+        2
+      ),
+
+    targetR:
+      CFG.TP2_R,
+
+    costPerTradeR:
+      CFG.BACKTEST_COST_R,
+
+    recentTrades:
+      trades
+        .slice(-12)
+        .reverse()
+
+  };
+
+}
+
+
+/* =========================================================
+   SESSION
+========================================================= */
+
+function sessionName() {
+
+  const hour =
+    new Date()
+      .getUTCHours();
+
+  if (
+    hour >= 6 &&
+    hour < 8
+  ) {
+    return "LONDON PRE-OPEN";
+  }
+
+  if (
+    hour >= 8 &&
+    hour < 12
+  ) {
+    return "LONDON";
+  }
+
+  if (
+    hour >= 12 &&
+    hour < 16
+  ) {
+    return "LONDON / NEW YORK";
+  }
+
+  if (
+    hour >= 16 &&
+    hour < 21
+  ) {
+    return "NEW YORK";
+  }
+
+  return "ASIA / QUIET";
+}
+
+
+/* =========================================================
+   API HANDLER
+========================================================= */
+
+export default async function handler(
+  req,
+  res
+) {
+
+  res.setHeader(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate"
+  );
+
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "*"
+  );
+
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET,OPTIONS"
+  );
+
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type"
+  );
+
+
+  if (
+    req.method ===
+    "OPTIONS"
+  ) {
+
+    return res
+      .status(204)
+      .end();
+
+  }
+
+
+  try {
+
+    if (
+      !API_KEY
+    ) {
+
+      throw new Error(
+        "TWELVE_DATA_API_KEY is missing in Vercel Environment Variables."
+      );
+
+    }
+
+
+    const [
+      m1,
+      m5,
+      m15,
+      quote
+    ] =
+      await Promise.all([
+
+        fetchSeries(
+          "1min",
+          CFG.M1_BARS
+        ),
+
+        fetchSeries(
+          "5min",
+          CFG.M5_BARS
+        ),
+
+        fetchSeries(
+          "15min",
+          CFG.M15_BARS
+        ),
+
+        fetchQuote()
+
+      ]);
+
+
+    const m5Snapshot =
+      timeframeSnapshot(
+        m5
+      );
+
+
+    const m15Snapshot =
+      timeframeSnapshot(
+        m15
+      );
+
+
+    const higher = {
+
+      m5:
+        m5Snapshot.bias,
+
+      m15:
+        m15Snapshot.bias
+
+    };
+
+
+    const latestIndex =
+      m1.length -
+      1;
+
+
+    const analysis =
+      analyzeAt(
+        m1,
+        latestIndex,
+        higher
+      );
+
+
+    if (
+      !analysis
+    ) {
+
+      throw new Error(
+        "Not enough completed M1 data to analyse."
+      );
+
+    }
+
+
+    const bt =
+      backtest(
+        m1
+      );
+
+
+    const candleAge =
+      minutesOld(
+        m1.at(-1)?.time
+      );
+
+
+    const marketState =
+
+      candleAge !== null &&
+      candleAge >
+      15
+
+        ?
+
+        "STALE / MARKET CLOSED"
+
+        :
+
+        "LIVE";
+
+
+    return res
+      .status(200)
+      .json({
+
+        success:
+          true,
+
+        engine:
+          "MKAYFX S&R SCALPER V1",
+
+        symbol:
+          SYMBOL,
+
+        executionTimeframe:
+          "1m",
+
+        generatedAt:
+          new Date()
+            .toISOString(),
+
+        session:
+          sessionName(),
+
+        marketState,
+
+        candleAgeMinutes:
+          round(
+            candleAge,
+            1
+          ),
+
+        price:
+          round(
+            quote.price,
+            2
+          ),
+
+        signal:
+          analysis.signal,
+
+        score:
+          analysis.score,
+
+        buyScore:
+          analysis.buyScore,
+
+        sellScore:
+          analysis.sellScore,
+
+        signalQuality:
+
+          analysis.score >=
+          CFG.STRONG_SIGNAL_SCORE
+
+            ?
+
+            "STRONG"
+
+            :
+
+            analysis.signal ===
+            "WAIT"
+
+              ?
+
+              "WAIT"
+
+              :
+
+              "VALID",
+
+        entry:
+          round(
+            analysis.entry,
+            2
+          ),
+
+        stopLoss:
+          round(
+            analysis.stopLoss,
+            2
+          ),
+
+        tp1:
+          round(
+            analysis.tp1,
+            2
+          ),
+
+        tp2:
+          round(
+            analysis.tp2,
+            2
+          ),
+
+        risk:
+          round(
+            analysis.risk,
+            2
+          ),
+
+        rr1:
+          CFG.TP1_R,
+
+        rr2:
+          CFG.TP2_R,
+
+        support:
+
+          analysis.support
+
+            ?
+
+            {
+              price:
+                round(
+                  analysis.support.price,
+                  2
+                ),
+
+              touches:
+                analysis.support.touches,
+
+              time:
+                analysis.support.time
+            }
+
+            :
+
+            null,
+
+        resistance:
+
+          analysis.resistance
+
+            ?
+
+            {
+              price:
+                round(
+                  analysis.resistance.price,
+                  2
+                ),
+
+              touches:
+                analysis.resistance.touches,
+
+              time:
+                analysis.resistance.time
+            }
+
+            :
+
+            null,
+
+        indicators: {
+
+          atr:
+            round(
+              analysis.atr,
+              2
+            ),
+
+          rsi:
+            round(
+              analysis.rsi,
+              1
+            ),
+
+          ema20:
+            round(
+              analysis.ema20,
+              2
+            ),
+
+          ema50:
+            round(
+              analysis.ema50,
+              2
+            ),
+
+          ema200:
+            round(
+              analysis.ema200,
+              2
+            )
+
+        },
+
+        confirmations: {
+
+          supportTouch:
+            analysis.supportTouch,
+
+          resistanceTouch:
+            analysis.resistanceTouch,
+
+          bullishSweep:
+            analysis.bullishSweep,
+
+          bearishSweep:
+            analysis.bearishSweep,
+
+          bullishRejection:
+            analysis.bullishRejection,
+
+          bearishRejection:
+            analysis.bearishRejection,
+
+          bullishReclaim:
+            analysis.bullishBreakRetest,
+
+          bearishRejectionBreak:
+            analysis.bearishBreakRetest
+
+        },
+
+        higherTimeframes: {
+
+          M5:
+            m5Snapshot,
+
+          M15:
+            m15Snapshot
+
+        },
+
+        reasons:
+          analysis.reasons,
+
+        backtest:
+          bt,
+
+        levels: {
+
+          supports:
+
+            confirmedLevels(
+              m1,
+              latestIndex,
+              analysis.atr
+            )
+              .supports
+              .map(
+                x => ({
+                  price:
+                    round(
+                      x.price,
+                      2
+                    ),
+                  touches:
+                    x.touches
+                })
+              ),
+
+          resistances:
+
+            confirmedLevels(
+              m1,
+              latestIndex,
+              analysis.atr
+            )
+              .resistances
+              .map(
+                x => ({
+                  price:
+                    round(
+                      x.price,
+                      2
+                    ),
+                  touches:
+                    x.touches
+                })
+              )
+
+        },
+
+        chart:
+
+          m1
+            .slice(-180)
+            .map(
+              bar => ({
+
+                time:
+                  bar.time,
+
+                open:
+                  round(
+                    bar.open,
+                    2
+                  ),
+
+                high:
+                  round(
+                    bar.high,
+                    2
+                  ),
+
+                low:
+                  round(
+                    bar.low,
+                    2
+                  ),
+
+                close:
+                  round(
+                    bar.close,
+                    2
+                  )
+
+              })
+            )
+
+      });
+
+
+  } catch (error) {
+
+    console.error(
+      "MKAYFX SR ERROR",
+      error
+    );
+
+
+    return res
+      .status(500)
+      .json({
+
+        success:
+          false,
+
+        engine:
+          "MKAYFX S&R SCALPER V1",
+
+        error:
+          safeError(
+            error
+          )
+
+          ||
+
+          "Unknown S&R engine error."
+
+      });
+
+  }
+
+}
