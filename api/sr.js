@@ -1,255 +1,76 @@
 /* =========================================================
-   MKAYFX MULTI-ASSET S&R SCALPER V2
+   MKAYFX 1-MIN GOLD SUPPORT & RESISTANCE SIGNALS
    /api/sr.js
 
-   ASSETS
-   ------
-   XAU/USD
-   BTC/USD
+   DIRECT JAVASCRIPT VERSION OF:
 
-   EXECUTION
-   ---------
-   M1
+   "1-Min Gold Support & Resistance Signals"
 
-   CONFIRMATION
-   ------------
-   M5
-   M15
+   LOGIC ONLY
+   ----------
+   - 1 minute XAU/USD
+   - Pivot highs
+   - Pivot lows
+   - Maximum 5 active support levels
+   - Maximum 5 active resistance levels
+   - BUY when close crosses ABOVE newest support
+   - SELL when close crosses BELOW newest resistance
 
-   REQUIRED VERCEL ENVIRONMENT VARIABLE
-   ------------------------------------
-   TWELVE_DATA_API_KEY
+   NO OTHER INDICATORS
+   NO EMA
+   NO RSI
+   NO ATR
+   NO M5
+   NO M15
+   NO SCORING
+   NO LIQUIDITY FILTERS
 ========================================================= */
+
 
 const API_KEY =
   process.env.TWELVE_DATA_API_KEY;
+
 
 const BASE_URL =
   "https://api.twelvedata.com";
 
 
-/* =========================================================
-   SUPPORTED ASSETS
-========================================================= */
-
-const ASSETS = {
-
-  "XAU/USD": {
-
-    name:
-      "GOLD",
-
-    short:
-      "XAU",
-
-    digits:
-      2,
-
-    backtestCostR:
-      0.05
-
-  },
-
-  "BTC/USD": {
-
-    name:
-      "BITCOIN",
-
-    short:
-      "BTC",
-
-    digits:
-      2,
-
-    backtestCostR:
-      0.06
-
-  }
-
-};
+const SYMBOL =
+  "XAU/USD";
 
 
 /* =========================================================
    SETTINGS
+
+   TradingView:
+   Pivot Lookback Length = 9
+   Max Active Levels     = 5
+   Show S&R Lines        = true
 ========================================================= */
 
-const CFG = {
+const LENGTH =
+  9;
 
-  M1_BARS:
-    900,
 
-  M5_BARS:
-    400,
+const MAX_LEVELS =
+  5;
 
-  M15_BARS:
-    300,
 
-  ATR_LEN:
-    14,
+const SHOW_ZONES =
+  true;
 
-  RSI_LEN:
-    14,
 
-  EMA_FAST:
-    20,
-
-  EMA_MID:
-    50,
-
-  EMA_SLOW:
-    200,
-
-  PIVOT_LEN:
-    5,
-
-  MAX_LEVELS:
-    8,
-
-  LEVEL_LOOKBACK:
-    260,
-
-  LEVEL_MERGE_ATR:
-    0.35,
-
-  TOUCH_ATR:
-    0.28,
-
-  SWEEP_MIN_ATR:
-    0.04,
-
-  SWEEP_MAX_ATR:
-    1.20,
-
-  STOP_BUFFER_ATR:
-    0.22,
-
-  MIN_STOP_ATR:
-    0.75,
-
-  MAX_STOP_ATR:
-    2.20,
-
-  TP1_R:
-    1.50,
-
-  TP2_R:
-    2.20,
-
-  MIN_SIGNAL_SCORE:
-    68,
-
-  STRONG_SIGNAL_SCORE:
-    80,
-
-  SCORE_SEPARATION:
-    8,
-
-  COOLDOWN_BARS:
-    6,
-
-  BACKTEST_LOOKBACK:
-    650,
-
-  BACKTEST_MAX_HOLD:
-    45
-
-};
+/*
+   Enough candles to calculate and display
+   recent S&R structure.
+*/
+const OUTPUT_SIZE =
+  500;
 
 
 /* =========================================================
    HELPERS
 ========================================================= */
-
-function clamp(
-  value,
-  min,
-  max
-) {
-
-  return Math.max(
-    min,
-    Math.min(
-      max,
-      value
-    )
-  );
-
-}
-
-
-function num(
-  value
-) {
-
-  const n =
-    Number(
-      value
-    );
-
-  return Number.isFinite(
-    n
-  )
-    ? n
-    : null;
-
-}
-
-
-function round(
-  value,
-  digits = 2
-) {
-
-  const n =
-    num(
-      value
-    );
-
-  if (
-    n === null
-  ) {
-
-    return null;
-
-  }
-
-  return Number(
-    n.toFixed(
-      digits
-    )
-  );
-
-}
-
-
-function mean(
-  values
-) {
-
-  const clean =
-    values.filter(
-      Number.isFinite
-    );
-
-  if (
-    !clean.length
-  ) {
-
-    return null;
-
-  }
-
-  return clean.reduce(
-    (
-      total,
-      value
-    ) =>
-      total + value,
-    0
-  ) / clean.length;
-
-}
-
 
 function safeError(
   value
@@ -262,6 +83,7 @@ function safeError(
     return "";
   }
 
+
   if (
     typeof value ===
     "string"
@@ -270,49 +92,22 @@ function safeError(
     return value;
   }
 
+
   if (
     value instanceof Error
   ) {
 
     return (
       value.message ||
-      String(
-        value
-      )
+      String(value)
     );
   }
+
 
   if (
     typeof value ===
     "object"
   ) {
-
-    const nested =
-
-      value.message
-
-      ??
-
-      value.error
-
-      ??
-
-      value.detail
-
-      ??
-
-      value.description;
-
-
-    if (
-      nested !== undefined &&
-      nested !== value
-    ) {
-
-      return safeError(
-        nested
-      );
-    }
 
     try {
 
@@ -329,66 +124,10 @@ function safeError(
 
   }
 
+
   return String(
     value
   );
-
-}
-
-
-/* =========================================================
-   SYMBOL NORMALIZATION
-========================================================= */
-
-function normalizeSymbol(
-  value
-) {
-
-  const raw =
-    String(
-      value ||
-      "XAU/USD"
-    )
-      .trim()
-      .toUpperCase();
-
-
-  const aliases = {
-
-    XAUUSD:
-      "XAU/USD",
-
-    GOLD:
-      "XAU/USD",
-
-    XAU:
-      "XAU/USD",
-
-    BTCUSD:
-      "BTC/USD",
-
-    BITCOIN:
-      "BTC/USD",
-
-    BTC:
-      "BTC/USD"
-
-  };
-
-
-  const symbol =
-    aliases[
-      raw
-    ]
-    ||
-    raw;
-
-
-  return ASSETS[
-    symbol
-  ]
-    ? symbol
-    : "XAU/USD";
 
 }
 
@@ -410,9 +149,7 @@ function parseTime(
 
 
   const text =
-    String(
-      value
-    )
+    String(value)
       .trim()
       .replace(
         " ",
@@ -435,41 +172,6 @@ function parseTime(
 }
 
 
-function minutesOld(
-  value
-) {
-
-  const timestamp =
-    parseTime(
-      value
-    );
-
-  if (
-    !Number.isFinite(
-      timestamp
-    )
-  ) {
-
-    return null;
-  }
-
-
-  return Math.max(
-
-    0,
-
-    (
-      Date.now() -
-      timestamp
-    )
-    /
-    60000
-
-  );
-
-}
-
-
 /* =========================================================
    HTTP
 ========================================================= */
@@ -485,8 +187,7 @@ async function getJSON(
 
   const timer =
     setTimeout(
-      () =>
-        controller.abort(),
+      () => controller.abort(),
       timeout
     );
 
@@ -535,42 +236,28 @@ async function getJSON(
 
         throw new Error(
 
-          `Provider returned non-JSON HTTP ${response.status}: ${raw.slice(0, 250)}`
+          `Provider returned invalid JSON. HTTP ${response.status}`
 
         );
+
       }
 
     }
 
 
     if (
-
-      !response.ok
-
-      ||
-
-      data?.status ===
-      "error"
-
+      !response.ok ||
+      data?.status === "error"
     ) {
 
       throw new Error(
 
-        safeError(
-          data?.message
-        )
-
-        ||
-
-        safeError(
-          data?.error
-        )
-
-        ||
-
+        data?.message ||
+        data?.error ||
         `HTTP ${response.status}`
 
       );
+
     }
 
 
@@ -588,7 +275,9 @@ async function getJSON(
       throw new Error(
         "Market-data request timed out."
       );
+
     }
+
 
     throw error;
 
@@ -597,20 +286,17 @@ async function getJSON(
     clearTimeout(
       timer
     );
+
   }
 
 }
 
 
 /* =========================================================
-   FETCH CANDLES
+   FETCH XAU/USD 1M CANDLES
 ========================================================= */
 
-async function fetchSeries(
-  symbol,
-  interval,
-  outputsize
-) {
+async function fetchM1() {
 
   if (
     !API_KEY
@@ -621,19 +307,22 @@ async function fetchSeries(
       "TWELVE_DATA_API_KEY is missing in Vercel Environment Variables."
 
     );
+
   }
 
 
   const query =
     new URLSearchParams({
 
-      symbol,
+      symbol:
+        SYMBOL,
 
-      interval,
+      interval:
+        "1min",
 
       outputsize:
         String(
-          outputsize
+          OUTPUT_SIZE
         ),
 
       timezone:
@@ -663,10 +352,9 @@ async function fetchSeries(
   ) {
 
     throw new Error(
-
-      `${symbol} ${interval}: no candles returned.`
-
+      "No XAU/USD 1-minute candles returned."
     );
+
   }
 
 
@@ -701,12 +389,6 @@ async function fetchSeries(
           close:
             Number(
               item.close
-            ),
-
-          volume:
-            Number(
-              item.volume ||
-              0
             )
 
         })
@@ -714,15 +396,28 @@ async function fetchSeries(
 
       .filter(
         bar =>
-          [
-            bar.open,
-            bar.high,
-            bar.low,
+
+          Number.isFinite(
+            bar.open
+          )
+
+          &&
+
+          Number.isFinite(
+            bar.high
+          )
+
+          &&
+
+          Number.isFinite(
+            bar.low
+          )
+
+          &&
+
+          Number.isFinite(
             bar.close
-          ]
-            .every(
-              Number.isFinite
-            )
+          )
       )
 
       .sort(
@@ -730,10 +425,13 @@ async function fetchSeries(
           a,
           b
         ) =>
+
           parseTime(
             a.time
           )
+
           -
+
           parseTime(
             b.time
           )
@@ -742,14 +440,15 @@ async function fetchSeries(
 
   if (
     bars.length <
-    100
+    LENGTH * 2 + 10
   ) {
 
     throw new Error(
 
-      `${symbol} ${interval}: only ${bars.length} usable candles returned.`
+      `Not enough M1 candles. Received ${bars.length}.`
 
     );
+
   }
 
 
@@ -759,418 +458,32 @@ async function fetchSeries(
 
 
 /* =========================================================
-   LIVE QUOTE
+   PINE:
+
+   ta.pivotlow(
+       low,
+       length,
+       length
+   )
 ========================================================= */
 
-async function fetchQuote(
-  symbol
-) {
-
-  const query =
-    new URLSearchParams({
-
-      symbol,
-
-      apikey:
-        API_KEY
-
-    });
-
-
-  const data =
-    await getJSON(
-
-      `${BASE_URL}/quote?${query.toString()}`
-
-    );
-
-
-  const price =
-    num(
-
-      data.close
-
-      ??
-
-      data.price
-
-      ??
-
-      data.previous_close
-
-    );
-
-
-  if (
-    price === null
-  ) {
-
-    throw new Error(
-
-      `${symbol}: live quote unavailable.`
-
-    );
-  }
-
-
-  return {
-
-    price,
-
-    time:
-
-      data.datetime
-
-      ??
-
-      data.timestamp
-
-      ??
-
-      null
-
-  };
-
-}
-
-
-/* =========================================================
-   INDICATORS
-========================================================= */
-
-function emaSeries(
-  values,
-  period
-) {
-
-  if (
-    !values.length
-  ) {
-
-    return [];
-  }
-
-
-  const k =
-    2 /
-    (
-      period +
-      1
-    );
-
-
-  const result =
-    [];
-
-
-  let current =
-    values[0];
-
-
-  result.push(
-    current
-  );
-
-
-  for (
-    let i = 1;
-    i < values.length;
-    i++
-  ) {
-
-    current =
-
-      values[i] *
-      k
-
-      +
-
-      current *
-      (
-        1 -
-        k
-      );
-
-
-    result.push(
-      current
-    );
-  }
-
-
-  return result;
-
-}
-
-
-function emaAt(
-  bars,
-  index,
-  period
-) {
-
-  if (
-    index <
-    period -
-    1
-  ) {
-
-    return null;
-  }
-
-
-  const start =
-    Math.max(
-      0,
-      index -
-      period *
-      5
-    );
-
-
-  const values =
-
-    bars
-      .slice(
-        start,
-        index + 1
-      )
-      .map(
-        bar =>
-          bar.close
-      );
-
-
-  if (
-    values.length <
-    period
-  ) {
-
-    return null;
-  }
-
-
-  return emaSeries(
-    values,
-    period
-  ).at(-1);
-
-}
-
-
-function trueRange(
-  bars,
-  index
-) {
-
-  if (
-    index === 0
-  ) {
-
-    return Math.max(
-
-      bars[index].high -
-      bars[index].low,
-
-      1e-9
-
-    );
-  }
-
-
-  return Math.max(
-
-    bars[index].high -
-    bars[index].low,
-
-    Math.abs(
-
-      bars[index].high -
-      bars[index - 1].close
-
-    ),
-
-    Math.abs(
-
-      bars[index].low -
-      bars[index - 1].close
-
-    )
-
-  );
-
-}
-
-
-function atrAt(
-  bars,
-  index,
-  period = CFG.ATR_LEN
-) {
-
-  if (
-    index <
-    period
-  ) {
-
-    return null;
-  }
-
-
-  const values =
-    [];
-
-
-  for (
-    let i =
-      index -
-      period +
-      1;
-
-    i <=
-      index;
-
-    i++
-  ) {
-
-    values.push(
-
-      trueRange(
-        bars,
-        i
-      )
-
-    );
-  }
-
-
-  return mean(
-    values
-  );
-
-}
-
-
-function rsiAt(
-  bars,
-  index,
-  period = CFG.RSI_LEN
-) {
-
-  if (
-    index <=
-    period
-  ) {
-
-    return 50;
-  }
-
-
-  let gains =
-    0;
-
-
-  let losses =
-    0;
-
-
-  for (
-    let i =
-      index -
-      period +
-      1;
-
-    i <=
-      index;
-
-    i++
-  ) {
-
-    const difference =
-
-      bars[i].close
-
-      -
-
-      bars[i - 1].close;
-
-
-    if (
-      difference >
-      0
-    ) {
-
-      gains +=
-        difference;
-
-    } else {
-
-      losses -=
-        difference;
-    }
-
-  }
-
-
-  if (
-    losses ===
-    0
-  ) {
-
-    return 100;
-  }
-
-
-  const rs =
-    gains /
-    losses;
-
-
-  return (
-
-    100
-
-    -
-
-    100 /
-    (
-      1 +
-      rs
-    )
-
-  );
-
-}
-
-
-/* =========================================================
-   PIVOT DETECTION
-========================================================= */
-
-function pivotLow(
+function isPivotLow(
   bars,
   center,
   length
 ) {
 
   if (
-
-    center <
-    length
-
-    ||
-
-    center +
-    length >=
-    bars.length
-
+    center - length < 0 ||
+    center + length >= bars.length
   ) {
 
     return false;
+
   }
 
 
-  const price =
+  const pivotPrice =
     bars[
       center
     ].low;
@@ -1178,29 +491,30 @@ function pivotLow(
 
   for (
     let i =
-      center -
-      length;
+      center - length;
 
     i <=
-      center +
-      length;
+      center + length;
 
     i++
   ) {
 
     if (
+      i === center
+    ) {
 
-      i !==
-      center
+      continue;
 
-      &&
+    }
 
+
+    if (
       bars[i].low <
-      price
-
+      pivotPrice
     ) {
 
       return false;
+
     }
 
   }
@@ -1211,30 +525,33 @@ function pivotLow(
 }
 
 
-function pivotHigh(
+/* =========================================================
+   PINE:
+
+   ta.pivothigh(
+       high,
+       length,
+       length
+   )
+========================================================= */
+
+function isPivotHigh(
   bars,
   center,
   length
 ) {
 
   if (
-
-    center <
-    length
-
-    ||
-
-    center +
-    length >=
-    bars.length
-
+    center - length < 0 ||
+    center + length >= bars.length
   ) {
 
     return false;
+
   }
 
 
-  const price =
+  const pivotPrice =
     bars[
       center
     ].high;
@@ -1242,29 +559,30 @@ function pivotHigh(
 
   for (
     let i =
-      center -
-      length;
+      center - length;
 
     i <=
-      center +
-      length;
+      center + length;
 
     i++
   ) {
 
     if (
+      i === center
+    ) {
 
-      i !==
-      center
+      continue;
 
-      &&
+    }
 
+
+    if (
       bars[i].high >
-      price
-
+      pivotPrice
     ) {
 
       return false;
+
     }
 
   }
@@ -1276,129 +594,21 @@ function pivotHigh(
 
 
 /* =========================================================
-   LEVEL MERGING
+   EXACT PINE-STYLE ENGINE
+
+   Pine performs this on every bar:
+
+   if not na(f_top)
+       array.unshift(resistances, f_top)
+
+   if not na(f_bot)
+       array.unshift(supports, f_bot)
+
+   max = 5
 ========================================================= */
 
-function mergeLevels(
-  levels,
-  atr
-) {
-
-  const merged =
-    [];
-
-
-  const tolerance =
-    Math.max(
-
-      atr *
-      CFG.LEVEL_MERGE_ATR,
-
-      0.000001
-
-    );
-
-
-  for (
-    const level
-    of levels
-  ) {
-
-    const existing =
-
-      merged.find(
-        item =>
-          Math.abs(
-
-            item.price -
-            level.price
-
-          )
-          <=
-          tolerance
-      );
-
-
-    if (
-      existing
-    ) {
-
-      const touches =
-        existing.touches;
-
-
-      existing.price =
-
-        (
-          existing.price *
-          touches
-
-          +
-
-          level.price
-        )
-
-        /
-
-        (
-          touches +
-          1
-        );
-
-
-      existing.touches++;
-
-
-      existing.center =
-        Math.max(
-
-          existing.center,
-
-          level.center
-
-        );
-
-    } else {
-
-      merged.push(
-        {
-          ...level
-        }
-      );
-    }
-
-  }
-
-
-  merged.sort(
-    (
-      a,
-      b
-    ) =>
-      b.center -
-      a.center
-  );
-
-
-  return merged.slice(
-    0,
-    CFG.MAX_LEVELS
-  );
-
-}
-
-
-/* =========================================================
-   CONFIRMED S&R LEVELS
-
-   IMPORTANT:
-   The pivot must already have PIVOT_LEN candles to its right.
-========================================================= */
-
-function confirmedLevels(
-  bars,
-  index,
-  atr
+function buildSignalState(
+  bars
 ) {
 
   const supports =
@@ -1409,1579 +619,368 @@ function confirmedLevels(
     [];
 
 
-  const length =
-    CFG.PIVOT_LEN;
+  const history =
+    [];
 
 
-  const latestCenter =
-    index -
-    length;
+  /*
+     A pivot centered at:
 
+         currentIndex - LENGTH
 
-  const earliest =
-    Math.max(
-
-      length,
-
-      latestCenter -
-      CFG.LEVEL_LOOKBACK
-
-    );
-
+     becomes confirmed on the current bar because it now
+     has LENGTH candles to its right.
+  */
 
   for (
-    let center =
-      latestCenter;
+    let currentIndex = 0;
 
-    center >=
-      earliest;
+    currentIndex < bars.length;
 
-    center--
+    currentIndex++
   ) {
 
+    const center =
+      currentIndex -
+      LENGTH;
+
+
+    /* ================================================
+       f_top = ta.pivothigh(...)
+    ================================================= */
+
     if (
-      pivotLow(
+      center >= LENGTH &&
+      isPivotHigh(
         bars,
         center,
-        length
+        LENGTH
       )
     ) {
 
-      supports.push({
+      const pivot =
+        bars[
+          center
+        ].high;
 
-        price:
-          bars[
-            center
-          ].low,
 
-        center,
+      /*
+         Pine:
+         array.unshift(resistances, f_top)
+      */
 
-        time:
-          bars[
-            center
-          ].time,
+      resistances.unshift(
+        pivot
+      );
 
-        touches:
-          1
 
-      });
+      /*
+         Pine:
+         if array.size(resistances) > maxLevels
+             array.pop(resistances)
+      */
+
+      if (
+        resistances.length >
+        MAX_LEVELS
+      ) {
+
+        resistances.pop();
+
+      }
+
     }
 
 
+    /* ================================================
+       f_bot = ta.pivotlow(...)
+    ================================================= */
+
     if (
-      pivotHigh(
+      center >= LENGTH &&
+      isPivotLow(
         bars,
         center,
-        length
+        LENGTH
       )
     ) {
 
-      resistances.push({
+      const pivot =
+        bars[
+          center
+        ].low;
 
-        price:
-          bars[
-            center
-          ].high,
 
-        center,
+      /*
+         Pine:
+         array.unshift(supports, f_bot)
+      */
 
-        time:
-          bars[
-            center
-          ].time,
+      supports.unshift(
+        pivot
+      );
 
-        touches:
-          1
 
-      });
+      /*
+         Pine:
+         if array.size(supports) > maxLevels
+             array.pop(supports)
+      */
+
+      if (
+        supports.length >
+        MAX_LEVELS
+      ) {
+
+        supports.pop();
+
+      }
+
     }
+
+
+    /*
+       Pine:
+
+       nearestSupport =
+           array.size(supports) > 0
+               ? array.get(supports, 0)
+               : na
+
+       nearestResistance =
+           array.size(resistances) > 0
+               ? array.get(resistances, 0)
+               : na
+
+       IMPORTANT:
+
+       This script does NOT calculate which level is
+       mathematically closest to price.
+
+       array.get(..., 0) means the NEWEST confirmed pivot.
+    */
+
+    const nearestSupport =
+
+      supports.length >
+      0
+
+        ? supports[0]
+
+        : null;
+
+
+    const nearestResistance =
+
+      resistances.length >
+      0
+
+        ? resistances[0]
+
+        : null;
+
+
+    history.push({
+
+      index:
+        currentIndex,
+
+      time:
+        bars[
+          currentIndex
+        ].time,
+
+      close:
+        bars[
+          currentIndex
+        ].close,
+
+      nearestSupport,
+
+      nearestResistance,
+
+      supports:
+        [...supports],
+
+      resistances:
+        [...resistances]
+
+    });
 
   }
 
 
-  return {
-
-    supports:
-      mergeLevels(
-        supports,
-        atr
-      ),
-
-    resistances:
-      mergeLevels(
-        resistances,
-        atr
-      )
-
-  };
+  return history;
 
 }
 
 
 /* =========================================================
-   NEAREST SUPPORT
+   PINE:
+
+   ta.crossover(
+       close,
+       nearestSupport
+   )
+
+   Equivalent:
+
+   current close > current support
+   AND
+   previous close <= previous support
 ========================================================= */
 
-function nearestSupport(
-  supports,
-  price,
-  atr
+function crossover(
+  previous,
+  current
 ) {
 
-  const valid =
+  if (
+    !previous ||
+    !current
+  ) {
 
-    supports
+    return false;
 
-      .filter(
-        level =>
-          level.price <=
-          price +
-          atr *
-          CFG.TOUCH_ATR
-      )
-
-      .sort(
-        (
-          a,
-          b
-        ) =>
-          Math.abs(
-            a.price -
-            price
-          )
-          -
-          Math.abs(
-            b.price -
-            price
-          )
-      );
+  }
 
 
-  return valid[0] ||
-    null;
+  if (
+    previous.nearestSupport === null ||
+    current.nearestSupport === null
+  ) {
+
+    return false;
+
+  }
+
+
+  return (
+
+    current.close >
+    current.nearestSupport
+
+    &&
+
+    previous.close <=
+    previous.nearestSupport
+
+  );
 
 }
 
 
 /* =========================================================
-   NEAREST RESISTANCE
+   PINE:
+
+   ta.crossunder(
+       close,
+       nearestResistance
+   )
+
+   Equivalent:
+
+   current close < current resistance
+   AND
+   previous close >= previous resistance
 ========================================================= */
 
-function nearestResistance(
-  resistances,
-  price,
-  atr
+function crossunder(
+  previous,
+  current
 ) {
 
-  const valid =
+  if (
+    !previous ||
+    !current
+  ) {
 
-    resistances
+    return false;
 
-      .filter(
-        level =>
-          level.price >=
-          price -
-          atr *
-          CFG.TOUCH_ATR
-      )
-
-      .sort(
-        (
-          a,
-          b
-        ) =>
-          Math.abs(
-            a.price -
-            price
-          )
-          -
-          Math.abs(
-            b.price -
-            price
-          )
-      );
+  }
 
 
-  return valid[0] ||
-    null;
+  if (
+    previous.nearestResistance === null ||
+    current.nearestResistance === null
+  ) {
 
-}
+    return false;
 
-
-/* =========================================================
-   CANDLE STATS
-========================================================= */
-
-function candleStats(
-  bar
-) {
-
-  const range =
-    Math.max(
-
-      bar.high -
-      bar.low,
-
-      1e-9
-
-    );
+  }
 
 
-  const body =
-    Math.abs(
+  return (
 
-      bar.close -
-      bar.open
+    current.close <
+    current.nearestResistance
 
-    );
+    &&
 
+    previous.close >=
+    previous.nearestResistance
 
-  const upperWick =
-
-    bar.high
-
-    -
-
-    Math.max(
-
-      bar.open,
-
-      bar.close
-
-    );
-
-
-  const lowerWick =
-
-    Math.min(
-
-      bar.open,
-
-      bar.close
-
-    )
-
-    -
-
-    bar.low;
-
-
-  return {
-
-    range,
-
-    body,
-
-    bodyRatio:
-      body /
-      range,
-
-    upperWick,
-
-    lowerWick,
-
-    closePosition:
-
-      (
-        bar.close -
-        bar.low
-      )
-      /
-      range,
-
-    bullish:
-      bar.close >
-      bar.open,
-
-    bearish:
-      bar.close <
-      bar.open
-
-  };
+  );
 
 }
 
 
 /* =========================================================
-   HIGHER TF SNAPSHOT
+   SIGNAL ENGINE
 ========================================================= */
 
-function timeframeSnapshot(
+function analyse(
   bars
 ) {
 
-  const index =
-    bars.length -
-    1;
-
-
-  const price =
-    bars[
-      index
-    ].close;
-
-
-  const ema20 =
-    emaAt(
-      bars,
-      index,
-      20
+  const states =
+    buildSignalState(
+      bars
     );
 
 
-  const ema50 =
-    emaAt(
-      bars,
-      index,
-      50
-    );
-
-
-  const ema200 =
-    emaAt(
-      bars,
-      index,
-      200
-    );
-
-
-  const rsi =
-    rsiAt(
-      bars,
-      index,
-      14
-    );
-
-
-  let score =
-    0;
-
-
-  if (
-    ema20 !== null
-  ) {
-
-    score +=
-
-      price >
-      ema20
-
-        ? 1
-        : -1;
-  }
-
-
-  if (
-    ema20 !== null &&
-    ema50 !== null
-  ) {
-
-    score +=
-
-      ema20 >
-      ema50
-
-        ? 1
-        : -1;
-  }
-
-
-  if (
-    ema50 !== null &&
-    ema200 !== null
-  ) {
-
-    score +=
-
-      ema50 >
-      ema200
-
-        ? 1
-        : -1;
-  }
-
-
-  if (
-    rsi >=
-    55
-  ) {
-
-    score +=
-      1;
-
-  } else if (
-    rsi <=
-    45
-  ) {
-
-    score -=
-      1;
-  }
-
-
-  return {
-
-    price:
-      round(
-        price,
-        2
-      ),
-
-    ema20:
-      round(
-        ema20,
-        2
-      ),
-
-    ema50:
-      round(
-        ema50,
-        2
-      ),
-
-    ema200:
-      round(
-        ema200,
-        2
-      ),
-
-    rsi:
-      round(
-        rsi,
-        1
-      ),
-
-    score,
-
-    bias:
-
-      score >=
-      2
-
-        ? "BULLISH"
-
-        : score <=
-          -2
-
-          ? "BEARISH"
-
-          : "NEUTRAL"
-
-  };
-
-}
-
-
-/* =========================================================
-   MAIN SIGNAL ENGINE
-========================================================= */
-
-function analyzeAt(
-  bars,
-  index,
-  higher = null
-) {
-
-  if (
-    index <
-    220
-  ) {
-
-    return null;
-  }
-
-
-  const bar =
-    bars[
-      index
-    ];
+  const current =
+    states.at(-1);
 
 
   const previous =
-    bars[
-      index -
-      1
-    ];
+    states.at(-2);
 
 
-  const atr =
-    atrAt(
-      bars,
-      index
+  const buySignal =
+    crossover(
+      previous,
+      current
     );
 
 
-  if (
-
-    !Number.isFinite(
-      atr
-    )
-
-    ||
-
-    atr <=
-    0
-
-  ) {
-
-    return null;
-  }
-
-
-  const levels =
-    confirmedLevels(
-
-      bars,
-
-      index,
-
-      atr
-
+  const sellSignal =
+    crossunder(
+      previous,
+      current
     );
 
-
-  const support =
-    nearestSupport(
-
-      levels.supports,
-
-      bar.close,
-
-      atr
-
-    );
-
-
-  const resistance =
-    nearestResistance(
-
-      levels.resistances,
-
-      bar.close,
-
-      atr
-
-    );
-
-
-  const stats =
-    candleStats(
-      bar
-    );
-
-
-  const ema20 =
-    emaAt(
-      bars,
-      index,
-      CFG.EMA_FAST
-    );
-
-
-  const ema50 =
-    emaAt(
-      bars,
-      index,
-      CFG.EMA_MID
-    );
-
-
-  const ema200 =
-    emaAt(
-      bars,
-      index,
-      CFG.EMA_SLOW
-    );
-
-
-  const rsi =
-    rsiAt(
-      bars,
-      index
-    );
-
-
-  /* =======================================================
-     BULLISH S&R CONDITIONS
-  ======================================================= */
-
-  let supportTouch =
-    false;
-
-
-  let bullishSweep =
-    false;
-
-
-  let bullishRejection =
-    false;
-
-
-  let bullishReclaim =
-    false;
-
-
-  if (
-    support
-  ) {
-
-    supportTouch =
-
-      bar.low <=
-      support.price +
-      atr *
-      CFG.TOUCH_ATR;
-
-
-    const penetration =
-
-      support.price -
-      bar.low;
-
-
-    bullishSweep =
-
-      penetration >=
-      atr *
-      CFG.SWEEP_MIN_ATR
-
-      &&
-
-      penetration <=
-      atr *
-      CFG.SWEEP_MAX_ATR
-
-      &&
-
-      bar.close >
-      support.price;
-
-
-    bullishRejection =
-
-      supportTouch
-
-      &&
-
-      stats.closePosition >=
-      0.60
-
-      &&
-
-      stats.lowerWick >=
-      Math.max(
-
-        stats.body *
-        0.70,
-
-        atr *
-        0.08
-
-      );
-
-
-    bullishReclaim =
-
-      previous.close <
-      support.price
-
-      &&
-
-      bar.close >
-      support.price
-
-      &&
-
-      stats.bullish;
-
-  }
-
-
-  /* =======================================================
-     BEARISH S&R CONDITIONS
-  ======================================================= */
-
-  let resistanceTouch =
-    false;
-
-
-  let bearishSweep =
-    false;
-
-
-  let bearishRejection =
-    false;
-
-
-  let bearishReclaim =
-    false;
-
-
-  if (
-    resistance
-  ) {
-
-    resistanceTouch =
-
-      bar.high >=
-      resistance.price -
-      atr *
-      CFG.TOUCH_ATR;
-
-
-    const penetration =
-
-      bar.high -
-      resistance.price;
-
-
-    bearishSweep =
-
-      penetration >=
-      atr *
-      CFG.SWEEP_MIN_ATR
-
-      &&
-
-      penetration <=
-      atr *
-      CFG.SWEEP_MAX_ATR
-
-      &&
-
-      bar.close <
-      resistance.price;
-
-
-    bearishRejection =
-
-      resistanceTouch
-
-      &&
-
-      stats.closePosition <=
-      0.40
-
-      &&
-
-      stats.upperWick >=
-      Math.max(
-
-        stats.body *
-        0.70,
-
-        atr *
-        0.08
-
-      );
-
-
-    bearishReclaim =
-
-      previous.close >
-      resistance.price
-
-      &&
-
-      bar.close <
-      resistance.price
-
-      &&
-
-      stats.bearish;
-
-  }
-
-
-  /* =======================================================
-     TREND
-  ======================================================= */
-
-  const bullishTrend =
-
-    ema20 !== null
-
-    &&
-
-    ema50 !== null
-
-    &&
-
-    bar.close >
-    ema20
-
-    &&
-
-    ema20 >=
-    ema50;
-
-
-  const bearishTrend =
-
-    ema20 !== null
-
-    &&
-
-    ema50 !== null
-
-    &&
-
-    bar.close <
-    ema20
-
-    &&
-
-    ema20 <=
-    ema50;
-
-
-  const majorBull =
-
-    ema200 === null
-
-    ||
-
-    bar.close >
-    ema200;
-
-
-  const majorBear =
-
-    ema200 === null
-
-    ||
-
-    bar.close <
-    ema200;
-
-
-  /* =======================================================
-     BUY SCORE
-  ======================================================= */
-
-  let buyScore =
-    0;
-
-
-  const buyReasons =
-    [];
-
-
-  if (
-    support
-  ) {
-
-    buyScore +=
-      8;
-
-
-    buyScore +=
-      Math.min(
-
-        support.touches *
-        3,
-
-        12
-
-      );
-
-
-    buyReasons.push(
-
-      `Support ${round(support.price, 2)} · ${support.touches} touch${support.touches === 1 ? "" : "es"}`
-
-    );
-  }
-
-
-  if (
-    supportTouch
-  ) {
-
-    buyScore +=
-      10;
-
-
-    buyReasons.push(
-      "Price tested support"
-    );
-  }
-
-
-  if (
-    bullishSweep
-  ) {
-
-    buyScore +=
-      20;
-
-
-    buyReasons.push(
-      "Sell-side liquidity sweep recovered"
-    );
-  }
-
-
-  if (
-    bullishRejection
-  ) {
-
-    buyScore +=
-      14;
-
-
-    buyReasons.push(
-      "Bullish rejection candle at support"
-    );
-  }
-
-
-  if (
-    bullishReclaim
-  ) {
-
-    buyScore +=
-      9;
-
-
-    buyReasons.push(
-      "Support reclaim confirmed"
-    );
-  }
-
-
-  if (
-    bullishTrend
-  ) {
-
-    buyScore +=
-      10;
-
-
-    buyReasons.push(
-      "M1 trend bullish"
-    );
-  }
-
-
-  if (
-    majorBull
-  ) {
-
-    buyScore +=
-      5;
-  }
-
-
-  if (
-
-    rsi >=
-    50
-
-    &&
-
-    rsi <=
-    72
-
-  ) {
-
-    buyScore +=
-      7;
-  }
-
-
-  if (
-
-    stats.bullish
-
-    &&
-
-    stats.bodyRatio >=
-    0.45
-
-  ) {
-
-    buyScore +=
-      7;
-  }
-
-
-  if (
-    previous.close <
-    bar.close
-  ) {
-
-    buyScore +=
-      4;
-  }
-
-
-  /* =======================================================
-     SELL SCORE
-  ======================================================= */
-
-  let sellScore =
-    0;
-
-
-  const sellReasons =
-    [];
-
-
-  if (
-    resistance
-  ) {
-
-    sellScore +=
-      8;
-
-
-    sellScore +=
-      Math.min(
-
-        resistance.touches *
-        3,
-
-        12
-
-      );
-
-
-    sellReasons.push(
-
-      `Resistance ${round(resistance.price, 2)} · ${resistance.touches} touch${resistance.touches === 1 ? "" : "es"}`
-
-    );
-  }
-
-
-  if (
-    resistanceTouch
-  ) {
-
-    sellScore +=
-      10;
-
-
-    sellReasons.push(
-      "Price tested resistance"
-    );
-  }
-
-
-  if (
-    bearishSweep
-  ) {
-
-    sellScore +=
-      20;
-
-
-    sellReasons.push(
-      "Buy-side liquidity sweep rejected"
-    );
-  }
-
-
-  if (
-    bearishRejection
-  ) {
-
-    sellScore +=
-      14;
-
-
-    sellReasons.push(
-      "Bearish rejection candle at resistance"
-    );
-  }
-
-
-  if (
-    bearishReclaim
-  ) {
-
-    sellScore +=
-      9;
-
-
-    sellReasons.push(
-      "Resistance rejection confirmed"
-    );
-  }
-
-
-  if (
-    bearishTrend
-  ) {
-
-    sellScore +=
-      10;
-
-
-    sellReasons.push(
-      "M1 trend bearish"
-    );
-  }
-
-
-  if (
-    majorBear
-  ) {
-
-    sellScore +=
-      5;
-  }
-
-
-  if (
-
-    rsi <=
-    50
-
-    &&
-
-    rsi >=
-    28
-
-  ) {
-
-    sellScore +=
-      7;
-  }
-
-
-  if (
-
-    stats.bearish
-
-    &&
-
-    stats.bodyRatio >=
-    0.45
-
-  ) {
-
-    sellScore +=
-      7;
-  }
-
-
-  if (
-    previous.close >
-    bar.close
-  ) {
-
-    sellScore +=
-      4;
-  }
-
-
-  /* =======================================================
-     M5 + M15 CONFIRMATION
-  ======================================================= */
-
-  if (
-    higher
-  ) {
-
-    if (
-      higher.m5 ===
-      "BULLISH"
-    ) {
-
-      buyScore +=
-        8;
-
-
-      sellScore -=
-        5;
-
-
-      buyReasons.push(
-        "M5 bullish confirmation"
-      );
-    }
-
-
-    if (
-      higher.m5 ===
-      "BEARISH"
-    ) {
-
-      sellScore +=
-        8;
-
-
-      buyScore -=
-        5;
-
-
-      sellReasons.push(
-        "M5 bearish confirmation"
-      );
-    }
-
-
-    if (
-      higher.m15 ===
-      "BULLISH"
-    ) {
-
-      buyScore +=
-        8;
-
-
-      sellScore -=
-        4;
-
-
-      buyReasons.push(
-        "M15 bullish confirmation"
-      );
-    }
-
-
-    if (
-      higher.m15 ===
-      "BEARISH"
-    ) {
-
-      sellScore +=
-        8;
-
-
-      buyScore -=
-        4;
-
-
-      sellReasons.push(
-        "M15 bearish confirmation"
-      );
-    }
-
-  }
-
-
-  buyScore =
-    clamp(
-
-      Math.round(
-        buyScore
-      ),
-
-      0,
-
-      100
-
-    );
-
-
-  sellScore =
-    clamp(
-
-      Math.round(
-        sellScore
-      ),
-
-      0,
-
-      100
-
-    );
-
-
-  /* =======================================================
-     DECISION
-  ======================================================= */
 
   let signal =
     "WAIT";
 
 
-  let score =
-    Math.max(
-
-      buyScore,
-
-      sellScore
-
-    );
-
-
-  let reasons =
-    [];
-
-
-  const bullishTrigger =
-
-    bullishSweep
-
-    ||
-
-    bullishRejection
-
-    ||
-
-    bullishReclaim;
-
-
-  const bearishTrigger =
-
-    bearishSweep
-
-    ||
-
-    bearishRejection
-
-    ||
-
-    bearishReclaim;
-
-
   if (
-
-    buyScore >=
-    CFG.MIN_SIGNAL_SCORE
-
-    &&
-
-    buyScore >=
-    sellScore +
-    CFG.SCORE_SEPARATION
-
-    &&
-
-    support
-
-    &&
-
-    bullishTrigger
-
+    buySignal
   ) {
 
     signal =
       "BUY";
 
-
-    score =
-      buyScore;
-
-
-    reasons =
-      buyReasons;
   }
 
 
   if (
-
-    sellScore >=
-    CFG.MIN_SIGNAL_SCORE
-
-    &&
-
-    sellScore >=
-    buyScore +
-    CFG.SCORE_SEPARATION
-
-    &&
-
-    resistance
-
-    &&
-
-    bearishTrigger
-
+    sellSignal
   ) {
 
     signal =
       "SELL";
-
-
-    score =
-      sellScore;
-
-
-    reasons =
-      sellReasons;
-  }
-
-
-  if (
-    signal ===
-    "WAIT"
-  ) {
-
-    reasons = [
-
-      `BUY score ${buyScore}/100`,
-
-      `SELL score ${sellScore}/100`,
-
-      bullishTrigger
-        ? "Bullish reaction detected, but confirmation is insufficient."
-        : bearishTrigger
-          ? "Bearish reaction detected, but confirmation is insufficient."
-          : "Waiting for a fresh liquidity reaction at support or resistance."
-
-    ];
-  }
-
-
-  /* =======================================================
-     ENTRY / SL / TP
-  ======================================================= */
-
-  let entry =
-    null;
-
-
-  let stopLoss =
-    null;
-
-
-  let tp1 =
-    null;
-
-
-  let tp2 =
-    null;
-
-
-  let risk =
-    null;
-
-
-  if (
-    signal ===
-    "BUY"
-  ) {
-
-    entry =
-      bar.close;
-
-
-    const rawStop =
-
-      Math.min(
-
-        support.price,
-
-        bar.low
-
-      )
-
-      -
-
-      atr *
-      CFG.STOP_BUFFER_ATR;
-
-
-    const minimumRisk =
-      atr *
-      CFG.MIN_STOP_ATR;
-
-
-    const maximumRisk =
-      atr *
-      CFG.MAX_STOP_ATR;
-
-
-    risk =
-      clamp(
-
-        entry -
-        rawStop,
-
-        minimumRisk,
-
-        maximumRisk
-
-      );
-
-
-    stopLoss =
-      entry -
-      risk;
-
-
-    tp1 =
-      entry +
-      risk *
-      CFG.TP1_R;
-
-
-    tp2 =
-      entry +
-      risk *
-      CFG.TP2_R;
-
-  }
-
-
-  if (
-    signal ===
-    "SELL"
-  ) {
-
-    entry =
-      bar.close;
-
-
-    const rawStop =
-
-      Math.max(
-
-        resistance.price,
-
-        bar.high
-
-      )
-
-      +
-
-      atr *
-      CFG.STOP_BUFFER_ATR;
-
-
-    const minimumRisk =
-      atr *
-      CFG.MIN_STOP_ATR;
-
-
-    const maximumRisk =
-      atr *
-      CFG.MAX_STOP_ATR;
-
-
-    risk =
-      clamp(
-
-        rawStop -
-        entry,
-
-        minimumRisk,
-
-        maximumRisk
-
-      );
-
-
-    stopLoss =
-      entry +
-      risk;
-
-
-    tp1 =
-      entry -
-      risk *
-      CFG.TP1_R;
-
-
-    tp2 =
-      entry -
-      risk *
-      CFG.TP2_R;
 
   }
 
@@ -2990,53 +989,33 @@ function analyzeAt(
 
     signal,
 
-    score,
+    buySignal,
 
-    buyScore,
+    sellSignal,
 
-    sellScore,
+    nearestSupport:
+      current.nearestSupport,
 
-    reasons,
+    nearestResistance:
+      current.nearestResistance,
 
-    entry,
+    supports:
+      current.supports,
 
-    stopLoss,
+    resistances:
+      current.resistances,
 
-    tp1,
+    currentClose:
+      current.close,
 
-    tp2,
+    previousClose:
+      previous?.close ?? null,
 
-    risk,
+    currentTime:
+      current.time,
 
-    atr,
-
-    rsi,
-
-    ema20,
-
-    ema50,
-
-    ema200,
-
-    support,
-
-    resistance,
-
-    supportTouch,
-
-    resistanceTouch,
-
-    bullishSweep,
-
-    bearishSweep,
-
-    bullishRejection,
-
-    bearishRejection,
-
-    bullishReclaim,
-
-    bearishReclaim
+    previousTime:
+      previous?.time ?? null
 
   };
 
@@ -3044,782 +1023,122 @@ function analyzeAt(
 
 
 /* =========================================================
-   BACKTEST
+   RECENT SIGNAL HISTORY
+
+   This does NOT add any new strategy logic.
+
+   It simply checks the exact same crossover / crossunder
+   logic across previous candles.
 ========================================================= */
 
-function backtest(
+function recentSignals(
   bars,
-  costPerTradeR
+  limit = 20
 ) {
 
-  const trades =
-    [];
-
-
-  const lastIndex =
-    bars.length -
-    1;
-
-
-  const start =
-    Math.max(
-
-      230,
-
-      bars.length -
-      CFG.BACKTEST_LOOKBACK
-
+  const states =
+    buildSignalState(
+      bars
     );
 
 
-  let nextAllowed =
-    start;
+  const signals =
+    [];
 
 
   for (
-    let i =
-      start;
+    let i = 1;
 
-    i <
-      lastIndex -
-      CFG.BACKTEST_MAX_HOLD;
+    i < states.length;
 
     i++
   ) {
 
-    if (
-      i <
-      nextAllowed
-    ) {
-
-      continue;
-    }
+    const previous =
+      states[
+        i - 1
+      ];
 
 
-    const setup =
-      analyzeAt(
+    const current =
+      states[
+        i
+      ];
 
-        bars,
 
-        i,
+    const buy =
+      crossover(
+        previous,
+        current
+      );
 
-        null
 
+    const sell =
+      crossunder(
+        previous,
+        current
       );
 
 
     if (
-
-      !setup
-
-      ||
-
-      setup.signal ===
-      "WAIT"
-
-      ||
-
-      !Number.isFinite(
-        setup.entry
-      )
-
-      ||
-
-      !Number.isFinite(
-        setup.stopLoss
-      )
-
-      ||
-
-      !Number.isFinite(
-        setup.tp2
-      )
-
+      buy
     ) {
 
-      continue;
+      signals.push({
+
+        signal:
+          "BUY",
+
+        time:
+          current.time,
+
+        price:
+          current.close,
+
+        level:
+          current.nearestSupport
+
+      });
+
     }
-
-
-    const risk =
-      Math.abs(
-
-        setup.entry -
-        setup.stopLoss
-
-      );
 
 
     if (
-      risk <=
-      0
+      sell
     ) {
 
-      continue;
-    }
+      signals.push({
 
+        signal:
+          "SELL",
 
-    let result =
-      null;
+        time:
+          current.time,
 
+        price:
+          current.close,
 
-    let exitIndex =
-      null;
+        level:
+          current.nearestResistance
 
+      });
 
-    let exitPrice =
-      null;
-
-
-    let resultR =
-      null;
-
-
-    for (
-      let j =
-        i +
-        1;
-
-      j <=
-        Math.min(
-
-          i +
-          CFG.BACKTEST_MAX_HOLD,
-
-          lastIndex
-
-        );
-
-      j++
-    ) {
-
-      const candle =
-        bars[j];
-
-
-      if (
-        setup.signal ===
-        "BUY"
-      ) {
-
-        const stopHit =
-
-          candle.low <=
-          setup.stopLoss;
-
-
-        const targetHit =
-
-          candle.high >=
-          setup.tp2;
-
-
-        if (
-          stopHit
-        ) {
-
-          result =
-            "LOSS";
-
-
-          exitIndex =
-            j;
-
-
-          exitPrice =
-            setup.stopLoss;
-
-
-          resultR =
-
-            -1
-
-            -
-
-            costPerTradeR;
-
-
-          break;
-        }
-
-
-        if (
-          targetHit
-        ) {
-
-          result =
-            "WIN";
-
-
-          exitIndex =
-            j;
-
-
-          exitPrice =
-            setup.tp2;
-
-
-          resultR =
-
-            CFG.TP2_R
-
-            -
-
-            costPerTradeR;
-
-
-          break;
-        }
-
-      }
-
-
-      if (
-        setup.signal ===
-        "SELL"
-      ) {
-
-        const stopHit =
-
-          candle.high >=
-          setup.stopLoss;
-
-
-        const targetHit =
-
-          candle.low <=
-          setup.tp2;
-
-
-        if (
-          stopHit
-        ) {
-
-          result =
-            "LOSS";
-
-
-          exitIndex =
-            j;
-
-
-          exitPrice =
-            setup.stopLoss;
-
-
-          resultR =
-
-            -1
-
-            -
-
-            costPerTradeR;
-
-
-          break;
-        }
-
-
-        if (
-          targetHit
-        ) {
-
-          result =
-            "WIN";
-
-
-          exitIndex =
-            j;
-
-
-          exitPrice =
-            setup.tp2;
-
-
-          resultR =
-
-            CFG.TP2_R
-
-            -
-
-            costPerTradeR;
-
-
-          break;
-        }
-
-      }
-
-    }
-
-
-    /* TIME EXIT */
-
-    if (
-      !result
-    ) {
-
-      exitIndex =
-        Math.min(
-
-          i +
-          CFG.BACKTEST_MAX_HOLD,
-
-          lastIndex
-
-        );
-
-
-      exitPrice =
-        bars[
-          exitIndex
-        ].close;
-
-
-      let rawR =
-
-        setup.signal ===
-        "BUY"
-
-          ?
-
-          (
-            exitPrice -
-            setup.entry
-          )
-          /
-          risk
-
-          :
-
-          (
-            setup.entry -
-            exitPrice
-          )
-          /
-          risk;
-
-
-      rawR =
-        clamp(
-
-          rawR,
-
-          -1,
-
-          CFG.TP2_R
-
-        );
-
-
-      resultR =
-
-        rawR
-
-        -
-
-        costPerTradeR;
-
-
-      result =
-
-        resultR >
-        0
-
-          ? "WIN"
-
-          : "LOSS";
-
-    }
-
-
-    trades.push({
-
-      signal:
-        setup.signal,
-
-      score:
-        setup.score,
-
-      entryTime:
-        bars[
-          i
-        ].time,
-
-      exitTime:
-        bars[
-          exitIndex
-        ].time,
-
-      entry:
-        round(
-          setup.entry,
-          2
-        ),
-
-      stop:
-        round(
-          setup.stopLoss,
-          2
-        ),
-
-      target:
-        round(
-          setup.tp2,
-          2
-        ),
-
-      exit:
-        round(
-          exitPrice,
-          2
-        ),
-
-      result,
-
-      r:
-        round(
-          resultR,
-          2
-        )
-
-    });
-
-
-    nextAllowed =
-
-      exitIndex
-
-      +
-
-      CFG.COOLDOWN_BARS;
-
-  }
-
-
-  const wins =
-
-    trades.filter(
-      trade =>
-        trade.r >
-        0
-    );
-
-
-  const losses =
-
-    trades.filter(
-      trade =>
-        trade.r <=
-        0
-    );
-
-
-  const grossProfit =
-
-    wins.reduce(
-      (
-        total,
-        trade
-      ) =>
-        total +
-        trade.r,
-      0
-    );
-
-
-  const grossLoss =
-
-    Math.abs(
-
-      losses.reduce(
-        (
-          total,
-          trade
-        ) =>
-          total +
-          trade.r,
-        0
-      )
-
-    );
-
-
-  const netR =
-
-    trades.reduce(
-      (
-        total,
-        trade
-      ) =>
-        total +
-        trade.r,
-      0
-    );
-
-
-  const expectancy =
-
-    trades.length
-
-      ?
-
-      netR /
-      trades.length
-
-      :
-
-      0;
-
-
-  const profitFactor =
-
-    grossLoss >
-    0
-
-      ?
-
-      grossProfit /
-      grossLoss
-
-      :
-
-      grossProfit >
-      0
-
-        ? 999
-
-        : 0;
-
-
-  let equity =
-    0;
-
-
-  let peak =
-    0;
-
-
-  let maxDrawdown =
-    0;
-
-
-  let currentLossStreak =
-    0;
-
-
-  let maxLossStreak =
-    0;
-
-
-  for (
-    const trade
-    of trades
-  ) {
-
-    equity +=
-      trade.r;
-
-
-    peak =
-      Math.max(
-
-        peak,
-
-        equity
-
-      );
-
-
-    maxDrawdown =
-      Math.max(
-
-        maxDrawdown,
-
-        peak -
-        equity
-
-      );
-
-
-    if (
-      trade.r <=
-      0
-    ) {
-
-      currentLossStreak++;
-
-
-      maxLossStreak =
-        Math.max(
-
-          maxLossStreak,
-
-          currentLossStreak
-
-        );
-
-    } else {
-
-      currentLossStreak =
-        0;
     }
 
   }
 
 
-  return {
-
-    trades:
-      trades.length,
-
-    wins:
-      wins.length,
-
-    losses:
-      losses.length,
-
-    winRate:
-
-      trades.length
-
-        ?
-
-        round(
-
-          wins.length /
-          trades.length *
-          100,
-
-          1
-
-        )
-
-        :
-
-        0,
-
-    profitFactor:
-
-      profitFactor ===
-      999
-
-        ? 999
-
-        : round(
-            profitFactor,
-            2
-          ),
-
-    netR:
-      round(
-        netR,
-        2
-      ),
-
-    expectancyR:
-      round(
-        expectancy,
-        3
-      ),
-
-    maxDrawdownR:
-      round(
-        maxDrawdown,
-        2
-      ),
-
-    maxLossStreak,
-
-    targetR:
-      CFG.TP2_R,
-
-    costPerTradeR,
-
-    recentTrades:
-
-      trades
-        .slice(
-          -12
-        )
-        .reverse()
-
-  };
+  return signals
+    .slice(
+      -limit
+    )
+    .reverse();
 
 }
 
 
 /* =========================================================
-   SESSION
-========================================================= */
-
-function sessionName(
-  symbol
-) {
-
-  if (
-    symbol ===
-    "BTC/USD"
-  ) {
-
-    return "CRYPTO · 24/7";
-  }
-
-
-  const hour =
-    new Date()
-      .getUTCHours();
-
-
-  if (
-    hour >=
-    8
-
-    &&
-
-    hour <
-    12
-  ) {
-
-    return "LONDON";
-  }
-
-
-  if (
-    hour >=
-    12
-
-    &&
-
-    hour <
-    16
-  ) {
-
-    return "LONDON / NEW YORK";
-  }
-
-
-  if (
-    hour >=
-    16
-
-    &&
-
-    hour <
-    21
-  ) {
-
-    return "NEW YORK";
-  }
-
-
-  return "ASIA / QUIET";
-
-}
-
-
-/* =========================================================
-   HANDLER
+   VERCEL HANDLER
 ========================================================= */
 
 export default async function handler(
@@ -3828,38 +1147,26 @@ export default async function handler(
 ) {
 
   res.setHeader(
-
     "Cache-Control",
-
     "no-store, no-cache, must-revalidate"
-
   );
 
 
   res.setHeader(
-
     "Access-Control-Allow-Origin",
-
     "*"
-
   );
 
 
   res.setHeader(
-
     "Access-Control-Allow-Methods",
-
     "GET,OPTIONS"
-
   );
 
 
   res.setHeader(
-
     "Access-Control-Allow-Headers",
-
     "Content-Type"
-
   );
 
 
@@ -3871,208 +1178,46 @@ export default async function handler(
     return res
       .status(204)
       .end();
+
+  }
+
+
+  if (
+    req.method !==
+    "GET"
+  ) {
+
+    return res
+      .status(405)
+      .json({
+
+        success:
+          false,
+
+        error:
+          "Method not allowed."
+
+      });
+
   }
 
 
   try {
 
-    if (
-      !API_KEY
-    ) {
-
-      throw new Error(
-
-        "TWELVE_DATA_API_KEY is missing in Vercel Environment Variables."
-
-      );
-    }
-
-
-    const requested =
-
-      Array.isArray(
-        req.query?.symbol
-      )
-
-        ?
-
-        req.query.symbol[0]
-
-        :
-
-        req.query?.symbol;
-
-
-    const symbol =
-      normalizeSymbol(
-        requested
-      );
-
-
-    const asset =
-      ASSETS[
-        symbol
-      ];
-
-
-    const [
-      m1,
-      m5,
-      m15,
-      quote
-    ] =
-      await Promise.all([
-
-        fetchSeries(
-          symbol,
-          "1min",
-          CFG.M1_BARS
-        ),
-
-        fetchSeries(
-          symbol,
-          "5min",
-          CFG.M5_BARS
-        ),
-
-        fetchSeries(
-          symbol,
-          "15min",
-          CFG.M15_BARS
-        ),
-
-        fetchQuote(
-          symbol
-        )
-
-      ]);
-
-
-    const m5Snapshot =
-      timeframeSnapshot(
-        m5
-      );
-
-
-    const m15Snapshot =
-      timeframeSnapshot(
-        m15
-      );
-
-
-    const higher = {
-
-      m5:
-        m5Snapshot.bias,
-
-      m15:
-        m15Snapshot.bias
-
-    };
-
-
-    const latestIndex =
-      m1.length -
-      1;
+    const bars =
+      await fetchM1();
 
 
     const analysis =
-      analyzeAt(
-
-        m1,
-
-        latestIndex,
-
-        higher
-
+      analyse(
+        bars
       );
 
 
-    if (
-      !analysis
-    ) {
-
-      throw new Error(
-
-        "Not enough completed M1 data to analyse."
-
-      );
-    }
-
-
-    const bt =
-      backtest(
-
-        m1,
-
-        asset.backtestCostR
-
-      );
-
-
-    const candleAge =
-      minutesOld(
-        m1.at(-1)?.time
-      );
-
-
-    let marketState =
-      "LIVE";
-
-
-    if (
-
-      symbol ===
-      "XAU/USD"
-
-      &&
-
-      candleAge !==
-      null
-
-      &&
-
-      candleAge >
-      15
-
-    ) {
-
-      marketState =
-        "STALE / MARKET CLOSED";
-    }
-
-
-    if (
-
-      symbol ===
-      "BTC/USD"
-
-      &&
-
-      candleAge !==
-      null
-
-      &&
-
-      candleAge >
-      10
-
-    ) {
-
-      marketState =
-        "DATA STALE";
-    }
-
-
-    const levels =
-      confirmedLevels(
-
-        m1,
-
-        latestIndex,
-
-        analysis.atr
-
+    const signals =
+      recentSignals(
+        bars,
+        20
       );
 
 
@@ -4083,276 +1228,143 @@ export default async function handler(
         success:
           true,
 
+
         engine:
-          "MKAYFX MULTI-ASSET S&R V2",
+          "1-Min Gold Support & Resistance Signals",
 
-        symbol,
 
-        assetName:
-          asset.name,
+        symbol:
+          SYMBOL,
 
-        assetShort:
-          asset.short,
 
-        executionTimeframe:
-          "1m",
+        timeframe:
+          "1min",
+
 
         generatedAt:
           new Date()
             .toISOString(),
 
-        session:
-          sessionName(
-            symbol
-          ),
 
-        marketState,
+        settings: {
 
-        candleAgeMinutes:
-          round(
-            candleAge,
-            1
-          ),
+          pivotLookbackLength:
+            LENGTH,
 
-        price:
-          round(
-            quote.price,
-            asset.digits
-          ),
+          maxActiveLevels:
+            MAX_LEVELS,
+
+          showSRLines:
+            SHOW_ZONES
+
+        },
+
 
         signal:
           analysis.signal,
 
-        score:
-          analysis.score,
 
-        buyScore:
-          analysis.buyScore,
+        buySignal:
+          analysis.buySignal,
 
-        sellScore:
-          analysis.sellScore,
 
-        signalQuality:
+        sellSignal:
+          analysis.sellSignal,
 
-          analysis.score >=
-          CFG.STRONG_SIGNAL_SCORE
 
-            ? "STRONG"
+        price:
+          analysis.currentClose,
 
-            : analysis.signal ===
-              "WAIT"
 
-              ? "WAIT"
+        previousClose:
+          analysis.previousClose,
 
-              : "VALID",
 
-        entry:
-          round(
-            analysis.entry,
-            asset.digits
-          ),
+        candleTime:
+          analysis.currentTime,
 
-        stopLoss:
-          round(
-            analysis.stopLoss,
-            asset.digits
-          ),
 
-        tp1:
-          round(
-            analysis.tp1,
-            asset.digits
-          ),
+        nearestSupport:
+          analysis.nearestSupport,
 
-        tp2:
-          round(
-            analysis.tp2,
-            asset.digits
-          ),
 
-        risk:
-          round(
-            analysis.risk,
-            asset.digits
-          ),
+        nearestResistance:
+          analysis.nearestResistance,
 
-        rr1:
-          CFG.TP1_R,
-
-        rr2:
-          CFG.TP2_R,
 
         support:
+          analysis.nearestSupport,
 
-          analysis.support
-
-            ?
-
-            {
-
-              price:
-                round(
-                  analysis.support.price,
-                  asset.digits
-                ),
-
-              touches:
-                analysis.support.touches,
-
-              time:
-                analysis.support.time
-
-            }
-
-            :
-
-            null,
 
         resistance:
+          analysis.nearestResistance,
 
-          analysis.resistance
-
-            ?
-
-            {
-
-              price:
-                round(
-                  analysis.resistance.price,
-                  asset.digits
-                ),
-
-              touches:
-                analysis.resistance.touches,
-
-              time:
-                analysis.resistance.time
-
-            }
-
-            :
-
-            null,
-
-        indicators: {
-
-          atr:
-            round(
-              analysis.atr,
-              asset.digits
-            ),
-
-          rsi:
-            round(
-              analysis.rsi,
-              1
-            ),
-
-          ema20:
-            round(
-              analysis.ema20,
-              asset.digits
-            ),
-
-          ema50:
-            round(
-              analysis.ema50,
-              asset.digits
-            ),
-
-          ema200:
-            round(
-              analysis.ema200,
-              asset.digits
-            )
-
-        },
-
-        confirmations: {
-
-          supportTouch:
-            analysis.supportTouch,
-
-          resistanceTouch:
-            analysis.resistanceTouch,
-
-          bullishSweep:
-            analysis.bullishSweep,
-
-          bearishSweep:
-            analysis.bearishSweep,
-
-          bullishRejection:
-            analysis.bullishRejection,
-
-          bearishRejection:
-            analysis.bearishRejection,
-
-          bullishReclaim:
-            analysis.bullishReclaim,
-
-          bearishReclaim:
-            analysis.bearishReclaim
-
-        },
-
-        higherTimeframes: {
-
-          M5:
-            m5Snapshot,
-
-          M15:
-            m15Snapshot
-
-        },
-
-        reasons:
-          analysis.reasons,
-
-        backtest:
-          bt,
 
         levels: {
 
           supports:
-
-            levels.supports.map(
-              level => ({
-
-                price:
-                  round(
-                    level.price,
-                    asset.digits
-                  ),
-
-                touches:
-                  level.touches
-
-              })
-            ),
+            analysis.supports,
 
           resistances:
-
-            levels.resistances.map(
-              level => ({
-
-                price:
-                  round(
-                    level.price,
-                    asset.digits
-                  ),
-
-                touches:
-                  level.touches
-
-              })
-            )
+            analysis.resistances
 
         },
 
+
+        /*
+           Pine Script only gives BUY / SELL markers.
+           It does NOT calculate entry, SL or TP.
+
+           These remain null intentionally.
+        */
+
+        entry:
+          null,
+
+        stopLoss:
+          null,
+
+        tp1:
+          null,
+
+        tp2:
+          null,
+
+
+        reasons:
+
+          analysis.signal ===
+          "BUY"
+
+            ? [
+
+                "Close crossed above newest confirmed support."
+
+              ]
+
+            : analysis.signal ===
+              "SELL"
+
+              ? [
+
+                  "Close crossed below newest confirmed resistance."
+
+                ]
+
+              : [
+
+                  "Waiting for close to cross newest support or resistance."
+
+                ],
+
+
+        recentSignals:
+          signals,
+
+
         chart:
 
-          m1
+          bars
             .slice(
               -180
             )
@@ -4363,28 +1375,16 @@ export default async function handler(
                   bar.time,
 
                 open:
-                  round(
-                    bar.open,
-                    asset.digits
-                  ),
+                  bar.open,
 
                 high:
-                  round(
-                    bar.high,
-                    asset.digits
-                  ),
+                  bar.high,
 
                 low:
-                  round(
-                    bar.low,
-                    asset.digits
-                  ),
+                  bar.low,
 
                 close:
-                  round(
-                    bar.close,
-                    asset.digits
-                  )
+                  bar.close
 
               })
             )
@@ -4397,7 +1397,7 @@ export default async function handler(
 
     console.error(
 
-      "MKAYFX MULTI-ASSET ERROR",
+      "MKAYFX S&R ERROR",
 
       error
 
@@ -4412,7 +1412,10 @@ export default async function handler(
           false,
 
         engine:
-          "MKAYFX MULTI-ASSET S&R V2",
+          "1-Min Gold Support & Resistance Signals",
+
+        symbol:
+          SYMBOL,
 
         error:
 
@@ -4427,4 +1430,5 @@ export default async function handler(
       });
 
   }
+
 }
