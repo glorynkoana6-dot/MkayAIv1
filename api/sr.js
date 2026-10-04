@@ -198,7 +198,7 @@ const RETEST_MIN_BODY_RATIO =
 
 
 const RISK_REWARD =
-  4;
+  2;
 
 
 /* =========================================================
