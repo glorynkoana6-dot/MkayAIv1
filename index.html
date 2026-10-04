@@ -8,7 +8,7 @@
 
 <meta
   name="viewport"
-  content="width=device-width, initial-scale=1, viewport-fit=cover"
+  content="width=device-width,initial-scale=1,viewport-fit=cover"
 >
 
 <meta
@@ -27,45 +27,37 @@
 >
 
 <title>
-MKAYFX WYCKOFF
+MKAYFX GOLD S&R
 </title>
 
 
 <style>
 
+*{
+  box-sizing:border-box;
+}
+
 :root{
 
   --bg:#05070b;
 
-  --card:#0c131c;
+  --panel:#0a1119;
 
-  --line:
-    rgba(
-      255,
-      255,
-      255,
-      .08
-    );
+  --panel2:#0d1722;
 
-  --text:#f5f7fb;
+  --border:rgba(255,255,255,.085);
 
-  --muted:#7f8a9a;
+  --text:#f6f8fb;
 
-  --gold:#f5c95e;
+  --muted:#788698;
 
-  --green:#3fe3a0;
+  --gold:#f4c85d;
 
-  --red:#ff657d;
+  --green:#37e6a1;
 
-  --blue:#7892ff;
+  --red:#ff6279;
 
-}
-
-
-*{
-
-  box-sizing:
-    border-box;
+  --blue:#7994ff;
 
 }
 
@@ -78,30 +70,20 @@ body{
   min-height:100%;
 
   background:
-
     radial-gradient(
-
       circle at top,
-
-      #0c1624 0%,
-
+      #101b2e 0%,
       #05070b 42%
-
     );
 
   color:
     var(--text);
 
   font-family:
-
     -apple-system,
-
     BlinkMacSystemFont,
-
     "SF Pro Display",
-
     "Segoe UI",
-
     sans-serif;
 
 }
@@ -109,15 +91,10 @@ body{
 
 body{
 
-  min-height:
-    100vh;
-
   padding:
 
     calc(
-      env(
-        safe-area-inset-top
-      )
+      env(safe-area-inset-top)
       +
       14px
     )
@@ -125,69 +102,52 @@ body{
     14px
 
     calc(
-      env(
-        safe-area-inset-bottom
-      )
+      env(safe-area-inset-bottom)
       +
-      24px
+      30px
     );
 
 }
 
 
-button,
-select{
+button{
 
-  font:
-    inherit;
+  font:inherit;
 
 }
 
 
 .app{
 
-  max-width:
-    1120px;
+  max-width:1050px;
 
-  margin:
-    auto;
+  margin:auto;
 
 }
 
 
-/* =========================================================
-   HEADER
-========================================================= */
+/* HEADER */
 
 .header{
 
   display:flex;
 
-  justify-content:
-    space-between;
+  align-items:center;
 
-  gap:
-    12px;
+  justify-content:space-between;
 
-  align-items:
-    center;
+  gap:12px;
 
-  margin-bottom:
-    20px;
+  margin-bottom:16px;
 
 }
 
 
 .brand{
 
-  font-size:
-    27px;
+  font-size:27px;
 
-  font-weight:
-    950;
-
-  line-height:
-    1;
+  font-weight:950;
 
 }
 
@@ -200,364 +160,190 @@ select{
 }
 
 
-.sub{
+.subtitle{
 
-  margin-top:
-    7px;
-
-  color:
-    var(--muted);
-
-  font-size:
-    13px;
-
-}
-
-
-.status{
-
-  border:
-
-    1px solid
-
-    var(--line);
-
-  background:
-    #080e15;
+  margin-top:5px;
 
   color:
     var(--muted);
 
-  border-radius:
-    999px;
-
-  padding:
-    11px 14px;
-
-  font-size:
-    10px;
-
-  letter-spacing:
-    .8px;
+  font-size:11px;
 
 }
 
 
-.build{
+.badge{
 
-  margin-top:
-    4px;
+  padding:10px 13px;
 
-  color:
-    #596576;
-
-  font-size:
-    9px;
-
-}
-
-
-/* =========================================================
-   CONTROLS
-========================================================= */
-
-.controls{
-
-  display:grid;
-
-  grid-template-columns:
-
-    1fr
-
-    1fr;
-
-  gap:
-    10px;
-
-}
-
-
-.control,
-.run{
-
-  width:
-    100%;
-
-  min-height:
-    54px;
+  border-radius:999px;
 
   border:
-
     1px solid
-
-    var(--line);
-
-  border-radius:
-    18px;
+    var(--border);
 
   background:
-    #070d14;
+    var(--panel);
+
+  font-size:9px;
 
   color:
-    var(--text);
+    var(--muted);
 
-  padding:
-    0 15px;
+  text-transform:uppercase;
 
-  font-weight:
-    850;
+  letter-spacing:.8px;
 
 }
 
 
-.control{
-
-  font-size:
-    18px;
-
-}
-
+/* RUN */
 
 .run{
 
-  margin-top:
-    12px;
+  width:100%;
 
-  min-height:
-    58px;
+  min-height:58px;
+
+  border-radius:18px;
+
+  border:
+    1px solid
+    rgba(121,148,255,.4);
 
   background:
-
     linear-gradient(
-
       135deg,
-
-      #203252,
-
-      #101d32
-
+      #233658,
+      #111d31
     );
 
-  border-color:
+  color:white;
 
-    rgba(
-      120,
-      146,
-      255,
-      .35
-    );
+  font-size:16px;
 
-  font-size:
-    16px;
+  font-weight:900;
 
 }
 
 
-/* =========================================================
-   ERROR
-========================================================= */
+/* ERROR */
 
 .error{
 
-  display:
-    none;
+  display:none;
 
-  margin-top:
-    14px;
+  margin-top:12px;
 
   border:
-
     1px solid
-
-    rgba(
-      255,
-      101,
-      125,
-      .45
-    );
+    rgba(255,98,121,.5);
 
   background:
+    rgba(255,98,121,.08);
 
-    rgba(
-      255,
-      101,
-      125,
-      .09
-    );
+  color:#ffc2cc;
 
-  border-radius:
-    18px;
+  padding:14px;
 
-  padding:
-    15px;
+  border-radius:16px;
 
-  color:
-    #ffc1cb;
+  white-space:pre-wrap;
 
-  white-space:
-    pre-wrap;
+  word-break:break-word;
 
-  word-break:
-    break-word;
-
-  font-size:
-    12px;
-
-  line-height:
-    1.45;
+  font-size:11px;
 
 }
 
 
-.error small{
-
-  display:
-    block;
-
-  margin-top:
-    10px;
-
-  color:
-    #9aa7b8;
-
-}
-
-
-/* =========================================================
-   LAYOUT
-========================================================= */
+/* GRID */
 
 .grid{
 
   display:grid;
 
   grid-template-columns:
+    minmax(0,1.4fr)
+    minmax(300px,.8fr);
 
-    minmax(
-      0,
-      1.45fr
-    )
+  gap:12px;
 
-    minmax(
-      300px,
-      .8fr
-    );
-
-  gap:
-    12px;
-
-  margin-top:
-    14px;
+  margin-top:12px;
 
 }
 
 
 .card{
 
-  border:
-
-    1px solid
-
-    var(--line);
-
-  border-radius:
-    20px;
-
   background:
-
     linear-gradient(
-
       180deg,
-
-      rgba(
-        13,
-        20,
-        29,
-        .98
-      ),
-
-      rgba(
-        6,
-        11,
-        17,
-        .98
-      )
-
+      rgba(12,19,28,.98),
+      rgba(5,10,15,.98)
     );
 
-  overflow:
-    hidden;
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:20px;
+
+  overflow:hidden;
 
 }
 
 
 .pad{
 
-  padding:
-    16px;
+  padding:16px;
 
 }
 
 
-/* =========================================================
-   HERO
-========================================================= */
-
-.hero{
-
-  display:grid;
-
-  grid-template-columns:
-
-    1fr
-
-    auto;
-
-  gap:
-    12px;
-
-  align-items:
-    end;
-
-}
-
-
-.eyebrow,
-.title{
+.label{
 
   color:
     var(--muted);
 
-  font-size:
-    10px;
+  font-size:9px;
 
-  text-transform:
-    uppercase;
+  text-transform:uppercase;
 
-  letter-spacing:
-    1.4px;
+  letter-spacing:1.2px;
+
+}
+
+
+/* SIGNAL */
+
+.signalTop{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:flex-end;
+
+  gap:12px;
 
 }
 
 
 .signal{
 
-  margin-top:
-    8px;
+  margin-top:7px;
 
-  font-size:
-    50px;
+  font-size:56px;
 
-  font-weight:
-    950;
+  font-weight:950;
 
-  line-height:
-    .95;
+  line-height:.95;
 
 }
 
 
-.signal.wait{
+.signal.WAIT{
 
   color:
     var(--gold);
@@ -565,7 +351,7 @@ select{
 }
 
 
-.signal.buy{
+.signal.BUY{
 
   color:
     var(--green);
@@ -573,7 +359,7 @@ select{
 }
 
 
-.signal.sell{
+.signal.SELL{
 
   color:
     var(--red);
@@ -581,95 +367,190 @@ select{
 }
 
 
-.structure,
-.small{
-
-  margin-top:
-    7px;
-
-  color:
-    var(--muted);
-
-  font-size:
-    11px;
-
-}
-
-
 .price{
 
-  text-align:
-    right;
+  font-size:29px;
 
-  font-size:
-    29px;
+  font-weight:950;
 
-  font-weight:
-    950;
+  text-align:right;
 
 }
 
 
-.selected{
-
-  text-align:
-    right;
-
-  margin-top:
-    5px;
+.statusText{
 
   color:
     var(--muted);
 
-  font-size:
-    11px;
+  font-size:10px;
+
+  margin-top:6px;
 
 }
 
 
-/* =========================================================
-   METRICS
-========================================================= */
+/* SCORE */
 
-.metrics{
-
-  margin-top:
-    16px;
+.scoreWrap{
 
   display:grid;
 
   grid-template-columns:
+    110px
+    1fr;
 
-    repeat(
-      4,
-      1fr
+  gap:12px;
+
+  align-items:center;
+
+  margin-top:18px;
+
+}
+
+
+.scoreCircle{
+
+  width:110px;
+
+  height:110px;
+
+  border-radius:50%;
+
+  display:grid;
+
+  place-items:center;
+
+  background:
+    conic-gradient(
+      var(--blue) 0deg,
+      var(--blue) var(--score-angle),
+      #171e27 var(--score-angle),
+      #171e27 360deg
     );
 
-  gap:
-    8px;
+  position:relative;
+
+}
+
+
+.scoreCircle::after{
+
+  content:"";
+
+  position:absolute;
+
+  inset:11px;
+
+  border-radius:50%;
+
+  background:
+    #080e15;
+
+}
+
+
+.scoreNumber{
+
+  position:relative;
+
+  z-index:2;
+
+  text-align:center;
+
+  font-size:31px;
+
+  font-weight:950;
+
+}
+
+
+.scoreNumber small{
+
+  display:block;
+
+  color:
+    var(--muted);
+
+  font-size:7px;
+
+}
+
+
+.scoreBars{
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:12px;
+
+}
+
+
+.scoreRow{
+
+  font-size:9px;
+
+  color:
+    var(--muted);
+
+}
+
+
+.progress{
+
+  margin-top:5px;
+
+  height:7px;
+
+  border-radius:999px;
+
+  overflow:hidden;
+
+  background:
+    #141b24;
+
+}
+
+
+.progress > div{
+
+  height:100%;
+
+}
+
+
+/* METRICS */
+
+.metrics{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(4,1fr);
+
+  gap:8px;
+
+  margin-top:16px;
 
 }
 
 
 .metric{
 
-  min-height:
-    84px;
+  padding:11px;
+
+  min-height:82px;
 
   border:
-
     1px solid
+    var(--border);
 
-    var(--line);
-
-  border-radius:
-    15px;
+  border-radius:14px;
 
   background:
     #070d14;
-
-  padding:
-    12px;
 
 }
 
@@ -679,279 +560,36 @@ select{
   color:
     var(--muted);
 
-  font-size:
-    9px;
+  font-size:8px;
 
-  text-transform:
-    uppercase;
-
-  letter-spacing:
-    1px;
+  text-transform:uppercase;
 
 }
 
 
-.metric b{
+.metric strong{
 
-  display:
-    block;
+  display:block;
 
-  margin-top:
-    8px;
+  margin-top:7px;
 
-  font-size:
-    14px;
+  font-size:14px;
 
 }
 
 
-/* =========================================================
-   CHART
-========================================================= */
-
-.chart{
-
-  height:
-    335px;
-
-  border-top:
-
-    1px solid
-
-    var(--line);
-
-  position:
-    relative;
-
-  background:
-    #060b11;
-
-}
-
-
-.chart canvas{
-
-  width:
-    100%;
-
-  height:
-    100%;
-
-  display:
-    block;
-
-}
-
-
-.legend{
-
-  position:
-    absolute;
-
-  top:
-    10px;
-
-  left:
-    10px;
-
-  display:flex;
-
-  gap:
-    6px;
-
-  flex-wrap:
-    wrap;
-
-}
-
-
-.pill{
-
-  border:
-
-    1px solid
-
-    var(--line);
-
-  border-radius:
-    999px;
-
-  background:
-
-    rgba(
-      4,
-      7,
-      11,
-      .82
-    );
-
-  padding:
-    5px 8px;
-
-  color:
-    #c2ccd8;
-
-  font-size:
-    9px;
-
-}
-
-
-/* =========================================================
-   EVENTS
-========================================================= */
-
-.eventList{
-
-  display:flex;
-
-  flex-direction:
-    column;
-
-  gap:
-    7px;
-
-  max-height:
-    300px;
-
-  overflow:
-    auto;
-
-}
-
-
-.event{
-
-  display:grid;
-
-  grid-template-columns:
-
-    auto
-
-    1fr
-
-    auto;
-
-  gap:
-    8px;
-
-  align-items:
-    center;
-
-  border:
-
-    1px solid
-
-    var(--line);
-
-  border-radius:
-    12px;
-
-  background:
-    #070d14;
-
-  padding:
-    9px;
-
-}
-
-
-.dot{
-
-  width:
-    8px;
-
-  height:
-    8px;
-
-  border-radius:
-    50%;
-
-  background:
-    var(--blue);
-
-  box-shadow:
-
-    0 0 10px
-
-    var(--blue);
-
-}
-
-
-.event b{
-
-  font-size:
-    12px;
-
-}
-
-
-.event span{
-
-  font-size:
-    9px;
-
-  color:
-    var(--muted);
-
-}
-
-
-.eventPrice{
-
-  font-size:
-    11px;
-
-  font-weight:
-    800;
-
-}
-
-
-/* =========================================================
-   TRADE
-========================================================= */
-
-.trade{
-
-  margin-top:
-    12px;
-
-  border:
-
-    1px solid
-
-    var(--line);
-
-  border-radius:
-    15px;
-
-  background:
-    #070d14;
-
-  padding:
-    12px;
-
-}
-
+/* TRADE */
 
 .tradeGrid{
 
   display:grid;
 
   grid-template-columns:
+    repeat(2,1fr);
 
-    repeat(
-      2,
-      1fr
-    );
+  gap:8px;
 
-  gap:
-    7px;
-
-  margin-top:
-    8px;
+  margin-top:14px;
 
 }
 
@@ -959,267 +597,298 @@ select{
 .level{
 
   border:
-
     1px solid
+    var(--border);
 
-    var(--line);
+  background:
+    #070d14;
 
-  border-radius:
-    11px;
+  border-radius:14px;
 
-  padding:
-    9px;
+  padding:11px;
 
 }
 
 
 .level small{
 
-  display:
-    block;
-
   color:
     var(--muted);
 
-  font-size:
-    8px;
+  font-size:8px;
 
-  text-transform:
-    uppercase;
+  text-transform:uppercase;
 
 }
 
 
 .level b{
 
-  display:
-    block;
+  display:block;
 
-  margin-top:
-    4px;
+  font-size:16px;
 
-  font-size:
-    13px;
+  margin-top:6px;
 
 }
 
 
-/* =========================================================
-   TIMEFRAMES
-========================================================= */
+/* CHART */
 
-.tf{
+.chart{
 
-  display:grid;
+  position:relative;
 
-  grid-template-columns:
+  height:350px;
 
-    42px
-
-    1fr
-
-    auto;
-
-  gap:
-    8px;
-
-  align-items:
-    center;
-
-  padding:
-    9px 0;
-
-  border-bottom:
-
+  border-top:
     1px solid
-
-    rgba(
-      255,
-      255,
-      255,
-      .05
-    );
-
-}
-
-
-.tf:last-child{
-
-  border-bottom:
-    0;
-
-}
-
-
-.bar{
-
-  height:
-    5px;
-
-  border-radius:
-    999px;
+    var(--border);
 
   background:
-    #060c12;
-
-  overflow:
-    hidden;
-
-  margin-top:
-    5px;
+    #050b11;
 
 }
 
 
-.fill{
+canvas{
 
-  height:
-    100%;
+  display:block;
 
-  background:
+  width:100%;
 
-    linear-gradient(
-
-      90deg,
-
-      var(--blue),
-
-      var(--green)
-
-    );
+  height:100%;
 
 }
 
 
-.badge{
+.chartLegend{
+
+  position:absolute;
+
+  left:10px;
+
+  top:10px;
+
+  display:flex;
+
+  flex-wrap:wrap;
+
+  gap:5px;
+
+}
+
+
+.chip{
+
+  padding:5px 7px;
+
+  font-size:8px;
+
+  border-radius:999px;
 
   border:
-
     1px solid
+    var(--border);
 
-    var(--line);
+  background:
+    rgba(5,7,11,.85);
 
-  border-radius:
-    999px;
+  color:
+    #c6cfdb;
 
-  padding:
-    3px 5px;
+}
+
+
+/* SIDE */
+
+.sectionTitle{
 
   color:
     var(--muted);
 
-  font-size:
-    8px;
+  text-transform:uppercase;
 
-  text-align:
-    center;
+  letter-spacing:1px;
 
-  min-width:
-    42px;
+  font-size:9px;
+
+  margin-bottom:9px;
 
 }
 
 
-.badges{
+.htf{
 
-  display:flex;
+  display:grid;
 
-  flex-direction:
-    column;
+  grid-template-columns:
+    45px
+    1fr
+    auto;
 
-  gap:
-    3px;
+  gap:8px;
+
+  align-items:center;
+
+  padding:11px 0;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.05);
+
+}
+
+
+.htf:last-child{
+
+  border-bottom:0;
+
+}
+
+
+.htf small{
+
+  color:
+    var(--muted);
+
+  font-size:8px;
+
+}
+
+
+.htf strong{
+
+  font-size:11px;
 
 }
 
 
 .reason{
 
-  padding:
-    8px 0;
+  padding:9px 0;
 
   border-bottom:
-
     1px solid
+    rgba(255,255,255,.05);
 
-    rgba(
-      255,
-      255,
-      255,
-      .05
-    );
+  color:#c9d2dd;
 
-  font-size:
-    11px;
+  font-size:10px;
 
-  color:
-    #c9d2dd;
-
-  line-height:
-    1.45;
+  line-height:1.45;
 
 }
 
 
-.reason:last-child{
+/* BACKTEST */
+
+.btGrid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(2,1fr);
+
+  gap:7px;
+
+}
+
+
+.bt{
+
+  border:
+    1px solid
+    var(--border);
+
+  background:
+    #070d14;
+
+  border-radius:12px;
+
+  padding:10px;
+
+}
+
+
+.bt small{
+
+  color:
+    var(--muted);
+
+  font-size:7px;
+
+  text-transform:uppercase;
+
+}
+
+
+.bt strong{
+
+  display:block;
+
+  margin-top:5px;
+
+  font-size:16px;
+
+}
+
+
+.tradeRow{
+
+  padding:9px 0;
 
   border-bottom:
-    0;
+    1px solid
+    rgba(255,255,255,.05);
+
+  font-size:9px;
 
 }
 
 
-.warn{
+.green{
+  color:var(--green);
+}
 
-  margin-top:
-    10px;
+.red{
+  color:var(--red);
+}
+
+.gold{
+  color:var(--gold);
+}
+
+.blue{
+  color:var(--blue);
+}
+
+
+.note{
+
+  margin-top:10px;
 
   color:
-    #d6a7b1;
+    var(--muted);
 
-  font-size:
-    10px;
+  font-size:8px;
+
+  line-height:1.5;
 
 }
 
 
 .loading{
 
-  opacity:
-    .58;
+  opacity:.55;
 
-  pointer-events:
-    none;
+  pointer-events:none;
 
 }
 
-
-.footer{
-
-  text-align:
-    center;
-
-  color:
-    var(--muted);
-
-  font-size:
-    9px;
-
-  padding:
-    14px 4px;
-
-  line-height:
-    1.5;
-
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
 
 @media(
-  max-width:820px
+  max-width:800px
 ){
 
   .grid{
@@ -1229,39 +898,22 @@ select{
 
   }
 
-
   .metrics{
 
     grid-template-columns:
-
-      repeat(
-        2,
-        1fr
-      );
+      repeat(2,1fr);
 
   }
-
-
-  .chart{
-
-    height:
-      315px;
-
-  }
-
 
   .signal{
 
-    font-size:
-      42px;
+    font-size:46px;
 
   }
 
+  .chart{
 
-  .price{
-
-    font-size:
-      25px;
+    height:330px;
 
   }
 
@@ -1281,137 +933,38 @@ select{
 >
 
 
-<!-- ======================================================
-     HEADER
-====================================================== -->
-
 <div class="header">
 
 
 <div>
-
 
 <div class="brand">
 
 MKAYFX
 
 <span>
-WYCKOFF
+S&R
 </span>
 
 </div>
 
+<div class="subtitle">
 
-<div class="sub">
-
-Structural campaign engine
-
-</div>
-
-
-<div class="build">
-
-Frontend V3.0
+1-Min Gold Liquidity + Support & Resistance Scalper
 
 </div>
-
 
 </div>
 
 
 <div
-  class="status"
-  id="status"
+  class="badge"
+  id="engineBadge"
 >
 
-ENGINE OFFLINE
+OFFLINE
 
 </div>
-
-
-</div>
-
-
-<!-- ======================================================
-     CONTROLS
-====================================================== -->
-
-<div class="controls">
-
-
-<select
-  class="control"
-  id="symbol"
->
-
-<option value="XAU/USD">
-XAU/USD
-</option>
-
-<option value="BTC/USD">
-BTC/USD
-</option>
-
-<option value="EUR/USD">
-EUR/USD
-</option>
-
-<option value="GBP/USD">
-GBP/USD
-</option>
-
-<option value="USD/JPY">
-USD/JPY
-</option>
-
-</select>
-
-
-<select
-  class="control"
-  id="tf"
->
-
-<option value="1m">
-1m
-</option>
-
-<option value="3m">
-3m
-</option>
-
-<option
-  value="5m"
-  selected
->
-5m
-</option>
-
-<option value="15m">
-15m
-</option>
-
-<option value="30m">
-30m
-</option>
-
-<option value="1h">
-1H
-</option>
-
-<option value="2h">
-2H
-</option>
-
-<option value="4h">
-4H
-</option>
-
-<option value="1D">
-1D
-</option>
-
-</select>
 
 
 </div>
@@ -1419,40 +972,25 @@ USD/JPY
 
 <button
   class="run"
-  id="run"
+  id="runButton"
 >
 
-RUN WYCKOFF ANALYSIS
+RUN GOLD ANALYSIS
 
 </button>
 
 
-<!-- ======================================================
-     ERROR
-====================================================== -->
-
 <div
   class="error"
-  id="error"
+  id="errorBox"
 >
-
-<div id="errorText">
 </div>
 
-<small id="errorDebug">
-</small>
-
-</div>
-
-
-<!-- ======================================================
-     MAIN GRID
-====================================================== -->
 
 <div class="grid">
 
 
-<!-- LEFT -->
+<!-- LEFT SIDE -->
 
 <div class="card">
 
@@ -1460,21 +998,19 @@ RUN WYCKOFF ANALYSIS
 <div class="pad">
 
 
-<div class="hero">
+<div class="signalTop">
 
 
 <div>
 
+<div class="label">
 
-<div class="eyebrow">
-
-Effective Wyckoff structure
+XAU/USD DECISION ENGINE
 
 </div>
 
-
 <div
-  class="signal wait"
+  class="signal WAIT"
   id="signal"
 >
 
@@ -1482,22 +1018,19 @@ WAIT
 
 </div>
 
-
 <div
-  class="structure"
-  id="structure"
+  class="statusText"
+  id="quality"
 >
 
-Searching for structure...
+Waiting for analysis
 
 </div>
-
 
 </div>
 
 
 <div>
-
 
 <div
   class="price"
@@ -1508,13 +1041,85 @@ Searching for structure...
 
 </div>
 
-
 <div
-  class="selected"
-  id="selected"
+  class="statusText"
+  id="marketState"
 >
 
-Selected TF —
+—
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<div class="scoreWrap">
+
+
+<div
+  class="scoreCircle"
+  id="scoreCircle"
+  style="--score-angle:0deg"
+>
+
+<div
+  class="scoreNumber"
+  id="score"
+>
+
+0
+
+<small>
+SETUP SCORE
+</small>
+
+</div>
+
+</div>
+
+
+<div class="scoreBars">
+
+
+<div class="scoreRow">
+
+BUY SCORE
+
+<div class="progress">
+
+<div
+  id="buyBar"
+  style="
+    width:0%;
+    background:var(--green)
+  "
+>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="scoreRow">
+
+SELL SCORE
+
+<div class="progress">
+
+<div
+  id="sellBar"
+  style="
+    width:0%;
+    background:var(--red)
+  "
+>
+</div>
+
+</div>
 
 </div>
 
@@ -1531,12 +1136,12 @@ Selected TF —
 <div class="metric">
 
 <small>
-Phase
+Support
 </small>
 
-<b id="phase">
+<strong id="support">
 —
-</b>
+</strong>
 
 </div>
 
@@ -1544,12 +1149,12 @@ Phase
 <div class="metric">
 
 <small>
-Maturity
+Resistance
 </small>
 
-<b id="confidence">
+<strong id="resistance">
 —
-</b>
+</strong>
 
 </div>
 
@@ -1557,12 +1162,12 @@ Maturity
 <div class="metric">
 
 <small>
-Validation
+ATR
 </small>
 
-<b id="validation">
+<strong id="atr">
 —
-</b>
+</strong>
 
 </div>
 
@@ -1570,10 +1175,77 @@ Validation
 <div class="metric">
 
 <small>
-Range
+RSI
 </small>
 
-<b id="range">
+<strong id="rsi">
+—
+</strong>
+
+</div>
+
+
+</div>
+
+
+<div class="tradeGrid">
+
+
+<div class="level">
+
+<small>
+Entry
+</small>
+
+<b id="entry">
+WAIT
+</b>
+
+</div>
+
+
+<div class="level">
+
+<small>
+Stop Loss
+</small>
+
+<b
+  class="red"
+  id="sl"
+>
+—
+</b>
+
+</div>
+
+
+<div class="level">
+
+<small>
+TP1 · 1.5R
+</small>
+
+<b
+  class="green"
+  id="tp1"
+>
+—
+</b>
+
+</div>
+
+
+<div class="level">
+
+<small>
+TP2 · 2.2R
+</small>
+
+<b
+  class="green"
+  id="tp2"
+>
 —
 </b>
 
@@ -1596,8 +1268,8 @@ Range
 
 
 <div
-  class="legend"
-  id="legend"
+  class="chartLegend"
+  id="chartLegend"
 >
 </div>
 
@@ -1608,7 +1280,7 @@ Range
 </div>
 
 
-<!-- RIGHT -->
+<!-- RIGHT SIDE -->
 
 <div>
 
@@ -1616,80 +1288,15 @@ Range
 <div class="card pad">
 
 
-<div class="title">
+<div class="sectionTitle">
 
-Campaign events
-
-</div>
-
-
-<div
-  class="eventList"
-  id="events"
->
-
-<div class="small">
-
-No confirmed events.
-
-</div>
-
-</div>
-
-
-<div class="trade">
-
-
-<div class="title">
-
-Trade setup
+Higher Timeframe Confirmation
 
 </div>
 
 
 <div
-  class="small"
-  id="tradeStatus"
->
-
-Waiting for a qualified setup.
-
-</div>
-
-
-<div
-  class="tradeGrid"
-  id="tradeGrid"
->
-</div>
-
-
-</div>
-
-
-</div>
-
-
-<div
-  class="card pad"
-  style="margin-top:12px"
->
-
-
-<div class="title">
-
-Multi-timeframe scan
-
-</div>
-
-
-<div id="timeframes">
-</div>
-
-
-<div
-  class="warn"
-  id="tfErrors"
+  id="higherTF"
 >
 </div>
 
@@ -1703,36 +1310,153 @@ Multi-timeframe scan
 >
 
 
-<div class="title">
+<div class="sectionTitle">
 
-Engine reasoning
-
-</div>
-
-
-<div id="reasons">
-
-<div class="small">
-
-Run analysis to see reasoning.
+Why This Signal
 
 </div>
 
+
+<div
+  id="reasons"
+>
 </div>
 
 
 </div>
 
 
+<div
+  class="card pad"
+  style="margin-top:12px"
+>
+
+
+<div class="sectionTitle">
+
+Historical Backtest
+
+</div>
+
+
+<div
+  class="btGrid"
+>
+
+
+<div class="bt">
+
+<small>
+Trades
+</small>
+
+<strong id="btTrades">
+—
+</strong>
+
+</div>
+
+
+<div class="bt">
+
+<small>
+Win Rate
+</small>
+
+<strong id="btWin">
+—
+</strong>
+
+</div>
+
+
+<div class="bt">
+
+<small>
+Profit Factor
+</small>
+
+<strong id="btPF">
+—
+</strong>
+
+</div>
+
+
+<div class="bt">
+
+<small>
+Net Result
+</small>
+
+<strong id="btNet">
+—
+</strong>
+
+</div>
+
+
+<div class="bt">
+
+<small>
+Expectancy
+</small>
+
+<strong id="btExpectancy">
+—
+</strong>
+
+</div>
+
+
+<div class="bt">
+
+<small>
+Max Drawdown
+</small>
+
+<strong id="btDD">
+—
+</strong>
+
 </div>
 
 
 </div>
 
 
-<div class="footer">
+<div class="note">
 
-Maturity and validation are structural scores, not guaranteed win probabilities.
+Backtest uses confirmed M1 pivots only, one trade at a time, a conservative stop-first assumption when both levels are touched, and an estimated 0.05R trading cost. Historical results do not guarantee future performance.
+
+</div>
+
+
+</div>
+
+
+<div
+  class="card pad"
+  style="margin-top:12px"
+>
+
+
+<div class="sectionTitle">
+
+Recent Backtest Trades
+
+</div>
+
+
+<div id="recentTrades">
+</div>
+
+
+</div>
+
+
+</div>
+
 
 </div>
 
@@ -1743,7 +1467,7 @@ Maturity and validation are structural scores, not guaranteed win probabilities.
 <script>
 
 /* =========================================================
-   VARIABLES
+   DOM
 ========================================================= */
 
 const $ =
@@ -1753,7 +1477,7 @@ const $ =
     );
 
 
-let lastPayload =
+let lastData =
   null;
 
 
@@ -1771,249 +1495,65 @@ function fmt(
       value
     );
 
-
   if (
-    !Number.isFinite(
-      n
-    )
+    !Number.isFinite(n)
   ) {
-
     return "—";
-
   }
 
-
   return n.toLocaleString(
-
     undefined,
-
     {
+      minimumFractionDigits:
+        digits,
       maximumFractionDigits:
         digits
     }
-
   );
 
 }
 
 
 /* =========================================================
-   SAFE OBJECT → TEXT
-
-   This permanently fixes:
-   [object Object]
+   RUN ANALYSIS
 ========================================================= */
 
-function describe(
-  value
-) {
+async function runAnalysis() {
 
-  if (
-    value == null
-  ) {
+  const app =
+    $("app");
 
-    return "";
+  const button =
+    $("runButton");
 
-  }
-
-
-  if (
-    typeof value ===
-    "string"
-  ) {
-
-    return value;
-
-  }
-
-
-  if (
-    value instanceof Error
-  ) {
-
-    return (
-      value.message ||
-      String(value)
-    );
-
-  }
-
-
-  if (
-
-    typeof value ===
-    "number"
-
-    ||
-
-    typeof value ===
-    "boolean"
-
-  ) {
-
-    return String(
-      value
-    );
-
-  }
-
-
-  if (
-    typeof value ===
-    "object"
-  ) {
-
-
-    const nested =
-
-      value.message
-
-      ??
-
-      value.error
-
-      ??
-
-      value.detail
-
-      ??
-
-      value.description;
-
-
-    if (
-
-      nested !==
-      undefined
-
-      &&
-
-      nested !==
-      value
-
-    ) {
-
-      const text =
-        describe(
-          nested
-        );
-
-
-      if (
-        text
-      ) {
-
-        return text;
-
-      }
-
-    }
-
-
-    try {
-
-      return JSON.stringify(
-
-        value,
-
-        null,
-
-        2
-
-      );
-
-    }
-
-    catch {
-
-      return String(
-        value
-      );
-
-    }
-
-  }
-
-
-  return String(
-    value
+  app.classList.add(
+    "loading"
   );
 
-}
+  button.textContent =
+    "ANALYSING GOLD...";
+
+  $("errorBox").style.display =
+    "none";
 
 
-function signalClass(
-  value
-) {
+  try {
 
-  return value ===
-    "BUY"
-
-    ?
-
-    "buy"
-
-    :
-
-    value ===
-      "SELL"
-
-      ?
-
-      "sell"
-
-      :
-
-      "wait";
-
-}
-
-
-/* =========================================================
-   FETCH API
-========================================================= */
-
-async function fetchApi(
-  url
-) {
-
-
-  const response =
-    await fetch(
-
-      url,
-
-      {
-
-        method:
-          "GET",
-
-        cache:
-          "no-store",
-
-        headers: {
-
-          Accept:
-            "application/json"
-
+    const response =
+      await fetch(
+        `/api/sr?t=${Date.now()}`,
+        {
+          cache:
+            "no-store"
         }
-
-      }
-
-    );
+      );
 
 
-  const raw =
-    await response.text();
+    const raw =
+      await response.text();
 
 
-  let data =
-    null;
-
-
-  if (
-    raw
-  ) {
+    let data;
 
 
     try {
@@ -2023,150 +1563,29 @@ async function fetchApi(
           raw
         );
 
-    }
-
-    catch {
-
+    } catch {
 
       throw new Error(
-
-        `NON-JSON RESPONSE
-
-HTTP ${response.status}
-
-${raw.slice(0, 500)}
-
-Endpoint: ${url}`
-
+        `Server returned non-JSON:\n${raw.slice(0,500)}`
       );
 
     }
 
-  }
 
+    if (
+      !response.ok ||
+      data.success !== true
+    ) {
 
-  if (
-
-    !response.ok
-
-    ||
-
-    data?.ok !==
-    true
-
-  ) {
-
-
-    const message =
-
-      describe(
-        data?.error
-      )
-
-      ||
-
-      describe(
-        data?.message
-      )
-
-      ||
-
-      describe(
-        data
-      )
-
-      ||
-
-      `HTTP ${response.status}`;
-
-
-    const details =
-
-      data?.timeframeErrors?.length
-
-        ?
-
-        `
-
-Timeframe errors:
-
-${data.timeframeErrors
-
-  .map(
-    x =>
-      `${x.tf}: ${describe(x.error)}`
-  )
-
-  .join(
-    "\n"
-  )}`
-
-        :
-
-        "";
-
-
-    throw new Error(
-
-      `${message}${details}`
-
-    );
-
-  }
-
-
-  return data;
-
-}
-
-
-/* =========================================================
-   RUN
-========================================================= */
-
-async function runAnalysis() {
-
-
-  const app =
-    $("app");
-
-
-  const symbol =
-    $("symbol").value;
-
-
-  const tf =
-    $("tf").value;
-
-
-  const endpoint =
-
-    `/api/wyckoff?symbol=${encodeURIComponent(symbol)}&tf=${encodeURIComponent(tf)}&v=3`;
-
-
-  app.classList.add(
-    "loading"
-  );
-
-
-  $("error").style.display =
-    "none";
-
-
-  $("status").textContent =
-    "ANALYSING";
-
-
-  try {
-
-
-    const data =
-      await fetchApi(
-        endpoint
+      throw new Error(
+        data.error ||
+        `HTTP ${response.status}`
       );
 
+    }
 
-    lastPayload =
+
+    lastData =
       data;
 
 
@@ -2175,46 +1594,26 @@ async function runAnalysis() {
     );
 
 
-  }
+  } catch (error) {
 
-  catch (
-    error
-  ) {
-
-
-    $("status").textContent =
+    $("engineBadge").textContent =
       "ENGINE ERROR";
 
+    $("errorBox").textContent =
+      error?.message ||
+      String(error);
 
-    $("errorText").textContent =
-
-      describe(
-        error
-      )
-
-      ||
-
-      "Unknown frontend error";
-
-
-    $("errorDebug").textContent =
-
-      `Frontend V3.0 · Requested endpoint: ${endpoint}`;
-
-
-    $("error").style.display =
+    $("errorBox").style.display =
       "block";
 
-
-  }
-
-  finally {
-
+  } finally {
 
     app.classList.remove(
       "loading"
     );
 
+    button.textContent =
+      "RUN GOLD ANALYSIS";
 
   }
 
@@ -2222,431 +1621,199 @@ async function runAnalysis() {
 
 
 /* =========================================================
-   MAIN RENDER
+   RENDER
 ========================================================= */
 
 function render(
   data
 ) {
 
-
-  const a =
-    data.analysis ||
-    {};
-
-
-  $("status").textContent =
-
-    `${data.engine || "WYCKOFF"} · ${data.mtfActive ? "MTF" : "CHART TF"}`;
+  $("engineBadge").textContent =
+    data.engine;
 
 
   $("signal").textContent =
-    a.direction ||
-    "WAIT";
+    data.signal;
 
 
   $("signal").className =
+    `signal ${data.signal}`;
 
-    `signal ${signalClass(a.direction)}`;
 
-
-  $("structure").textContent =
-
-    `${a.structure || "SEARCHING"} · ${a.phaseName || "None"}`;
+  $("quality").textContent =
+    `${data.signalQuality} · ${data.session}`;
 
 
   $("price").textContent =
-
     fmt(
-      data.price,
-      2
+      data.price
     );
 
 
-  $("selected").textContent =
-
-    data.mtfActive
-
-      ?
-
-      `Selected ${data.selectedTf} · requested ${data.requestedTf}`
-
-      :
-
-      `Selected TF ${data.selectedTf || "—"}`;
+  $("marketState").textContent =
+    `${data.marketState} · Candle ${fmt(data.candleAgeMinutes,1)} min old`;
 
 
-  const letters = [
-    "",
-    "A",
-    "B",
-    "C",
-    "D",
-    "E"
-  ];
+  $("score").innerHTML =
+    `${data.score}<small>SETUP SCORE</small>`;
 
 
-  $("phase").textContent =
-
-    a.phase
-
-      ?
-
-      `Phase ${letters[a.phase] || a.phase}`
-
-      :
-
-      "—";
-
-
-  $("confidence").textContent =
-
-    `${a.confidence || 0}/100`;
-
-
-  $("validation").textContent =
-
-    `${a.validation || 0}/100`;
-
-
-  $("range").textContent =
-
-    a.range
-
-      ?
-
-      `${fmt(a.range.low)} – ${fmt(a.range.high)}`
-
-      :
-
-      "—";
-
-
-  renderEvents(
-    a.events ||
-    []
+  $("scoreCircle").style.setProperty(
+    "--score-angle",
+    `${Math.max(0,Math.min(100,data.score))*3.6}deg`
   );
 
 
-  renderTrade(
-    a.entry
-  );
+  $("buyBar").style.width =
+    `${data.buyScore}%`;
 
 
-  renderTimeframes(
-    data.timeframes ||
-    []
+  $("sellBar").style.width =
+    `${data.sellScore}%`;
+
+
+  $("support").textContent =
+    data.support
+      ?
+      `${fmt(data.support.price)} · ${data.support.touches}x`
+      :
+      "—";
+
+
+  $("resistance").textContent =
+    data.resistance
+      ?
+      `${fmt(data.resistance.price)} · ${data.resistance.touches}x`
+      :
+      "—";
+
+
+  $("atr").textContent =
+    fmt(
+      data.indicators?.atr
+    );
+
+
+  $("rsi").textContent =
+    fmt(
+      data.indicators?.rsi,
+      1
+    );
+
+
+  $("entry").textContent =
+    data.entry === null
+      ?
+      "WAIT"
+      :
+      fmt(
+        data.entry
+      );
+
+
+  $("sl").textContent =
+    fmt(
+      data.stopLoss
+    );
+
+
+  $("tp1").textContent =
+    fmt(
+      data.tp1
+    );
+
+
+  $("tp2").textContent =
+    fmt(
+      data.tp2
+    );
+
+
+  renderHigherTF(
+    data.higherTimeframes
   );
 
 
   renderReasons(
-    a.reasons ||
-    []
+    data.reasons
   );
 
 
-  renderTfErrors(
-    data.timeframeErrors ||
-    []
+  renderBacktest(
+    data.backtest
   );
 
 
   drawChart(
-
-    data.candles ||
-    [],
-
-    a.events ||
-    [],
-
-    a.range
-
+    data
   );
 
 }
 
 
 /* =========================================================
-   EVENTS
+   HIGHER TF
 ========================================================= */
 
-function renderEvents(
-  events
+function renderHigherTF(
+  htf
 ) {
 
+  if (!htf) {
 
-  if (
-    !events.length
-  ) {
-
-
-    $("events").innerHTML =
-
-      `<div class="small">No confirmed Wyckoff events yet.</div>`;
-
+    $("higherTF").innerHTML =
+      "No HTF data.";
 
     return;
 
   }
 
 
-  $("events").innerHTML =
+  $("higherTF").innerHTML =
 
-    events
-
-      .map(
-
-        e => `
-
-          <div class="event">
-
-            <div class="dot"></div>
-
-            <div>
-
-              <b>
-                ${e.label || "Event"}
-              </b>
-
-              <br>
-
-              <span>
-                ${e.time || ""}
-              </span>
-
-            </div>
-
-            <div class="eventPrice">
-
-              ${fmt(e.price)}
-
-            </div>
-
-          </div>
-
-        `
-
-      )
-
-      .join("");
-
-}
-
-
-/* =========================================================
-   TRADE
-========================================================= */
-
-function renderTrade(
-  entry
-) {
-
-
-  if (
-    !entry
-  ) {
-
-
-    $("tradeStatus").textContent =
-
-      "Waiting for confidence + validation + entry trigger.";
-
-
-    $("tradeGrid").innerHTML =
-      "";
-
-
-    return;
-
-  }
-
-
-  const color =
-
-    entry.side ===
-    "BUY"
-
-      ?
-
-      "var(--green)"
-
-      :
-
-      "var(--red)";
-
-
-  $("tradeStatus").innerHTML =
-
-    `<b style="color:${color}">${entry.side}</b> · ${entry.trigger || "Wyckoff trigger"}`;
-
-
-  const rows = [
-
-    [
-      "Entry",
-      entry.price
-    ],
-
-    [
-      "Stop Loss",
-      entry.stop
-    ],
-
-    [
-      `TP1 ${entry.rr1 || ""}R`,
-      entry.tp1
-    ],
-
-    [
-      `TP2 ${entry.rr2 || ""}R`,
-      entry.tp2
-    ]
-
-  ];
-
-
-  $("tradeGrid").innerHTML =
-
-    rows
+    Object.entries(
+      htf
+    )
 
       .map(
-        (
-          [
-            name,
-            value
-          ]
-        ) => `
+        ([tf,data]) => `
 
-          <div class="level">
+        <div class="htf">
+
+          <strong>
+            ${tf}
+          </strong>
+
+          <div>
+
+            <strong class="${
+              data.bias === "BULLISH"
+                ? "green"
+                : data.bias === "BEARISH"
+                  ? "red"
+                  : "gold"
+            }">
+              ${data.bias}
+            </strong>
+
+            <br>
 
             <small>
-              ${name}
+              RSI ${fmt(data.rsi,1)}
             </small>
 
-            <b>
-              ${fmt(value)}
-            </b>
-
           </div>
 
-        `
+          <small>
+            Score ${data.score}
+          </small>
+
+        </div>
+
+      `
       )
 
       .join("");
-
-}
-
-
-/* =========================================================
-   TIMEFRAMES
-========================================================= */
-
-function renderTimeframes(
-  rows
-) {
-
-
-  if (
-    !rows.length
-  ) {
-
-
-    $("timeframes").innerHTML =
-
-      `<div class="small">No timeframe data.</div>`;
-
-
-    return;
-
-  }
-
-
-  $("timeframes").innerHTML =
-
-    rows
-
-      .map(
-
-        row => `
-
-          <div class="tf">
-
-            <b>
-              ${row.tf}
-            </b>
-
-            <div>
-
-              <div style="font-size:10px">
-
-                ${row.structure || "SEARCHING"}
-
-              </div>
-
-              <div class="bar">
-
-                <div
-                  class="fill"
-                  style="width:${Math.max(2, Math.min(100, row.validation || 0))}%"
-                >
-                </div>
-
-              </div>
-
-            </div>
-
-            <div class="badges">
-
-              <div class="badge">
-                P${row.phase || 0}
-              </div>
-
-              <div class="badge">
-                ${row.direction || "WAIT"}
-              </div>
-
-            </div>
-
-          </div>
-
-        `
-
-      )
-
-      .join("");
-
-}
-
-
-/* =========================================================
-   TIMEFRAME ERRORS
-========================================================= */
-
-function renderTfErrors(
-  errors
-) {
-
-
-  $("tfErrors").textContent =
-
-    errors.length
-
-      ?
-
-      `Unavailable TFs: ${errors
-
-        .map(
-          x =>
-            `${x.tf} (${describe(x.error)})`
-        )
-
-        .join(
-          " · "
-        )}`
-
-      :
-
-      "";
 
 }
 
@@ -2659,25 +1826,142 @@ function renderReasons(
   reasons
 ) {
 
-
   $("reasons").innerHTML =
 
+    Array.isArray(reasons) &&
     reasons.length
 
       ?
 
       reasons
-
         .map(
-          reason =>
-            `<div class="reason">${reason}</div>`
+          x =>
+            `<div class="reason">${x}</div>`
         )
-
         .join("")
 
       :
 
-      `<div class="small">No reasoning available.</div>`;
+      `<div class="reason">No reasoning returned.</div>`;
+
+}
+
+
+/* =========================================================
+   BACKTEST
+========================================================= */
+
+function renderBacktest(
+  bt
+) {
+
+  if (!bt) {
+    return;
+  }
+
+
+  $("btTrades").textContent =
+    bt.trades;
+
+
+  $("btWin").textContent =
+    `${bt.winRate}%`;
+
+
+  $("btPF").textContent =
+    bt.profitFactor === 999
+      ?
+      "∞"
+      :
+      bt.profitFactor;
+
+
+  $("btNet").textContent =
+    `${bt.netR}R`;
+
+
+  $("btNet").className =
+    bt.netR >= 0
+      ?
+      "green"
+      :
+      "red";
+
+
+  $("btExpectancy").textContent =
+    `${bt.expectancyR}R`;
+
+
+  $("btExpectancy").className =
+    bt.expectancyR >= 0
+      ?
+      "green"
+      :
+      "red";
+
+
+  $("btDD").textContent =
+    `${bt.maxDrawdownR}R`;
+
+
+  const recent =
+    bt.recentTrades ||
+    [];
+
+
+  $("recentTrades").innerHTML =
+
+    recent.length
+
+      ?
+
+      recent
+        .map(
+          trade => `
+
+          <div class="tradeRow">
+
+            <b class="${
+              trade.signal === "BUY"
+                ? "green"
+                : "red"
+            }">
+
+              ${trade.signal}
+
+            </b>
+
+            · Score ${trade.score}
+
+            ·
+
+            <b class="${
+              trade.r > 0
+                ? "green"
+                : "red"
+            }">
+
+              ${trade.r}R
+
+            </b>
+
+            <br>
+
+            <span style="color:var(--muted)">
+
+              ${trade.entryTime}
+
+            </span>
+
+          </div>
+
+        `
+        )
+        .join("")
+
+      :
+
+      `<div class="reason">No backtest trades generated.</div>`;
 
 }
 
@@ -2687,10 +1971,12 @@ function renderReasons(
 ========================================================= */
 
 function drawChart(
-  bars,
-  events,
-  range
+  data
 ) {
+
+  const bars =
+    data.chart ||
+    [];
 
 
   const canvas =
@@ -2701,32 +1987,19 @@ function drawChart(
     canvas.getBoundingClientRect();
 
 
-  const dpr =
-    Math.max(
-      1,
-      window.devicePixelRatio ||
-      1
-    );
+  const ratio =
+    window.devicePixelRatio ||
+    1;
 
 
   canvas.width =
-    Math.max(
-      1,
-      Math.floor(
-        rect.width *
-        dpr
-      )
-    );
+    rect.width *
+    ratio;
 
 
   canvas.height =
-    Math.max(
-      1,
-      Math.floor(
-        rect.height *
-        dpr
-      )
-    );
+    rect.height *
+    ratio;
 
 
   const ctx =
@@ -2736,63 +2009,29 @@ function drawChart(
 
 
   ctx.setTransform(
-
-    dpr,
-
+    ratio,
     0,
-
     0,
-
-    dpr,
-
+    ratio,
     0,
-
     0
-
   );
 
 
   ctx.clearRect(
-
     0,
-
     0,
-
     rect.width,
-
     rect.height
-
   );
 
 
-  const valid =
-    bars.filter(
-
-      b =>
-        [
-          b.open,
-          b.high,
-          b.low,
-          b.close
-        ].every(
-          x =>
-            Number.isFinite(
-              Number(x)
-            )
-        )
-
-    );
-
-
   if (
-    !valid.length
+    !bars.length
   ) {
 
-
-    $("legend").innerHTML =
-
-      `<span class="pill">No chart data</span>`;
-
+    $("chartLegend").innerHTML =
+      `<span class="chip">No chart data</span>`;
 
     return;
 
@@ -2801,45 +2040,38 @@ function drawChart(
 
   let high =
     Math.max(
-      ...valid.map(
-        b =>
-          Number(
-            b.high
-          )
+      ...bars.map(
+        x =>
+          Number(x.high)
       )
     );
 
 
   let low =
     Math.min(
-      ...valid.map(
-        b =>
-          Number(
-            b.low
-          )
+      ...bars.map(
+        x =>
+          Number(x.low)
       )
     );
 
 
-  const pad =
+  const extra =
     (
       high -
       low
     )
     *
     .08
-
     ||
-
     1;
 
 
   high +=
-    pad;
-
+    extra;
 
   low -=
-    pad;
+    extra;
 
 
   const W =
@@ -2852,277 +2084,184 @@ function drawChart(
 
   const x =
     i =>
-
-      18
-
-      +
-
-      i
-
-      *
-
-      (
-        W -
-        36
-      )
-
-      /
-
+      15 +
+      i /
       Math.max(
         1,
-        valid.length -
+        bars.length -
         1
+      )
+      *
+      (
+        W -
+        30
       );
 
 
   const y =
-    p =>
-
+    price =>
       H -
-      18
-
-      -
-
+      16 -
       (
-        Number(p) -
+        Number(price) -
         low
       )
-
-      *
-
-      (
-        H -
-        36
-      )
-
       /
-
       Math.max(
         high -
         low,
         1e-9
+      )
+      *
+      (
+        H -
+        32
       );
 
 
   /* GRID */
 
   ctx.strokeStyle =
-    "rgba(255,255,255,.055)";
-
-
-  ctx.lineWidth =
-    1;
+    "rgba(255,255,255,.045)";
 
 
   for (
-    let i =
-      1;
-
-    i <
-      5;
-
-    i++
+    let row = 1;
+    row < 6;
+    row++
   ) {
 
-
     const yy =
-
-      18
-
-      +
-
-      i
-
-      *
-
-      (
-        H -
-        36
-      )
-
-      /
-      5;
-
+      row *
+      H /
+      6;
 
     ctx.beginPath();
-
 
     ctx.moveTo(
       0,
       yy
     );
 
-
     ctx.lineTo(
       W,
       yy
     );
-
 
     ctx.stroke();
 
   }
 
 
-  /* RANGE */
+  /* SUPPORT */
 
   if (
-
-    range
-
-    &&
-
-    Number.isFinite(
-      Number(
-        range.low
-      )
-    )
-
-    &&
-
-    Number.isFinite(
-      Number(
-        range.high
-      )
-    )
-
+    data.support?.price
   ) {
 
+    ctx.strokeStyle =
+      "rgba(55,230,161,.65)";
 
-    const top =
-      y(
-        range.high
-      );
-
-
-    const bottom =
-      y(
-        range.low
-      );
-
-
-    ctx.fillStyle =
-      "rgba(120,146,255,.075)";
-
-
-    ctx.fillRect(
-
-      0,
-
-      top,
-
-      W,
-
-      bottom -
-      top
-
+    ctx.setLineDash(
+      [6,6]
     );
 
+    ctx.beginPath();
 
-    ctx.strokeStyle =
-      "rgba(120,146,255,.35)";
+    ctx.moveTo(
+      0,
+      y(
+        data.support.price
+      )
+    );
 
+    ctx.lineTo(
+      W,
+      y(
+        data.support.price
+      )
+    );
 
-    [
-      range.low,
-      range.high
-    ]
-      .forEach(
-        level => {
-
-
-          ctx.beginPath();
-
-
-          ctx.moveTo(
-            0,
-            y(level)
-          );
-
-
-          ctx.lineTo(
-            W,
-            y(level)
-          );
-
-
-          ctx.stroke();
-
-        }
-      );
+    ctx.stroke();
 
   }
+
+
+  /* RESISTANCE */
+
+  if (
+    data.resistance?.price
+  ) {
+
+    ctx.strokeStyle =
+      "rgba(255,98,121,.65)";
+
+    ctx.setLineDash(
+      [6,6]
+    );
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      0,
+      y(
+        data.resistance.price
+      )
+    );
+
+    ctx.lineTo(
+      W,
+      y(
+        data.resistance.price
+      )
+    );
+
+    ctx.stroke();
+
+  }
+
+
+  ctx.setLineDash(
+    []
+  );
 
 
   /* CANDLES */
 
   const candleWidth =
-
     Math.max(
-
       1,
-
       Math.min(
-
-        5,
-
+        4.5,
         (
-          W -
-          36
+          W /
+          bars.length
         )
-
-        /
-
-        valid.length
-
         *
-
-        .58
-
+        .65
       )
-
     );
 
 
-  valid.forEach(
+  bars.forEach(
     (
       bar,
       i
     ) => {
 
-
       const xx =
         x(i);
 
-
-      const open =
-        Number(
-          bar.open
-        );
-
-
-      const close =
-        Number(
-          bar.close
-        );
-
-
       const bullish =
-        close >=
-        open;
-
+        bar.close >=
+        bar.open;
 
       const color =
-
         bullish
-
           ?
-
-          "rgba(63,227,160,.9)"
-
+          "#37e6a1"
           :
-
-          "rgba(255,101,125,.9)";
+          "#ff6279";
 
 
       ctx.strokeStyle =
@@ -3133,24 +2272,14 @@ function drawChart(
 
 
       ctx.moveTo(
-
         xx,
-
-        y(
-          bar.low
-        )
-
+        y(bar.low)
       );
 
 
       ctx.lineTo(
-
         xx,
-
-        y(
-          bar.high
-        )
-
+        y(bar.high)
       );
 
 
@@ -3161,282 +2290,101 @@ function drawChart(
         color;
 
 
-      const top =
+      const bodyTop =
         Math.min(
-
-          y(open),
-
-          y(close)
-
+          y(bar.open),
+          y(bar.close)
         );
 
 
-      const height =
+      const bodyHeight =
         Math.max(
-
           1,
-
           Math.abs(
-
-            y(open) -
-            y(close)
-
+            y(bar.open) -
+            y(bar.close)
           )
-
         );
 
 
       ctx.fillRect(
-
         xx -
         candleWidth /
         2,
-
-        top,
-
+        bodyTop,
         candleWidth,
-
-        height
-
+        bodyHeight
       );
 
     }
   );
 
 
-  /* WYCKOFF EVENTS */
+  $("chartLegend").innerHTML = `
 
-  const timeIndex =
-    new Map(
+    <span class="chip">
+      M1 · ${bars.length} candles
+    </span>
 
-      valid.map(
-        (
-          bar,
-          i
-        ) => [
-
-          String(
-            bar.time
-          ),
-
-          i
-
-        ]
-      )
-
-    );
-
-
-  events.forEach(
-    (
-      e,
-      idx
-    ) => {
-
-
-      const i =
-        timeIndex.get(
-          String(
-            e.time
-          )
-        );
-
-
-      const price =
-        Number(
-          e.price
-        );
-
-
-      if (
-        i === undefined
-
-        ||
-
-        !Number.isFinite(
-          price
-        )
-      ) {
-
-        return;
-
-      }
-
-
-      const xx =
-        x(i);
-
-
-      const yy =
-        y(
-          price
-        );
-
-
-      ctx.fillStyle =
-
-        idx ===
-        events.length -
-        1
-
-          ?
-
-          "#f5c95e"
-
-          :
-
-          "#dfe7f2";
-
-
-      ctx.beginPath();
-
-
-      ctx.arc(
-
-        xx,
-
-        yy,
-
-        3.5,
-
-        0,
-
-        Math.PI *
-        2
-
-      );
-
-
-      ctx.fill();
-
-
-      ctx.font =
-        "10px -apple-system";
-
-
-      ctx.fillText(
-
-        e.label ||
-        "",
-
-        xx +
-        5,
-
-        yy -
-        6
-
-      );
-
+    ${
+      data.support
+        ?
+        `<span class="chip">S ${fmt(data.support.price)}</span>`
+        :
+        ""
     }
-  );
 
+    ${
+      data.resistance
+        ?
+        `<span class="chip">R ${fmt(data.resistance.price)}</span>`
+        :
+        ""
+    }
 
-  $("legend").innerHTML =
-
-    `
-
-      <span class="pill">
-
-        ${valid.length} candles
-
-      </span>
-
-      ${
-
-        range
-
-          ?
-
-          `<span class="pill">Wyckoff range</span>`
-
-          :
-
-          ""
-
-      }
-
-    `;
+  `;
 
 }
 
 
 /* =========================================================
-   BUTTONS
+   EVENTS
 ========================================================= */
 
-$("run").addEventListener(
-
+$("runButton").addEventListener(
   "click",
-
   runAnalysis
-
-);
-
-
-$("symbol").addEventListener(
-
-  "change",
-
-  runAnalysis
-
-);
-
-
-$("tf").addEventListener(
-
-  "change",
-
-  runAnalysis
-
 );
 
 
 window.addEventListener(
-
   "resize",
-
   () => {
 
-
     if (
-      !lastPayload
+      lastData
     ) {
 
-      return;
+      drawChart(
+        lastData
+      );
 
     }
 
-
-    drawChart(
-
-      lastPayload.candles ||
-      [],
-
-      lastPayload.analysis?.events ||
-      [],
-
-      lastPayload.analysis?.range
-
-    );
-
   }
-
 );
 
 
 /* =========================================================
-   START
+   AUTO START
 ========================================================= */
 
 runAnalysis();
 
 
 setInterval(
-
   runAnalysis,
-
-  30000
-
+  60000
 );
 
 </script>
