@@ -93,7 +93,7 @@ const MARKETS = {
 ========================================================= */
 
 const INTERVAL =
-  "5min";
+  "15min";
 
 
 const LENGTH =
