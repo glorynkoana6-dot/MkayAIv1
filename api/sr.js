@@ -1,113 +1,44 @@
 /* =========================================================
-   MKAYFX 5M HTF VOLUME SPIKE + IMBALANCE ENGINE
+   MKAYFX 5M HTF VOLUME SPIKE + IMBALANCE ENGINE V3
    /api/sr.js
 
-   USER STRATEGY FOUNDATION
-   ------------------------
+   FOUNDATION
+   ----------
    HTF Volume Spike & Imbalance Projection [LuxAlgo]
    © LuxAlgo — CC BY-NC-SA 4.0
 
-   APP IMPLEMENTATION
-   ------------------
-   Execution chart: 5M
-   HTF anchor:      1H
-   Spike data:      1M
+   IMPORTANT
+   ---------
+   This is a custom MKAYFX trading adaptation.
 
-   BTC/USD
-   -------
-   Price + actual traded volume:
-   Coinbase Exchange BTC-USD public 1M candles.
+   EXECUTION
+   ---------
+   5M entries
+   1H current context
+   1M volume spikes
+   3-hour active-zone memory
+   3R target
+   one hard-locked trade per symbol
 
-   XAU/USD
-   -------
-   Price:
-   Twelve Data XAU/USD 1M spot candles.
-
-   Volume proxy:
-   Yahoo Finance GC=F 1M gold-futures volume.
-   GC volume is aligned by UTC minute to XAU/USD spot bars.
-   Spike direction + spike price still come from XAU/USD spot.
-
-   INDICATOR MECHANICS USED
-   ------------------------
-   Volume MA length:        20
-   Volume spike multiplier: 1.2
-   Volume profile rows:     40
-   Stacked imbalance:       >= 3 same-side spikes in a row
-
-   TRADING RULE ADDED BY MKAYFX
-   ----------------------------
-   BUY:
-   - bullish stacked imbalance exists in current 1H anchor
-   - prior completed 5M close <= zone high
-   - current completed 5M close > zone high
-   - current 1H partial candle closes >= its open
-
-   SELL:
-   - bearish stacked imbalance exists in current 1H anchor
-   - prior completed 5M close >= zone low
-   - current completed 5M close < zone low
-   - current 1H partial candle closes <= its open
-
-   TRADE MANAGEMENT
-   ----------------
-   BUY SL:  bottom of bullish imbalance zone
-   SELL SL: top of bearish imbalance zone
-   TP:      3R
-   HARD LOCK: one trade per symbol until SL or TP
-
-   BACKTEST
-   --------
-   Reconstructs the signal chronologically.
-   Exits are tested on 1M price bars after entry.
-   If SL and TP are both touched in one 1M bar, SL wins.
-
-   REQUIRED VERCEL ENV
-   -------------------
-   TWELVE_DATA_API_KEY
+   WHY V3 IS LESS RESTRICTIVE
+   --------------------------
+   - stacked imbalance minimum lowered from 3 spikes to 2
+   - qualified zones remain active for 3 hours instead of resetting every hour
+   - entry may be a breakout, reclaim, or retest/continuation
+   - 1H candle direction is a scoring factor, not a hard blocker
+   - current POC and spike pressure add/subtract score
+   - best BUY and SELL candidates compete; minimum score decides
 ========================================================= */
 
-const TWELVE_API_KEY =
-  process.env.TWELVE_DATA_API_KEY;
+const TWELVE_API_KEY = process.env.TWELVE_DATA_API_KEY;
 
-const TWELVE_BASE =
-  "https://api.twelvedata.com";
-
-const COINBASE_BASE =
-  "https://api.exchange.coinbase.com";
-
-const YAHOO_BASE =
-  "https://query1.finance.yahoo.com/v8/finance/chart";
-
+const TWELVE_BASE = "https://api.twelvedata.com";
+const COINBASE_BASE = "https://api.exchange.coinbase.com";
+const YAHOO_BASE = "https://query1.finance.yahoo.com/v8/finance/chart";
 
 const MARKETS = {
-
-  "XAU/USD": {
-
-    name:
-      "GOLD",
-
-    short:
-      "XAU",
-
-    digits:
-      2
-
-  },
-
-  "BTC/USD": {
-
-    name:
-      "BITCOIN",
-
-    short:
-      "BTC",
-
-    digits:
-      2
-
-  }
-
+  "XAU/USD": { name: "GOLD", short: "XAU", digits: 2 },
+  "BTC/USD": { name: "BITCOIN", short: "BTC", digits: 2 }
 };
 
 
@@ -115,77 +46,79 @@ const MARKETS = {
    SETTINGS
 ========================================================= */
 
-const EXECUTION_MINUTES =
-  5;
+const EXECUTION_MINUTES = 5;
+const HTF_MINUTES = 60;
 
-const HTF_MINUTES =
-  60;
-
-const VOLUME_MA_LENGTH =
-  20;
-
-const SPIKE_MULTIPLIER =
-  1.2;
-
-const VP_ROWS =
-  40;
-
-const MIN_STACKED_SPIKES =
-  3;
-
-const RISK_REWARD =
-  3;
+const VOLUME_MA_LENGTH = 20;
+const SPIKE_MULTIPLIER = 1.2;
+const VP_ROWS = 40;
 
 
 /*
-   About 30 hours of XAU 1M history.
+   OLD = 3
+   NEW = 2
+
+   This lets imbalance zones form more often.
 */
-const XAU_OUTPUT_SIZE =
-  1800;
+const MIN_STACKED_SPIKES = 2;
 
 
 /*
-   Coinbase is downloaded in chunks.
-
-   ~1440 bars = about 24 hours of 1M data.
+   Current hour + previous 2 hourly anchors.
 */
-const COINBASE_TARGET_BARS =
-  1440;
-
-const COINBASE_CHUNK_BARS =
-  288;
+const ZONE_LOOKBACK_HOURS = 3;
 
 
-const RECENT_SIGNAL_LIMIT =
-  20;
+/*
+   Instead of requiring every condition perfectly,
+   candidates receive a score.
+*/
+const MIN_SIGNAL_SCORE = 55;
 
-const RECENT_BACKTEST_LIMIT =
-  15;
 
-const BACKTEST_WARMUP_STATES =
-  20;
+/*
+   If BUY and SELL are both strong,
+   one must beat the other by at least this much.
+*/
+const MIN_SCORE_GAP = 5;
+
+
+const RISK_REWARD = 3;
+
+
+/*
+   History sizes.
+*/
+const XAU_OUTPUT_SIZE = 1800;
+
+const COINBASE_TARGET_BARS = 1440;
+const COINBASE_CHUNK_BARS = 288;
+
+
+const RECENT_SIGNAL_LIMIT = 40;
+const RECENT_BACKTEST_LIMIT = 60;
+
+
+/*
+   Old was 20 5M states.
+   Slightly shorter warmup gives the backtester
+   more usable test states.
+*/
+const BACKTEST_WARMUP_STATES = 12;
 
 
 /* =========================================================
-   HELPERS
+   BASIC HELPERS
 ========================================================= */
 
-function num(
-  value
-) {
+function num(value) {
 
   const x =
-    Number(
-      value
-    );
+    Number(value);
 
 
-  return Number.isFinite(
-    x
-  )
-
+  return Number.isFinite(x)
     ? x
-
     : null;
 
 }
@@ -197,84 +130,49 @@ function round(
 ) {
 
   const x =
-    num(
-      value
-    );
+    num(value);
 
 
-  return x ===
-    null
-
+  return x === null
     ? null
-
     : Number(
-        x.toFixed(
-          digits
-        )
+        x.toFixed(digits)
       );
 
 }
 
 
-function safeError(
-  value
-) {
+function safeError(value) {
 
-  if (
-    value == null
-  ) {
-
+  if (value == null) {
     return "";
-
   }
 
 
-  if (
-    typeof value ===
-    "string"
-  ) {
-
+  if (typeof value === "string") {
     return value;
-
   }
 
 
-  if (
-    value instanceof Error
-  ) {
+  if (value instanceof Error) {
 
     return (
       value.message ||
-      String(
-        value
-      )
+      String(value)
     );
 
   }
 
 
-  if (
-    typeof value ===
-    "object"
-  ) {
+  if (typeof value === "object") {
 
-    if (
-      typeof value.message ===
-      "string"
-    ) {
-
+    if (typeof value.message === "string") {
       return value.message;
-
     }
 
 
-    if (
-      typeof value.error ===
-      "string"
-    ) {
-
+    if (typeof value.error === "string") {
       return value.error;
-
     }
 
 
@@ -289,9 +187,7 @@ function safeError(
   }
 
 
-  return String(
-    value
-  );
+  return String(value);
 
 }
 
@@ -300,23 +196,15 @@ function safeError(
    TIME
 ========================================================= */
 
-function parseTime(
-  value
-) {
+function parseTime(value) {
 
-  if (
-    !value
-  ) {
-
+  if (!value) {
     return NaN;
-
   }
 
 
   const text =
-    String(
-      value
-    )
+    String(value)
       .trim()
       .replace(
         " ",
@@ -326,12 +214,8 @@ function parseTime(
 
   return new Date(
 
-    /Z$|[+-]\d\d:\d\d$/.test(
-      text
-    )
-
+    /Z$|[+-]\d\d:\d\d$/.test(text)
       ? text
-
       : `${text}Z`
 
   ).getTime();
@@ -339,13 +223,9 @@ function parseTime(
 }
 
 
-function iso(
-  ms
-) {
+function iso(ms) {
 
-  return new Date(
-    ms
-  )
+  return new Date(ms)
     .toISOString();
 
 }
@@ -371,24 +251,14 @@ function bucketStart(
 }
 
 
-function minutesOld(
-  value
-) {
+function minutesOld(value) {
 
   const ts =
-    parseTime(
-      value
-    );
+    parseTime(value);
 
 
-  if (
-    !Number.isFinite(
-      ts
-    )
-  ) {
-
+  if (!Number.isFinite(ts)) {
     return null;
-
   }
 
 
@@ -414,9 +284,7 @@ function minutesOld(
    SYMBOL
 ========================================================= */
 
-function normalizeSymbol(
-  value
-) {
+function normalizeSymbol(value) {
 
   const raw =
     String(
@@ -451,19 +319,12 @@ function normalizeSymbol(
 
 
   const symbol =
-    aliases[
-      raw
-    ]
-    ||
+    aliases[raw] ||
     raw;
 
 
-  return MARKETS[
-    symbol
-  ]
-
+  return MARKETS[symbol]
     ? symbol
-
     : "XAU/USD";
 
 }
@@ -540,11 +401,7 @@ async function getJSON(
 
       data =
         raw
-
-          ? JSON.parse(
-              raw
-            )
-
+          ? JSON.parse(raw)
           : null;
 
     } catch {
@@ -558,9 +415,7 @@ async function getJSON(
     }
 
 
-    if (
-      !response.ok
-    ) {
+    if (!response.ok) {
 
       throw new Error(
 
@@ -585,9 +440,7 @@ async function getJSON(
 
     return data;
 
-  } catch (
-    error
-  ) {
+  } catch (error) {
 
     if (
       error?.name ===
@@ -615,15 +468,12 @@ async function getJSON(
 
 
 /* =========================================================
-   XAU/USD PRICE
-   TWELVE DATA
+   XAU/USD SPOT PRICE — TWELVE DATA
 ========================================================= */
 
 async function fetchXauSpot1m() {
 
-  if (
-    !TWELVE_API_KEY
-  ) {
+  if (!TWELVE_API_KEY) {
 
     throw new Error(
 
@@ -793,8 +643,7 @@ async function fetchXauSpot1m() {
 
 
 /* =========================================================
-   GOLD FUTURES VOLUME PROXY
-   YAHOO GC=F
+   GOLD FUTURES VOLUME PROXY — YAHOO GC=F
 ========================================================= */
 
 async function fetchGoldFuturesVolume1m() {
@@ -824,7 +673,6 @@ async function fetchGoldFuturesVolume1m() {
         headers: {
 
           "User-Agent":
-
             "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Safari/604.1"
 
         }
@@ -880,7 +728,7 @@ async function fetchGoldFuturesVolume1m() {
     let i = 0;
 
     i <
-      timestamps.length;
+    timestamps.length;
 
     i++
   ) {
@@ -964,8 +812,7 @@ async function fetchGoldFuturesVolume1m() {
 
 
 /* =========================================================
-   BTC/USD
-   COINBASE REAL EXCHANGE VOLUME
+   BTC/USD — COINBASE REAL EXCHANGE VOLUME
 ========================================================= */
 
 async function fetchCoinbaseChunk(
@@ -1029,18 +876,6 @@ async function fetchCoinbaseChunk(
 
 
         return {
-
-          /*
-             Coinbase format:
-             [
-               time,
-               low,
-               high,
-               open,
-               close,
-               volume
-             ]
-          */
 
           timestamp,
 
@@ -1135,16 +970,11 @@ async function fetchBtcCoinbase1m() {
     [];
 
 
-  /*
-     Sequential requests are gentler on
-     Coinbase's public API.
-  */
-
   for (
     let i = 0;
 
     i <
-      chunks;
+    chunks;
 
     i++
   ) {
@@ -1270,8 +1100,7 @@ async function fetchBtcCoinbase1m() {
 
 
 /* =========================================================
-   ALIGN GC FUTURES VOLUME
-   TO XAU SPOT 1M BARS
+   ALIGN GOLD FUTURES VOLUME TO XAU SPOT
 ========================================================= */
 
 function attachProxyVolume(
@@ -1385,7 +1214,7 @@ function addVolumeSpikeStats(
     let i = 0;
 
     i <
-      bars.length;
+    bars.length;
 
     i++
   ) {
@@ -1546,7 +1375,7 @@ function addVolumeSpikeStats(
 
 
 /* =========================================================
-   1M -> 5M
+   RESAMPLE 1M -> 5M
 ========================================================= */
 
 function resamplePrice(
@@ -1665,7 +1494,7 @@ function resamplePrice(
 
 
 /* =========================================================
-   BUILD PARTIAL 1H ANCHOR
+   BUILD ONE HOURLY ANCHOR
 ========================================================= */
 
 function buildAnchor(
@@ -2032,6 +1861,11 @@ function buildAnchor(
       }
 
 
+      /*
+         V3:
+         only 2 same-side spikes needed.
+      */
+
       const bullish =
 
         bin.bullCount >=
@@ -2131,66 +1965,6 @@ function buildAnchor(
   }
 
 
-  const strongestBullish =
-
-    zones
-
-      .filter(
-        zone =>
-          zone.direction ===
-          "BULLISH"
-      )
-
-      .sort(
-        (
-          a,
-          b
-        ) =>
-
-          b.strength -
-          a.strength
-
-          ||
-
-          b.bullCount -
-          a.bullCount
-      )[0]
-
-    ||
-
-    null;
-
-
-  const strongestBearish =
-
-    zones
-
-      .filter(
-        zone =>
-          zone.direction ===
-          "BEARISH"
-      )
-
-      .sort(
-        (
-          a,
-          b
-        ) =>
-
-          b.strength -
-          a.strength
-
-          ||
-
-          b.bearCount -
-          a.bearCount
-      )[0]
-
-    ||
-
-    null;
-
-
   return {
 
     startTime:
@@ -2236,10 +2010,6 @@ function buildAnchor(
 
     zones,
 
-    strongestBullish,
-
-    strongestBearish,
-
     profile,
 
     poc
@@ -2250,12 +2020,1022 @@ function buildAnchor(
 
 
 /* =========================================================
-   ENTRY SIGNAL
+   ACTIVE ZONES
+
+   V3 DIFFERENCE:
+   Zones do not disappear immediately at the new hour.
+
+   ageHours:
+   0 = current hour
+   1 = previous hour
+   2 = two hours ago
+========================================================= */
+
+function activeZonesForState(
+  oneMinuteBars,
+  stateCloseTimestamp,
+  currentAnchor
+) {
+
+  const zones =
+    [];
+
+
+  if (
+    !currentAnchor
+  ) {
+
+    return zones;
+
+  }
+
+
+  const currentHourStart =
+    bucketStart(
+
+      stateCloseTimestamp -
+      1,
+
+      HTF_MINUTES
+
+    );
+
+
+  /*
+     CURRENT PARTIAL HOUR
+  */
+
+  for (
+    const zone
+    of currentAnchor.zones
+  ) {
+
+    zones.push({
+
+      ...zone,
+
+      ageHours:
+        0,
+
+      sourceStartTime:
+        currentAnchor.startTime,
+
+      sourceEndTime:
+        currentAnchor.endTime
+
+    });
+
+  }
+
+
+  /*
+     PREVIOUS COMPLETED HOURS
+  */
+
+  for (
+    let age = 1;
+
+    age <
+    ZONE_LOOKBACK_HOURS;
+
+    age++
+  ) {
+
+    const boundary =
+
+      currentHourStart
+
+      -
+
+      (
+        age -
+        1
+      )
+
+      *
+      HTF_MINUTES
+      *
+      60_000;
+
+
+    const historicalAnchor =
+      buildAnchor(
+
+        oneMinuteBars,
+
+        boundary
+
+      );
+
+
+    if (
+      !historicalAnchor
+    ) {
+
+      continue;
+
+    }
+
+
+    for (
+      const zone
+      of historicalAnchor.zones
+    ) {
+
+      zones.push({
+
+        ...zone,
+
+        ageHours:
+          age,
+
+        sourceStartTime:
+          historicalAnchor.startTime,
+
+        sourceEndTime:
+          historicalAnchor.endTime
+
+      });
+
+    }
+
+  }
+
+
+  /*
+     STRONGER + NEWER ZONES FIRST
+  */
+
+  zones.sort(
+
+    (
+      a,
+      b
+    ) =>
+
+      b.strength -
+      a.strength
+
+      ||
+
+      a.ageHours -
+      b.ageHours
+
+  );
+
+
+  return zones;
+
+}
+
+
+/* =========================================================
+   BUILD STRATEGY CONTEXT
+========================================================= */
+
+function buildStrategyAnchor(
+  oneMinuteBars,
+  stateCloseTimestamp
+) {
+
+  const currentAnchor =
+    buildAnchor(
+
+      oneMinuteBars,
+
+      stateCloseTimestamp
+
+    );
+
+
+  if (
+    !currentAnchor
+  ) {
+
+    return null;
+
+  }
+
+
+  const activeZones =
+    activeZonesForState(
+
+      oneMinuteBars,
+
+      stateCloseTimestamp,
+
+      currentAnchor
+
+    );
+
+
+  const strongestBullish =
+
+    activeZones
+
+      .filter(
+        zone =>
+          zone.direction ===
+          "BULLISH"
+      )
+
+      .sort(
+        (
+          a,
+          b
+        ) =>
+
+          b.strength -
+          a.strength
+
+          ||
+
+          a.ageHours -
+          b.ageHours
+      )[0]
+
+    ||
+
+    null;
+
+
+  const strongestBearish =
+
+    activeZones
+
+      .filter(
+        zone =>
+          zone.direction ===
+          "BEARISH"
+      )
+
+      .sort(
+        (
+          a,
+          b
+        ) =>
+
+          b.strength -
+          a.strength
+
+          ||
+
+          a.ageHours -
+          b.ageHours
+      )[0]
+
+    ||
+
+    null;
+
+
+  return {
+
+    ...currentAnchor,
+
+    /*
+       OHLC / pressure / profile remain current 1H.
+
+       Only zones are carried forward.
+    */
+
+    zones:
+      activeZones,
+
+    strongestBullish,
+
+    strongestBearish,
+
+    zoneLookbackHours:
+      ZONE_LOOKBACK_HOURS
+
+  };
+
+}
+
+
+/* =========================================================
+   CANDIDATE SCORE
+
+   This is the main strategy change.
+
+   We no longer require EVERY rule to be perfect.
+
+   A candidate can trigger via:
+
+   1. BREAKOUT
+   2. RECLAIM
+   3. RETEST / CONTINUATION
+========================================================= */
+
+function evaluateCandidate(
+  direction,
+  zone,
+  previousBar,
+  currentBar,
+  anchor
+) {
+
+  if (
+    !zone
+
+    ||
+
+    !previousBar
+
+    ||
+
+    !currentBar
+
+    ||
+
+    !anchor
+  ) {
+
+    return null;
+
+  }
+
+
+  const zoneLow =
+    Number(
+      zone.low
+    );
+
+
+  const zoneHigh =
+    Number(
+      zone.high
+    );
+
+
+  if (
+    !Number.isFinite(
+      zoneLow
+    )
+
+    ||
+
+    !Number.isFinite(
+      zoneHigh
+    )
+
+    ||
+
+    zoneHigh <=
+    zoneLow
+  ) {
+
+    return null;
+
+  }
+
+
+  const previousClose =
+    Number(
+      previousBar.close
+    );
+
+
+  const currentOpen =
+    Number(
+      currentBar.open
+    );
+
+
+  const currentHigh =
+    Number(
+      currentBar.high
+    );
+
+
+  const currentLow =
+    Number(
+      currentBar.low
+    );
+
+
+  const currentClose =
+    Number(
+      currentBar.close
+    );
+
+
+  if (
+    ![
+      previousClose,
+      currentOpen,
+      currentHigh,
+      currentLow,
+      currentClose
+    ]
+      .every(
+        Number.isFinite
+      )
+  ) {
+
+    return null;
+
+  }
+
+
+  const zoneWidth =
+
+    Math.max(
+
+      zoneHigh -
+      zoneLow,
+
+      1e-9
+
+    );
+
+
+  const anchorRange =
+
+    Math.max(
+
+      Number(
+        anchor.high
+      )
+
+      -
+
+      Number(
+        anchor.low
+      ),
+
+      zoneWidth
+
+    );
+
+
+  const midpoint =
+
+    (
+      zoneLow +
+      zoneHigh
+    )
+
+    /
+
+    2;
+
+
+  /*
+     Price doesn't need to touch the zone
+     to one exact decimal.
+  */
+
+  const touchTolerance =
+
+    Math.max(
+
+      zoneWidth *
+      0.4,
+
+      anchorRange *
+      0.01
+
+    );
+
+
+  /*
+     Do not chase a breakout miles away
+     from the source zone.
+  */
+
+  const maxChase =
+
+    Math.max(
+
+      zoneWidth *
+      2.75,
+
+      anchorRange *
+      0.15
+
+    );
+
+
+  let trigger =
+    null;
+
+
+  /* =======================================================
+     BUY INTERACTIONS
+  ======================================================= */
+
+  if (
+    direction ===
+    "BUY"
+  ) {
+
+    /*
+       Classic breakout.
+    */
+
+    const breakout =
+
+      previousClose <=
+      zoneHigh +
+      touchTolerance
+
+      &&
+
+      currentClose >
+      zoneHigh
+
+      &&
+
+      currentClose -
+      zoneHigh <=
+      maxChase;
+
+
+    /*
+       Candle trades into the zone,
+       then closes back through its midpoint.
+
+       This catches bullish rejection/reclaim setups
+       that the old engine completely ignored.
+    */
+
+    const reclaim =
+
+      currentLow <=
+      zoneHigh +
+      touchTolerance
+
+      &&
+
+      currentClose >
+      midpoint
+
+      &&
+
+      currentClose >
+      currentOpen
+
+      &&
+
+      currentClose -
+      zoneHigh <=
+      maxChase;
+
+
+    /*
+       Price was already above the zone,
+       retests it, and closes bullish again.
+    */
+
+    const continuation =
+
+      previousClose >
+      zoneHigh
+
+      &&
+
+      currentLow <=
+      zoneHigh +
+      touchTolerance
+
+      &&
+
+      currentClose >
+      zoneHigh
+
+      &&
+
+      currentClose >
+      currentOpen;
+
+
+    if (
+      breakout
+    ) {
+
+      trigger =
+        "BREAKOUT";
+
+    } else if (
+      reclaim
+    ) {
+
+      trigger =
+        "RECLAIM";
+
+    } else if (
+      continuation
+    ) {
+
+      trigger =
+        "RETEST";
+
+    }
+
+  }
+
+
+  /* =======================================================
+     SELL INTERACTIONS
+  ======================================================= */
+
+  else {
+
+    const breakout =
+
+      previousClose >=
+      zoneLow -
+      touchTolerance
+
+      &&
+
+      currentClose <
+      zoneLow
+
+      &&
+
+      zoneLow -
+      currentClose <=
+      maxChase;
+
+
+    const reclaim =
+
+      currentHigh >=
+      zoneLow -
+      touchTolerance
+
+      &&
+
+      currentClose <
+      midpoint
+
+      &&
+
+      currentClose <
+      currentOpen
+
+      &&
+
+      zoneLow -
+      currentClose <=
+      maxChase;
+
+
+    const continuation =
+
+      previousClose <
+      zoneLow
+
+      &&
+
+      currentHigh >=
+      zoneLow -
+      touchTolerance
+
+      &&
+
+      currentClose <
+      zoneLow
+
+      &&
+
+      currentClose <
+      currentOpen;
+
+
+    if (
+      breakout
+    ) {
+
+      trigger =
+        "BREAKOUT";
+
+    } else if (
+      reclaim
+    ) {
+
+      trigger =
+        "RECLAIM";
+
+    } else if (
+      continuation
+    ) {
+
+      trigger =
+        "RETEST";
+
+    }
+
+  }
+
+
+  if (
+    !trigger
+  ) {
+
+    return null;
+
+  }
+
+
+  /* =======================================================
+     SCORE
+  ======================================================= */
+
+  let score =
+    30;
+
+
+  /*
+     Trigger quality
+  */
+
+  if (
+    trigger ===
+    "BREAKOUT"
+  ) {
+
+    score +=
+      14;
+
+  } else if (
+    trigger ===
+    "RECLAIM"
+  ) {
+
+    score +=
+      12;
+
+  } else {
+
+    score +=
+      10;
+
+  }
+
+
+  /*
+     Zone strength
+  */
+
+  score +=
+
+    Math.min(
+
+      20,
+
+      Number(
+        zone.strength ||
+        0
+      )
+
+      *
+      8
+
+    );
+
+
+  /*
+     Same-side spike count
+  */
+
+  const sameSideCount =
+
+    direction ===
+    "BUY"
+
+      ? Number(
+          zone.bullCount ||
+          0
+        )
+
+      : Number(
+          zone.bearCount ||
+          0
+        );
+
+
+  score +=
+
+    Math.min(
+
+      10,
+
+      sameSideCount *
+      2
+
+    );
+
+
+  const bullSpikes =
+    Number(
+      anchor.bullSpikes ||
+      0
+    );
+
+
+  const bearSpikes =
+    Number(
+      anchor.bearSpikes ||
+      0
+    );
+
+
+  /* =======================================================
+     BUY SCORE
+  ======================================================= */
+
+  if (
+    direction ===
+    "BUY"
+  ) {
+
+    if (
+      bullSpikes >
+      bearSpikes
+    ) {
+
+      score +=
+        10;
+
+    } else if (
+      bullSpikes ===
+      bearSpikes
+    ) {
+
+      score +=
+        5;
+
+    } else {
+
+      /*
+         Opposite pressure does NOT block the trade.
+         It only reduces the score.
+      */
+
+      score -=
+        5;
+
+    }
+
+
+    if (
+      currentClose >
+      currentOpen
+    ) {
+
+      score +=
+        8;
+
+    }
+
+
+    if (
+      Number.isFinite(
+        anchor.poc
+      )
+
+      &&
+
+      currentClose >=
+      anchor.poc
+    ) {
+
+      score +=
+        6;
+
+    }
+
+  }
+
+
+  /* =======================================================
+     SELL SCORE
+  ======================================================= */
+
+  else {
+
+    if (
+      bearSpikes >
+      bullSpikes
+    ) {
+
+      score +=
+        10;
+
+    } else if (
+      bullSpikes ===
+      bearSpikes
+    ) {
+
+      score +=
+        5;
+
+    } else {
+
+      score -=
+        5;
+
+    }
+
+
+    if (
+      currentClose <
+      currentOpen
+    ) {
+
+      score +=
+        8;
+
+    }
+
+
+    if (
+      Number.isFinite(
+        anchor.poc
+      )
+
+      &&
+
+      currentClose <=
+      anchor.poc
+    ) {
+
+      score +=
+        6;
+
+    }
+
+  }
+
+
+  /*
+     Newer zones score slightly higher,
+     but old zones are still tradable.
+  */
+
+  const ageHours =
+    Number(
+      zone.ageHours ||
+      0
+    );
+
+
+  if (
+    ageHours ===
+    0
+  ) {
+
+    score +=
+      8;
+
+  } else if (
+    ageHours ===
+    1
+  ) {
+
+    score +=
+      5;
+
+  } else if (
+    ageHours ===
+    2
+  ) {
+
+    score +=
+      3;
+
+  }
+
+
+  return {
+
+    direction,
+
+    zone,
+
+    trigger,
+
+    score:
+      Math.round(
+        score
+      )
+
+  };
+
+}
+
+
+/* =========================================================
+   ENTRY SIGNAL V3
 ========================================================= */
 
 function selectSignal(
-  previousClose,
-  currentClose,
+  previousBar,
+  currentBar,
   anchor
 ) {
 
@@ -2264,15 +3044,11 @@ function selectSignal(
 
     ||
 
-    !Number.isFinite(
-      previousClose
-    )
+    !previousBar
 
     ||
 
-    !Number.isFinite(
-      currentClose
-    )
+    !currentBar
   ) {
 
     return null;
@@ -2286,19 +3062,29 @@ function selectSignal(
 
       .filter(
         zone =>
-
           zone.direction ===
           "BULLISH"
+      )
 
-          &&
+      .map(
+        zone =>
+          evaluateCandidate(
 
-          previousClose <=
-          zone.high
+            "BUY",
 
-          &&
+            zone,
 
-          currentClose >
-          zone.high
+            previousBar,
+
+            currentBar,
+
+            anchor
+
+          )
+      )
+
+      .filter(
+        Boolean
       )
 
       .sort(
@@ -2307,13 +3093,13 @@ function selectSignal(
           b
         ) =>
 
-          b.strength -
-          a.strength
+          b.score -
+          a.score
 
           ||
 
-          b.bullCount -
-          a.bullCount
+          b.zone.strength -
+          a.zone.strength
       );
 
 
@@ -2323,19 +3109,29 @@ function selectSignal(
 
       .filter(
         zone =>
-
           zone.direction ===
           "BEARISH"
+      )
 
-          &&
+      .map(
+        zone =>
+          evaluateCandidate(
 
-          previousClose >=
-          zone.low
+            "SELL",
 
-          &&
+            zone,
 
-          currentClose <
-          zone.low
+            previousBar,
+
+            currentBar,
+
+            anchor
+
+          )
+      )
+
+      .filter(
+        Boolean
       )
 
       .sort(
@@ -2344,48 +3140,58 @@ function selectSignal(
           b
         ) =>
 
-          b.strength -
-          a.strength
+          b.score -
+          a.score
 
           ||
 
-          b.bearCount -
-          a.bearCount
+          b.zone.strength -
+          a.zone.strength
       );
 
 
-  const buyAllowed =
+  const bestBuy =
+    buyCandidates[0]
+    ||
+    null;
 
-    currentClose >
-    previousClose
+
+  const bestSell =
+    sellCandidates[0]
+    ||
+    null;
+
+
+  const buyQualified =
+
+    bestBuy
 
     &&
 
-    anchor.close >=
-    anchor.open;
+    bestBuy.score >=
+    MIN_SIGNAL_SCORE;
 
 
-  const sellAllowed =
+  const sellQualified =
 
-    currentClose <
-    previousClose
+    bestSell
 
     &&
 
-    anchor.close <=
-    anchor.open;
+    bestSell.score >=
+    MIN_SIGNAL_SCORE;
 
+
+  /*
+     BUY ONLY
+  */
 
   if (
-    buyAllowed
+    buyQualified
 
     &&
 
-    buyCandidates.length
-
-    &&
-
-    !sellCandidates.length
+    !sellQualified
   ) {
 
     return {
@@ -2394,23 +3200,29 @@ function selectSignal(
         "BUY",
 
       zone:
-        buyCandidates[0]
+        bestBuy.zone,
+
+      trigger:
+        bestBuy.trigger,
+
+      score:
+        bestBuy.score
 
     };
 
   }
 
 
+  /*
+     SELL ONLY
+  */
+
   if (
-    sellAllowed
+    sellQualified
 
     &&
 
-    sellCandidates.length
-
-    &&
-
-    !buyCandidates.length
+    !buyQualified
   ) {
 
     return {
@@ -2419,7 +3231,93 @@ function selectSignal(
         "SELL",
 
       zone:
-        sellCandidates[0]
+        bestSell.zone,
+
+      trigger:
+        bestSell.trigger,
+
+      score:
+        bestSell.score
+
+    };
+
+  }
+
+
+  /*
+     BOTH SIDES VALID
+  */
+
+  if (
+    buyQualified
+
+    &&
+
+    sellQualified
+  ) {
+
+    const difference =
+
+      Math.abs(
+
+        bestBuy.score -
+        bestSell.score
+
+      );
+
+
+    /*
+       If they're basically tied,
+       do nothing.
+    */
+
+    if (
+      difference <
+      MIN_SCORE_GAP
+    ) {
+
+      return null;
+
+    }
+
+
+    if (
+      bestBuy.score >
+      bestSell.score
+    ) {
+
+      return {
+
+        signal:
+          "BUY",
+
+        zone:
+          bestBuy.zone,
+
+        trigger:
+          bestBuy.trigger,
+
+        score:
+          bestBuy.score
+
+      };
+
+    }
+
+
+    return {
+
+      signal:
+        "SELL",
+
+      zone:
+        bestSell.zone,
+
+      trigger:
+        bestSell.trigger,
+
+      score:
+        bestSell.score
 
     };
 
@@ -2481,6 +3379,10 @@ function buildTradePlan(
 
   }
 
+
+  /*
+     Same risk structure as before.
+  */
 
   const stopLoss =
 
@@ -2592,7 +3494,7 @@ function buildStates(
     let i = 0;
 
     i <
-      fiveMinuteBars.length;
+    fiveMinuteBars.length;
 
     i++
   ) {
@@ -2602,7 +3504,7 @@ function buildStates(
 
 
     const anchor =
-      buildAnchor(
+      buildStrategyAnchor(
 
         oneMinuteBars,
 
@@ -2611,7 +3513,7 @@ function buildStates(
       );
 
 
-    const previousClose =
+    const previousBar =
 
       i >
       0
@@ -2619,7 +3521,7 @@ function buildStates(
         ? fiveMinuteBars[
             i -
             1
-          ].close
+          ]
 
         : null;
 
@@ -2627,9 +3529,9 @@ function buildStates(
     const selection =
       selectSignal(
 
-        previousClose,
+        previousBar,
 
-        bar.close,
+        bar,
 
         anchor
 
@@ -2644,6 +3546,16 @@ function buildStates(
     let zone =
       selection?.zone ||
       null;
+
+
+    let trigger =
+      selection?.trigger ||
+      null;
+
+
+    let score =
+      selection?.score ||
+      0;
 
 
     let plan =
@@ -2670,6 +3582,14 @@ function buildStates(
         null;
 
 
+      trigger =
+        null;
+
+
+      score =
+        0;
+
+
       plan =
         buildTradePlan(
 
@@ -2688,13 +3608,21 @@ function buildStates(
 
       ...bar,
 
-      previousClose,
+      previousClose:
+
+        previousBar?.close
+        ??
+        null,
 
       anchor,
 
       signal,
 
       zone,
+
+      trigger,
+
+      score,
 
       ...plan
 
@@ -2770,9 +3698,8 @@ function simulateTrade(
 
 
       /*
-         Conservative:
-         if both hit in one 1M candle,
-         count SL first.
+         Conservative backtest:
+         both hit in same 1M bar = LOSS first.
       */
 
       if (
@@ -3018,6 +3945,12 @@ function backtest(
       signal:
         state.signal,
 
+      trigger:
+        state.trigger,
+
+      score:
+        state.score,
+
       entryTime:
         state.closeTime,
 
@@ -3084,7 +4017,7 @@ function backtest(
 
     /*
        HARD LOCK:
-       Skip all other signals until exit.
+       all other setups ignored until exit.
     */
 
     index++;
@@ -3150,8 +4083,10 @@ function backtest(
         total,
         trade
       ) =>
+
         total +
         trade.r,
+
       0
     );
 
@@ -3165,8 +4100,10 @@ function backtest(
           total,
           trade
         ) =>
+
           total +
           trade.r,
+
         0
       )
 
@@ -3180,8 +4117,10 @@ function backtest(
         total,
         trade
       ) =>
+
         total +
         trade.r,
+
       0
     );
 
@@ -3322,8 +4261,10 @@ function backtest(
           total,
           value
         ) =>
+
           total +
           value,
+
         0
       )
 
@@ -3572,7 +4513,7 @@ function getRequestedLock(
 
 
 /* =========================================================
-   CHECK ACTIVE LOCK
+   CHECK ACTIVE HARD LOCK
 ========================================================= */
 
 function checkRequestedLock(
@@ -3605,6 +4546,35 @@ function checkRequestedLock(
 
       status:
         "ACTIVE"
+
+    };
+
+  }
+
+
+  /*
+     Do NOT assume a trade survived if its creation
+     predates the data we currently downloaded.
+
+     Safest behavior = preserve the hard lock.
+  */
+
+  if (
+    priceBars.length
+
+    &&
+
+    start <
+    priceBars[0].timestamp
+  ) {
+
+    return {
+
+      status:
+        "ACTIVE",
+
+      warning:
+        "Lock predates fetched history; preserved as active."
 
     };
 
@@ -3678,7 +4648,10 @@ function checkRequestedLock(
 
       }
 
-    } else {
+    }
+
+
+    else {
 
       if (
         bar.high >=
@@ -3784,7 +4757,22 @@ function mapZone(
       zone.direction,
 
     strength:
-      zone.strength
+      zone.strength,
+
+    ageHours:
+      zone.ageHours
+      ??
+      0,
+
+    sourceStartTime:
+      zone.sourceStartTime
+      ??
+      null,
+
+    sourceEndTime:
+      zone.sourceEndTime
+      ??
+      null
 
   };
 
@@ -3800,6 +4788,12 @@ function mapSignalState(
 
     signal:
       state.signal,
+
+    trigger:
+      state.trigger,
+
+    score:
+      state.score,
 
     time:
       state.time,
@@ -3901,12 +4895,6 @@ async function loadMarket(
 
   }
 
-
-  /*
-     GOLD:
-     Spot price and futures-volume proxy
-     fetched independently.
-  */
 
   const [
     spotBars,
@@ -4256,85 +5244,140 @@ export default async function handler(
       [];
 
 
+    /* =====================================================
+       REASONS
+    ===================================================== */
+
     if (
       !volumePacket.volumeAvailable
     ) {
 
       reasons.push(
 
-        "Volume source is still too sparse for the 20-bar 1M volume average."
+        "Volume source is too sparse for the 20-bar 1M volume average."
 
       );
 
-    } else if (
+    }
+
+
+    else if (
       signal ===
       "BUY"
     ) {
 
       reasons.push(
 
-        "Bullish stacked imbalance detected inside the current 1H anchor."
+        `BUY ${current.trigger || "SETUP"} scored ${current.score}/${MIN_SIGNAL_SCORE}+ required.`
 
       );
 
 
       reasons.push(
 
-        "The completed 5M candle crossed above the bullish imbalance zone."
+        `Bullish zones remain active for up to ${ZONE_LOOKBACK_HOURS} hours.`
 
       );
 
 
       reasons.push(
 
-        "Stop Loss is the bottom of the imbalance zone."
+        "A breakout, reclaim, or retest of the bullish imbalance can trigger."
 
       );
 
 
       reasons.push(
 
-        "Take Profit is stretched to 3R and the trade hard-locks until exit."
+        "1H volume pressure and POC are scoring factors instead of hard blockers."
 
       );
 
-    } else if (
+
+      reasons.push(
+
+        "SL is the bottom of the selected bullish imbalance zone."
+
+      );
+
+
+      reasons.push(
+
+        "TP remains fixed at 3R and the trade hard-locks until SL or TP."
+
+      );
+
+    }
+
+
+    else if (
       signal ===
       "SELL"
     ) {
 
       reasons.push(
 
-        "Bearish stacked imbalance detected inside the current 1H anchor."
+        `SELL ${current.trigger || "SETUP"} scored ${current.score}/${MIN_SIGNAL_SCORE}+ required.`
 
       );
 
 
       reasons.push(
 
-        "The completed 5M candle crossed below the bearish imbalance zone."
+        `Bearish zones remain active for up to ${ZONE_LOOKBACK_HOURS} hours.`
 
       );
 
 
       reasons.push(
 
-        "Stop Loss is the top of the imbalance zone."
+        "A breakdown, reclaim, or retest of the bearish imbalance can trigger."
 
       );
 
 
       reasons.push(
 
-        "Take Profit is stretched to 3R and the trade hard-locks until exit."
+        "1H volume pressure and POC are scoring factors instead of hard blockers."
 
       );
 
-    } else {
 
       reasons.push(
 
-        "No fresh 5M cross of a qualified stacked imbalance zone."
+        "SL is the top of the selected bearish imbalance zone."
+
+      );
+
+
+      reasons.push(
+
+        "TP remains fixed at 3R and the trade hard-locks until SL or TP."
+
+      );
+
+    }
+
+
+    else {
+
+      reasons.push(
+
+        `No BUY or SELL candidate reached the V3 minimum score of ${MIN_SIGNAL_SCORE}.`
+
+      );
+
+
+      reasons.push(
+
+        `V3 only needs ${MIN_STACKED_SPIKES} same-side volume spikes to form a zone.`
+
+      );
+
+
+      reasons.push(
+
+        `Zones stay usable for ${ZONE_LOOKBACK_HOURS} hours instead of resetting every hour.`
 
       );
 
@@ -4342,6 +5385,13 @@ export default async function handler(
       reasons.push(
 
         `Current 1H pressure: ${current.anchor.bullSpikes} bullish spikes vs ${current.anchor.bearSpikes} bearish spikes.`
+
+      );
+
+
+      reasons.push(
+
+        `Active current + carried zones: ${current.anchor.zones.length}.`
 
       );
 
@@ -4374,7 +5424,7 @@ export default async function handler(
           true,
 
         engine:
-          "MKAYFX 5M HTF VOLUME IMBALANCE V2",
+          "MKAYFX 5M HTF VOLUME IMBALANCE V3",
 
         symbol,
 
@@ -4412,6 +5462,31 @@ export default async function handler(
           ),
 
         signal,
+
+
+        /*
+           NEW V3 FIELDS
+        */
+
+        trigger:
+
+          signal ===
+          "WAIT"
+
+            ? null
+
+            : current.trigger,
+
+
+        signalScore:
+
+          signal ===
+          "WAIT"
+
+            ? 0
+
+            : current.score,
+
 
         entry:
 
@@ -4464,6 +5539,11 @@ export default async function handler(
         rr:
           RISK_REWARD,
 
+
+        /* =================================================
+           DATA SOURCES
+        ================================================= */
+
         dataSources: {
 
           price:
@@ -4476,6 +5556,11 @@ export default async function handler(
             packet.volumeMode
 
         },
+
+
+        /* =================================================
+           SETTINGS
+        ================================================= */
 
         settings: {
 
@@ -4500,6 +5585,15 @@ export default async function handler(
           minimumStackedSpikes:
             MIN_STACKED_SPIKES,
 
+          zoneLookbackHours:
+            ZONE_LOOKBACK_HOURS,
+
+          minimumSignalScore:
+            MIN_SIGNAL_SCORE,
+
+          minimumScoreGap:
+            MIN_SCORE_GAP,
+
           riskReward:
             RISK_REWARD,
 
@@ -4507,6 +5601,11 @@ export default async function handler(
             true
 
         },
+
+
+        /* =================================================
+           VOLUME HEALTH
+        ================================================= */
 
         volume: {
 
@@ -4520,6 +5619,11 @@ export default async function handler(
             oneMinuteBars.length
 
         },
+
+
+        /* =================================================
+           1H CONTEXT
+        ================================================= */
 
         anchor: {
 
@@ -4565,11 +5669,19 @@ export default async function handler(
           dominance:
             current.anchor.dominance,
 
+          zoneLookbackHours:
+            current.anchor.zoneLookbackHours,
+
           poc:
             round(
               current.anchor.poc,
               market.digits
             ),
+
+
+          /* ===============================================
+             STRONGEST ACTIVE ZONES
+          =============================================== */
 
           strongestBullish:
             mapZone(
@@ -4585,6 +5697,11 @@ export default async function handler(
               market.digits
             ),
 
+
+          /*
+             Current hour + carried zones.
+          */
+
           imbalances:
 
             current.anchor.zones
@@ -4599,11 +5716,16 @@ export default async function handler(
 
                   b.strength -
                   a.strength
+
+                  ||
+
+                  a.ageHours -
+                  b.ageHours
               )
 
               .slice(
                 0,
-                12
+                16
               )
 
               .map(
@@ -4613,6 +5735,11 @@ export default async function handler(
                     market.digits
                   )
               ),
+
+
+          /*
+             Volume profile remains the CURRENT 1H profile.
+          */
 
           profile:
 
@@ -4641,6 +5768,11 @@ export default async function handler(
 
                 })
               ),
+
+
+          /*
+             Current 1H spikes.
+          */
 
           spikes:
 
@@ -4689,9 +5821,20 @@ export default async function handler(
 
         },
 
+
         reasons,
 
+
+        /* =================================================
+           ACTIVE HARD LOCK CHECK
+        ================================================= */
+
         lockCheck,
+
+
+        /* =================================================
+           RECENT RAW STRATEGY SIGNALS
+        ================================================= */
 
         recentSignals:
 
@@ -4713,6 +5856,11 @@ export default async function handler(
             :
 
             [],
+
+
+        /* =================================================
+           BACKTEST
+        ================================================= */
 
         backtest: {
 
@@ -4770,6 +5918,11 @@ export default async function handler(
               )
 
         },
+
+
+        /* =================================================
+           CHART
+        ================================================= */
 
         chart:
 
@@ -4838,7 +5991,7 @@ export default async function handler(
           false,
 
         engine:
-          "MKAYFX 5M HTF VOLUME IMBALANCE V2",
+          "MKAYFX 5M HTF VOLUME IMBALANCE V3",
 
         error:
 
