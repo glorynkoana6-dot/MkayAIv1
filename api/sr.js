@@ -2,54 +2,112 @@
    MKAYFX 5M HTF VOLUME SPIKE + IMBALANCE ENGINE
    /api/sr.js
 
-   Based on the user-provided:
-   "HTF Volume Spike & Imbalance Projection [LuxAlgo]"
+   USER STRATEGY FOUNDATION
+   ------------------------
+   HTF Volume Spike & Imbalance Projection [LuxAlgo]
    © LuxAlgo — CC BY-NC-SA 4.0
 
-   5M chart => Auto HTF = 1H, Auto LTF = 1M
+   APP IMPLEMENTATION
+   ------------------
+   Execution chart: 5M
+   HTF anchor:      1H
+   Spike data:      1M
 
-   Original indicator mechanics kept:
-   - 1M volume SMA(20)
-   - spike when volume > SMA20 * 1.2
-   - bullish spike when close >= open
-   - bearish spike when close < open
-   - 40 price rows inside the live 1H anchor
-   - stacked imbalance when >= 3 spikes dominate a row
-   - volume profile from 1M closes/volume
+   BTC/USD
+   -------
+   Price + actual traded volume:
+   Coinbase Exchange BTC-USD public 1M candles.
 
-   Trading rules added for this app:
-   BUY  = completed 5M close crosses above a bullish stacked zone
-          while the current 1H anchor is bullish/neutral-bullish
-   SELL = completed 5M close crosses below a bearish stacked zone
-          while the current 1H anchor is bearish/neutral-bearish
+   XAU/USD
+   -------
+   Price:
+   Twelve Data XAU/USD 1M spot candles.
 
-   BUY SL  = bottom of signal imbalance zone
-   SELL SL = top of signal imbalance zone
-   TP      = 3R
+   Volume proxy:
+   Yahoo Finance GC=F 1M gold-futures volume.
+   GC volume is aligned by UTC minute to XAU/USD spot bars.
+   Spike direction + spike price still come from XAU/USD spot.
 
-   HARD LOCK:
-   - one active trade per symbol
-   - ignore all later signals until SL or TP
+   INDICATOR MECHANICS USED
+   ------------------------
+   Volume MA length:        20
+   Volume spike multiplier: 1.2
+   Volume profile rows:     40
+   Stacked imbalance:       >= 3 same-side spikes in a row
 
-   Vercel env:
+   TRADING RULE ADDED BY MKAYFX
+   ----------------------------
+   BUY:
+   - bullish stacked imbalance exists in current 1H anchor
+   - prior completed 5M close <= zone high
+   - current completed 5M close > zone high
+   - current 1H partial candle closes >= its open
+
+   SELL:
+   - bearish stacked imbalance exists in current 1H anchor
+   - prior completed 5M close >= zone low
+   - current completed 5M close < zone low
+   - current 1H partial candle closes <= its open
+
+   TRADE MANAGEMENT
+   ----------------
+   BUY SL:  bottom of bullish imbalance zone
+   SELL SL: top of bearish imbalance zone
+   TP:      3R
+   HARD LOCK: one trade per symbol until SL or TP
+
+   BACKTEST
+   --------
+   Reconstructs the signal chronologically.
+   Exits are tested on 1M price bars after entry.
+   If SL and TP are both touched in one 1M bar, SL wins.
+
+   REQUIRED VERCEL ENV
+   -------------------
    TWELVE_DATA_API_KEY
 ========================================================= */
 
-const API_KEY = process.env.TWELVE_DATA_API_KEY;
-const BASE_URL = "https://api.twelvedata.com";
+const TWELVE_API_KEY =
+  process.env.TWELVE_DATA_API_KEY;
+
+const TWELVE_BASE =
+  "https://api.twelvedata.com";
+
+const COINBASE_BASE =
+  "https://api.exchange.coinbase.com";
+
+const YAHOO_BASE =
+  "https://query1.finance.yahoo.com/v8/finance/chart";
+
 
 const MARKETS = {
+
   "XAU/USD": {
-    name: "GOLD",
-    short: "XAU",
-    digits: 2
+
+    name:
+      "GOLD",
+
+    short:
+      "XAU",
+
+    digits:
+      2
+
   },
 
   "BTC/USD": {
-    name: "BITCOIN",
-    short: "BTC",
-    digits: 2
+
+    name:
+      "BITCOIN",
+
+    short:
+      "BTC",
+
+    digits:
+      2
+
   }
+
 };
 
 
@@ -57,38 +115,77 @@ const MARKETS = {
    SETTINGS
 ========================================================= */
 
-const EXECUTION_MINUTES = 5;
-const HTF_MINUTES = 60;
+const EXECUTION_MINUTES =
+  5;
 
-const VOLUME_MA_LENGTH = 20;
-const SPIKE_MULTIPLIER = 1.2;
+const HTF_MINUTES =
+  60;
 
-const VP_ROWS = 40;
+const VOLUME_MA_LENGTH =
+  20;
 
-const MIN_STACKED_SPIKES = 3;
+const SPIKE_MULTIPLIER =
+  1.2;
 
-const RISK_REWARD = 3;
+const VP_ROWS =
+  40;
 
-const OUTPUT_SIZE = 5000;
+const MIN_STACKED_SPIKES =
+  3;
 
-const BACKTEST_WARMUP_STATES = 30;
+const RISK_REWARD =
+  3;
 
-const RECENT_SIGNAL_LIMIT = 20;
 
-const RECENT_BACKTEST_LIMIT = 15;
+/*
+   About 30 hours of XAU 1M history.
+*/
+const XAU_OUTPUT_SIZE =
+  1800;
+
+
+/*
+   Coinbase is downloaded in chunks.
+
+   ~1440 bars = about 24 hours of 1M data.
+*/
+const COINBASE_TARGET_BARS =
+  1440;
+
+const COINBASE_CHUNK_BARS =
+  288;
+
+
+const RECENT_SIGNAL_LIMIT =
+  20;
+
+const RECENT_BACKTEST_LIMIT =
+  15;
+
+const BACKTEST_WARMUP_STATES =
+  20;
 
 
 /* =========================================================
    HELPERS
 ========================================================= */
 
-function n(value) {
+function num(
+  value
+) {
 
-  const out =
-    Number(value);
+  const x =
+    Number(
+      value
+    );
 
-  return Number.isFinite(out)
-    ? out
+
+  return Number.isFinite(
+    x
+  )
+
+    ? x
+
     : null;
 
 }
@@ -99,19 +196,29 @@ function round(
   digits = 2
 ) {
 
-  const out =
-    n(value);
+  const x =
+    num(
+      value
+    );
 
-  return out === null
+
+  return x ===
+    null
+
     ? null
+
     : Number(
-        out.toFixed(digits)
+        x.toFixed(
+          digits
+        )
       );
 
 }
 
 
-function errText(value) {
+function safeError(
+  value
+) {
 
   if (
     value == null
@@ -123,7 +230,8 @@ function errText(value) {
 
 
   if (
-    typeof value === "string"
+    typeof value ===
+    "string"
   ) {
 
     return value;
@@ -135,18 +243,24 @@ function errText(value) {
     value instanceof Error
   ) {
 
-    return value.message ||
-      String(value);
+    return (
+      value.message ||
+      String(
+        value
+      )
+    );
 
   }
 
 
   if (
-    typeof value === "object"
+    typeof value ===
+    "object"
   ) {
 
     if (
-      typeof value.message === "string"
+      typeof value.message ===
+      "string"
     ) {
 
       return value.message;
@@ -155,7 +269,8 @@ function errText(value) {
 
 
     if (
-      typeof value.error === "string"
+      typeof value.error ===
+      "string"
     ) {
 
       return value.error;
@@ -174,7 +289,123 @@ function errText(value) {
   }
 
 
-  return String(value);
+  return String(
+    value
+  );
+
+}
+
+
+/* =========================================================
+   TIME
+========================================================= */
+
+function parseTime(
+  value
+) {
+
+  if (
+    !value
+  ) {
+
+    return NaN;
+
+  }
+
+
+  const text =
+    String(
+      value
+    )
+      .trim()
+      .replace(
+        " ",
+        "T"
+      );
+
+
+  return new Date(
+
+    /Z$|[+-]\d\d:\d\d$/.test(
+      text
+    )
+
+      ? text
+
+      : `${text}Z`
+
+  ).getTime();
+
+}
+
+
+function iso(
+  ms
+) {
+
+  return new Date(
+    ms
+  )
+    .toISOString();
+
+}
+
+
+function bucketStart(
+  ts,
+  minutes
+) {
+
+  const size =
+    minutes *
+    60_000;
+
+
+  return Math.floor(
+    ts /
+    size
+  )
+  *
+  size;
+
+}
+
+
+function minutesOld(
+  value
+) {
+
+  const ts =
+    parseTime(
+      value
+    );
+
+
+  if (
+    !Number.isFinite(
+      ts
+    )
+  ) {
+
+    return null;
+
+  }
+
+
+  return Math.max(
+
+    0,
+
+    (
+      Date.now() -
+      ts
+    )
+
+    /
+
+    60_000
+
+  );
 
 }
 
@@ -183,7 +414,9 @@ function errText(value) {
    SYMBOL
 ========================================================= */
 
-function normalizeSymbol(value) {
+function normalizeSymbol(
+  value
+) {
 
   const raw =
     String(
@@ -218,99 +451,20 @@ function normalizeSymbol(value) {
 
 
   const symbol =
-    aliases[raw] ||
+    aliases[
+      raw
+    ]
+    ||
     raw;
 
 
-  return MARKETS[symbol]
+  return MARKETS[
+    symbol
+  ]
+
     ? symbol
+
     : "XAU/USD";
-
-}
-
-
-/* =========================================================
-   TIME
-========================================================= */
-
-function parseTime(value) {
-
-  if (
-    !value
-  ) {
-
-    return NaN;
-
-  }
-
-
-  const text =
-    String(value)
-      .trim()
-      .replace(
-        " ",
-        "T"
-      );
-
-
-  return new Date(
-
-    /Z$|[+-]\d\d:\d\d$/.test(text)
-
-      ? text
-
-      : `${text}Z`
-
-  ).getTime();
-
-}
-
-
-function iso(ms) {
-
-  return new Date(ms)
-    .toISOString();
-
-}
-
-
-function bucketStart(
-  ts,
-  minutes
-) {
-
-  const size =
-    minutes *
-    60_000;
-
-
-  return Math.floor(
-    ts /
-    size
-  ) * size;
-
-}
-
-
-function minutesOld(value) {
-
-  const ts =
-    parseTime(value);
-
-
-  return Number.isFinite(ts)
-
-    ? Math.max(
-        0,
-        (
-          Date.now() -
-          ts
-        )
-        /
-        60_000
-      )
-
-    : null;
 
 }
 
@@ -321,6 +475,7 @@ function minutesOld(value) {
 
 async function getJSON(
   url,
+  options = {},
   timeout = 20000
 ) {
 
@@ -330,9 +485,12 @@ async function getJSON(
 
   const timer =
     setTimeout(
+
       () =>
         controller.abort(),
+
       timeout
+
     );
 
 
@@ -345,13 +503,23 @@ async function getJSON(
 
         {
 
+          ...options,
+
           signal:
             controller.signal,
 
           headers: {
 
             Accept:
-              "application/json"
+              "application/json",
+
+            "User-Agent":
+              "MKAYFX/1.0",
+
+            ...(
+              options.headers ||
+              {}
+            )
 
           }
 
@@ -365,45 +533,44 @@ async function getJSON(
 
 
     let data =
-      {};
+      null;
 
 
-    if (
-      raw
-    ) {
+    try {
 
-      try {
+      data =
+        raw
 
-        data =
-          JSON.parse(raw);
+          ? JSON.parse(
+              raw
+            )
 
-      } catch {
+          : null;
 
-        throw new Error(
+    } catch {
 
-          `Provider returned non-JSON HTTP ${response.status}: ${raw.slice(0, 250)}`
+      throw new Error(
 
-        );
+        `Non-JSON response HTTP ${response.status}: ${raw.slice(0,250)}`
 
-      }
+      );
 
     }
 
 
     if (
-      !response.ok ||
-      data?.status === "error"
+      !response.ok
     ) {
 
       throw new Error(
 
-        errText(
+        safeError(
           data?.message
         )
 
         ||
 
-        errText(
+        safeError(
           data?.error
         )
 
@@ -418,7 +585,9 @@ async function getJSON(
 
     return data;
 
-  } catch (error) {
+  } catch (
+    error
+  ) {
 
     if (
       error?.name ===
@@ -446,13 +615,14 @@ async function getJSON(
 
 
 /* =========================================================
-   FETCH 1M
+   XAU/USD PRICE
+   TWELVE DATA
 ========================================================= */
 
-async function fetch1m(symbol) {
+async function fetchXauSpot1m() {
 
   if (
-    !API_KEY
+    !TWELVE_API_KEY
   ) {
 
     throw new Error(
@@ -464,17 +634,18 @@ async function fetch1m(symbol) {
   }
 
 
-  const q =
+  const query =
     new URLSearchParams({
 
-      symbol,
+      symbol:
+        "XAU/USD",
 
       interval:
         "1min",
 
       outputsize:
         String(
-          OUTPUT_SIZE
+          XAU_OUTPUT_SIZE
         ),
 
       timezone:
@@ -484,7 +655,7 @@ async function fetch1m(symbol) {
         "JSON",
 
       apikey:
-        API_KEY
+        TWELVE_API_KEY
 
     });
 
@@ -492,20 +663,35 @@ async function fetch1m(symbol) {
   const data =
     await getJSON(
 
-      `${BASE_URL}/time_series?${q.toString()}`
+      `${TWELVE_BASE}/time_series?${query.toString()}`
 
     );
 
 
   if (
+    data?.status ===
+    "error"
+  ) {
+
+    throw new Error(
+
+      data.message ||
+      "Twelve Data XAU/USD error."
+
+    );
+
+  }
+
+
+  if (
     !Array.isArray(
-      data.values
+      data?.values
     )
   ) {
 
     throw new Error(
 
-      `${symbol}: no 1-minute candles returned.`
+      "Twelve Data returned no XAU/USD 1M candles."
 
     );
 
@@ -517,77 +703,63 @@ async function fetch1m(symbol) {
     data.values
 
       .map(
-        v => ({
+        value => ({
 
           time:
             String(
-              v.datetime ||
+              value.datetime ||
               ""
             ),
 
           timestamp:
             parseTime(
-              v.datetime
+              value.datetime
             ),
 
           open:
             Number(
-              v.open
+              value.open
             ),
 
           high:
             Number(
-              v.high
+              value.high
             ),
 
           low:
             Number(
-              v.low
+              value.low
             ),
 
           close:
             Number(
-              v.close
+              value.close
             ),
 
           volume:
-            Number(
-              v.volume
-            )
+            null
 
         })
       )
 
       .filter(
-        b =>
+        bar =>
 
           Number.isFinite(
-            b.timestamp
+            bar.timestamp
           )
 
           &&
 
-          Number.isFinite(
-            b.open
-          )
-
-          &&
-
-          Number.isFinite(
-            b.high
-          )
-
-          &&
-
-          Number.isFinite(
-            b.low
-          )
-
-          &&
-
-          Number.isFinite(
-            b.close
-          )
+          [
+            bar.open,
+            bar.high,
+            bar.low,
+            bar.close
+          ]
+            .every(
+              Number.isFinite
+            )
       )
 
       .sort(
@@ -595,6 +767,7 @@ async function fetch1m(symbol) {
           a,
           b
         ) =>
+
           a.timestamp -
           b.timestamp
       );
@@ -607,7 +780,7 @@ async function fetch1m(symbol) {
 
     throw new Error(
 
-      `${symbol}: not enough 1-minute history.`
+      "Not enough XAU/USD 1M price history."
 
     );
 
@@ -620,20 +793,565 @@ async function fetch1m(symbol) {
 
 
 /* =========================================================
+   GOLD FUTURES VOLUME PROXY
+   YAHOO GC=F
+========================================================= */
+
+async function fetchGoldFuturesVolume1m() {
+
+  const symbol =
+    encodeURIComponent(
+      "GC=F"
+    );
+
+
+  const url =
+
+    `${YAHOO_BASE}/${symbol}`
+
+    +
+
+    `?interval=1m&range=5d&includePrePost=true&events=div%2Csplits`;
+
+
+  const data =
+    await getJSON(
+
+      url,
+
+      {
+
+        headers: {
+
+          "User-Agent":
+
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Safari/604.1"
+
+        }
+
+      }
+
+    );
+
+
+  const result =
+    data
+      ?.chart
+      ?.result
+      ?.[0];
+
+
+  const timestamps =
+    result
+      ?.timestamp;
+
+
+  const quote =
+    result
+      ?.indicators
+      ?.quote
+      ?.[0];
+
+
+  if (
+    !Array.isArray(
+      timestamps
+    )
+
+    ||
+
+    !quote
+  ) {
+
+    throw new Error(
+
+      "Gold futures proxy GC=F returned no usable 1M data."
+
+    );
+
+  }
+
+
+  const bars =
+    [];
+
+
+  for (
+    let i = 0;
+
+    i <
+      timestamps.length;
+
+    i++
+  ) {
+
+    const timestamp =
+      Number(
+        timestamps[i]
+      )
+      *
+      1000;
+
+
+    const volume =
+      Number(
+        quote.volume?.[i]
+      );
+
+
+    if (
+      Number.isFinite(
+        timestamp
+      )
+
+      &&
+
+      Number.isFinite(
+        volume
+      )
+
+      &&
+
+      volume >=
+      0
+    ) {
+
+      bars.push({
+
+        timestamp,
+
+        time:
+          iso(
+            timestamp
+          ),
+
+        volume
+
+      });
+
+    }
+
+  }
+
+
+  bars.sort(
+    (
+      a,
+      b
+    ) =>
+      a.timestamp -
+      b.timestamp
+  );
+
+
+  if (
+    bars.length <
+    100
+  ) {
+
+    throw new Error(
+
+      "GC=F 1M volume proxy is too sparse."
+
+    );
+
+  }
+
+
+  return bars;
+
+}
+
+
+/* =========================================================
+   BTC/USD
+   COINBASE REAL EXCHANGE VOLUME
+========================================================= */
+
+async function fetchCoinbaseChunk(
+  startMs,
+  endMs
+) {
+
+  const query =
+    new URLSearchParams({
+
+      granularity:
+        "60",
+
+      start:
+        iso(
+          startMs
+        ),
+
+      end:
+        iso(
+          endMs
+        )
+
+    });
+
+
+  const data =
+    await getJSON(
+
+      `${COINBASE_BASE}/products/BTC-USD/candles?${query.toString()}`
+
+    );
+
+
+  if (
+    !Array.isArray(
+      data
+    )
+  ) {
+
+    throw new Error(
+
+      "Coinbase BTC-USD candle response was invalid."
+
+    );
+
+  }
+
+
+  return data
+
+    .map(
+      row => {
+
+        const timestamp =
+          Number(
+            row?.[0]
+          )
+          *
+          1000;
+
+
+        return {
+
+          /*
+             Coinbase format:
+             [
+               time,
+               low,
+               high,
+               open,
+               close,
+               volume
+             ]
+          */
+
+          timestamp,
+
+          time:
+
+            Number.isFinite(
+              timestamp
+            )
+
+              ? iso(
+                  timestamp
+                )
+
+              : "",
+
+          low:
+            Number(
+              row?.[1]
+            ),
+
+          high:
+            Number(
+              row?.[2]
+            ),
+
+          open:
+            Number(
+              row?.[3]
+            ),
+
+          close:
+            Number(
+              row?.[4]
+            ),
+
+          volume:
+            Number(
+              row?.[5]
+            )
+
+        };
+
+      }
+    )
+
+    .filter(
+      bar =>
+
+        Number.isFinite(
+          bar.timestamp
+        )
+
+        &&
+
+        [
+          bar.open,
+          bar.high,
+          bar.low,
+          bar.close,
+          bar.volume
+        ]
+          .every(
+            Number.isFinite
+          )
+    );
+
+}
+
+
+async function fetchBtcCoinbase1m() {
+
+  const end =
+    bucketStart(
+      Date.now(),
+      1
+    );
+
+
+  const chunks =
+    Math.ceil(
+
+      COINBASE_TARGET_BARS
+
+      /
+
+      COINBASE_CHUNK_BARS
+
+    );
+
+
+  const all =
+    [];
+
+
+  /*
+     Sequential requests are gentler on
+     Coinbase's public API.
+  */
+
+  for (
+    let i = 0;
+
+    i <
+      chunks;
+
+    i++
+  ) {
+
+    const chunkEnd =
+
+      end
+
+      -
+
+      i
+      *
+      COINBASE_CHUNK_BARS
+      *
+      60_000;
+
+
+    const chunkStart =
+
+      chunkEnd
+
+      -
+
+      COINBASE_CHUNK_BARS
+      *
+      60_000;
+
+
+    const rows =
+      await fetchCoinbaseChunk(
+
+        chunkStart,
+
+        chunkEnd
+
+      );
+
+
+    all.push(
+      ...rows
+    );
+
+  }
+
+
+  const map =
+    new Map();
+
+
+  for (
+    const bar
+    of all
+  ) {
+
+    const minute =
+      bucketStart(
+        bar.timestamp,
+        1
+      );
+
+
+    map.set(
+
+      minute,
+
+      {
+
+        ...bar,
+
+        timestamp:
+          minute,
+
+        time:
+          iso(
+            minute
+          )
+
+      }
+
+    );
+
+  }
+
+
+  const bars =
+
+    [
+      ...map.values()
+    ]
+
+      .sort(
+        (
+          a,
+          b
+        ) =>
+
+          a.timestamp -
+          b.timestamp
+      )
+
+      .slice(
+        -COINBASE_TARGET_BARS
+      );
+
+
+  if (
+    bars.length <
+    200
+  ) {
+
+    throw new Error(
+
+      "Coinbase returned too little BTC-USD 1M history."
+
+    );
+
+  }
+
+
+  return bars;
+
+}
+
+
+/* =========================================================
+   ALIGN GC FUTURES VOLUME
+   TO XAU SPOT 1M BARS
+========================================================= */
+
+function attachProxyVolume(
+  priceBars,
+  proxyBars
+) {
+
+  const volumeMap =
+    new Map();
+
+
+  for (
+    const proxy
+    of proxyBars
+  ) {
+
+    const minute =
+      bucketStart(
+        proxy.timestamp,
+        1
+      );
+
+
+    volumeMap.set(
+
+      minute,
+
+      proxy.volume
+
+    );
+
+  }
+
+
+  return priceBars.map(
+    bar => ({
+
+      ...bar,
+
+      volume:
+
+        volumeMap.get(
+
+          bucketStart(
+            bar.timestamp,
+            1
+          )
+
+        )
+
+        ??
+
+        null
+
+    })
+  );
+
+}
+
+
+/* =========================================================
    COMPLETED 1M
 ========================================================= */
 
-function completed1m(bars) {
+function completedOneMinuteBars(
+  bars
+) {
 
   const now =
     Date.now();
 
 
   return bars.filter(
-    b =>
-      b.timestamp +
+
+    bar =>
+
+      bar.timestamp +
       60_000 <=
       now
+
   );
 
 }
@@ -643,13 +1361,19 @@ function completed1m(bars) {
    VOLUME SMA + SPIKES
 ========================================================= */
 
-function addVolumeStats(bars) {
+function addVolumeSpikeStats(
+  bars
+) {
 
-  const out =
+  const output =
     [];
 
 
-  let rolling =
+  const window =
+    [];
+
+
+  let sum =
     0;
 
 
@@ -659,11 +1383,14 @@ function addVolumeStats(bars) {
 
   for (
     let i = 0;
-    i < bars.length;
+
+    i <
+      bars.length;
+
     i++
   ) {
 
-    const vol =
+    const volume =
 
       Number.isFinite(
         bars[i].volume
@@ -671,16 +1398,19 @@ function addVolumeStats(bars) {
 
       &&
 
-      bars[i].volume >
+      bars[i].volume >=
       0
 
-        ? bars[i].volume
+        ? Number(
+            bars[i].volume
+          )
 
         : null;
 
 
     if (
-      vol !== null
+      volume !==
+      null
     ) {
 
       usable++;
@@ -688,85 +1418,99 @@ function addVolumeStats(bars) {
     }
 
 
-    rolling +=
-      vol ??
-      0;
+    window.push(
+      volume
+    );
 
 
     if (
-      i >=
-      VOLUME_MA_LENGTH
+      volume !==
+      null
     ) {
 
-      const old =
-
-        Number.isFinite(
-          bars[
-            i -
-            VOLUME_MA_LENGTH
-          ].volume
-        )
-
-        &&
-
-        bars[
-          i -
-          VOLUME_MA_LENGTH
-        ].volume >
-        0
-
-          ? bars[
-              i -
-              VOLUME_MA_LENGTH
-            ].volume
-
-          : 0;
-
-
-      rolling -=
-        old;
+      sum +=
+        volume;
 
     }
 
 
+    if (
+      window.length >
+      VOLUME_MA_LENGTH
+    ) {
+
+      const removed =
+        window.shift();
+
+
+      if (
+        removed !==
+        null
+      ) {
+
+        sum -=
+          removed;
+
+      }
+
+    }
+
+
+    const completeWindow =
+
+      window.length ===
+      VOLUME_MA_LENGTH
+
+      &&
+
+      window.every(
+        item =>
+          item !==
+          null
+      );
+
+
     const volumeMA =
 
-      i >=
-      VOLUME_MA_LENGTH -
-      1
+      completeWindow
 
-        ? rolling /
+        ? sum /
           VOLUME_MA_LENGTH
 
         : null;
 
 
-    out.push({
+    const isSpike =
+
+      volume !==
+      null
+
+      &&
+
+      volumeMA !==
+      null
+
+      &&
+
+      volumeMA >
+      0
+
+      &&
+
+      volume >
+      volumeMA *
+      SPIKE_MULTIPLIER;
+
+
+    output.push({
 
       ...bars[i],
 
+      volume,
+
       volumeMA,
 
-      isSpike:
-
-        vol !==
-        null
-
-        &&
-
-        volumeMA !==
-        null
-
-        &&
-
-        volumeMA >
-        0
-
-        &&
-
-        vol >
-        volumeMA *
-        SPIKE_MULTIPLIER,
+      isSpike,
 
       delta:
 
@@ -785,7 +1529,7 @@ function addVolumeStats(bars) {
   return {
 
     bars:
-      out,
+      output,
 
     usableVolumeBars:
       usable,
@@ -802,10 +1546,10 @@ function addVolumeStats(bars) {
 
 
 /* =========================================================
-   RESAMPLE
+   1M -> 5M
 ========================================================= */
 
-function resample(
+function resamplePrice(
   bars,
   minutes
 ) {
@@ -820,28 +1564,28 @@ function resample(
 
 
   for (
-    const b
+    const bar
     of bars
   ) {
 
     const start =
       bucketStart(
-        b.timestamp,
+        bar.timestamp,
         minutes
       );
 
 
-    let g =
+    let group =
       map.get(
         start
       );
 
 
     if (
-      !g
+      !group
     ) {
 
-      g = {
+      group = {
 
         timestamp:
           start,
@@ -862,65 +1606,43 @@ function resample(
           ),
 
         open:
-          b.open,
+          bar.open,
 
         high:
-          b.high,
+          bar.high,
 
         low:
-          b.low,
+          bar.low,
 
         close:
-          b.close,
-
-        volume:
-
-          Number.isFinite(
-            b.volume
-          )
-
-            ? b.volume
-
-            : 0
+          bar.close
 
       };
 
 
       map.set(
         start,
-        g
+        group
       );
 
     } else {
 
-      g.high =
+      group.high =
         Math.max(
-          g.high,
-          b.high
+          group.high,
+          bar.high
         );
 
 
-      g.low =
+      group.low =
         Math.min(
-          g.low,
-          b.low
+          group.low,
+          bar.low
         );
 
 
-      g.close =
-        b.close;
-
-
-      if (
-        Number.isFinite(
-          b.volume
-        )
-      ) {
-
-        g.volume +=
-          b.volume;
-
-      }
+      group.close =
+        bar.close;
 
     }
 
@@ -943,33 +1665,39 @@ function resample(
 
 
 /* =========================================================
-   BUILD 1H ANCHOR
+   BUILD PARTIAL 1H ANCHOR
 ========================================================= */
 
 function buildAnchor(
   oneMinuteBars,
-  stateCloseTs
+  stateCloseTimestamp
 ) {
 
-  const start =
+  const htfStart =
     bucketStart(
-      stateCloseTs -
+
+      stateCloseTimestamp -
       1,
+
       HTF_MINUTES
+
     );
 
 
   const anchorBars =
 
     oneMinuteBars.filter(
-      b =>
-        b.timestamp >=
-        start
+
+      bar =>
+
+        bar.timestamp >=
+        htfStart
 
         &&
 
-        b.timestamp <
-        stateCloseTs
+        bar.timestamp <
+        stateCloseTimestamp
+
     );
 
 
@@ -999,26 +1727,26 @@ function buildAnchor(
 
 
   for (
-    const b
+    const bar
     of anchorBars
   ) {
 
     high =
       Math.max(
         high,
-        b.high
+        bar.high
       );
 
 
     low =
       Math.min(
         low,
-        b.low
+        bar.low
       );
 
 
     close =
-      b.close;
+      bar.close;
 
   }
 
@@ -1028,30 +1756,30 @@ function buildAnchor(
     anchorBars
 
       .filter(
-        b =>
-          b.isSpike
+        bar =>
+          bar.isSpike
       )
 
       .map(
-        b => ({
+        bar => ({
 
           time:
-            b.time,
+            bar.time,
 
           timestamp:
-            b.timestamp,
+            bar.timestamp,
 
           price:
-            b.close,
+            bar.close,
 
           volume:
-            b.volume,
+            bar.volume,
 
           volumeMA:
-            b.volumeMA,
+            bar.volumeMA,
 
           delta:
-            b.delta
+            bar.delta
 
         })
       );
@@ -1060,8 +1788,8 @@ function buildAnchor(
   const bullSpikes =
 
     spikes.filter(
-      s =>
-        s.delta >
+      spike =>
+        spike.delta >
         0
     ).length;
 
@@ -1069,8 +1797,8 @@ function buildAnchor(
   const bearSpikes =
 
     spikes.filter(
-      s =>
-        s.delta <
+      spike =>
+        spike.delta <
         0
     ).length;
 
@@ -1107,29 +1835,39 @@ function buildAnchor(
     const bins =
 
       Array.from(
+
         {
           length:
             VP_ROWS
         },
+
         (
           _,
-          i
+          index
         ) => ({
 
-          index:
-            i,
+          index,
 
           low:
-            low +
-            i *
+
+            low
+
+            +
+
+            index *
             step,
 
           high:
-            low +
+
+            low
+
+            +
+
             (
-              i +
+              index +
               1
             )
+
             *
             step,
 
@@ -1143,21 +1881,22 @@ function buildAnchor(
             0
 
         })
+
       );
 
 
     /* VOLUME PROFILE */
 
     for (
-      const b
+      const bar
       of anchorBars
     ) {
 
-      let idx =
+      let index =
         Math.floor(
 
           (
-            b.close -
+            bar.close -
             low
           )
 
@@ -1168,30 +1907,36 @@ function buildAnchor(
         );
 
 
-      idx =
+      index =
         Math.max(
+
           0,
+
           Math.min(
+
             VP_ROWS -
             1,
-            idx
+
+            index
+
           )
+
         );
 
 
       if (
         Number.isFinite(
-          b.volume
+          bar.volume
         )
 
         &&
 
-        b.volume >
+        bar.volume >=
         0
       ) {
 
-        bins[idx].volume +=
-          b.volume;
+        bins[index].volume +=
+          bar.volume;
 
       }
 
@@ -1201,15 +1946,15 @@ function buildAnchor(
     /* SPIKES INTO ROWS */
 
     for (
-      const s
+      const spike
       of spikes
     ) {
 
-      let idx =
+      let index =
         Math.floor(
 
           (
-            s.price -
+            spike.price -
             low
           )
 
@@ -1220,34 +1965,42 @@ function buildAnchor(
         );
 
 
-      idx =
+      index =
         Math.max(
+
           0,
+
           Math.min(
+
             VP_ROWS -
             1,
-            idx
+
+            index
+
           )
+
         );
 
 
       if (
-        s.delta >
+        spike.delta >
         0
       ) {
 
-        bins[idx].bullCount++;
+        bins[index]
+          .bullCount++;
 
       } else {
 
-        bins[idx].bearCount++;
+        bins[index]
+          .bearCount++;
 
       }
 
     }
 
 
-    let maxProfileVol =
+    let maxProfileVolume =
       0;
 
 
@@ -1258,10 +2011,10 @@ function buildAnchor(
 
       if (
         bin.volume >
-        maxProfileVol
+        maxProfileVolume
       ) {
 
-        maxProfileVol =
+        maxProfileVolume =
           bin.volume;
 
 
@@ -1273,12 +2026,13 @@ function buildAnchor(
           )
 
           /
+
           2;
 
       }
 
 
-      const bull =
+      const bullish =
 
         bin.bullCount >=
         MIN_STACKED_SPIKES
@@ -1289,7 +2043,7 @@ function buildAnchor(
         bin.bearCount;
 
 
-      const bear =
+      const bearish =
 
         bin.bearCount >=
         MIN_STACKED_SPIKES
@@ -1301,8 +2055,8 @@ function buildAnchor(
 
 
       if (
-        bull ||
-        bear
+        bullish ||
+        bearish
       ) {
 
         zones.push({
@@ -1321,7 +2075,7 @@ function buildAnchor(
 
           direction:
 
-            bull
+            bullish
 
               ? "BULLISH"
 
@@ -1329,7 +2083,7 @@ function buildAnchor(
 
           strength:
 
-            bull
+            bullish
 
               ? bin.bullCount -
                 bin.bearCount
@@ -1362,11 +2116,11 @@ function buildAnchor(
 
         relative:
 
-          maxProfileVol >
+          maxProfileVolume >
           0
 
             ? bin.volume /
-              maxProfileVol
+              maxProfileVolume
 
             : 0
 
@@ -1382,8 +2136,8 @@ function buildAnchor(
     zones
 
       .filter(
-        z =>
-          z.direction ===
+        zone =>
+          zone.direction ===
           "BULLISH"
       )
 
@@ -1412,8 +2166,8 @@ function buildAnchor(
     zones
 
       .filter(
-        z =>
-          z.direction ===
+        zone =>
+          zone.direction ===
           "BEARISH"
       )
 
@@ -1441,12 +2195,12 @@ function buildAnchor(
 
     startTime:
       iso(
-        start
+        htfStart
       ),
 
     endTime:
       iso(
-        stateCloseTs
+        stateCloseTimestamp
       ),
 
     open,
@@ -1456,8 +2210,6 @@ function buildAnchor(
     low,
 
     close,
-
-    spikes,
 
     bullSpikes,
 
@@ -1480,6 +2232,8 @@ function buildAnchor(
 
           : "BALANCED",
 
+    spikes,
+
     zones,
 
     strongestBullish,
@@ -1496,10 +2250,10 @@ function buildAnchor(
 
 
 /* =========================================================
-   SIGNAL ZONE
+   ENTRY SIGNAL
 ========================================================= */
 
-function selectCrossedZone(
+function selectSignal(
   previousClose,
   currentClose,
   anchor
@@ -1531,20 +2285,20 @@ function selectCrossedZone(
     anchor.zones
 
       .filter(
-        z =>
+        zone =>
 
-          z.direction ===
+          zone.direction ===
           "BULLISH"
 
           &&
 
           previousClose <=
-          z.high
+          zone.high
 
           &&
 
           currentClose >
-          z.high
+          zone.high
       )
 
       .sort(
@@ -1558,8 +2312,8 @@ function selectCrossedZone(
 
           ||
 
-          b.high -
-          a.high
+          b.bullCount -
+          a.bullCount
       );
 
 
@@ -1568,20 +2322,20 @@ function selectCrossedZone(
     anchor.zones
 
       .filter(
-        z =>
+        zone =>
 
-          z.direction ===
+          zone.direction ===
           "BEARISH"
 
           &&
 
           previousClose >=
-          z.low
+          zone.low
 
           &&
 
           currentClose <
-          z.low
+          zone.low
       )
 
       .sort(
@@ -1595,8 +2349,8 @@ function selectCrossedZone(
 
           ||
 
-          a.low -
-          b.low
+          b.bearCount -
+          a.bearCount
       );
 
 
@@ -1668,52 +2422,6 @@ function selectCrossedZone(
         sellCandidates[0]
 
     };
-
-  }
-
-
-  if (
-    buyAllowed
-
-    &&
-
-    buyCandidates.length
-
-    &&
-
-    sellAllowed
-
-    &&
-
-    sellCandidates.length
-  ) {
-
-    return (
-
-      buyCandidates[0].strength >=
-      sellCandidates[0].strength
-
-        ? {
-
-            signal:
-              "BUY",
-
-            zone:
-              buyCandidates[0]
-
-          }
-
-        : {
-
-            signal:
-              "SELL",
-
-            zone:
-              sellCandidates[0]
-
-          }
-
-    );
 
   }
 
@@ -1868,7 +2576,7 @@ function buildTradePlan(
 
 
 /* =========================================================
-   BUILD ALL 5M STATES
+   BUILD 5M STATES
 ========================================================= */
 
 function buildStates(
@@ -1882,7 +2590,10 @@ function buildStates(
 
   for (
     let i = 0;
-    i < fiveMinuteBars.length;
+
+    i <
+      fiveMinuteBars.length;
+
     i++
   ) {
 
@@ -1892,8 +2603,11 @@ function buildStates(
 
     const anchor =
       buildAnchor(
+
         oneMinuteBars,
+
         bar.closeTimestamp
+
       );
 
 
@@ -1910,8 +2624,8 @@ function buildStates(
         : null;
 
 
-    const crossed =
-      selectCrossedZone(
+    const selection =
+      selectSignal(
 
         previousClose,
 
@@ -1923,12 +2637,12 @@ function buildStates(
 
 
     let signal =
-      crossed?.signal ||
+      selection?.signal ||
       "WAIT";
 
 
     let zone =
-      crossed?.zone ||
+      selection?.zone ||
       null;
 
 
@@ -1995,38 +2709,10 @@ function buildStates(
 
 
 /* =========================================================
-   RECENT SIGNALS
+   TRADE SIMULATION
 ========================================================= */
 
-function recentSignals(states) {
-
-  return states
-
-    .filter(
-      s =>
-        s.signal ===
-        "BUY"
-
-        ||
-
-        s.signal ===
-        "SELL"
-    )
-
-    .slice(
-      -RECENT_SIGNAL_LIMIT
-    )
-
-    .reverse();
-
-}
-
-
-/* =========================================================
-   SIMULATE TRADE ON 1M DATA
-========================================================= */
-
-function simulateTrade1m(
+function simulateTrade(
   oneMinuteBars,
   state
 ) {
@@ -2052,12 +2738,12 @@ function simulateTrade1m(
 
 
   for (
-    const b
+    const bar
     of oneMinuteBars
   ) {
 
     if (
-      b.timestamp <
+      bar.timestamp <
       state.closeTimestamp
     ) {
 
@@ -2073,21 +2759,20 @@ function simulateTrade1m(
 
       const stopHit =
 
-        b.low <=
+        bar.low <=
         state.stopLoss;
 
 
       const targetHit =
 
-        b.high >=
+        bar.high >=
         state.takeProfit;
 
 
       /*
          Conservative:
-         if TP and SL both hit
-         inside same 1M candle,
-         SL wins.
+         if both hit in one 1M candle,
+         count SL first.
       */
 
       if (
@@ -2107,11 +2792,11 @@ function simulateTrade1m(
 
 
         exitTime =
-          b.time;
+          bar.time;
 
 
         exitTimestamp =
-          b.timestamp;
+          bar.timestamp;
 
 
         break;
@@ -2136,11 +2821,11 @@ function simulateTrade1m(
 
 
         exitTime =
-          b.time;
+          bar.time;
 
 
         exitTimestamp =
-          b.timestamp;
+          bar.timestamp;
 
 
         break;
@@ -2157,13 +2842,13 @@ function simulateTrade1m(
 
       const stopHit =
 
-        b.high >=
+        bar.high >=
         state.stopLoss;
 
 
       const targetHit =
 
-        b.low <=
+        bar.low <=
         state.takeProfit;
 
 
@@ -2184,11 +2869,11 @@ function simulateTrade1m(
 
 
         exitTime =
-          b.time;
+          bar.time;
 
 
         exitTimestamp =
-          b.timestamp;
+          bar.timestamp;
 
 
         break;
@@ -2213,11 +2898,11 @@ function simulateTrade1m(
 
 
         exitTime =
-          b.time;
+          bar.time;
 
 
         exitTimestamp =
-          b.timestamp;
+          bar.timestamp;
 
 
         break;
@@ -2270,7 +2955,7 @@ function simulateTrade1m(
 
 
 /* =========================================================
-   HARD LOCK BACKTEST
+   HARD-LOCK BACKTEST
 ========================================================= */
 
 function backtest(
@@ -2282,7 +2967,7 @@ function backtest(
     [];
 
 
-  let i =
+  let index =
 
     Math.min(
 
@@ -2298,12 +2983,12 @@ function backtest(
 
 
   while (
-    i <
+    index <
     states.length
   ) {
 
     const state =
-      states[i];
+      states[index];
 
 
     if (
@@ -2311,15 +2996,15 @@ function backtest(
       "WAIT"
     ) {
 
-      i++;
+      index++;
 
       continue;
 
     }
 
 
-    const sim =
-      simulateTrade1m(
+    const simulation =
+      simulateTrade(
 
         oneMinuteBars,
 
@@ -2354,34 +3039,41 @@ function backtest(
       zone:
         state.zone,
 
+      bullSpikes:
+        state.anchor
+          ?.bullSpikes
+        ??
+        0,
+
+      bearSpikes:
+        state.anchor
+          ?.bearSpikes
+        ??
+        0,
+
       result:
-        sim.result,
+        simulation.result,
 
       r:
-        sim.r,
+        simulation.r,
 
       exitPrice:
-        sim.exitPrice,
+        simulation.exitPrice,
 
       exitTime:
-        sim.exitTime,
+        simulation.exitTime,
 
       exitTimestamp:
-        sim.exitTimestamp,
+        simulation.exitTimestamp,
 
       holdMinutes:
-        sim.holdMinutes
+        simulation.holdMinutes
 
     });
 
 
-    /*
-       Hard lock:
-       no other signal while trade active.
-    */
-
     if (
-      sim.exitTimestamp ===
+      simulation.exitTimestamp ===
       null
     ) {
 
@@ -2390,22 +3082,28 @@ function backtest(
     }
 
 
-    i++;
+    /*
+       HARD LOCK:
+       Skip all other signals until exit.
+    */
+
+    index++;
 
 
     while (
 
-      i <
+      index <
       states.length
 
       &&
 
-      states[i].closeTimestamp <=
-      sim.exitTimestamp
+      states[index]
+        .closeTimestamp <=
+      simulation.exitTimestamp
 
     ) {
 
-      i++;
+      index++;
 
     }
 
@@ -2415,13 +3113,14 @@ function backtest(
   const closed =
 
     trades.filter(
-      t =>
-        t.result ===
+      trade =>
+
+        trade.result ===
         "WIN"
 
         ||
 
-        t.result ===
+        trade.result ===
         "LOSS"
     );
 
@@ -2429,8 +3128,8 @@ function backtest(
   const wins =
 
     closed.filter(
-      t =>
-        t.result ===
+      trade =>
+        trade.result ===
         "WIN"
     );
 
@@ -2438,8 +3137,8 @@ function backtest(
   const losses =
 
     closed.filter(
-      t =>
-        t.result ===
+      trade =>
+        trade.result ===
         "LOSS"
     );
 
@@ -2448,11 +3147,11 @@ function backtest(
 
     wins.reduce(
       (
-        s,
-        t
+        total,
+        trade
       ) =>
-        s +
-        t.r,
+        total +
+        trade.r,
       0
     );
 
@@ -2463,11 +3162,11 @@ function backtest(
 
       losses.reduce(
         (
-          s,
-          t
+          total,
+          trade
         ) =>
-          s +
-          t.r,
+          total +
+          trade.r,
         0
       )
 
@@ -2478,11 +3177,11 @@ function backtest(
 
     closed.reduce(
       (
-        s,
-        t
+        total,
+        trade
       ) =>
-        s +
-        t.r,
+        total +
+        trade.r,
       0
     );
 
@@ -2536,7 +3235,7 @@ function backtest(
     0;
 
 
-  let lossStreak =
+  let currentLossStreak =
     0;
 
 
@@ -2545,12 +3244,12 @@ function backtest(
 
 
   for (
-    const t
+    const trade
     of closed
   ) {
 
     equity +=
-      t.r;
+      trade.r;
 
 
     peak =
@@ -2572,11 +3271,11 @@ function backtest(
 
 
     if (
-      t.result ===
+      trade.result ===
       "LOSS"
     ) {
 
-      lossStreak++;
+      currentLossStreak++;
 
 
       maxLossStreak =
@@ -2584,13 +3283,13 @@ function backtest(
 
           maxLossStreak,
 
-          lossStreak
+          currentLossStreak
 
         );
 
     } else {
 
-      lossStreak =
+      currentLossStreak =
         0;
 
     }
@@ -2603,8 +3302,8 @@ function backtest(
     closed
 
       .map(
-        t =>
-          t.holdMinutes
+        trade =>
+          trade.holdMinutes
       )
 
       .filter(
@@ -2612,23 +3311,29 @@ function backtest(
       );
 
 
-  const avgHoldMinutes =
+  const averageHoldMinutes =
 
     holdValues.length
 
-      ? holdValues.reduce(
-          (
-            s,
-            v
-          ) =>
-            s +
-            v,
-          0
-        )
-        /
-        holdValues.length
+      ?
 
-      : 0;
+      holdValues.reduce(
+        (
+          total,
+          value
+        ) =>
+          total +
+          value,
+        0
+      )
+
+      /
+
+      holdValues.length
+
+      :
+
+      0;
 
 
   return {
@@ -2636,8 +3341,8 @@ function backtest(
     mode:
       "HARD LOCK",
 
-    strategy:
-      "HTF Volume Spike + Stacked Imbalance",
+    targetR:
+      RISK_REWARD,
 
     tradesTaken:
       trades.length,
@@ -2648,8 +3353,8 @@ function backtest(
     openTrades:
 
       trades.filter(
-        t =>
-          t.result ===
+        trade =>
+          trade.result ===
           "OPEN"
       ).length,
 
@@ -2699,16 +3404,20 @@ function backtest(
 
     averageHoldMinutes:
       round(
-        avgHoldMinutes,
+        averageHoldMinutes,
         1
       ),
 
     firstCandle:
-      states[0]?.time ??
+      states[0]
+        ?.time
+      ??
       null,
 
     lastCandle:
-      states.at(-1)?.closeTime ??
+      states.at(-1)
+        ?.closeTime
+      ??
       null,
 
     recentTrades:
@@ -2727,14 +3436,49 @@ function backtest(
 
 
 /* =========================================================
-   LOCK QUERY
+   RECENT SIGNALS
 ========================================================= */
 
-function getRequestedLock(req) {
+function recentSignals(
+  states
+) {
+
+  return states
+
+    .filter(
+      state =>
+
+        state.signal ===
+        "BUY"
+
+        ||
+
+        state.signal ===
+        "SELL"
+    )
+
+    .slice(
+      -RECENT_SIGNAL_LIMIT
+    )
+
+    .reverse();
+
+}
+
+
+/* =========================================================
+   HARD LOCK QUERY
+========================================================= */
+
+function getRequestedLock(
+  req
+) {
 
   const signal =
     String(
-      req.query?.lockSignal ||
+      req.query
+        ?.lockSignal
+      ||
       ""
     )
       .trim()
@@ -2757,26 +3501,31 @@ function getRequestedLock(req) {
 
 
   const entry =
-    n(
-      req.query?.lockEntry
+    num(
+      req.query
+        ?.lockEntry
     );
 
 
   const stopLoss =
-    n(
-      req.query?.lockSL
+    num(
+      req.query
+        ?.lockSL
     );
 
 
   const takeProfit =
-    n(
-      req.query?.lockTP
+    num(
+      req.query
+        ?.lockTP
     );
 
 
   const time =
     String(
-      req.query?.lockTime ||
+      req.query
+        ?.lockTime
+      ||
       ""
     );
 
@@ -2823,11 +3572,11 @@ function getRequestedLock(req) {
 
 
 /* =========================================================
-   CHECK LIVE LOCK
+   CHECK ACTIVE LOCK
 ========================================================= */
 
 function checkRequestedLock(
-  raw1m,
+  priceBars,
   lock
 ) {
 
@@ -2863,12 +3612,12 @@ function checkRequestedLock(
 
 
   for (
-    const b
-    of raw1m
+    const bar
+    of priceBars
   ) {
 
     if (
-      b.timestamp <
+      bar.timestamp <
       start
     ) {
 
@@ -2883,7 +3632,7 @@ function checkRequestedLock(
     ) {
 
       if (
-        b.low <=
+        bar.low <=
         lock.stopLoss
       ) {
 
@@ -2899,7 +3648,7 @@ function checkRequestedLock(
             lock.stopLoss,
 
           exitTime:
-            b.time
+            bar.time
 
         };
 
@@ -2907,7 +3656,7 @@ function checkRequestedLock(
 
 
       if (
-        b.high >=
+        bar.high >=
         lock.takeProfit
       ) {
 
@@ -2923,7 +3672,7 @@ function checkRequestedLock(
             lock.takeProfit,
 
           exitTime:
-            b.time
+            bar.time
 
         };
 
@@ -2932,7 +3681,7 @@ function checkRequestedLock(
     } else {
 
       if (
-        b.high >=
+        bar.high >=
         lock.stopLoss
       ) {
 
@@ -2948,7 +3697,7 @@ function checkRequestedLock(
             lock.stopLoss,
 
           exitTime:
-            b.time
+            bar.time
 
         };
 
@@ -2956,7 +3705,7 @@ function checkRequestedLock(
 
 
       if (
-        b.low <=
+        bar.low <=
         lock.takeProfit
       ) {
 
@@ -2972,7 +3721,7 @@ function checkRequestedLock(
             lock.takeProfit,
 
           exitTime:
-            b.time
+            bar.time
 
         };
 
@@ -2994,7 +3743,7 @@ function checkRequestedLock(
 
 
 /* =========================================================
-   MAP ZONE
+   RESPONSE MAPPERS
 ========================================================= */
 
 function mapZone(
@@ -3042,11 +3791,7 @@ function mapZone(
 }
 
 
-/* =========================================================
-   MAP SIGNAL
-========================================================= */
-
-function mapTradeState(
+function mapSignalState(
   state,
   digits
 ) {
@@ -3096,15 +3841,21 @@ function mapTradeState(
       ),
 
     bullSpikes:
-      state.anchor?.bullSpikes ??
+      state.anchor
+        ?.bullSpikes
+      ??
       0,
 
     bearSpikes:
-      state.anchor?.bearSpikes ??
+      state.anchor
+        ?.bearSpikes
+      ??
       0,
 
     dominance:
-      state.anchor?.dominance ??
+      state.anchor
+        ?.dominance
+      ??
       "BALANCED"
 
   };
@@ -3113,7 +3864,97 @@ function mapTradeState(
 
 
 /* =========================================================
-   HANDLER
+   LOAD MARKET
+========================================================= */
+
+async function loadMarket(
+  symbol
+) {
+
+  if (
+    symbol ===
+    "BTC/USD"
+  ) {
+
+    const btcBars =
+      await fetchBtcCoinbase1m();
+
+
+    return {
+
+      priceBars:
+        btcBars,
+
+      volumeBars:
+        btcBars,
+
+      priceSource:
+        "Coinbase Exchange BTC-USD",
+
+      volumeSource:
+        "Coinbase Exchange BTC-USD traded volume",
+
+      volumeMode:
+        "REAL EXCHANGE VOLUME"
+
+    };
+
+  }
+
+
+  /*
+     GOLD:
+     Spot price and futures-volume proxy
+     fetched independently.
+  */
+
+  const [
+    spotBars,
+    futuresVolume
+  ] =
+    await Promise.all([
+
+      fetchXauSpot1m(),
+
+      fetchGoldFuturesVolume1m()
+
+    ]);
+
+
+  const aligned =
+    attachProxyVolume(
+
+      spotBars,
+
+      futuresVolume
+
+    );
+
+
+  return {
+
+    priceBars:
+      aligned,
+
+    volumeBars:
+      futuresVolume,
+
+    priceSource:
+      "Twelve Data XAU/USD spot",
+
+    volumeSource:
+      "Yahoo Finance GC=F gold-futures volume proxy",
+
+    volumeMode:
+      "FUTURES VOLUME PROXY"
+
+  };
+
+}
+
+
+/* =========================================================
+   VERCEL HANDLER
 ========================================================= */
 
 export default async function handler(
@@ -3122,26 +3963,38 @@ export default async function handler(
 ) {
 
   res.setHeader(
+
     "Cache-Control",
+
     "no-store, no-cache, must-revalidate"
+
   );
 
 
   res.setHeader(
+
     "Access-Control-Allow-Origin",
+
     "*"
+
   );
 
 
   res.setHeader(
+
     "Access-Control-Allow-Methods",
+
     "GET,OPTIONS"
+
   );
 
 
   res.setHeader(
+
     "Access-Control-Allow-Headers",
+
     "Content-Type"
+
   );
 
 
@@ -3202,25 +4055,21 @@ export default async function handler(
       ];
 
 
-    /* =====================================================
-       GET 1M
-    ===================================================== */
-
-    const raw1m =
-      await fetch1m(
+    const packet =
+      await loadMarket(
         symbol
       );
 
 
-    const completed =
-      completed1m(
-        raw1m
+    const completedPrice =
+      completedOneMinuteBars(
+        packet.priceBars
       );
 
 
     const volumePacket =
-      addVolumeStats(
-        completed
+      addVolumeSpikeStats(
+        completedPrice
       );
 
 
@@ -3228,41 +4077,37 @@ export default async function handler(
       volumePacket.bars;
 
 
-    /* =====================================================
-       BUILD 5M
-    ===================================================== */
-
     const fiveMinuteBars =
 
-      resample(
+      resamplePrice(
+
         oneMinuteBars,
+
         EXECUTION_MINUTES
+
       )
 
         .filter(
-          b =>
-            b.closeTimestamp <=
+          bar =>
+
+            bar.closeTimestamp <=
             Date.now()
         );
 
 
     if (
       fiveMinuteBars.length <
-      40
+      30
     ) {
 
       throw new Error(
 
-        `${symbol}: not enough completed 5-minute candles.`
+        `${symbol}: not enough completed 5M candles.`
 
       );
 
     }
 
-
-    /* =====================================================
-       STATES
-    ===================================================== */
 
     const states =
       buildStates(
@@ -3279,22 +4124,17 @@ export default async function handler(
 
 
     if (
-      !current ||
-      !current.anchor
+      !current?.anchor
     ) {
 
       throw new Error(
 
-        `${symbol}: could not build current 1H anchor.`
+        `${symbol}: current 1H anchor could not be built.`
 
       );
 
     }
 
-
-    /* =====================================================
-       SIGNAL
-    ===================================================== */
 
     const signal =
 
@@ -3305,11 +4145,7 @@ export default async function handler(
         : "WAIT";
 
 
-    /* =====================================================
-       BACKTEST
-    ===================================================== */
-
-    const bt =
+    const backtestResult =
 
       volumePacket.volumeAvailable
 
@@ -3330,14 +4166,14 @@ export default async function handler(
           mode:
             "HARD LOCK",
 
-          strategy:
-            "HTF Volume Spike + Stacked Imbalance",
+          targetR:
+            RISK_REWARD,
 
           unavailable:
             true,
 
           reason:
-            "Provider did not return enough usable 1-minute volume data.",
+            "Not enough usable 1M volume data.",
 
           tradesTaken:
             0,
@@ -3376,7 +4212,9 @@ export default async function handler(
             0,
 
           firstCandle:
-            states[0]?.time ??
+            states[0]
+              ?.time
+            ??
             null,
 
           lastCandle:
@@ -3388,11 +4226,7 @@ export default async function handler(
         };
 
 
-    /* =====================================================
-       LOCK
-    ===================================================== */
-
-    const lock =
+    const requestedLock =
       getRequestedLock(
         req
       );
@@ -3401,29 +4235,22 @@ export default async function handler(
     const lockCheck =
       checkRequestedLock(
 
-        raw1m,
+        packet.priceBars,
 
-        lock
+        requestedLock
 
       );
 
 
-    /* =====================================================
-       LIVE PRICE
-    ===================================================== */
-
     const livePrice =
 
-      raw1m.at(-1)?.close
+      packet.priceBars.at(-1)
+        ?.close
 
       ??
 
       current.close;
 
-
-    /* =====================================================
-       REASONS
-    ===================================================== */
 
     const reasons =
       [];
@@ -3435,14 +4262,7 @@ export default async function handler(
 
       reasons.push(
 
-        "1-minute volume is unavailable or too sparse from the current provider."
-
-      );
-
-
-      reasons.push(
-
-        "The engine stays on WAIT instead of inventing volume data."
+        "Volume source is still too sparse for the 20-bar 1M volume average."
 
       );
 
@@ -3460,21 +4280,21 @@ export default async function handler(
 
       reasons.push(
 
-        "The completed 5M candle crossed above that bullish imbalance zone."
+        "The completed 5M candle crossed above the bullish imbalance zone."
 
       );
 
 
       reasons.push(
 
-        "The current 1H anchor is bullish/neutral-bullish."
+        "Stop Loss is the bottom of the imbalance zone."
 
       );
 
 
       reasons.push(
 
-        "SL = bottom of the imbalance zone; TP = 3R."
+        "Take Profit is stretched to 3R and the trade hard-locks until exit."
 
       );
 
@@ -3492,21 +4312,21 @@ export default async function handler(
 
       reasons.push(
 
-        "The completed 5M candle crossed below that bearish imbalance zone."
+        "The completed 5M candle crossed below the bearish imbalance zone."
 
       );
 
 
       reasons.push(
 
-        "The current 1H anchor is bearish/neutral-bearish."
+        "Stop Loss is the top of the imbalance zone."
 
       );
 
 
       reasons.push(
 
-        "SL = top of the imbalance zone; TP = 3R."
+        "Take Profit is stretched to 3R and the trade hard-locks until exit."
 
       );
 
@@ -3521,16 +4341,12 @@ export default async function handler(
 
       reasons.push(
 
-        `Current 1H spike pressure: ${current.anchor.bullSpikes} bullish vs ${current.anchor.bearSpikes} bearish.`
+        `Current 1H pressure: ${current.anchor.bullSpikes} bullish spikes vs ${current.anchor.bearSpikes} bearish spikes.`
 
       );
 
     }
 
-
-    /* =====================================================
-       SPIKE SCALE
-    ===================================================== */
 
     const maxSpikeVolume =
 
@@ -3539,9 +4355,9 @@ export default async function handler(
         0,
 
         ...current.anchor.spikes.map(
-          s =>
+          spike =>
             Number(
-              s.volume
+              spike.volume
             )
             ||
             0
@@ -3549,10 +4365,6 @@ export default async function handler(
 
       );
 
-
-    /* =====================================================
-       RESPONSE
-    ===================================================== */
 
     return res
       .status(200)
@@ -3562,10 +4374,7 @@ export default async function handler(
           true,
 
         engine:
-          "MKAYFX 5M HTF VOLUME IMBALANCE",
-
-        sourceModel:
-          "HTF Volume Spike & Imbalance Projection concept",
+          "MKAYFX 5M HTF VOLUME IMBALANCE V2",
 
         symbol,
 
@@ -3654,6 +4463,19 @@ export default async function handler(
 
         rr:
           RISK_REWARD,
+
+        dataSources: {
+
+          price:
+            packet.priceSource,
+
+          volume:
+            packet.volumeSource,
+
+          volumeMode:
+            packet.volumeMode
+
+        },
 
         settings: {
 
@@ -3751,13 +4573,15 @@ export default async function handler(
 
           strongestBullish:
             mapZone(
-              current.anchor.strongestBullish,
+              current.anchor
+                .strongestBullish,
               market.digits
             ),
 
           strongestBearish:
             mapZone(
-              current.anchor.strongestBearish,
+              current.anchor
+                .strongestBearish,
               market.digits
             ),
 
@@ -3772,6 +4596,7 @@ export default async function handler(
                   a,
                   b
                 ) =>
+
                   b.strength -
                   a.strength
               )
@@ -3782,9 +4607,9 @@ export default async function handler(
               )
 
               .map(
-                z =>
+                zone =>
                   mapZone(
-                    z,
+                    zone,
                     market.digits
                   )
               ),
@@ -3794,23 +4619,23 @@ export default async function handler(
             current.anchor.profile
 
               .map(
-                p => ({
+                row => ({
 
                   low:
                     round(
-                      p.low,
+                      row.low,
                       market.digits
                     ),
 
                   high:
                     round(
-                      p.high,
+                      row.high,
                       market.digits
                     ),
 
                   relative:
                     round(
-                      p.relative,
+                      row.relative,
                       4
                     )
 
@@ -3826,24 +4651,24 @@ export default async function handler(
               )
 
               .map(
-                s => ({
+                spike => ({
 
                   time:
-                    s.time,
+                    spike.time,
 
                   price:
                     round(
-                      s.price,
+                      spike.price,
                       market.digits
                     ),
 
                   delta:
-                    s.delta,
+                    spike.delta,
 
                   volume:
                     round(
-                      s.volume,
-                      2
+                      spike.volume,
+                      4
                     ),
 
                   relative:
@@ -3852,7 +4677,7 @@ export default async function handler(
                     0
 
                       ? round(
-                          s.volume /
+                          spike.volume /
                           maxSpikeVolume,
                           4
                         )
@@ -3878,9 +4703,9 @@ export default async function handler(
               states
             )
               .map(
-                s =>
-                  mapTradeState(
-                    s,
+                state =>
+                  mapSignalState(
+                    state,
                     market.digits
                   )
               )
@@ -3891,53 +4716,53 @@ export default async function handler(
 
         backtest: {
 
-          ...bt,
+          ...backtestResult,
 
           recentTrades:
 
             (
-              bt.recentTrades ||
+              backtestResult.recentTrades ||
               []
             )
 
               .map(
-                t => ({
+                trade => ({
 
-                  ...t,
+                  ...trade,
 
                   entry:
                     round(
-                      t.entry,
+                      trade.entry,
                       market.digits
                     ),
 
                   stopLoss:
                     round(
-                      t.stopLoss,
+                      trade.stopLoss,
                       market.digits
                     ),
 
                   takeProfit:
                     round(
-                      t.takeProfit,
+                      trade.takeProfit,
                       market.digits
                     ),
 
                   risk:
                     round(
-                      t.risk,
+                      trade.risk,
                       market.digits
                     ),
 
                   exitPrice:
                     round(
-                      t.exitPrice,
+                      trade.exitPrice,
                       market.digits
                     ),
 
                   zone:
                     mapZone(
-                      t.zone,
+                      trade.zone,
                       market.digits
                     )
 
@@ -3955,35 +4780,35 @@ export default async function handler(
             )
 
             .map(
-              b => ({
+              bar => ({
 
                 time:
-                  b.time,
+                  bar.time,
 
                 closeTime:
-                  b.closeTime,
+                  bar.closeTime,
 
                 open:
                   round(
-                    b.open,
+                    bar.open,
                     market.digits
                   ),
 
                 high:
                   round(
-                    b.high,
+                    bar.high,
                     market.digits
                   ),
 
                 low:
                   round(
-                    b.low,
+                    bar.low,
                     market.digits
                   ),
 
                 close:
                   round(
-                    b.close,
+                    bar.close,
                     market.digits
                   )
 
@@ -3992,11 +4817,13 @@ export default async function handler(
 
       });
 
-  } catch (error) {
+  } catch (
+    error
+  ) {
 
     console.error(
 
-      "MKAYFX VOLUME IMBALANCE ERROR",
+      "MKAYFX VOLUME ENGINE ERROR",
 
       error
 
@@ -4011,17 +4838,17 @@ export default async function handler(
           false,
 
         engine:
-          "MKAYFX 5M HTF VOLUME IMBALANCE",
+          "MKAYFX 5M HTF VOLUME IMBALANCE V2",
 
         error:
 
-          errText(
+          safeError(
             error
           )
 
           ||
 
-          "Unknown volume-imbalance engine error."
+          "Unknown volume engine error."
 
       });
 
