@@ -93,7 +93,7 @@ const MARKETS = {
 ========================================================= */
 
 const INTERVAL =
-  "30min";
+  "5min";
 
 
 const LENGTH =
@@ -112,7 +112,7 @@ const SHOW_ZONES =
    TP STRETCHED FROM 2R TO 3R
 */
 const RISK_REWARD =
-  3;
+  0.8;
 
 
 const OUTPUT_SIZE =
