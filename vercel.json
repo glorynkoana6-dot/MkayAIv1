@@ -1,8 +1,13 @@
 {
   "version": 2,
+  "functions": {
+    "api/sr.js": {
+      "maxDuration": 30
+    }
+  },
   "headers": [
     {
-      "source": "/api/(.*)",
+      "source": "/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
