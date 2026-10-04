@@ -27,7 +27,7 @@
 >
 
 <title>
-MKAYFX TOTT
+MKAYFX Volume Imbalance
 </title>
 
 
@@ -43,7 +43,9 @@ MKAYFX TOTT
 
   --panel:#0a1119;
 
-  --border:rgba(255,255,255,.085);
+  --card:#070d14;
+
+  --line:rgba(255,255,255,.085);
 
   --text:#f6f8fb;
 
@@ -55,7 +57,7 @@ MKAYFX TOTT
 
   --red:#ff6279;
 
-  --blue:#5ba8ff;
+  --blue:#7994ff;
 
   --purple:#9d83ff;
 
@@ -101,7 +103,7 @@ button{
 
 .app{
 
-  max-width:1050px;
+  max-width:1080px;
 
   margin:auto;
 
@@ -156,7 +158,7 @@ button{
 
   border-radius:999px;
 
-  border:1px solid var(--border);
+  border:1px solid var(--line);
 
   background:var(--panel);
 
@@ -189,7 +191,7 @@ button{
 
 .asset{
 
-  border:1px solid var(--border);
+  border:1px solid var(--line);
 
   background:#080e15;
 
@@ -214,12 +216,12 @@ button{
 .asset.active{
 
   border-color:
-    rgba(91,168,255,.65);
+    rgba(121,148,255,.65);
 
   background:
     linear-gradient(
       135deg,
-      rgba(30,52,86,.95),
+      rgba(33,52,86,.95),
       rgba(11,18,31,.98)
     );
 
@@ -304,7 +306,7 @@ button{
 
   border:
     1px solid
-    rgba(91,168,255,.45);
+    rgba(121,148,255,.45);
 
   background:
     linear-gradient(
@@ -321,7 +323,7 @@ button{
 
 }
 
-.clearButton{
+.clear{
 
   width:100%;
 
@@ -388,7 +390,7 @@ button{
   display:grid;
 
   grid-template-columns:
-    minmax(0,1.4fr)
+    minmax(0,1.42fr)
     minmax(300px,.8fr);
 
   gap:12px;
@@ -406,7 +408,9 @@ button{
       rgba(5,10,15,.98)
     );
 
-  border:1px solid var(--border);
+  border:
+    1px solid
+    var(--line);
 
   border-radius:20px;
 
@@ -462,21 +466,15 @@ button{
 }
 
 .signal.WAIT{
-
   color:var(--gold);
-
 }
 
 .signal.BUY{
-
   color:var(--green);
-
 }
 
 .signal.SELL{
-
   color:var(--red);
-
 }
 
 .price{
@@ -489,7 +487,7 @@ button{
 
 }
 
-.statusText{
+.status{
 
   color:var(--muted);
 
@@ -526,7 +524,7 @@ button{
 
 
 /* =========================================================
-   TOTT METRICS
+   METRICS
 ========================================================= */
 
 .metrics{
@@ -534,7 +532,7 @@ button{
   display:grid;
 
   grid-template-columns:
-    repeat(2,1fr);
+    repeat(4,1fr);
 
   gap:8px;
 
@@ -542,43 +540,61 @@ button{
 
 }
 
-.metric{
+.metric,
+.level,
+.setting,
+.bt{
 
-  padding:13px;
+  padding:11px;
 
-  min-height:86px;
+  border:
+    1px solid
+    var(--line);
 
-  border:1px solid var(--border);
+  border-radius:14px;
 
-  border-radius:15px;
-
-  background:#070d14;
+  background:
+    var(--card);
 
 }
 
-.metric small{
+.metric{
+
+  min-height:84px;
+
+}
+
+.metric small,
+.level small,
+.setting small,
+.bt small{
+
+  display:block;
 
   color:var(--muted);
 
-  font-size:8px;
+  font-size:7px;
 
   text-transform:uppercase;
 
 }
 
-.metric strong{
+.metric strong,
+.level b,
+.setting b,
+.bt strong{
 
   display:block;
 
-  margin-top:9px;
+  margin-top:7px;
 
-  font-size:17px;
+  font-size:16px;
 
 }
 
 
 /* =========================================================
-   TRADE PLAN
+   TRADE
 ========================================================= */
 
 .tradeGrid{
@@ -594,89 +610,21 @@ button{
 
 }
 
-.level{
-
-  border:1px solid var(--border);
-
-  background:#070d14;
-
-  border-radius:14px;
-
-  padding:12px;
-
-  min-height:82px;
-
-}
-
-.level small{
-
-  color:var(--muted);
-
-  font-size:8px;
-
-  text-transform:uppercase;
-
-}
-
-.level b{
-
-  display:block;
-
-  margin-top:7px;
-
-  font-size:17px;
-
-}
-
 
 /* =========================================================
    SETTINGS
 ========================================================= */
 
-.settingsGrid{
+.settings{
 
   display:grid;
 
   grid-template-columns:
-    repeat(3,1fr);
+    repeat(4,1fr);
 
   gap:8px;
 
   margin-top:14px;
-
-}
-
-.setting{
-
-  padding:10px;
-
-  border:1px solid var(--border);
-
-  border-radius:13px;
-
-  background:#070d14;
-
-}
-
-.setting small{
-
-  display:block;
-
-  color:var(--muted);
-
-  font-size:7px;
-
-  text-transform:uppercase;
-
-}
-
-.setting b{
-
-  display:block;
-
-  margin-top:6px;
-
-  font-size:13px;
 
 }
 
@@ -714,11 +662,11 @@ button{
 
   position:relative;
 
-  height:400px;
+  height:410px;
 
   border-top:
     1px solid
-    var(--border);
+    var(--line);
 
   background:#050b11;
 
@@ -734,7 +682,7 @@ canvas{
 
 }
 
-.chartLegend{
+.legend{
 
   position:absolute;
 
@@ -760,7 +708,9 @@ canvas{
 
   border-radius:999px;
 
-  border:1px solid var(--border);
+  border:
+    1px solid
+    var(--line);
 
   background:
     rgba(5,7,11,.88);
@@ -771,7 +721,7 @@ canvas{
 
 
 /* =========================================================
-   SECTIONS
+   RIGHT PANEL
 ========================================================= */
 
 .sectionTitle{
@@ -788,7 +738,9 @@ canvas{
 
 }
 
-.reason{
+.reason,
+.tradeRow,
+.zoneRow{
 
   padding:10px 0;
 
@@ -804,7 +756,9 @@ canvas{
 
 }
 
-.reason:last-child{
+.reason:last-child,
+.tradeRow:last-child,
+.zoneRow:last-child{
 
   border-bottom:0;
 
@@ -823,65 +777,6 @@ canvas{
     repeat(2,1fr);
 
   gap:7px;
-
-}
-
-.bt{
-
-  padding:11px;
-
-  border-radius:13px;
-
-  border:1px solid var(--border);
-
-  background:#070d14;
-
-}
-
-.bt small{
-
-  display:block;
-
-  color:var(--muted);
-
-  font-size:7px;
-
-  text-transform:uppercase;
-
-}
-
-.bt strong{
-
-  display:block;
-
-  margin-top:6px;
-
-  font-size:16px;
-
-}
-
-
-/* =========================================================
-   HISTORY
-========================================================= */
-
-.tradeRow{
-
-  padding:10px 0;
-
-  border-bottom:
-    1px solid
-    rgba(255,255,255,.05);
-
-  font-size:10px;
-
-  line-height:1.45;
-
-}
-
-.tradeRow:last-child{
-
-  border-bottom:0;
 
 }
 
@@ -909,6 +804,53 @@ canvas{
 
 
 /* =========================================================
+   ZONES
+========================================================= */
+
+.zonePill{
+
+  display:inline-block;
+
+  padding:3px 6px;
+
+  border-radius:999px;
+
+  font-size:7px;
+
+  margin-right:5px;
+
+}
+
+.bullPill{
+
+  background:
+    rgba(55,230,161,.1);
+
+  color:
+    var(--green);
+
+  border:
+    1px solid
+    rgba(55,230,161,.25);
+
+}
+
+.bearPill{
+
+  background:
+    rgba(255,98,121,.1);
+
+  color:
+    var(--red);
+
+  border:
+    1px solid
+    rgba(255,98,121,.25);
+
+}
+
+
+/* =========================================================
    LOADING
 ========================================================= */
 
@@ -925,11 +867,18 @@ canvas{
    MOBILE
 ========================================================= */
 
-@media(max-width:800px){
+@media(max-width:820px){
 
   .grid{
 
     grid-template-columns:1fr;
+
+  }
+
+  .metrics{
+
+    grid-template-columns:
+      repeat(2,1fr);
 
   }
 
@@ -941,7 +890,7 @@ canvas{
 
   .chart{
 
-    height:355px;
+    height:360px;
 
   }
 
@@ -950,7 +899,7 @@ canvas{
 
 @media(max-width:430px){
 
-  .settingsGrid{
+  .settings{
 
     grid-template-columns:
       repeat(2,1fr);
@@ -988,7 +937,7 @@ canvas{
 MKAYFX
 
 <span>
-TOTT
+VOLUME
 </span>
 
 </div>
@@ -996,7 +945,7 @@ TOTT
 
 <div class="subtitle">
 
-5-Min Twin Optimized Trend Tracker
+5M · 1H Anchor · 1M Volume Spike & Imbalance Engine
 
 </div>
 
@@ -1029,21 +978,33 @@ CHECKING
   data-symbol="XAU/USD"
 >
 
+
 <div class="assetIcon goldIcon">
+
 Au
+
 </div>
+
 
 <div>
 
+
 <div class="assetName">
+
 GOLD
+
 </div>
+
 
 <div class="assetSymbol">
+
 XAU/USD · 5M
-</div>
 
 </div>
+
+
+</div>
+
 
 </button>
 
@@ -1053,21 +1014,33 @@ XAU/USD · 5M
   data-symbol="BTC/USD"
 >
 
+
 <div class="assetIcon btcIcon">
+
 ₿
+
 </div>
+
 
 <div>
 
+
 <div class="assetName">
+
 BITCOIN
+
 </div>
+
 
 <div class="assetSymbol">
+
 BTC/USD · 5M
-</div>
 
 </div>
+
+
+</div>
+
 
 </button>
 
@@ -1084,13 +1057,13 @@ BTC/USD · 5M
   id="runButton"
 >
 
-RUN GOLD TOTT ANALYSIS
+RUN GOLD ANALYSIS
 
 </button>
 
 
 <button
-  class="clearButton"
+  class="clear"
   id="clearButton"
 >
 
@@ -1107,14 +1080,14 @@ CLEAR LOCKED TRADE
 
 
 <!-- ======================================================
-     GRID
+     MAIN GRID
 ======================================================= -->
 
 <div class="grid">
 
 
 <!-- ======================================================
-     LEFT
+     LEFT PANEL
 ======================================================= -->
 
 <div class="card">
@@ -1134,7 +1107,7 @@ CLEAR LOCKED TRADE
   id="decisionTitle"
 >
 
-XAU/USD · TOTT SIGNAL
+XAU/USD · VOLUME IMBALANCE
 
 </div>
 
@@ -1150,11 +1123,11 @@ WAIT
 
 
 <div
-  class="statusText"
+  class="status"
   id="signalDescription"
 >
 
-Waiting for TOTT crossover
+Waiting for a stacked imbalance breakout
 
 </div>
 
@@ -1186,7 +1159,7 @@ UNLOCKED · WAITING
 
 
 <div
-  class="statusText"
+  class="status"
   id="candleTime"
 >
 
@@ -1202,7 +1175,7 @@ Latest completed 5M candle
 
 
 <!-- ======================================================
-     TOTT VALUES
+     VOLUME METRICS
 ======================================================= -->
 
 <div class="metrics">
@@ -1211,30 +1184,16 @@ Latest completed 5M candle
 <div class="metric">
 
 <small>
-VAR Support
-</small>
-
-<strong
-  class="blue"
-  id="mavg"
->
-—
-</strong>
-
-</div>
-
-
-<div class="metric">
-
-<small>
-OTT Upper
+1H Bull Spikes
 </small>
 
 <strong
   class="green"
-  id="ottUpper"
+  id="bullSpikes"
 >
+
 —
+
 </strong>
 
 </div>
@@ -1243,14 +1202,16 @@ OTT Upper
 <div class="metric">
 
 <small>
-OTT Lower
+1H Bear Spikes
 </small>
 
 <strong
   class="red"
-  id="ottLower"
+  id="bearSpikes"
 >
+
 —
+
 </strong>
 
 </div>
@@ -1259,13 +1220,31 @@ OTT Lower
 <div class="metric">
 
 <small>
-TOTT Direction
+Dominance
+</small>
+
+<strong id="dominance">
+
+—
+
+</strong>
+
+</div>
+
+
+<div class="metric">
+
+<small>
+Volume POC
 </small>
 
 <strong
-  id="direction"
+  class="purple"
+  id="poc"
 >
+
 —
+
 </strong>
 
 </div>
@@ -1275,7 +1254,7 @@ TOTT Direction
 
 
 <!-- ======================================================
-     LOCKED TRADE
+     HARD LOCK TRADE
 ======================================================= -->
 
 <div class="tradeGrid">
@@ -1291,7 +1270,9 @@ Locked Entry
   class="blue"
   id="entry"
 >
+
 —
+
 </b>
 
 </div>
@@ -1307,7 +1288,9 @@ Stop Loss
   class="red"
   id="sl"
 >
+
 —
+
 </b>
 
 </div>
@@ -1323,7 +1306,9 @@ Stretched TP · 3R
   class="green"
   id="tp"
 >
+
 —
+
 </b>
 
 </div>
@@ -1336,7 +1321,9 @@ Current R
 </small>
 
 <b id="currentR">
+
 —
+
 </b>
 
 </div>
@@ -1349,13 +1336,13 @@ Current R
      SETTINGS
 ======================================================= -->
 
-<div class="settingsGrid">
+<div class="settings">
 
 
 <div class="setting">
 
 <small>
-Timeframe
+Execution
 </small>
 
 <b>
@@ -1368,11 +1355,11 @@ Timeframe
 <div class="setting">
 
 <small>
-MA
+HTF Anchor
 </small>
 
 <b>
-VAR
+1H
 </b>
 
 </div>
@@ -1381,37 +1368,11 @@ VAR
 <div class="setting">
 
 <small>
-Period
+Spike LTF
 </small>
 
-<b id="period">
-40
-</b>
-
-</div>
-
-
-<div class="setting">
-
-<small>
-Optimization
-</small>
-
-<b id="percent">
-1%
-</b>
-
-</div>
-
-
-<div class="setting">
-
-<small>
-Twin Coeff
-</small>
-
-<b id="coefficient">
-0.001
+<b>
+1M
 </b>
 
 </div>
@@ -1423,8 +1384,68 @@ Twin Coeff
 Target
 </small>
 
-<b id="rr">
+<b>
 1:3
+</b>
+
+</div>
+
+
+<div class="setting">
+
+<small>
+Spike Mult
+</small>
+
+<b id="spikeMult">
+
+1.2×
+
+</b>
+
+</div>
+
+
+<div class="setting">
+
+<small>
+Volume MA
+</small>
+
+<b id="volMa">
+
+20
+
+</b>
+
+</div>
+
+
+<div class="setting">
+
+<small>
+VP Rows
+</small>
+
+<b id="vpRows">
+
+40
+
+</b>
+
+</div>
+
+
+<div class="setting">
+
+<small>
+Stack Min
+</small>
+
+<b id="stackMin">
+
+3
+
 </b>
 
 </div>
@@ -1448,7 +1469,7 @@ Target
 
 
 <div
-  class="chartLegend"
+  class="legend"
   id="chartLegend"
 >
 </div>
@@ -1461,15 +1482,147 @@ Target
 
 
 <!-- ======================================================
-     RIGHT
+     RIGHT PANEL
 ======================================================= -->
 
 <div>
 
 
-<!-- SIGNAL STATUS -->
+<!-- CURRENT 1H ANCHOR -->
 
 <div class="card pad">
+
+
+<div class="sectionTitle">
+
+Current 1H Anchor
+
+</div>
+
+
+<div class="btGrid">
+
+
+<div class="bt">
+
+<small>
+Open
+</small>
+
+<strong id="aOpen">
+
+—
+
+</strong>
+
+</div>
+
+
+<div class="bt">
+
+<small>
+High
+</small>
+
+<strong
+  class="green"
+  id="aHigh"
+>
+
+—
+
+</strong>
+
+</div>
+
+
+<div class="bt">
+
+<small>
+Low
+</small>
+
+<strong
+  class="red"
+  id="aLow"
+>
+
+—
+
+</strong>
+
+</div>
+
+
+<div class="bt">
+
+<small>
+Close
+</small>
+
+<strong id="aClose">
+
+—
+
+</strong>
+
+</div>
+
+
+</div>
+
+
+<div
+  class="note"
+  id="volumeStatus"
+>
+
+Waiting for volume data.
+
+</div>
+
+
+</div>
+
+
+<!-- STACKED IMBALANCES -->
+
+<div
+  class="card pad"
+  style="margin-top:12px"
+>
+
+
+<div class="sectionTitle">
+
+Stacked Imbalance Zones
+
+</div>
+
+
+<div id="zones">
+
+
+<div class="reason">
+
+Waiting for zones.
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+<!-- HARD LOCK STATUS -->
+
+<div
+  class="card pad"
+  style="margin-top:12px"
+>
+
 
 <div class="sectionTitle">
 
@@ -1477,15 +1630,19 @@ Hard-Lock Status
 
 </div>
 
+
 <div id="reasons">
+
 
 <div class="reason">
 
-Waiting for TOTT analysis.
+Waiting for analysis.
 
 </div>
 
+
 </div>
+
 
 </div>
 
@@ -1497,9 +1654,10 @@ Waiting for TOTT analysis.
   style="margin-top:12px"
 >
 
+
 <div class="sectionTitle">
 
-TOTT Hard-Lock Backtest
+Hard-Lock Backtest
 
 </div>
 
@@ -1514,7 +1672,9 @@ Trades
 </small>
 
 <strong id="btTrades">
+
 —
+
 </strong>
 
 </div>
@@ -1527,7 +1687,9 @@ Win Rate
 </small>
 
 <strong id="btWin">
+
 —
+
 </strong>
 
 </div>
@@ -1540,7 +1702,9 @@ Profit Factor
 </small>
 
 <strong id="btPF">
+
 —
+
 </strong>
 
 </div>
@@ -1553,7 +1717,9 @@ Net Result
 </small>
 
 <strong id="btNet">
+
 —
+
 </strong>
 
 </div>
@@ -1566,7 +1732,9 @@ Expectancy
 </small>
 
 <strong id="btExpectancy">
+
 —
+
 </strong>
 
 </div>
@@ -1579,7 +1747,9 @@ Max Drawdown
 </small>
 
 <strong id="btDD">
+
 —
+
 </strong>
 
 </div>
@@ -1592,7 +1762,9 @@ Loss Streak
 </small>
 
 <strong id="btLossStreak">
+
 —
+
 </strong>
 
 </div>
@@ -1605,7 +1777,9 @@ Avg Hold
 </small>
 
 <strong id="btHold">
+
 —
+
 </strong>
 
 </div>
@@ -1623,15 +1797,17 @@ Waiting for backtest.
 
 </div>
 
+
 </div>
 
 
-<!-- BACKTEST TRADES -->
+<!-- RECENT BACKTEST TRADES -->
 
 <div
   class="card pad"
   style="margin-top:12px"
 >
+
 
 <div class="sectionTitle">
 
@@ -1639,52 +1815,57 @@ Recent Backtest Trades
 
 </div>
 
+
 <div id="backtestTrades">
 
+
 <div class="reason">
+
 Waiting for backtest.
-</div>
 
 </div>
 
+
 </div>
 
 
-<!-- RAW SIGNALS -->
+</div>
+
+
+<!-- RECENT SIGNALS -->
 
 <div
   class="card pad"
   style="margin-top:12px"
 >
 
+
 <div class="sectionTitle">
 
-Recent TOTT Signals
+Recent Signals
 
 </div>
+
 
 <div id="recentSignals">
 
+
 <div class="reason">
+
 Waiting for signals.
+
 </div>
+
 
 </div>
 
 
 <div class="note">
 
-BUY = VAR crosses above OTT Upper [2].
-
-<br><br>
-
-SELL = VAR crosses below OTT Lower [2].
-
-<br><br>
-
-The original TOTT strategy provides the BUY/SELL logic. This app adds the hard lock, TOTT-band stop and stretched 3R target.
+Signal engine uses only the supplied volume-spike / imbalance mechanics plus the app's 5M entry rule, hard lock, zone SL and 3R TP.
 
 </div>
+
 
 </div>
 
@@ -1707,7 +1888,7 @@ The original TOTT strategy provides the BUY/SELL logic. This app adds the hard l
 let selectedSymbol =
 
   localStorage.getItem(
-    "mkayfx_tott_symbol"
+    "mkayfx_volume_symbol"
   )
 
   ||
@@ -1731,46 +1912,6 @@ const $ =
 
 
 /* =========================================================
-   STORAGE KEYS
-========================================================= */
-
-function lockKey() {
-
-  return selectedSymbol ===
-    "BTC/USD"
-
-    ? "mkayfx_tott_lock_btc_v1"
-
-    : "mkayfx_tott_lock_xau_v1";
-
-}
-
-
-function historyKey() {
-
-  return selectedSymbol ===
-    "BTC/USD"
-
-    ? "mkayfx_tott_history_btc_v1"
-
-    : "mkayfx_tott_history_xau_v1";
-
-}
-
-
-function ignoreKey() {
-
-  return selectedSymbol ===
-    "BTC/USD"
-
-    ? "mkayfx_tott_ignore_btc_v1"
-
-    : "mkayfx_tott_ignore_xau_v1";
-
-}
-
-
-/* =========================================================
    FORMAT
 ========================================================= */
 
@@ -1785,46 +1926,44 @@ function fmt(
     );
 
 
-  if (
-    !Number.isFinite(
-      n
+  return Number.isFinite(
+    n
+  )
+
+    ?
+
+    n.toLocaleString(
+
+      undefined,
+
+      {
+
+        minimumFractionDigits:
+          digits,
+
+        maximumFractionDigits:
+          digits
+
+      }
+
     )
-  ) {
 
-    return "—";
+    :
 
-  }
-
-
-  return n.toLocaleString(
-
-    undefined,
-
-    {
-
-      minimumFractionDigits:
-        digits,
-
-      maximumFractionDigits:
-        digits
-
-    }
-
-  );
+    "—";
 
 }
 
 
 /* =========================================================
-   HTML ESCAPE
+   ESCAPE
 ========================================================= */
 
-function escapeHtml(
-  value
-) {
+function esc(value) {
 
   return String(
-    value ?? ""
+    value ??
+    ""
   )
 
     .replace(
@@ -1859,9 +1998,7 @@ function escapeHtml(
    TIME
 ========================================================= */
 
-function parseTime(
-  value
-) {
+function parseTime(value) {
 
   if (
     !value
@@ -1898,11 +2035,9 @@ function parseTime(
 }
 
 
-function displayTime(
-  value
-) {
+function displayTime(value) {
 
-  const timestamp =
+  const ts =
     parseTime(
       value
     );
@@ -1910,7 +2045,7 @@ function displayTime(
 
   if (
     !Number.isFinite(
-      timestamp
+      ts
     )
   ) {
 
@@ -1921,7 +2056,7 @@ function displayTime(
 
 
   return new Date(
-    timestamp
+    ts
   )
     .toLocaleString(
 
@@ -1949,10 +2084,62 @@ function displayTime(
 
 
 /* =========================================================
+   SYMBOL HELPERS
+========================================================= */
+
+function assetName() {
+
+  return selectedSymbol ===
+    "BTC/USD"
+
+    ? "BITCOIN"
+
+    : "GOLD";
+
+}
+
+
+function lockKey() {
+
+  return selectedSymbol ===
+    "BTC/USD"
+
+    ? "mkayfx_volume_lock_btc_v1"
+
+    : "mkayfx_volume_lock_xau_v1";
+
+}
+
+
+function ignoreKey() {
+
+  return selectedSymbol ===
+    "BTC/USD"
+
+    ? "mkayfx_volume_ignore_btc_v1"
+
+    : "mkayfx_volume_ignore_xau_v1";
+
+}
+
+
+function historyKey() {
+
+  return selectedSymbol ===
+    "BTC/USD"
+
+    ? "mkayfx_volume_history_btc_v1"
+
+    : "mkayfx_volume_history_xau_v1";
+
+}
+
+
+/* =========================================================
    LOCK STORAGE
 ========================================================= */
 
-function getLockedTrade() {
+function getLock() {
 
   try {
 
@@ -1977,18 +2164,12 @@ function getLockedTrade() {
       );
 
 
-    if (
-      !trade ||
-      trade.symbol !==
+    return trade?.symbol ===
       selectedSymbol
-    ) {
 
-      return null;
+      ? trade
 
-    }
-
-
-    return trade;
+      : null;
 
   } catch {
 
@@ -1999,9 +2180,7 @@ function getLockedTrade() {
 }
 
 
-function saveLockedTrade(
-  trade
-) {
+function saveLock(trade) {
 
   localStorage.setItem(
 
@@ -2016,7 +2195,7 @@ function saveLockedTrade(
 }
 
 
-function clearLockedTrade() {
+function clearLock() {
 
   localStorage.removeItem(
     lockKey()
@@ -2025,9 +2204,7 @@ function clearLockedTrade() {
 }
 
 
-function saveCompletedTrade(
-  trade
-) {
+function saveHistory(trade) {
 
   let history =
     [];
@@ -2048,12 +2225,7 @@ function saveCompletedTrade(
 
       );
 
-  } catch {
-
-    history =
-      [];
-
-  }
+  } catch {}
 
 
   history.unshift(
@@ -2061,19 +2233,17 @@ function saveCompletedTrade(
   );
 
 
-  history =
-    history.slice(
-      0,
-      100
-    );
-
-
   localStorage.setItem(
 
     historyKey(),
 
     JSON.stringify(
-      history
+
+      history.slice(
+        0,
+        100
+      )
+
     )
 
   );
@@ -2082,56 +2252,38 @@ function saveCompletedTrade(
 
 
 /* =========================================================
-   ASSET
+   ASSETS
 ========================================================= */
 
-function assetName() {
-
-  return selectedSymbol ===
-    "BTC/USD"
-
-    ? "BITCOIN"
-
-    : "GOLD";
-
-}
-
-
-function updateAssetButtons() {
+function updateAssets() {
 
   document
     .querySelectorAll(
       ".asset"
     )
     .forEach(
-      button => {
+      b =>
 
-        button.classList.toggle(
+        b.classList.toggle(
 
           "active",
 
-          button.dataset.symbol ===
+          b.dataset.symbol ===
           selectedSymbol
 
-        );
-
-      }
+        )
     );
 
 
   $("runButton").textContent =
-    `RUN ${assetName()} TOTT ANALYSIS`;
+    `RUN ${assetName()} ANALYSIS`;
 
 
   $("decisionTitle").textContent =
-    `${selectedSymbol} · TOTT SIGNAL`;
+    `${selectedSymbol} · VOLUME IMBALANCE`;
 
 }
 
-
-/* =========================================================
-   ASSET BUTTONS
-========================================================= */
 
 document
   .querySelectorAll(
@@ -2152,14 +2304,14 @@ document
 
           localStorage.setItem(
 
-            "mkayfx_tott_symbol",
+            "mkayfx_volume_symbol",
 
             selectedSymbol
 
           );
 
 
-          updateAssetButtons();
+          updateAssets();
 
 
           runAnalysis();
@@ -2173,15 +2325,13 @@ document
 
 
 /* =========================================================
-   CREATE LOCK
+   CREATE HARD LOCK
 ========================================================= */
 
-function maybeCreateLock(
-  data
-) {
+function maybeCreateLock(data) {
 
   const existing =
-    getLockedTrade();
+    getLock();
 
 
   if (
@@ -2208,21 +2358,13 @@ function maybeCreateLock(
   }
 
 
-  /*
-     If user manually cleared this exact
-     signal candle, don't immediately
-     recreate it.
-  */
-
-  const ignoredTime =
+  if (
     localStorage.getItem(
       ignoreKey()
-    );
+    )
 
+    ===
 
-  if (
-    ignoredTime &&
-    ignoredTime ===
     data.signalTime
   ) {
 
@@ -2265,14 +2407,9 @@ function maybeCreateLock(
       .every(
         Number.isFinite
       )
-  ) {
 
-    return null;
+    ||
 
-  }
-
-
-  if (
     risk <=
     0
   ) {
@@ -2285,7 +2422,7 @@ function maybeCreateLock(
   const trade = {
 
     id:
-      `TOTT-${Date.now()}-${selectedSymbol.replace("/", "")}`,
+      `VOL-${Date.now()}-${selectedSymbol.replace("/", "")}`,
 
     symbol:
       selectedSymbol,
@@ -2320,7 +2457,7 @@ function maybeCreateLock(
   };
 
 
-  saveLockedTrade(
+  saveLock(
     trade
   );
 
@@ -2348,7 +2485,7 @@ function currentR(
   }
 
 
-  const price =
+  const p =
     Number(
       currentPrice
     );
@@ -2362,7 +2499,7 @@ function currentR(
 
   if (
     !Number.isFinite(
-      price
+      p
     )
 
     ||
@@ -2382,40 +2519,37 @@ function currentR(
   }
 
 
-  if (
-    trade.signal ===
+  return trade.signal ===
     "BUY"
-  ) {
 
-    return (
+    ?
 
-      price -
+    (
+      p -
       trade.entry
-
     )
+
+    /
+    risk
+
+    :
+
+    (
+      trade.entry -
+      p
+    )
+
     /
     risk;
-
-  }
-
-
-  return (
-
-    trade.entry -
-    price
-
-  )
-  /
-  risk;
 
 }
 
 
 /* =========================================================
-   BUILD API URL
+   ENDPOINT
 ========================================================= */
 
-function buildEndpoint() {
+function endpoint() {
 
   const params =
     new URLSearchParams({
@@ -2432,7 +2566,7 @@ function buildEndpoint() {
 
 
   const lock =
-    getLockedTrade();
+    getLock();
 
 
   if (
@@ -2487,7 +2621,7 @@ function buildEndpoint() {
 
 
 /* =========================================================
-   RUN
+   RUN ANALYSIS
 ========================================================= */
 
 async function runAnalysis() {
@@ -2523,7 +2657,7 @@ async function runAnalysis() {
     const response =
       await fetch(
 
-        buildEndpoint(),
+        endpoint(),
 
         {
 
@@ -2577,16 +2711,23 @@ async function runAnalysis() {
 
 
     let lock =
-      getLockedTrade();
+      getLock();
 
 
-    /*
-       SERVER-SIDE LOCK CHECK
-    */
+    /* =====================================================
+       EXISTING LOCK HIT TP / SL
+    ===================================================== */
 
     if (
-      lock &&
-      data.lockCheck &&
+
+      lock
+
+      &&
+
+      data.lockCheck
+
+      &&
+
       (
         data.lockCheck.status ===
         "WIN"
@@ -2596,6 +2737,7 @@ async function runAnalysis() {
         data.lockCheck.status ===
         "LOSS"
       )
+
     ) {
 
       const completed = {
@@ -2617,12 +2759,12 @@ async function runAnalysis() {
       };
 
 
-      saveCompletedTrade(
+      saveHistory(
         completed
       );
 
 
-      clearLockedTrade();
+      clearLock();
 
 
       lock =
@@ -2635,10 +2777,9 @@ async function runAnalysis() {
     }
 
 
-    /*
-       CREATE NEW HARD LOCK
-       ONLY IF NONE EXISTS
-    */
+    /* =====================================================
+       NEW LOCK
+    ===================================================== */
 
     if (
       !lock
@@ -2664,9 +2805,7 @@ async function runAnalysis() {
       data
     );
 
-  } catch (
-    error
-  ) {
+  } catch (error) {
 
     $("engineBadge").textContent =
       "ENGINE ERROR";
@@ -2698,7 +2837,7 @@ async function runAnalysis() {
 
 
     $("runButton").textContent =
-      `RUN ${assetName()} TOTT ANALYSIS`;
+      `RUN ${assetName()} ANALYSIS`;
 
   }
 
@@ -2709,12 +2848,26 @@ async function runAnalysis() {
    RENDER
 ========================================================= */
 
-function render(
-  data
-) {
+function render(data) {
+
+  const lock =
+    data.lockedTrade;
+
+
+  const shownSignal =
+
+    lock
+
+      ? lock.signal
+
+      : (
+          data.signal ||
+          "WAIT"
+        );
+
 
   $("decisionTitle").textContent =
-    `${data.symbol} · TOTT SIGNAL`;
+    `${data.symbol} · VOLUME IMBALANCE`;
 
 
   $("engineBadge").textContent =
@@ -2722,42 +2875,22 @@ function render(
     data.symbol ===
     "BTC/USD"
 
-      ? "BTC · TOTT · 5M"
+      ? "BTC · 5M · 24/7"
 
-      : "GOLD · TOTT · 5M";
-
-
-  const lock =
-    data.lockedTrade;
-
-
-  const displayedSignal =
-
-    lock
-
-      ? lock.signal
-
-      : data.signal ||
-        "WAIT";
+      : "GOLD · 5M";
 
 
   $("signal").textContent =
-    displayedSignal;
+    shownSignal;
 
 
   $("signal").className =
-    `signal ${displayedSignal}`;
+    `signal ${shownSignal}`;
 
 
   $("price").textContent =
     fmt(
       data.price
-    );
-
-
-  const age =
-    Number(
-      data.candleAgeMinutes
     );
 
 
@@ -2767,78 +2900,124 @@ function render(
 
       ?
 
-      `5M · ${displayTime(data.candleTime)}${
-        Number.isFinite(age)
-          ? ` · ${age.toFixed(1)}m old`
-          : ""
-      }`
+      `5M · ${displayTime(data.candleTime)} · ${fmt(data.candleAgeMinutes,1)}m old`
 
       :
 
       "Latest completed 5M candle";
 
 
-  /* TOTT */
+  /* =====================================================
+     SPIKES
+  ===================================================== */
 
-  $("mavg").textContent =
-    fmt(
-      data.mavg
-    );
-
-
-  $("ottUpper").textContent =
-    fmt(
-      data.ottUpper
-    );
+  $("bullSpikes").textContent =
+    data.anchor?.bullSpikes ??
+    0;
 
 
-  $("ottLower").textContent =
-    fmt(
-      data.ottLower
-    );
+  $("bearSpikes").textContent =
+    data.anchor?.bearSpikes ??
+    0;
 
 
-  $("direction").textContent =
-    data.direction ||
+  $("dominance").textContent =
+    data.anchor?.dominance ??
     "—";
 
 
-  $("direction").className =
+  $("dominance").className =
 
-    data.direction ===
-    "UP"
+    data.anchor?.dominance ===
+    "BULLISH"
 
       ? "green"
 
-      : data.direction ===
-        "DOWN"
+      : data.anchor?.dominance ===
+        "BEARISH"
 
         ? "red"
 
-        : "";
+        : "gold";
 
 
-  /* SETTINGS */
+  $("poc").textContent =
+    fmt(
+      data.anchor?.poc
+    );
 
-  $("period").textContent =
-    data.settings?.ottPeriod ??
+
+  /* =====================================================
+     1H ANCHOR
+  ===================================================== */
+
+  $("aOpen").textContent =
+    fmt(
+      data.anchor?.open
+    );
+
+
+  $("aHigh").textContent =
+    fmt(
+      data.anchor?.high
+    );
+
+
+  $("aLow").textContent =
+    fmt(
+      data.anchor?.low
+    );
+
+
+  $("aClose").textContent =
+    fmt(
+      data.anchor?.close
+    );
+
+
+  /* =====================================================
+     SETTINGS
+  ===================================================== */
+
+  $("spikeMult").textContent =
+    `${data.settings?.spikeMultiplier ?? 1.2}×`;
+
+
+  $("volMa").textContent =
+    data.settings?.volumeMALength ??
+    20;
+
+
+  $("vpRows").textContent =
+    data.settings?.vpRows ??
     40;
 
 
-  $("percent").textContent =
-    `${data.settings?.optimizationConstant ?? 1}%`;
+  $("stackMin").textContent =
+    data.settings?.minimumStackedSpikes ??
+    3;
 
 
-  $("coefficient").textContent =
-    data.settings?.twinCoefficient ??
-    0.001;
+  /* =====================================================
+     VOLUME STATUS
+  ===================================================== */
+
+  $("volumeStatus").innerHTML =
+
+    data.volume?.available
+
+      ?
+
+      `Volume feed: <span class="green">AVAILABLE</span> · ${Number(data.volume.usableBars || 0).toLocaleString()} usable 1M bars.`
+
+      :
+
+      `Volume feed: <span class="red">UNAVAILABLE / TOO SPARSE</span>. This strategy will stay on WAIT.`;
 
 
-  $("rr").textContent =
-    `1:${data.settings?.riskReward ?? 3}`;
-
-
-  /* LOCK */
+  /* =====================================================
+     HARD LOCK
+  ===================================================== */
 
   if (
     lock
@@ -2849,8 +3028,7 @@ function render(
 
 
     $("signalDescription").textContent =
-
-      `${lock.signal} stays locked until TP or SL.`;
+      `${lock.signal} remains locked until TP or SL is hit.`;
 
   } else {
 
@@ -2863,14 +3041,14 @@ function render(
       data.signal ===
       "BUY"
 
-        ? "Fresh TOTT BUY crossover."
+        ? "Fresh bullish stacked-imbalance breakout."
 
         : data.signal ===
           "SELL"
 
-          ? "Fresh TOTT SELL crossover."
+          ? "Fresh bearish stacked-imbalance breakdown."
 
-          : "Waiting for TOTT crossover.";
+          : "Waiting for a stacked imbalance breakout.";
 
   }
 
@@ -2937,14 +3115,22 @@ function render(
       rNow
     )
 
-      ? rNow >=
-        0
+      ? (
+          rNow >=
+          0
 
-        ? "green"
+            ? "green"
 
-        : "red"
+            : "red"
+        )
 
       : "";
+
+
+  renderZones(
+    data.anchor?.imbalances ||
+    []
+  );
 
 
   renderStatus(
@@ -2959,7 +3145,8 @@ function render(
 
 
   renderRecentSignals(
-    data.recentSignals
+    data.recentSignals ||
+    []
   );
 
 
@@ -2967,6 +3154,65 @@ function render(
     data,
     lock
   );
+
+}
+
+
+/* =========================================================
+   ZONES
+========================================================= */
+
+function renderZones(zones) {
+
+  $("zones").innerHTML =
+
+    zones.length
+
+      ?
+
+      zones
+        .map(
+          z => `
+
+            <div class="zoneRow">
+
+              <span class="zonePill ${
+                z.direction === "BULLISH"
+                  ? "bullPill"
+                  : "bearPill"
+              }">
+
+                ${esc(z.direction)}
+
+              </span>
+
+              ${fmt(z.low)}
+              →
+              ${fmt(z.high)}
+
+              <br>
+
+              <span class="tradeTime">
+
+                Bull ${z.bullCount}
+                ·
+                Bear ${z.bearCount}
+                ·
+                Strength ${z.strength}
+
+              </span>
+
+            </div>
+
+          `
+        )
+        .join("")
+
+      :
+
+      `<div class="reason">
+         No stacked imbalance zones in the current 1H anchor.
+       </div>`;
 
 }
 
@@ -2988,57 +3234,46 @@ function renderStatus(
 
       <div class="reason">
 
-        🔒 TOTT trade is HARD LOCKED.
+        🔒 Signal is HARD LOCKED.
 
       </div>
 
       <div class="reason">
 
-        Direction:
         <b class="${
           lock.signal === "BUY"
             ? "green"
             : "red"
         }">
 
-          ${escapeHtml(lock.signal)}
+          ${esc(lock.signal)}
 
         </b>
 
-      </div>
-
-      <div class="reason">
-
-        Entry:
-        ${fmt(lock.entry)}
+        · Entry ${fmt(lock.entry)}
 
       </div>
 
       <div class="reason">
 
-        TOTT Stop:
-        ${fmt(lock.stopLoss)}
+        SL ${fmt(lock.stopLoss)}
+        ·
+        TP ${fmt(lock.takeProfit)}
+        ·
+        1:${lock.rr}
 
       </div>
 
       <div class="reason">
 
-        Stretched Target:
-        ${fmt(lock.takeProfit)}
-        · 3R
+        New BUY, SELL and WAIT states are ignored until this trade exits.
 
       </div>
 
       <div class="reason">
 
-        New TOTT signals are ignored until this trade hits TP or SL.
-
-      </div>
-
-      <div class="reason">
-
-        Signal candle:
-        ${escapeHtml(
+        Signal time:
+        ${esc(
           displayTime(
             lock.signalTime
           )
@@ -3047,6 +3282,7 @@ function renderStatus(
       </div>
 
     `;
+
 
     return;
 
@@ -3057,7 +3293,7 @@ function renderStatus(
     data.lastCompletedTrade
   ) {
 
-    const trade =
+    const t =
       data.lastCompletedTrade;
 
 
@@ -3065,15 +3301,15 @@ function renderStatus(
 
       <div class="reason">
 
-        Previous hard-locked trade completed:
+        Previous locked trade completed:
 
         <b class="${
-          trade.status === "WIN"
+          t.status === "WIN"
             ? "green"
             : "red"
         }">
 
-          ${escapeHtml(trade.status)}
+          ${esc(t.status)}
 
         </b>
 
@@ -3082,18 +3318,19 @@ function renderStatus(
       <div class="reason">
 
         Result:
-        ${trade.resultR > 0 ? "+" : ""}
-        ${trade.resultR}R
+        ${t.resultR > 0 ? "+" : ""}
+        ${t.resultR}R
 
       </div>
 
       <div class="reason">
 
-        Waiting for the next fresh TOTT crossover.
+        Unlocked and waiting for the next fresh imbalance signal.
 
       </div>
 
     `;
+
 
     return;
 
@@ -3101,6 +3338,7 @@ function renderStatus(
 
 
   const reasons =
+
     Array.isArray(
       data.reasons
     )
@@ -3118,11 +3356,11 @@ function renderStatus(
 
       reasons
         .map(
-          reason => `
+          r => `
 
             <div class="reason">
 
-              ${escapeHtml(reason)}
+              ${esc(r)}
 
             </div>
 
@@ -3133,7 +3371,7 @@ function renderStatus(
       :
 
       `<div class="reason">
-         Waiting for TOTT crossover.
+         Waiting for analysis.
        </div>`;
 
 }
@@ -3143,9 +3381,7 @@ function renderStatus(
    BACKTEST
 ========================================================= */
 
-function renderBacktest(
-  bt
-) {
+function renderBacktest(bt) {
 
   if (
     !bt
@@ -3162,7 +3398,7 @@ function renderBacktest(
 
 
   $("btWin").textContent =
-    `${fmt(bt.winRate, 1)}%`;
+    `${fmt(bt.winRate,1)}%`;
 
 
   $("btPF").textContent =
@@ -3179,7 +3415,7 @@ function renderBacktest(
 
 
   $("btNet").textContent =
-    `${fmt(bt.netR, 2)}R`;
+    `${fmt(bt.netR,2)}R`;
 
 
   $("btNet").className =
@@ -3195,7 +3431,7 @@ function renderBacktest(
 
 
   $("btExpectancy").textContent =
-    `${fmt(bt.expectancyR, 3)}R`;
+    `${fmt(bt.expectancyR,3)}R`;
 
 
   $("btExpectancy").className =
@@ -3211,69 +3447,54 @@ function renderBacktest(
 
 
   $("btDD").textContent =
-    `${fmt(bt.maxDrawdownR, 2)}R`;
+    `${fmt(bt.maxDrawdownR,2)}R`;
 
 
   $("btLossStreak").textContent =
-    String(
-      bt.maxLossStreak ??
-      0
-    );
+    bt.maxLossStreak ??
+    0;
 
 
   $("btHold").textContent =
-    `${fmt(bt.averageHoldMinutes, 1)}m`;
+    `${fmt(bt.averageHoldMinutes,1)}m`;
 
 
-  $("btPeriod").innerHTML = `
+  $("btPeriod").innerHTML =
 
-    TOTT · VAR 40 · Optimization 1% · Twin 0.001
+    bt.unavailable
 
-    <br>
+      ?
 
-    Hard-lock target:
-    <b class="green">
-      3R
-    </b>
+      `<span class="red">
+         Backtest unavailable:
+       </span>
+       ${esc(
+         bt.reason ||
+         "No usable volume data."
+       )}`
 
-    <br><br>
+      :
 
-    Wins:
-    <span class="green">
-      ${bt.wins ?? 0}
-    </span>
-
-    ·
-
-    Losses:
-    <span class="red">
-      ${bt.losses ?? 0}
-    </span>
-
-    ·
-
-    Open:
-    <span class="gold">
-      ${bt.openTrades ?? 0}
-    </span>
-
-    <br><br>
-
-    ${escapeHtml(
-      displayTime(
-        bt.firstCandle
-      )
-    )}
-
-    →
-
-    ${escapeHtml(
-      displayTime(
-        bt.lastCandle
-      )
-    )}
-
-  `;
+      `Hard lock · 3R target · Wins
+       <span class="green">
+         ${bt.wins ?? 0}
+       </span>
+       · Losses
+       <span class="red">
+         ${bt.losses ?? 0}
+       </span>
+       <br><br>
+       ${esc(
+         displayTime(
+           bt.firstCandle
+         )
+       )}
+       →
+       ${esc(
+         displayTime(
+           bt.lastCandle
+         )
+       )}`;
 
 
   const trades =
@@ -3295,36 +3516,36 @@ function renderBacktest(
 
       trades
         .map(
-          trade => `
+          t => `
 
             <div class="tradeRow">
 
               <b class="${
-                trade.signal === "BUY"
+                t.signal === "BUY"
                   ? "green"
                   : "red"
               }">
 
-                ${escapeHtml(trade.signal)}
+                ${esc(t.signal)}
 
               </b>
 
               ·
 
               <b class="${
-                trade.result === "WIN"
+                t.result === "WIN"
                   ? "green"
-                  : trade.result === "LOSS"
+                  : t.result === "LOSS"
                     ? "red"
                     : "gold"
               }">
 
-                ${escapeHtml(trade.result)}
+                ${esc(t.result)}
 
                 ${
-                  trade.r == null
+                  t.r == null
                     ? ""
-                    : ` · ${trade.r > 0 ? "+" : ""}${trade.r}R`
+                    : ` · ${t.r > 0 ? "+" : ""}${t.r}R`
                 }
 
               </b>
@@ -3333,39 +3554,27 @@ function renderBacktest(
 
               <span class="tradeTime">
 
-                Entry ${fmt(trade.entry)}
-
-                <br>
-
-                SL ${fmt(trade.stopLoss)}
-
+                Entry ${fmt(t.entry)}
                 ·
-
-                TP ${fmt(trade.takeProfit)}
-
-                <br>
-
-                Hold:
-                ${trade.holdBars ?? 0}
-                × 5M candles
+                SL ${fmt(t.stopLoss)}
+                ·
+                TP ${fmt(t.takeProfit)}
 
                 <br>
 
-                ${escapeHtml(
+                ${esc(
                   displayTime(
-                    trade.entryTime
+                    t.entryTime
                   )
                 )}
 
                 ${
-                  trade.exitTime
-
-                    ? ` → ${escapeHtml(
+                  t.exitTime
+                    ? ` → ${esc(
                         displayTime(
-                          trade.exitTime
+                          t.exitTime
                         )
                       )}`
-
                     : ""
                 }
 
@@ -3387,71 +3596,62 @@ function renderBacktest(
 
 
 /* =========================================================
-   RECENT TOTT SIGNALS
+   RECENT SIGNALS
 ========================================================= */
 
-function renderRecentSignals(
-  signals
-) {
-
-  const list =
-
-    Array.isArray(
-      signals
-    )
-
-      ? signals
-
-      : [];
-
+function renderRecentSignals(signals) {
 
   $("recentSignals").innerHTML =
 
-    list.length
+    signals.length
 
       ?
 
-      list
+      signals
         .map(
-          trade => `
+          t => `
 
             <div class="tradeRow">
 
               <b class="${
-                trade.signal === "BUY"
+                t.signal === "BUY"
                   ? "green"
                   : "red"
               }">
 
-                ${escapeHtml(trade.signal)}
+                ${esc(t.signal)}
 
               </b>
 
-              · Entry ${fmt(trade.entry)}
+              · Entry ${fmt(t.entry)}
 
               <br>
 
               <span class="tradeTime">
 
-                SL ${fmt(trade.stopLoss)}
-
+                SL ${fmt(t.stopLoss)}
                 ·
-
-                TP ${fmt(trade.takeProfit)}
-
+                TP ${fmt(t.takeProfit)}
                 ·
-
-                1:${trade.rr ?? 3}
+                1:${t.rr ?? 3}
 
                 <br>
 
-                VAR ${fmt(trade.mavg)}
+                Zone
+                ${fmt(t.zone?.low)}
+                →
+                ${fmt(t.zone?.high)}
+
+                · Bull ${t.bullSpikes}
+                /
+                Bear ${t.bearSpikes}
 
                 <br>
 
-                ${escapeHtml(
+                ${esc(
                   displayTime(
-                    trade.time
+                    t.signalTime ||
+                    t.time
                   )
                 )}
 
@@ -3466,7 +3666,7 @@ function renderRecentSignals(
       :
 
       `<div class="reason">
-         No recent TOTT signals.
+         No recent qualified signals.
        </div>`;
 
 }
@@ -3568,84 +3768,90 @@ function drawChart(
   }
 
 
-  const values =
-    [];
+  const zones =
+
+    Array.isArray(
+      data.anchor?.imbalances
+    )
+
+      ? data.anchor.imbalances
+
+      : [];
 
 
-  bars.forEach(
-    bar => {
-
-      [
-        bar.high,
-        bar.low,
-        bar.mavg,
-        bar.ottUpper,
-        bar.ottLower
-      ]
-        .map(
-          Number
-        )
-        .filter(
-          Number.isFinite
-        )
-        .forEach(
-          value =>
-            values.push(
-              value
-            )
-        );
-
-    }
-  );
-
-
-  if (
-    lock
-  ) {
+  const extra =
 
     [
-      lock.entry,
-      lock.stopLoss,
-      lock.takeProfit
+
+      data.anchor?.poc,
+
+      lock?.entry,
+
+      lock?.stopLoss,
+
+      lock?.takeProfit,
+
+      ...zones.flatMap(
+        z => [
+          z.low,
+          z.high
+        ]
+      )
+
     ]
+
       .map(
         Number
       )
+
       .filter(
         Number.isFinite
-      )
-      .forEach(
-        value =>
-          values.push(
-            value
-          )
       );
 
-  }
+
+  const highs =
+
+    bars
+      .map(
+        b =>
+          Number(
+            b.high
+          )
+      )
+      .filter(
+        Number.isFinite
+      );
 
 
-  if (
-    !values.length
-  ) {
+  const lows =
 
-    return;
-
-  }
+    bars
+      .map(
+        b =>
+          Number(
+            b.low
+          )
+      )
+      .filter(
+        Number.isFinite
+      );
 
 
   let high =
     Math.max(
-      ...values
+      ...highs,
+      ...extra
     );
 
 
   let low =
     Math.min(
-      ...values
+      ...lows,
+      ...extra
     );
 
 
-  const padding =
+  const pad =
 
     (
       high -
@@ -3661,11 +3867,11 @@ function drawChart(
 
 
   high +=
-    padding;
+    pad;
 
 
   low -=
-    padding;
+    pad;
 
 
   const W =
@@ -3677,13 +3883,13 @@ function drawChart(
 
 
   const x =
-    index =>
+    i =>
 
       14
 
       +
 
-      index /
+      i /
       Math.max(
         1,
         bars.length -
@@ -3699,7 +3905,7 @@ function drawChart(
 
 
   const y =
-    price =>
+    p =>
 
       H -
       16
@@ -3707,10 +3913,7 @@ function drawChart(
       -
 
       (
-        Number(
-          price
-        )
-        -
+        Number(p) -
         low
       )
 
@@ -3730,23 +3933,107 @@ function drawChart(
       );
 
 
-  /* GRID */
+  const firstTs =
+    parseTime(
+      bars[0].time
+    );
+
+
+  const lastTs =
+    parseTime(
+
+      bars.at(-1).closeTime
+
+      ||
+
+      bars.at(-1).time
+
+    );
+
+
+  const xTime =
+    time => {
+
+      const ts =
+        parseTime(
+          time
+        );
+
+
+      if (
+        !Number.isFinite(
+          ts
+        )
+
+        ||
+
+        !Number.isFinite(
+          firstTs
+        )
+
+        ||
+
+        !Number.isFinite(
+          lastTs
+        )
+
+        ||
+
+        lastTs ===
+        firstTs
+      ) {
+
+        return null;
+
+      }
+
+
+      return (
+
+        14
+
+        +
+
+        (
+          ts -
+          firstTs
+        )
+
+        /
+
+        (
+          lastTs -
+          firstTs
+        )
+
+        *
+
+        (
+          W -
+          28
+        )
+
+      );
+
+    };
+
+
+  /* =====================================================
+     GRID
+  ===================================================== */
 
   ctx.strokeStyle =
     "rgba(255,255,255,.045)";
 
 
   for (
-    let row = 1;
-
-    row <
-      6;
-
-    row++
+    let r = 1;
+    r < 6;
+    r++
   ) {
 
     const yy =
-      row *
+      r *
       H /
       6;
 
@@ -3771,9 +4058,59 @@ function drawChart(
   }
 
 
-  /* =======================================================
+  /* =====================================================
+     IMBALANCE ZONES
+  ===================================================== */
+
+  for (
+    const z
+    of zones
+  ) {
+
+    const top =
+      y(
+        z.high
+      );
+
+
+    const bottom =
+      y(
+        z.low
+      );
+
+
+    ctx.fillStyle =
+
+      z.direction ===
+      "BULLISH"
+
+        ? "rgba(55,230,161,.10)"
+
+        : "rgba(255,98,121,.10)";
+
+
+    ctx.fillRect(
+
+      0,
+
+      top,
+
+      W,
+
+      Math.max(
+        1,
+        bottom -
+        top
+      )
+
+    );
+
+  }
+
+
+  /* =====================================================
      CANDLES
-  ======================================================= */
+  ===================================================== */
 
   const candleWidth =
 
@@ -3800,40 +4137,40 @@ function drawChart(
 
   bars.forEach(
     (
-      bar,
-      index
+      b,
+      i
     ) => {
 
-      const open =
+      const o =
         Number(
-          bar.open
+          b.open
         );
 
 
-      const highPrice =
+      const h =
         Number(
-          bar.high
+          b.high
         );
 
 
-      const lowPrice =
+      const l =
         Number(
-          bar.low
+          b.low
         );
 
 
-      const close =
+      const c =
         Number(
-          bar.close
+          b.close
         );
 
 
       if (
         ![
-          open,
-          highPrice,
-          lowPrice,
-          close
+          o,
+          h,
+          l,
+          c
         ]
           .every(
             Number.isFinite
@@ -3847,22 +4184,18 @@ function drawChart(
 
       const xx =
         x(
-          index
+          i
         );
-
-
-      const bullish =
-        close >=
-        open;
 
 
       const color =
 
-        bullish
+        c >=
+        o
 
-          ? "rgba(55,230,161,.70)"
+          ? "#37e6a1"
 
-          : "rgba(255,98,121,.70)";
+          : "#ff6279";
 
 
       ctx.strokeStyle =
@@ -3873,18 +4206,24 @@ function drawChart(
 
 
       ctx.moveTo(
+
         xx,
+
         y(
-          lowPrice
+          l
         )
+
       );
 
 
       ctx.lineTo(
+
         xx,
+
         y(
-          highPrice
+          h
         )
+
       );
 
 
@@ -3895,30 +4234,39 @@ function drawChart(
         color;
 
 
-      const bodyTop =
+      const top =
+
         Math.min(
+
           y(
-            open
+            o
           ),
+
           y(
-            close
+            c
           )
+
         );
 
 
-      const bodyHeight =
+      const bh =
+
         Math.max(
 
           1,
 
           Math.abs(
+
             y(
-              open
+              o
             )
+
             -
+
             y(
-              close
+              c
             )
+
           )
 
         );
@@ -3930,11 +4278,11 @@ function drawChart(
         candleWidth /
         2,
 
-        bodyTop,
+        top,
 
         candleWidth,
 
-        bodyHeight
+        bh
 
       );
 
@@ -3942,163 +4290,118 @@ function drawChart(
   );
 
 
-  /* =======================================================
-     SERIES
-  ======================================================= */
+  /* =====================================================
+     SPIKE BUBBLES
+  ===================================================== */
 
-  function drawSeries(
-    key,
-    color,
-    width
-  ) {
+  const spikes =
 
-    ctx.save();
+    Array.isArray(
+      data.anchor?.spikes
+    )
 
+      ? data.anchor.spikes
 
-    ctx.strokeStyle =
-      color;
+      : [];
 
 
-    ctx.lineWidth =
-      width;
+  spikes.forEach(
+    s => {
+
+      const xx =
+        xTime(
+          s.time
+        );
 
 
-    ctx.beginPath();
+      if (
+        xx ===
+        null
+      ) {
 
-
-    let started =
-      false;
-
-
-    bars.forEach(
-      (
-        bar,
-        index
-      ) => {
-
-        const value =
-          Number(
-            bar[
-              key
-            ]
-          );
-
-
-        if (
-          !Number.isFinite(
-            value
-          )
-        ) {
-
-          return;
-
-        }
-
-
-        if (
-          !started
-        ) {
-
-          ctx.moveTo(
-
-            x(
-              index
-            ),
-
-            y(
-              value
-            )
-
-          );
-
-
-          started =
-            true;
-
-        } else {
-
-          ctx.lineTo(
-
-            x(
-              index
-            ),
-
-            y(
-              value
-            )
-
-          );
-
-        }
+        return;
 
       }
-    );
 
 
-    ctx.stroke();
+      const yy =
+        y(
+          s.price
+        );
 
 
-    ctx.restore();
+      const rel =
 
-  }
+        Math.max(
+
+          .15,
+
+          Math.min(
+
+            1,
+
+            Number(
+              s.relative
+            )
+
+            ||
+
+            .2
+
+          )
+
+        );
 
 
-  /*
-     Pine Support Line
-  */
+      ctx.beginPath();
 
-  drawSeries(
 
-    "mavg",
+      ctx.arc(
 
-    "#5ba8ff",
+        xx,
 
-    2
+        yy,
 
+        2 +
+        rel *
+        4,
+
+        0,
+
+        Math.PI *
+        2
+
+      );
+
+
+      ctx.fillStyle =
+
+        s.delta >
+        0
+
+          ? `rgba(55,230,161,${.35 + rel * .55})`
+
+          : `rgba(255,98,121,${.35 + rel * .55})`;
+
+
+      ctx.fill();
+
+    }
   );
 
 
-  /*
-     Twin OTT upper
-  */
+  /* =====================================================
+     HORIZONTAL LINE
+  ===================================================== */
 
-  drawSeries(
-
-    "ottUpper",
-
-    "#37e6a1",
-
-    2
-
-  );
-
-
-  /*
-     Twin OTT lower
-  */
-
-  drawSeries(
-
-    "ottLower",
-
-    "#ff6279",
-
-    2
-
-  );
-
-
-  /* =======================================================
-     LOCKED LEVELS
-  ======================================================= */
-
-  function horizontal(
+  function line(
     price,
     label,
-    color
+    color,
+    dash = []
   ) {
 
-    const value =
+    const p =
       Number(
         price
       );
@@ -4106,7 +4409,7 @@ function drawChart(
 
     if (
       !Number.isFinite(
-        value
+        p
       )
     ) {
 
@@ -4117,7 +4420,7 @@ function drawChart(
 
     const yy =
       y(
-        value
+        p
       );
 
 
@@ -4132,12 +4435,8 @@ function drawChart(
       color;
 
 
-    ctx.lineWidth =
-      1.5;
-
-
     ctx.setLineDash(
-      []
+      dash
     );
 
 
@@ -4159,19 +4458,25 @@ function drawChart(
     ctx.stroke();
 
 
+    ctx.setLineDash(
+      []
+    );
+
+
     ctx.font =
       "9px -apple-system";
 
 
     ctx.fillText(
 
-      `${label} ${fmt(value)}`,
+      `${label} ${fmt(p)}`,
 
       6,
 
       Math.max(
         11,
-        yy - 4
+        yy -
+        4
       )
 
     );
@@ -4182,22 +4487,42 @@ function drawChart(
   }
 
 
+  /* POC */
+
+  line(
+
+    data.anchor?.poc,
+
+    "POC",
+
+    "rgba(157,131,255,.9)",
+
+    [
+      5,
+      5
+    ]
+
+  );
+
+
+  /* LOCK */
+
   if (
     lock
   ) {
 
-    horizontal(
+    line(
 
       lock.entry,
 
       "ENTRY",
 
-      "rgba(157,131,255,.98)"
+      "rgba(121,148,255,.98)"
 
     );
 
 
-    horizontal(
+    line(
 
       lock.stopLoss,
 
@@ -4208,7 +4533,7 @@ function drawChart(
     );
 
 
-    horizontal(
+    line(
 
       lock.takeProfit,
 
@@ -4221,24 +4546,47 @@ function drawChart(
   }
 
 
-  /* =======================================================
-     SIGNAL MARKERS
-  ======================================================= */
+  /* =====================================================
+     VOLUME PROFILE
+  ===================================================== */
 
-  bars.forEach(
-    (
-      bar,
-      index
-    ) => {
+  const profile =
+
+    Array.isArray(
+      data.anchor?.profile
+    )
+
+      ? data.anchor.profile
+
+      : [];
+
+
+  const profileMaxWidth =
+
+    Math.min(
+
+      90,
+
+      W *
+      .18
+
+    );
+
+
+  profile.forEach(
+    p => {
+
+      const rel =
+        Number(
+          p.relative
+        )
+        ||
+        0;
+
 
       if (
-        bar.signal !==
-        "BUY"
-
-        &&
-
-        bar.signal !==
-        "SELL"
+        rel <=
+        0
       ) {
 
         return;
@@ -4246,53 +4594,38 @@ function drawChart(
       }
 
 
-      const xx =
-        x(
-          index
+      const top =
+        y(
+          p.high
         );
 
 
-      const yy =
-
-        bar.signal ===
-        "BUY"
-
-          ? y(
-              bar.low
-            ) +
-            12
-
-          : y(
-              bar.high
-            ) -
-            12;
+      const bottom =
+        y(
+          p.low
+        );
 
 
       ctx.fillStyle =
-
-        bar.signal ===
-        "BUY"
-
-          ? "#37e6a1"
-
-          : "#ff6279";
+        "rgba(157,131,255,.18)";
 
 
-      ctx.font =
-        "bold 9px -apple-system";
+      ctx.fillRect(
 
+        W -
+        profileMaxWidth *
+        rel,
 
-      ctx.textAlign =
-        "center";
+        top,
 
+        profileMaxWidth *
+        rel,
 
-      ctx.fillText(
-
-        bar.signal,
-
-        xx,
-
-        yy
+        Math.max(
+          1,
+          bottom -
+          top
+        )
 
       );
 
@@ -4300,49 +4633,50 @@ function drawChart(
   );
 
 
-  ctx.textAlign =
-    "left";
-
+  /* =====================================================
+     LEGEND
+  ===================================================== */
 
   $("chartLegend").innerHTML = `
 
     <span class="chip">
 
-      ${escapeHtml(
-        data.symbol
-      )}
-      · 5M
+      ${esc(data.symbol)} · 5M
 
     </span>
 
     <span class="chip">
 
-      BLUE · VAR
+      1H ANCHOR
 
     </span>
 
     <span class="chip">
 
-      GREEN · OTT UP
+      1M SPIKES
 
     </span>
 
     <span class="chip">
 
-      RED · OTT DOWN
+      ${data.anchor?.totalSpikes ?? 0} SPIKES
 
     </span>
 
     ${
       lock
 
-        ? `<span class="chip">
-             🔒 ${lock.signal} · 3R
-           </span>`
+        ?
 
-        : `<span class="chip">
-             UNLOCKED
-           </span>`
+        `<span class="chip">
+           🔒 ${lock.signal} · 3R
+         </span>`
+
+        :
+
+        `<span class="chip">
+           UNLOCKED
+         </span>`
     }
 
   `;
@@ -4362,7 +4696,7 @@ $("clearButton")
     () => {
 
       const lock =
-        getLockedTrade();
+        getLock();
 
 
       if (
@@ -4392,7 +4726,7 @@ $("clearButton")
       }
 
 
-      clearLockedTrade();
+      clearLock();
 
 
       runAnalysis();
@@ -4403,7 +4737,7 @@ $("clearButton")
 
 
 /* =========================================================
-   RUN BUTTON
+   RUN
 ========================================================= */
 
 $("runButton")
@@ -4434,7 +4768,7 @@ window.addEventListener(
 
         lastData,
 
-        getLockedTrade()
+        getLock()
 
       );
 
@@ -4472,7 +4806,7 @@ setInterval(
    START
 ========================================================= */
 
-updateAssetButtons();
+updateAssets();
 
 runAnalysis();
 
