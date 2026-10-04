@@ -1,5 +1,5 @@
 /* =========================================================
-   MKAYFX MULTI-ASSET 1M S&R SIGNAL ENGINE
+   MKAYFX MULTI-ASSET 5M S&R ENGINE
    /api/sr.js
 
    MARKETS
@@ -7,8 +7,12 @@
    XAU/USD
    BTC/USD
 
-   EXACT CORE LOGIC FROM PINE
-   --------------------------
+   TIMEFRAME
+   ---------
+   5 MINUTES
+
+   STRATEGY
+   --------
    Pivot Lookback = 9
    Max Active Levels = 5
 
@@ -18,8 +22,8 @@
    SELL:
    close crosses BELOW newest confirmed resistance
 
-   TRADE LEVELS
-   ------------
+   TRADE PLAN
+   ----------
    BUY:
    Entry = signal close
    SL    = newest support
@@ -30,25 +34,11 @@
    SL    = newest resistance
    TP    = 2R
 
-   NO:
-   EMA
-   RSI
-   ATR
-   MACD
-   M5
-   M15
-   SCORE
-   EXTRA FILTERS
-
-   VERCEL ENV
-   ----------
-   TWELVE_DATA_API_KEY
+   NO EXTRA INDICATORS
 ========================================================= */
-
 
 const API_KEY =
   process.env.TWELVE_DATA_API_KEY;
-
 
 const BASE_URL =
   "https://api.twelvedata.com";
@@ -61,29 +51,15 @@ const BASE_URL =
 const MARKETS = {
 
   "XAU/USD": {
-
-    name:
-      "GOLD",
-
-    short:
-      "XAU",
-
-    digits:
-      2
-
+    name: "GOLD",
+    short: "XAU",
+    digits: 2
   },
 
   "BTC/USD": {
-
-    name:
-      "BITCOIN",
-
-    short:
-      "BTC",
-
-    digits:
-      2
-
+    name: "BITCOIN",
+    short: "BTC",
+    digits: 2
   }
 
 };
@@ -93,21 +69,20 @@ const MARKETS = {
    SETTINGS
 ========================================================= */
 
+const INTERVAL =
+  "5min";
+
 const LENGTH =
   9;
-
 
 const MAX_LEVELS =
   5;
 
-
 const SHOW_ZONES =
   true;
 
-
 const RISK_REWARD =
   2;
-
 
 const OUTPUT_SIZE =
   500;
@@ -117,19 +92,12 @@ const OUTPUT_SIZE =
    HELPERS
 ========================================================= */
 
-function number(
-  value
-) {
+function num(value) {
 
   const n =
-    Number(
-      value
-    );
+    Number(value);
 
-
-  return Number.isFinite(
-    n
-  )
+  return Number.isFinite(n)
     ? n
     : null;
 
@@ -142,10 +110,7 @@ function round(
 ) {
 
   const n =
-    number(
-      value
-    );
-
+    num(value);
 
   if (
     n === null
@@ -155,36 +120,30 @@ function round(
 
   }
 
-
   return Number(
-    n.toFixed(
-      digits
-    )
+    n.toFixed(digits)
   );
 
 }
 
 
-function safeError(
-  value
-) {
+function safeError(value) {
 
   if (
     value == null
   ) {
 
     return "";
+
   }
 
-
   if (
-    typeof value ===
-    "string"
+    typeof value === "string"
   ) {
 
     return value;
-  }
 
+  }
 
   if (
     value instanceof Error
@@ -192,39 +151,28 @@ function safeError(
 
     return (
       value.message ||
-      String(
-        value
-      )
+      String(value)
     );
 
   }
 
-
   if (
-    typeof value ===
-    "object"
+    typeof value === "object"
   ) {
 
     try {
 
-      return JSON.stringify(
-        value
-      );
+      return JSON.stringify(value);
 
     } catch {
 
-      return String(
-        value
-      );
+      return String(value);
 
     }
 
   }
 
-
-  return String(
-    value
-  );
+  return String(value);
 
 }
 
@@ -233,9 +181,7 @@ function safeError(
    SYMBOL
 ========================================================= */
 
-function normalizeSymbol(
-  value
-) {
+function normalizeSymbol(value) {
 
   const raw =
     String(
@@ -270,16 +216,11 @@ function normalizeSymbol(
 
 
   const symbol =
-    aliases[
-      raw
-    ]
-    ||
+    aliases[raw] ||
     raw;
 
 
-  return MARKETS[
-    symbol
-  ]
+  return MARKETS[symbol]
     ? symbol
     : "XAU/USD";
 
@@ -290,22 +231,19 @@ function normalizeSymbol(
    TIME
 ========================================================= */
 
-function parseTime(
-  value
-) {
+function parseTime(value) {
 
   if (
     !value
   ) {
 
     return NaN;
+
   }
 
 
   const text =
-    String(
-      value
-    )
+    String(value)
       .trim()
       .replace(
         " ",
@@ -315,9 +253,7 @@ function parseTime(
 
   return new Date(
 
-    /Z$|[+-]\d\d:\d\d$/.test(
-      text
-    )
+    /Z$|[+-]\d\d:\d\d$/.test(text)
 
       ? text
 
@@ -328,23 +264,18 @@ function parseTime(
 }
 
 
-function minutesOld(
-  value
-) {
+function minutesOld(value) {
 
   const timestamp =
-    parseTime(
-      value
-    );
+    parseTime(value);
 
 
   if (
-    !Number.isFinite(
-      timestamp
-    )
+    !Number.isFinite(timestamp)
   ) {
 
     return null;
+
   }
 
 
@@ -355,9 +286,7 @@ function minutesOld(
     (
       Date.now() -
       timestamp
-    )
-    /
-    60000
+    ) / 60000
 
   );
 
@@ -379,12 +308,8 @@ async function getJSON(
 
   const timer =
     setTimeout(
-
-      () =>
-        controller.abort(),
-
+      () => controller.abort(),
       timeout
-
     );
 
 
@@ -392,23 +317,16 @@ async function getJSON(
 
     const response =
       await fetch(
-
         url,
-
         {
-
           signal:
             controller.signal,
 
           headers: {
-
             Accept:
               "application/json"
-
           }
-
         }
-
       );
 
 
@@ -427,9 +345,7 @@ async function getJSON(
       try {
 
         data =
-          JSON.parse(
-            raw
-          );
+          JSON.parse(raw);
 
       } catch {
 
@@ -462,13 +378,10 @@ async function getJSON(
 
     return data;
 
-  } catch (
-    error
-  ) {
+  } catch (error) {
 
     if (
-      error?.name ===
-      "AbortError"
+      error?.name === "AbortError"
     ) {
 
       throw new Error(
@@ -477,14 +390,11 @@ async function getJSON(
 
     }
 
-
     throw error;
 
   } finally {
 
-    clearTimeout(
-      timer
-    );
+    clearTimeout(timer);
 
   }
 
@@ -492,12 +402,10 @@ async function getJSON(
 
 
 /* =========================================================
-   FETCH 1M CANDLES
+   FETCH 5M CANDLES
 ========================================================= */
 
-async function fetchM1(
-  symbol
-) {
+async function fetch5m(symbol) {
 
   if (
     !API_KEY
@@ -518,12 +426,10 @@ async function fetchM1(
       symbol,
 
       interval:
-        "1min",
+        INTERVAL,
 
       outputsize:
-        String(
-          OUTPUT_SIZE
-        ),
+        String(OUTPUT_SIZE),
 
       timezone:
         "UTC",
@@ -546,14 +452,12 @@ async function fetchM1(
 
 
   if (
-    !Array.isArray(
-      data.values
-    )
+    !Array.isArray(data.values)
   ) {
 
     throw new Error(
 
-      `${symbol}: no 1-minute candles returned.`
+      `${symbol}: no 5-minute candles returned.`
 
     );
 
@@ -574,24 +478,16 @@ async function fetchM1(
             ),
 
           open:
-            Number(
-              item.open
-            ),
+            Number(item.open),
 
           high:
-            Number(
-              item.high
-            ),
+            Number(item.high),
 
           low:
-            Number(
-              item.low
-            ),
+            Number(item.low),
 
           close:
-            Number(
-              item.close
-            )
+            Number(item.close)
 
         })
       )
@@ -605,9 +501,7 @@ async function fetchM1(
             bar.low,
             bar.close
           ]
-            .every(
-              Number.isFinite
-            )
+            .every(Number.isFinite)
       )
 
       .sort(
@@ -616,15 +510,8 @@ async function fetchM1(
           b
         ) =>
 
-          parseTime(
-            a.time
-          )
-
-          -
-
-          parseTime(
-            b.time
-          )
+          parseTime(a.time) -
+          parseTime(b.time)
       );
 
 
@@ -635,7 +522,7 @@ async function fetchM1(
 
     throw new Error(
 
-      `${symbol}: not enough 1-minute candles returned.`
+      `${symbol}: not enough 5-minute candles returned.`
 
     );
 
@@ -650,7 +537,7 @@ async function fetchM1(
 /* =========================================================
    PIVOT LOW
 
-   Equivalent core idea:
+   Same logic as:
    ta.pivotlow(low, length, length)
 ========================================================= */
 
@@ -671,9 +558,7 @@ function isPivotLow(
 
 
   const price =
-    bars[
-      center
-    ].low;
+    bars[center].low;
 
 
   for (
@@ -715,7 +600,7 @@ function isPivotLow(
 /* =========================================================
    PIVOT HIGH
 
-   Equivalent core idea:
+   Same logic as:
    ta.pivothigh(high, length, length)
 ========================================================= */
 
@@ -736,9 +621,7 @@ function isPivotHigh(
 
 
   const price =
-    bars[
-      center
-    ].high;
+    bars[center].high;
 
 
   for (
@@ -778,20 +661,16 @@ function isPivotHigh(
 
 
 /* =========================================================
-   BUILD PINE-STYLE LEVEL STATE
+   BUILD S&R STATES
 ========================================================= */
 
-function buildStates(
-  bars
-) {
+function buildStates(bars) {
 
   const supports =
     [];
 
-
   const resistances =
     [];
-
 
   const states =
     [];
@@ -800,14 +679,15 @@ function buildStates(
   for (
     let currentIndex = 0;
 
-    currentIndex < bars.length;
+    currentIndex <
+      bars.length;
 
     currentIndex++
   ) {
 
     /*
-       Pivot gets confirmed LENGTH bars
-       after its center.
+       A pivot is confirmed after
+       LENGTH candles appear to its right.
     */
 
     const center =
@@ -826,19 +706,8 @@ function buildStates(
       )
     ) {
 
-      const value =
-        bars[
-          center
-        ].high;
-
-
-      /*
-         Pine:
-         array.unshift(resistances, f_top)
-      */
-
       resistances.unshift(
-        value
+        bars[center].high
       );
 
 
@@ -865,19 +734,8 @@ function buildStates(
       )
     ) {
 
-      const value =
-        bars[
-          center
-        ].low;
-
-
-      /*
-         Pine:
-         array.unshift(supports, f_bot)
-      */
-
       supports.unshift(
-        value
+        bars[center].low
       );
 
 
@@ -892,14 +750,6 @@ function buildStates(
 
     }
 
-
-    /*
-       Pine uses array.get(..., 0)
-
-       So "nearest" means the newest
-       confirmed pivot, not mathematically
-       nearest price.
-    */
 
     const nearestSupport =
 
@@ -925,28 +775,20 @@ function buildStates(
         currentIndex,
 
       time:
-        bars[
-          currentIndex
-        ].time,
+        bars[currentIndex].time,
 
       close:
-        bars[
-          currentIndex
-        ].close,
+        bars[currentIndex].close,
 
       nearestSupport,
 
       nearestResistance,
 
       supports:
-        [
-          ...supports
-        ],
+        [...supports],
 
       resistances:
-        [
-          ...resistances
-        ]
+        [...resistances]
 
     });
 
@@ -959,6 +801,9 @@ function buildStates(
 
 
 /* =========================================================
+   BUY CROSSOVER
+
+   Pine:
    ta.crossover(close, nearestSupport)
 ========================================================= */
 
@@ -1003,6 +848,9 @@ function supportCrossover(
 
 
 /* =========================================================
+   SELL CROSSUNDER
+
+   Pine:
    ta.crossunder(close, nearestResistance)
 ========================================================= */
 
@@ -1047,11 +895,9 @@ function resistanceCrossunder(
 
 
 /* =========================================================
-   TRADE LEVELS
+   ENTRY / SL / TP
 
-   ONLY S&R + PRICE
-
-   NO EXTRA INDICATORS
+   Uses ONLY price + S&R.
 ========================================================= */
 
 function tradePlan(
@@ -1062,18 +908,17 @@ function tradePlan(
   let entry =
     null;
 
-
   let stopLoss =
     null;
-
 
   let takeProfit =
     null;
 
-
   let risk =
     null;
 
+
+  /* BUY */
 
   if (
     signal === "BUY" &&
@@ -1124,6 +969,8 @@ function tradePlan(
 
   }
 
+
+  /* SELL */
 
   if (
     signal === "SELL" &&
@@ -1194,17 +1041,13 @@ function tradePlan(
 
 
 /* =========================================================
-   ANALYSE CURRENT BAR
+   CURRENT ANALYSIS
 ========================================================= */
 
-function analyse(
-  bars
-) {
+function analyse(bars) {
 
   const states =
-    buildStates(
-      bars
-    );
+    buildStates(bars);
 
 
   const current =
@@ -1304,9 +1147,7 @@ function recentSignals(
 ) {
 
   const states =
-    buildStates(
-      bars
-    );
+    buildStates(bars);
 
 
   const signals =
@@ -1322,15 +1163,11 @@ function recentSignals(
   ) {
 
     const previous =
-      states[
-        i - 1
-      ];
+      states[i - 1];
 
 
     const current =
-      states[
-        i
-      ];
+      states[i];
 
 
     let signal =
@@ -1388,8 +1225,7 @@ function recentSignals(
 
       level:
 
-        signal ===
-        "BUY"
+        signal === "BUY"
 
           ? current.nearestSupport
 
@@ -1416,16 +1252,14 @@ function recentSignals(
 
 
   return signals
-    .slice(
-      -limit
-    )
+    .slice(-limit)
     .reverse();
 
 }
 
 
 /* =========================================================
-   VERCEL HANDLER
+   API HANDLER
 ========================================================= */
 
 export default async function handler(
@@ -1434,44 +1268,31 @@ export default async function handler(
 ) {
 
   res.setHeader(
-
     "Cache-Control",
-
     "no-store, no-cache, must-revalidate"
-
   );
 
 
   res.setHeader(
-
     "Access-Control-Allow-Origin",
-
     "*"
-
   );
 
 
   res.setHeader(
-
     "Access-Control-Allow-Methods",
-
     "GET,OPTIONS"
-
   );
 
 
   res.setHeader(
-
     "Access-Control-Allow-Headers",
-
     "Content-Type"
-
   );
 
 
   if (
-    req.method ===
-    "OPTIONS"
+    req.method === "OPTIONS"
   ) {
 
     return res
@@ -1482,8 +1303,7 @@ export default async function handler(
 
 
   if (
-    req.method !==
-    "GET"
+    req.method !== "GET"
   ) {
 
     return res
@@ -1504,6 +1324,7 @@ export default async function handler(
   try {
 
     const requested =
+
       Array.isArray(
         req.query?.symbol
       )
@@ -1520,13 +1341,11 @@ export default async function handler(
 
 
     const market =
-      MARKETS[
-        symbol
-      ];
+      MARKETS[symbol];
 
 
     const bars =
-      await fetchM1(
+      await fetch5m(
         symbol
       );
 
@@ -1558,10 +1377,10 @@ export default async function handler(
           true,
 
         engine:
-          "MKAYFX 1M S&R",
+          "MKAYFX 5M S&R",
 
         strategy:
-          "PIVOT S&R CROSSOVER",
+          "5M PIVOT S&R CROSSOVER",
 
         symbol,
 
@@ -1572,7 +1391,7 @@ export default async function handler(
           market.short,
 
         timeframe:
-          "1min",
+          "5min",
 
         generatedAt:
           new Date()
@@ -1588,6 +1407,9 @@ export default async function handler(
           ),
 
         settings: {
+
+          timeframe:
+            "5min",
 
           pivotLookbackLength:
             LENGTH,
@@ -1689,31 +1511,29 @@ export default async function handler(
 
         reasons:
 
-          analysis.signal ===
-          "BUY"
+          analysis.signal === "BUY"
 
             ? [
 
-                "Close crossed above the newest confirmed support.",
-                "Stop Loss uses that confirmed support.",
+                "5M close crossed above newest confirmed support.",
+                "Stop Loss uses the confirmed support.",
                 "Take Profit is 2R from entry."
 
               ]
 
-            : analysis.signal ===
-              "SELL"
+            : analysis.signal === "SELL"
 
               ? [
 
-                  "Close crossed below the newest confirmed resistance.",
-                  "Stop Loss uses that confirmed resistance.",
+                  "5M close crossed below newest confirmed resistance.",
+                  "Stop Loss uses the confirmed resistance.",
                   "Take Profit is 2R from entry."
 
                 ]
 
               : [
 
-                  "Waiting for a close crossover of newest support or crossunder of newest resistance."
+                  "Waiting for a 5M close to cross newest support or resistance."
 
                 ],
 
@@ -1766,9 +1586,7 @@ export default async function handler(
         chart:
 
           bars
-            .slice(
-              -180
-            )
+            .slice(-180)
             .map(
               bar => ({
 
@@ -1804,16 +1622,11 @@ export default async function handler(
 
       });
 
-  } catch (
-    error
-  ) {
+  } catch (error) {
 
     console.error(
-
-      "MKAYFX S&R ERROR",
-
+      "MKAYFX 5M S&R ERROR",
       error
-
     );
 
 
@@ -1825,16 +1638,10 @@ export default async function handler(
           false,
 
         engine:
-          "MKAYFX 1M S&R",
+          "MKAYFX 5M S&R",
 
         error:
-
-          safeError(
-            error
-          )
-
-          ||
-
+          safeError(error) ||
           "Unknown S&R engine error."
 
       });
