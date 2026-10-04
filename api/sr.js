@@ -1,47 +1,58 @@
 /* =========================================================
-   MKAYFX MULTI-ASSET 5M S&R ENGINE V3
+   MKAYFX TOTT 5M ENGINE
    /api/sr.js
+
+   SIGNAL ENGINE
+   -------------
+   Based on:
+   Twin Optimized Trend Tracker (TOTT)
+
+   Pine defaults used:
+   Source                = close
+   OTT Period            = 40
+   Optimization Constant = 1.0
+   Twin OTT Coefficient  = 0.001
+   Moving Average Type   = VAR
 
    MARKETS
    -------
    XAU/USD
    BTC/USD
 
-   STRATEGY
-   --------
-   Timeframe         = 5M
-   Pivot Lookback    = 9
-   Max Active Levels = 5
+   TIMEFRAME
+   ---------
+   5 minutes
 
-   BUY
-   ---
-   Close crosses ABOVE newest confirmed pivot support.
-
-   SELL
-   ----
-   Close crosses BELOW newest confirmed pivot resistance.
-
-   TRADE PLAN
-   ----------
-   Entry = signal candle close
-
+   SIGNALS
+   -------
    BUY:
-   SL = newest support
-   TP = 3R
+   MAvg crosses above OTTup[2]
 
    SELL:
-   SL = newest resistance
-   TP = 3R
+   MAvg crosses below OTTdn[2]
 
-   HARD-LOCK BACKTEST
-   ------------------
-   - One trade at a time
-   - Ignore all new signals while a trade is active
-   - Trade remains active until SL or TP
-   - Next signal can only be taken after exit
-   - If SL + TP touch same candle, SL wins conservatively
+   CUSTOM TRADE MANAGEMENT
+   -----------------------
+   BUY SL  = opposite TOTT lower band
+   SELL SL = opposite TOTT upper band
+   TP      = 3R
 
-   NO EXTRA INDICATORS
+   HARD LOCK
+   ---------
+   Once a trade is active:
+   - opposite signals are ignored
+   - WAIT is ignored
+   - trade stays locked until SL or TP
+
+   BACKTEST
+   --------
+   One trade at a time.
+   No overlapping trades.
+   SL wins if TP + SL are both touched in one candle.
+
+   ENV
+   ---
+   TWELVE_DATA_API_KEY
 ========================================================= */
 
 
@@ -89,34 +100,47 @@ const MARKETS = {
 
 
 /* =========================================================
-   SETTINGS
+   TOTT SETTINGS
 ========================================================= */
 
 const INTERVAL =
   "5min";
 
 
-const LENGTH =
-  5;
+const OTT_PERIOD =
+  40;
 
 
-const MAX_LEVELS =
-  3;
+const OPTIMIZATION_PERCENT =
+  1.0;
 
 
-const SHOW_ZONES =
-  true;
+const TWIN_COEFFICIENT =
+  0.001;
 
 
-/*
-   TP STRETCHED FROM 2R TO 3R
-*/
-const RISK_REWARD =
+const MA_TYPE =
+  "VAR";
+
+
+const OTT_SHIFT =
   2;
+
+
+/* =========================================================
+   TRADE SETTINGS
+========================================================= */
+
+const RISK_REWARD =
+  3;
 
 
 const OUTPUT_SIZE =
   5000;
+
+
+const WARMUP_BARS =
+  100;
 
 
 const RECENT_SIGNAL_LIMIT =
@@ -422,9 +446,12 @@ async function getJSON(
 
   const timer =
     setTimeout(
+
       () =>
         controller.abort(),
+
       timeout
+
     );
 
 
@@ -680,7 +707,7 @@ async function fetch5m(
 
   if (
     bars.length <
-    LENGTH * 2 + 10
+    150
   ) {
 
     throw new Error(
@@ -698,143 +725,369 @@ async function fetch5m(
 
 
 /* =========================================================
-   PIVOT LOW
+   COMPLETED CANDLES
+
+   TOTT signals should be generated from finished 5M bars.
 ========================================================= */
 
-function isPivotLow(
-  bars,
-  center,
-  length
-) {
-
-  if (
-    center - length < 0 ||
-    center + length >= bars.length
-  ) {
-
-    return false;
-
-  }
-
-
-  const price =
-    bars[
-      center
-    ].low;
-
-
-  for (
-    let i =
-      center - length;
-
-    i <=
-      center + length;
-
-    i++
-  ) {
-
-    if (
-      i === center
-    ) {
-
-      continue;
-
-    }
-
-
-    if (
-      bars[i].low <
-      price
-    ) {
-
-      return false;
-
-    }
-
-  }
-
-
-  return true;
-
-}
-
-
-/* =========================================================
-   PIVOT HIGH
-========================================================= */
-
-function isPivotHigh(
-  bars,
-  center,
-  length
-) {
-
-  if (
-    center - length < 0 ||
-    center + length >= bars.length
-  ) {
-
-    return false;
-
-  }
-
-
-  const price =
-    bars[
-      center
-    ].high;
-
-
-  for (
-    let i =
-      center - length;
-
-    i <=
-      center + length;
-
-    i++
-  ) {
-
-    if (
-      i === center
-    ) {
-
-      continue;
-
-    }
-
-
-    if (
-      bars[i].high >
-      price
-    ) {
-
-      return false;
-
-    }
-
-  }
-
-
-  return true;
-
-}
-
-
-/* =========================================================
-   BUILD S&R STATES
-========================================================= */
-
-function buildStates(
+function completedBars(
   bars
 ) {
 
-  const supports =
-    [];
+  const now =
+    Date.now();
 
 
-  const resistances =
-    [];
+  return bars.filter(
+    bar => {
+
+      const start =
+        parseTime(
+          bar.time
+        );
+
+
+      if (
+        !Number.isFinite(
+          start
+        )
+      ) {
+
+        return false;
+
+      }
+
+
+      return (
+
+        start +
+        5 * 60 * 1000
+
+      )
+      <=
+      now;
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   VAR MOVING AVERAGE
+
+   Pine:
+
+   valpha = 2 / (length + 1)
+
+   vud1 =
+       src > src[1]
+       ? src - src[1]
+       : 0
+
+   vdd1 =
+       src < src[1]
+       ? src[1] - src
+       : 0
+
+   vUD = math.sum(vud1, 9)
+   vDD = math.sum(vdd1, 9)
+
+   vCMO =
+       nz(
+         (vUD - vDD)
+         /
+         (vUD + vDD)
+       )
+
+   VAR :=
+       valpha
+       * abs(vCMO)
+       * src
+
+       +
+
+       (
+         1 -
+         valpha
+         * abs(vCMO)
+       )
+       * nz(VAR[1])
+========================================================= */
+
+function varSeries(
+  values,
+  length
+) {
+
+  const result =
+    new Array(
+      values.length
+    ).fill(
+      0
+    );
+
+
+  const ups =
+    new Array(
+      values.length
+    ).fill(
+      0
+    );
+
+
+  const downs =
+    new Array(
+      values.length
+    ).fill(
+      0
+    );
+
+
+  const alpha =
+    2 /
+    (
+      length +
+      1
+    );
+
+
+  let sumUp =
+    0;
+
+
+  let sumDown =
+    0;
+
+
+  for (
+    let i = 0;
+
+    i <
+      values.length;
+
+    i++
+  ) {
+
+    if (
+      i >
+      0
+    ) {
+
+      const difference =
+
+        values[i]
+
+        -
+
+        values[
+          i - 1
+        ];
+
+
+      if (
+        difference >
+        0
+      ) {
+
+        ups[i] =
+          difference;
+
+      } else if (
+        difference <
+        0
+      ) {
+
+        downs[i] =
+          Math.abs(
+            difference
+          );
+
+      }
+
+    }
+
+
+    sumUp +=
+      ups[i];
+
+
+    sumDown +=
+      downs[i];
+
+
+    if (
+      i >=
+      9
+    ) {
+
+      sumUp -=
+        ups[
+          i - 9
+        ];
+
+
+      sumDown -=
+        downs[
+          i - 9
+        ];
+
+    }
+
+
+    let cmo =
+      0;
+
+
+    /*
+       math.sum(..., 9) effectively
+       requires a 9-value window.
+    */
+
+    if (
+      i >=
+      8
+    ) {
+
+      const denominator =
+        sumUp +
+        sumDown;
+
+
+      if (
+        denominator !==
+        0
+      ) {
+
+        cmo =
+
+          (
+            sumUp -
+            sumDown
+          )
+
+          /
+
+          denominator;
+
+      }
+
+    }
+
+
+    const weighting =
+
+      alpha
+
+      *
+
+      Math.abs(
+        cmo
+      );
+
+
+    const previous =
+
+      i >
+      0
+
+        ? result[
+            i - 1
+          ]
+
+        : 0;
+
+
+    result[i] =
+
+      weighting *
+      values[i]
+
+      +
+
+      (
+        1 -
+        weighting
+      )
+      *
+      previous;
+
+  }
+
+
+  return result;
+
+}
+
+
+/* =========================================================
+   BUILD TOTT SERIES
+========================================================= */
+
+function buildTottStates(
+  bars
+) {
+
+  const source =
+    bars.map(
+      bar =>
+        bar.close
+    );
+
+
+  const mavg =
+    varSeries(
+      source,
+      OTT_PERIOD
+    );
+
+
+  const longStop =
+    new Array(
+      bars.length
+    ).fill(
+      null
+    );
+
+
+  const shortStop =
+    new Array(
+      bars.length
+    ).fill(
+      null
+    );
+
+
+  const direction =
+    new Array(
+      bars.length
+    ).fill(
+      1
+    );
+
+
+  const ott =
+    new Array(
+      bars.length
+    ).fill(
+      null
+    );
+
+
+  const ottUp =
+    new Array(
+      bars.length
+    ).fill(
+      null
+    );
+
+
+  const ottDown =
+    new Array(
+      bars.length
+    ).fill(
+      null
+    );
 
 
   const states =
@@ -842,129 +1095,405 @@ function buildStates(
 
 
   for (
-    let currentIndex = 0;
+    let i = 0;
 
-    currentIndex <
+    i <
       bars.length;
 
-    currentIndex++
+    i++
   ) {
 
-    const center =
-      currentIndex -
-      LENGTH;
+    const ma =
+      mavg[i];
 
 
-    /* RESISTANCE */
+    /*
+       fark =
+         MAvg
+         * percent
+         * 0.01
+    */
+
+    const difference =
+
+      ma
+
+      *
+
+      OPTIMIZATION_PERCENT
+
+      *
+
+      0.01;
+
+
+    const rawLongStop =
+      ma -
+      difference;
+
+
+    const rawShortStop =
+      ma +
+      difference;
+
+
+    /*
+       longStopPrev =
+         nz(
+           longStop[1],
+           longStop
+         )
+    */
+
+    const longStopPrevious =
+
+      i >
+      0
+
+        ? longStop[
+            i - 1
+          ]
+
+        : rawLongStop;
+
+
+    /*
+       longStop :=
+         MAvg > longStopPrev
+         ? max(longStop, longStopPrev)
+         : longStop
+    */
+
+    longStop[i] =
+
+      ma >
+      longStopPrevious
+
+        ? Math.max(
+            rawLongStop,
+            longStopPrevious
+          )
+
+        : rawLongStop;
+
+
+    const shortStopPrevious =
+
+      i >
+      0
+
+        ? shortStop[
+            i - 1
+          ]
+
+        : rawShortStop;
+
+
+    shortStop[i] =
+
+      ma <
+      shortStopPrevious
+
+        ? Math.min(
+            rawShortStop,
+            shortStopPrevious
+          )
+
+        : rawShortStop;
+
+
+    const previousDirection =
+
+      i >
+      0
+
+        ? direction[
+            i - 1
+          ]
+
+        : 1;
+
+
+    let currentDirection =
+      previousDirection;
+
 
     if (
-      center >= LENGTH &&
-      isPivotHigh(
-        bars,
-        center,
-        LENGTH
-      )
+
+      previousDirection ===
+      -1
+
+      &&
+
+      ma >
+      shortStopPrevious
+
     ) {
 
-      resistances.unshift(
+      currentDirection =
+        1;
 
-        bars[
-          center
-        ].high
+    } else if (
 
-      );
+      previousDirection ===
+      1
 
+      &&
 
-      if (
-        resistances.length >
-        MAX_LEVELS
-      ) {
+      ma <
+      longStopPrevious
 
-        resistances.pop();
+    ) {
 
-      }
+      currentDirection =
+        -1;
 
     }
 
 
-    /* SUPPORT */
+    direction[i] =
+      currentDirection;
 
-    if (
-      center >= LENGTH &&
-      isPivotLow(
-        bars,
-        center,
-        LENGTH
-      )
-    ) {
 
-      supports.unshift(
+    const mt =
 
-        bars[
-          center
-        ].low
+      currentDirection ===
+      1
 
+        ? longStop[i]
+
+        : shortStop[i];
+
+
+    /*
+       OTT =
+         MAvg > MT
+         ? MT * (200 + percent) / 200
+         : MT * (200 - percent) / 200
+    */
+
+    ott[i] =
+
+      ma >
+      mt
+
+        ?
+
+        mt
+
+        *
+
+        (
+          200 +
+          OPTIMIZATION_PERCENT
+        )
+
+        /
+
+        200
+
+        :
+
+        mt
+
+        *
+
+        (
+          200 -
+          OPTIMIZATION_PERCENT
+        )
+
+        /
+
+        200;
+
+
+    ottUp[i] =
+
+      ott[i]
+
+      *
+
+      (
+        1 +
+        TWIN_COEFFICIENT
       );
 
 
-      if (
-        supports.length >
-        MAX_LEVELS
-      ) {
+    ottDown[i] =
 
-        supports.pop();
+      ott[i]
 
-      }
+      *
+
+      (
+        1 -
+        TWIN_COEFFICIENT
+      );
+
+
+    /*
+       Pine plots and signals use:
+       OTTup[2]
+       OTTdn[2]
+    */
+
+    const shiftedUpper =
+
+      i >=
+      OTT_SHIFT
+
+        ? ottUp[
+            i -
+            OTT_SHIFT
+          ]
+
+        : null;
+
+
+    const shiftedLower =
+
+      i >=
+      OTT_SHIFT
+
+        ? ottDown[
+            i -
+            OTT_SHIFT
+          ]
+
+        : null;
+
+
+    let buySignal =
+      false;
+
+
+    let sellSignal =
+      false;
+
+
+    /*
+       ta.crossover(
+         MAvg,
+         OTTup[2]
+       )
+
+       Current:
+       MAvg > OTTup[2]
+
+       Previous:
+       MAvg[1] <= OTTup[3]
+    */
+
+    if (
+      i >=
+      OTT_SHIFT + 1
+    ) {
+
+      const previousMA =
+        mavg[
+          i - 1
+        ];
+
+
+      const previousShiftedUpper =
+
+        ottUp[
+          i -
+          OTT_SHIFT -
+          1
+        ];
+
+
+      const previousShiftedLower =
+
+        ottDown[
+          i -
+          OTT_SHIFT -
+          1
+        ];
+
+
+      buySignal =
+
+        ma >
+        shiftedUpper
+
+        &&
+
+        previousMA <=
+        previousShiftedUpper;
+
+
+      sellSignal =
+
+        ma <
+        shiftedLower
+
+        &&
+
+        previousMA >=
+        previousShiftedLower;
 
     }
-
-
-    const nearestSupport =
-
-      supports.length
-
-        ? supports[0]
-
-        : null;
-
-
-    const nearestResistance =
-
-      resistances.length
-
-        ? resistances[0]
-
-        : null;
 
 
     states.push({
 
       index:
-        currentIndex,
+        i,
 
       time:
-        bars[
-          currentIndex
-        ].time,
+        bars[i].time,
+
+      open:
+        bars[i].open,
+
+      high:
+        bars[i].high,
+
+      low:
+        bars[i].low,
 
       close:
-        bars[
-          currentIndex
-        ].close,
+        bars[i].close,
 
-      nearestSupport,
+      mavg:
+        ma,
 
-      nearestResistance,
+      longStop:
+        longStop[i],
 
-      supports:
-        [
-          ...supports
-        ],
+      shortStop:
+        shortStop[i],
 
-      resistances:
-        [
-          ...resistances
-        ]
+      direction:
+        currentDirection,
+
+      ott:
+        ott[i],
+
+      ottUpper:
+        shiftedUpper,
+
+      ottLower:
+        shiftedLower,
+
+      buySignal,
+
+      sellSignal,
+
+      signal:
+
+        buySignal
+
+          ? "BUY"
+
+          : sellSignal
+
+            ? "SELL"
+
+            : "WAIT"
 
     });
 
@@ -977,139 +1506,57 @@ function buildStates(
 
 
 /* =========================================================
-   BUY CROSSOVER
-========================================================= */
+   CUSTOM TRADE PLAN
 
-function supportCrossover(
-  previous,
-  current
-) {
+   We use the OPPOSITE Twin OTT band as the stop.
 
-  if (
-    !previous ||
-    !current
-  ) {
+   BUY:
+     Entry = signal close
+     SL    = OTT lower
+     TP    = Entry + 3R
 
-    return false;
-
-  }
-
-
-  if (
-    previous.nearestSupport === null ||
-    current.nearestSupport === null
-  ) {
-
-    return false;
-
-  }
-
-
-  return (
-
-    current.close >
-    current.nearestSupport
-
-    &&
-
-    previous.close <=
-    previous.nearestSupport
-
-  );
-
-}
-
-
-/* =========================================================
-   SELL CROSSUNDER
-========================================================= */
-
-function resistanceCrossunder(
-  previous,
-  current
-) {
-
-  if (
-    !previous ||
-    !current
-  ) {
-
-    return false;
-
-  }
-
-
-  if (
-    previous.nearestResistance === null ||
-    current.nearestResistance === null
-  ) {
-
-    return false;
-
-  }
-
-
-  return (
-
-    current.close <
-    current.nearestResistance
-
-    &&
-
-    previous.close >=
-    previous.nearestResistance
-
-  );
-
-}
-
-
-/* =========================================================
-   SIGNAL
-========================================================= */
-
-function signalAt(
-  previous,
-  current
-) {
-
-  if (
-    supportCrossover(
-      previous,
-      current
-    )
-  ) {
-
-    return "BUY";
-
-  }
-
-
-  if (
-    resistanceCrossunder(
-      previous,
-      current
-    )
-  ) {
-
-    return "SELL";
-
-  }
-
-
-  return "WAIT";
-
-}
-
-
-/* =========================================================
-   ENTRY / SL / STRETCHED TP
+   SELL:
+     Entry = signal close
+     SL    = OTT upper
+     TP    = Entry - 3R
 ========================================================= */
 
 function tradePlan(
-  signal,
   state
 ) {
+
+  if (
+    !state
+  ) {
+
+    return {
+
+      valid:
+        false,
+
+      entry:
+        null,
+
+      stopLoss:
+        null,
+
+      takeProfit:
+        null,
+
+      risk:
+        null,
+
+      rr:
+        RISK_REWARD
+
+    };
+
+  }
+
+
+  const signal =
+    state.signal;
+
 
   let entry =
     null;
@@ -1128,8 +1575,8 @@ function tradePlan(
 
 
   if (
-    signal === "BUY" &&
-    state.nearestSupport !== null
+    signal ===
+    "BUY"
   ) {
 
     entry =
@@ -1137,26 +1584,41 @@ function tradePlan(
 
 
     stopLoss =
-      state.nearestSupport;
-
-
-    risk =
-      entry -
-      stopLoss;
+      state.ottLower;
 
 
     if (
-      risk > 0
+      Number.isFinite(
+        entry
+      )
+
+      &&
+
+      Number.isFinite(
+        stopLoss
+      )
     ) {
 
-      takeProfit =
+      risk =
+        entry -
+        stopLoss;
 
-        entry
 
-        +
+      if (
+        risk >
+        0
+      ) {
 
-        risk *
-        RISK_REWARD;
+        takeProfit =
+
+          entry
+
+          +
+
+          risk *
+          RISK_REWARD;
+
+      }
 
     }
 
@@ -1164,8 +1626,8 @@ function tradePlan(
 
 
   if (
-    signal === "SELL" &&
-    state.nearestResistance !== null
+    signal ===
+    "SELL"
   ) {
 
     entry =
@@ -1173,26 +1635,41 @@ function tradePlan(
 
 
     stopLoss =
-      state.nearestResistance;
-
-
-    risk =
-      stopLoss -
-      entry;
+      state.ottUpper;
 
 
     if (
-      risk > 0
+      Number.isFinite(
+        entry
+      )
+
+      &&
+
+      Number.isFinite(
+        stopLoss
+      )
     ) {
 
-      takeProfit =
+      risk =
+        stopLoss -
+        entry;
 
-        entry
 
-        -
+      if (
+        risk >
+        0
+      ) {
 
-        risk *
-        RISK_REWARD;
+        takeProfit =
+
+          entry
+
+          -
+
+          risk *
+          RISK_REWARD;
+
+      }
 
     }
 
@@ -1200,6 +1677,11 @@ function tradePlan(
 
 
   const valid =
+
+    signal !==
+    "WAIT"
+
+    &&
 
     Number.isFinite(
       entry
@@ -1270,7 +1752,7 @@ function analyse(
 ) {
 
   const states =
-    buildStates(
+    buildTottStates(
       bars
     );
 
@@ -1279,57 +1761,19 @@ function analyse(
     states.at(-1);
 
 
-  const previous =
-    states.at(-2);
-
-
-  const signal =
-    signalAt(
-      previous,
-      current
-    );
-
-
   const plan =
     tradePlan(
-      signal,
       current
     );
 
 
   return {
 
-    signal,
-
-    buySignal:
-      signal === "BUY",
-
-    sellSignal:
-      signal === "SELL",
+    ...current,
 
     ...plan,
 
-    nearestSupport:
-      current.nearestSupport,
-
-    nearestResistance:
-      current.nearestResistance,
-
-    supports:
-      current.supports,
-
-    resistances:
-      current.resistances,
-
-    currentClose:
-      current.close,
-
-    previousClose:
-      previous?.close ??
-      null,
-
-    currentTime:
-      current.time
+    states
 
   };
 
@@ -1341,23 +1785,18 @@ function analyse(
 ========================================================= */
 
 function recentSignals(
-  bars,
+  states,
   limit =
     RECENT_SIGNAL_LIMIT
 ) {
-
-  const states =
-    buildStates(
-      bars
-    );
-
 
   const signals =
     [];
 
 
   for (
-    let i = 1;
+    let i =
+      WARMUP_BARS;
 
     i <
       states.length;
@@ -1365,27 +1804,13 @@ function recentSignals(
     i++
   ) {
 
-    const previous =
-      states[
-        i - 1
-      ];
-
-
-    const current =
-      states[
-        i
-      ];
-
-
-    const signal =
-      signalAt(
-        previous,
-        current
-      );
+    const state =
+      states[i];
 
 
     if (
-      signal === "WAIT"
+      state.signal ===
+      "WAIT"
     ) {
 
       continue;
@@ -1395,8 +1820,7 @@ function recentSignals(
 
     const plan =
       tradePlan(
-        signal,
-        current
+        state
       );
 
 
@@ -1411,21 +1835,11 @@ function recentSignals(
 
     signals.push({
 
-      signal,
+      signal:
+        state.signal,
 
       time:
-        current.time,
-
-      price:
-        current.close,
-
-      level:
-
-        signal === "BUY"
-
-          ? current.nearestSupport
-
-          : current.nearestResistance,
+        state.time,
 
       entry:
         plan.entry,
@@ -1440,7 +1854,16 @@ function recentSignals(
         plan.risk,
 
       rr:
-        plan.rr
+        plan.rr,
+
+      mavg:
+        state.mavg,
+
+      ottUpper:
+        state.ottUpper,
+
+      ottLower:
+        state.ottLower
 
     });
 
@@ -1457,7 +1880,7 @@ function recentSignals(
 
 
 /* =========================================================
-   SIMULATE HARD-LOCKED TRADE
+   SIMULATE LOCKED TRADE
 ========================================================= */
 
 function simulateTrade(
@@ -1488,28 +1911,30 @@ function simulateTrade(
 
 
   /*
-     Signal entry happens at signal candle close.
-     Therefore exit checking begins on NEXT candle.
+     Entry occurs at signal candle close.
+
+     Therefore TP/SL testing starts
+     on the NEXT candle.
   */
 
   for (
-    let j =
-      signalIndex + 1;
+    let i =
+      signalIndex +
+      1;
 
-    j <
+    i <
       bars.length;
 
-    j++
+    i++
   ) {
 
     const candle =
-      bars[
-        j
-      ];
+      bars[i];
 
 
     if (
-      signal === "BUY"
+      signal ===
+      "BUY"
     ) {
 
       const stopHit =
@@ -1525,9 +1950,9 @@ function simulateTrade(
 
 
       /*
-         Conservative:
-         if both touched in same candle,
-         stop counts first.
+         Conservative rule:
+         if both TP and SL occurred
+         inside one candle, count SL.
       */
 
       if (
@@ -1551,7 +1976,7 @@ function simulateTrade(
 
 
         exitIndex =
-          j;
+          i;
 
 
         break;
@@ -1580,7 +2005,7 @@ function simulateTrade(
 
 
         exitIndex =
-          j;
+          i;
 
 
         break;
@@ -1591,7 +2016,8 @@ function simulateTrade(
 
 
     if (
-      signal === "SELL"
+      signal ===
+      "SELL"
     ) {
 
       const stopHit =
@@ -1627,7 +2053,7 @@ function simulateTrade(
 
 
         exitIndex =
-          j;
+          i;
 
 
         break;
@@ -1656,7 +2082,7 @@ function simulateTrade(
 
 
         exitIndex =
-          j;
+          i;
 
 
         break;
@@ -1683,7 +2109,8 @@ function simulateTrade(
 
     holdBars:
 
-      exitIndex === null
+      exitIndex ===
+      null
 
         ? bars.length -
           1 -
@@ -1698,63 +2125,43 @@ function simulateTrade(
 
 
 /* =========================================================
-   HARD-LOCK BACKTESTER
-
-   IMPORTANT:
-   Only ONE trade can exist at a time.
-
-   When BUY/SELL opens:
-   all signals are ignored until exit.
+   HARD-LOCK BACKTEST
 ========================================================= */
 
 function backtest(
-  bars
+  bars,
+  states
 ) {
-
-  const states =
-    buildStates(
-      bars
-    );
-
 
   const trades =
     [];
 
 
-  let i =
-    1;
+  let index =
+    Math.max(
+      WARMUP_BARS,
+      OTT_PERIOD + 20
+    );
 
 
   while (
-    i <
+    index <
     states.length -
     1
   ) {
 
-    const previous =
+    const state =
       states[
-        i - 1
+        index
       ];
-
-
-    const current =
-      states[
-        i
-      ];
-
-
-    const signal =
-      signalAt(
-        previous,
-        current
-      );
 
 
     if (
-      signal === "WAIT"
+      state.signal ===
+      "WAIT"
     ) {
 
-      i++;
+      index++;
 
       continue;
 
@@ -1763,8 +2170,7 @@ function backtest(
 
     const plan =
       tradePlan(
-        signal,
-        current
+        state
       );
 
 
@@ -1772,7 +2178,7 @@ function backtest(
       !plan.valid
     ) {
 
-      i++;
+      index++;
 
       continue;
 
@@ -1784,9 +2190,9 @@ function backtest(
 
         bars,
 
-        i,
+        index,
 
-        signal,
+        state.signal,
 
         plan
 
@@ -1795,10 +2201,11 @@ function backtest(
 
     trades.push({
 
-      signal,
+      signal:
+        state.signal,
 
       entryTime:
-        current.time,
+        state.time,
 
       entry:
         plan.entry,
@@ -1837,28 +2244,22 @@ function backtest(
 
 
     /*
-       HARD LOCK:
+       HARD LOCK.
 
-       If trade closed, jump directly to
-       the candle AFTER exit.
-
-       This prevents overlapping entries.
+       No new BUY / SELL signal is taken
+       while this trade is active.
     */
 
     if (
-      simulation.exitIndex !== null
+      simulation.exitIndex !==
+      null
     ) {
 
-      i =
+      index =
         simulation.exitIndex +
         1;
 
     } else {
-
-      /*
-         Trade is still open at end of data.
-         No later signal can be taken.
-      */
 
       break;
 
@@ -1871,8 +2272,13 @@ function backtest(
 
     trades.filter(
       trade =>
-        trade.result === "WIN" ||
-        trade.result === "LOSS"
+        trade.result ===
+        "WIN"
+
+        ||
+
+        trade.result ===
+        "LOSS"
     );
 
 
@@ -1880,7 +2286,8 @@ function backtest(
 
     trades.filter(
       trade =>
-        trade.result === "OPEN"
+        trade.result ===
+        "OPEN"
     );
 
 
@@ -1888,7 +2295,8 @@ function backtest(
 
     closedTrades.filter(
       trade =>
-        trade.result === "WIN"
+        trade.result ===
+        "WIN"
     );
 
 
@@ -1896,11 +2304,12 @@ function backtest(
 
     closedTrades.filter(
       trade =>
-        trade.result === "LOSS"
+        trade.result ===
+        "LOSS"
     );
 
 
-  const grossProfit =
+  const grossProfitR =
 
     wins.reduce(
       (
@@ -1913,7 +2322,7 @@ function backtest(
     );
 
 
-  const grossLoss =
+  const grossLossR =
 
     Math.abs(
 
@@ -1943,36 +2352,44 @@ function backtest(
     );
 
 
-  const expectancyR =
-
-    closedTrades.length
-
-      ? netR /
-        closedTrades.length
-
-      : 0;
-
-
   const winRate =
 
     closedTrades.length
 
-      ? wins.length /
-        closedTrades.length *
-        100
+      ?
 
-      : 0;
+      wins.length /
+      closedTrades.length *
+      100
+
+      :
+
+      0;
+
+
+  const expectancyR =
+
+    closedTrades.length
+
+      ?
+
+      netR /
+      closedTrades.length
+
+      :
+
+      0;
 
 
   const profitFactor =
 
-    grossLoss >
+    grossLossR >
     0
 
-      ? grossProfit /
-        grossLoss
+      ? grossProfitR /
+        grossLossR
 
-      : grossProfit >
+      : grossProfitR >
         0
 
         ? 999
@@ -2069,7 +2486,9 @@ function backtest(
           trade.holdBars,
         0
       )
+
       /
+
       closedTrades.length
 
       :
@@ -2082,14 +2501,23 @@ function backtest(
     mode:
       "HARD LOCK",
 
+    strategy:
+      "TOTT",
+
     timeframe:
       "5min",
 
-    pivotLength:
-      LENGTH,
+    maType:
+      MA_TYPE,
 
-    maxLevels:
-      MAX_LEVELS,
+    period:
+      OTT_PERIOD,
+
+    percent:
+      OPTIMIZATION_PERCENT,
+
+    coefficient:
+      TWIN_COEFFICIENT,
 
     targetR:
       RISK_REWARD,
@@ -2128,13 +2556,13 @@ function backtest(
 
     grossProfitR:
       round(
-        grossProfit,
+        grossProfitR,
         2
       ),
 
     grossLossR:
       round(
-        grossLoss,
+        grossLossR,
         2
       ),
 
@@ -2190,6 +2618,316 @@ function backtest(
           -RECENT_BACKTEST_LIMIT
         )
         .reverse()
+
+  };
+
+}
+
+
+/* =========================================================
+   OPTIONAL FRONTEND HARD LOCK CHECK
+
+   Frontend sends:
+   lockSignal
+   lockEntry
+   lockSL
+   lockTP
+   lockTime
+
+   This allows the server to check the full fetched
+   history instead of only the chart window.
+========================================================= */
+
+function getRequestedLock(
+  req
+) {
+
+  const signal =
+    String(
+      req.query?.lockSignal ||
+      ""
+    )
+      .trim()
+      .toUpperCase();
+
+
+  if (
+    signal !==
+    "BUY"
+
+    &&
+
+    signal !==
+    "SELL"
+  ) {
+
+    return null;
+
+  }
+
+
+  const entry =
+    num(
+      req.query?.lockEntry
+    );
+
+
+  const stopLoss =
+    num(
+      req.query?.lockSL
+    );
+
+
+  const takeProfit =
+    num(
+      req.query?.lockTP
+    );
+
+
+  const time =
+    String(
+      req.query?.lockTime ||
+      ""
+    );
+
+
+  if (
+    entry === null ||
+    stopLoss === null ||
+    takeProfit === null ||
+    !time
+  ) {
+
+    return null;
+
+  }
+
+
+  return {
+
+    signal,
+
+    entry,
+
+    stopLoss,
+
+    takeProfit,
+
+    time
+
+  };
+
+}
+
+
+/* =========================================================
+   CHECK LIVE HARD LOCK
+========================================================= */
+
+function checkRequestedLock(
+  bars,
+  lock
+) {
+
+  if (
+    !lock
+  ) {
+
+    return null;
+
+  }
+
+
+  const startTime =
+    parseTime(
+      lock.time
+    );
+
+
+  if (
+    !Number.isFinite(
+      startTime
+    )
+  ) {
+
+    return {
+
+      status:
+        "ACTIVE"
+
+    };
+
+  }
+
+
+  for (
+    const candle
+    of bars
+  ) {
+
+    const candleTime =
+      parseTime(
+        candle.time
+      );
+
+
+    /*
+       Entry occurs at signal candle close,
+       so never test that same candle.
+    */
+
+    if (
+      !Number.isFinite(
+        candleTime
+      )
+
+      ||
+
+      candleTime <=
+      startTime
+    ) {
+
+      continue;
+
+    }
+
+
+    if (
+      lock.signal ===
+      "BUY"
+    ) {
+
+      const stopHit =
+
+        candle.low <=
+        lock.stopLoss;
+
+
+      const targetHit =
+
+        candle.high >=
+        lock.takeProfit;
+
+
+      if (
+        stopHit
+      ) {
+
+        return {
+
+          status:
+            "LOSS",
+
+          resultR:
+            -1,
+
+          exitPrice:
+            lock.stopLoss,
+
+          exitTime:
+            candle.time
+
+        };
+
+      }
+
+
+      if (
+        targetHit
+      ) {
+
+        return {
+
+          status:
+            "WIN",
+
+          resultR:
+            RISK_REWARD,
+
+          exitPrice:
+            lock.takeProfit,
+
+          exitTime:
+            candle.time
+
+        };
+
+      }
+
+    }
+
+
+    if (
+      lock.signal ===
+      "SELL"
+    ) {
+
+      const stopHit =
+
+        candle.high >=
+        lock.stopLoss;
+
+
+      const targetHit =
+
+        candle.low <=
+        lock.takeProfit;
+
+
+      if (
+        stopHit
+      ) {
+
+        return {
+
+          status:
+            "LOSS",
+
+          resultR:
+            -1,
+
+          exitPrice:
+            lock.stopLoss,
+
+          exitTime:
+            candle.time
+
+        };
+
+      }
+
+
+      if (
+        targetHit
+      ) {
+
+        return {
+
+          status:
+            "WIN",
+
+          resultR:
+            RISK_REWARD,
+
+          exitPrice:
+            lock.takeProfit,
+
+          exitTime:
+            candle.time
+
+        };
+
+      }
+
+    }
+
+  }
+
+
+  return {
+
+    status:
+      "ACTIVE"
 
   };
 
@@ -2298,10 +3036,43 @@ export default async function handler(
       ];
 
 
-    const bars =
+    /*
+       Raw bars include the current
+       forming candle.
+
+       They are useful for checking
+       TP / SL intrabar.
+    */
+
+    const rawBars =
       await fetch5m(
         symbol
       );
+
+
+    /*
+       TOTT signals only use
+       completed 5M candles.
+    */
+
+    const bars =
+      completedBars(
+        rawBars
+      );
+
+
+    if (
+      bars.length <
+      150
+    ) {
+
+      throw new Error(
+
+        `${symbol}: not enough completed 5M candles.`
+
+      );
+
+    }
 
 
     const analysis =
@@ -2310,21 +3081,55 @@ export default async function handler(
       );
 
 
-    const signals =
+    const recent =
       recentSignals(
-        bars
+        analysis.states
       );
 
 
     const bt =
       backtest(
-        bars
+        bars,
+        analysis.states
       );
+
+
+    const requestedLock =
+      getRequestedLock(
+        req
+      );
+
+
+    const lockCheck =
+      checkRequestedLock(
+
+        rawBars,
+
+        requestedLock
+
+      );
+
+
+    /*
+       Latest raw close is used as
+       current market price.
+
+       Signal itself still comes from
+       completed candle.
+    */
+
+    const liveBar =
+      rawBars.at(-1);
+
+
+    const currentPrice =
+      liveBar?.close ??
+      analysis.close;
 
 
     const candleAge =
       minutesOld(
-        analysis.currentTime
+        analysis.time
       );
 
 
@@ -2336,10 +3141,10 @@ export default async function handler(
           true,
 
         engine:
-          "MKAYFX 5M S&R HARD LOCK V3",
+          "MKAYFX TOTT 5M HARD LOCK",
 
         strategy:
-          "5M PIVOT S&R CROSSOVER",
+          "Twin Optimized Trend Tracker",
 
         symbol,
 
@@ -2356,28 +3161,25 @@ export default async function handler(
           new Date()
             .toISOString(),
 
-        candleTime:
-          analysis.currentTime,
-
-        candleAgeMinutes:
-          round(
-            candleAge,
-            1
-          ),
-
         settings: {
 
-          timeframe:
-            "5min",
+          source:
+            "close",
 
-          pivotLookbackLength:
-            LENGTH,
+          maType:
+            MA_TYPE,
 
-          maxActiveLevels:
-            MAX_LEVELS,
+          ottPeriod:
+            OTT_PERIOD,
 
-          showSRLines:
-            SHOW_ZONES,
+          optimizationConstant:
+            OPTIMIZATION_PERCENT,
+
+          twinCoefficient:
+            TWIN_COEFFICIENT,
+
+          ottShift:
+            OTT_SHIFT,
 
           riskReward:
             RISK_REWARD,
@@ -2390,33 +3192,60 @@ export default async function handler(
         signal:
           analysis.signal,
 
-        buySignal:
-          analysis.buySignal,
+        signalTime:
+          analysis.time,
 
-        sellSignal:
-          analysis.sellSignal,
+        candleTime:
+          analysis.time,
+
+        candleAgeMinutes:
+          round(
+            candleAge,
+            1
+          ),
 
         price:
           round(
-            analysis.currentClose,
+            currentPrice,
             market.digits
           ),
 
-        previousClose:
+        signalClose:
           round(
-            analysis.previousClose,
+            analysis.close,
             market.digits
           ),
 
-        support:
+        direction:
+
+          analysis.direction ===
+          1
+
+            ? "UP"
+
+            : "DOWN",
+
+        mavg:
           round(
-            analysis.nearestSupport,
+            analysis.mavg,
             market.digits
           ),
 
-        resistance:
+        ott:
           round(
-            analysis.nearestResistance,
+            analysis.ott,
+            market.digits
+          ),
+
+        ottUpper:
+          round(
+            analysis.ottUpper,
+            market.digits
+          ),
+
+        ottLower:
+          round(
+            analysis.ottLower,
             market.digits
           ),
 
@@ -2447,29 +3276,7 @@ export default async function handler(
         rr:
           analysis.rr,
 
-        levels: {
-
-          supports:
-
-            analysis.supports.map(
-              value =>
-                round(
-                  value,
-                  market.digits
-                )
-            ),
-
-          resistances:
-
-            analysis.resistances.map(
-              value =>
-                round(
-                  value,
-                  market.digits
-                )
-            )
-
-        },
+        lockCheck,
 
         reasons:
 
@@ -2478,10 +3285,11 @@ export default async function handler(
 
             ? [
 
-                "5M close crossed above newest confirmed support.",
-                "This signal can be hard-locked by the frontend.",
-                "Stop Loss uses the confirmed support.",
-                "Take Profit is stretched to 3R."
+                "VAR crossed above the shifted upper TOTT line.",
+                "BUY signal generated from the TOTT strategy.",
+                "Stop Loss uses the opposite lower TOTT band.",
+                "Take Profit is stretched to 3R.",
+                "Once locked, later WAIT or SELL signals are ignored until exit."
 
               ]
 
@@ -2490,59 +3298,66 @@ export default async function handler(
 
               ? [
 
-                  "5M close crossed below newest confirmed resistance.",
-                  "This signal can be hard-locked by the frontend.",
-                  "Stop Loss uses the confirmed resistance.",
-                  "Take Profit is stretched to 3R."
+                  "VAR crossed below the shifted lower TOTT line.",
+                  "SELL signal generated from the TOTT strategy.",
+                  "Stop Loss uses the opposite upper TOTT band.",
+                  "Take Profit is stretched to 3R.",
+                  "Once locked, later WAIT or BUY signals are ignored until exit."
 
                 ]
 
               : [
 
-                  "Waiting for a new 5M S&R crossover."
+                  "No new TOTT crossover on the latest completed 5M candle."
 
                 ],
 
         recentSignals:
 
-          signals.map(
-            item => ({
+          recent.map(
+            trade => ({
 
-              ...item,
-
-              price:
-                round(
-                  item.price,
-                  market.digits
-                ),
-
-              level:
-                round(
-                  item.level,
-                  market.digits
-                ),
+              ...trade,
 
               entry:
                 round(
-                  item.entry,
+                  trade.entry,
                   market.digits
                 ),
 
               stopLoss:
                 round(
-                  item.stopLoss,
+                  trade.stopLoss,
                   market.digits
                 ),
 
               takeProfit:
                 round(
-                  item.takeProfit,
+                  trade.takeProfit,
                   market.digits
                 ),
 
               risk:
                 round(
-                  item.risk,
+                  trade.risk,
+                  market.digits
+                ),
+
+              mavg:
+                round(
+                  trade.mavg,
+                  market.digits
+                ),
+
+              ottUpper:
+                round(
+                  trade.ottUpper,
+                  market.digits
+                ),
+
+              ottLower:
+                round(
+                  trade.ottLower,
                   market.digits
                 )
 
@@ -2597,39 +3412,60 @@ export default async function handler(
 
         chart:
 
-          bars
+          analysis.states
             .slice(
               -180
             )
             .map(
-              bar => ({
+              state => ({
 
                 time:
-                  bar.time,
+                  state.time,
 
                 open:
                   round(
-                    bar.open,
+                    state.open,
                     market.digits
                   ),
 
                 high:
                   round(
-                    bar.high,
+                    state.high,
                     market.digits
                   ),
 
                 low:
                   round(
-                    bar.low,
+                    state.low,
                     market.digits
                   ),
 
                 close:
                   round(
-                    bar.close,
+                    state.close,
                     market.digits
-                  )
+                  ),
+
+                mavg:
+                  round(
+                    state.mavg,
+                    market.digits
+                  ),
+
+                ottUpper:
+                  round(
+                    state.ottUpper,
+                    market.digits
+                  ),
+
+                ottLower:
+                  round(
+                    state.ottLower,
+                    market.digits
+                  ),
+
+                signal:
+                  state.signal
 
               })
             )
@@ -2642,7 +3478,7 @@ export default async function handler(
 
     console.error(
 
-      "MKAYFX 5M S&R ERROR",
+      "MKAYFX TOTT ERROR",
 
       error
 
@@ -2657,7 +3493,7 @@ export default async function handler(
           false,
 
         engine:
-          "MKAYFX 5M S&R HARD LOCK V3",
+          "MKAYFX TOTT 5M HARD LOCK",
 
         error:
 
@@ -2667,7 +3503,7 @@ export default async function handler(
 
           ||
 
-          "Unknown S&R engine error."
+          "Unknown TOTT engine error."
 
       });
 
