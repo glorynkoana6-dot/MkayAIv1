@@ -1,9 +1,11 @@
 {
-  "name": "mkayfx-gold-intelligence",
+  "name": "gold-session-tracker",
   "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "engines": {
-    "node": ">=20"
-  }
+  "description": "Gold session, liquidity trap, and volume footprint tracker",
+  "main": "index.html",
+  "scripts": {
+    "start": "node api/gold.js"
+  },
+  "dependencies": {},
+  "devDependencies": {}
 }
