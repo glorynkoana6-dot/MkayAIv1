@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -12,7 +13,7 @@
 
 <meta
   name="theme-color"
-  content="#05080d"
+  content="#030507"
 >
 
 <meta
@@ -27,47 +28,45 @@
 
 <meta
   name="apple-mobile-web-app-title"
-  content="XAU LIQ"
+  content="MKAYFX SWEEP"
 >
 
-<title>XAU Liquidity Intelligence</title>
+<title>MKAYFX Liquidity Sweep Strategy</title>
 
 
 <style>
 
-:root{
-
-  --bg:#05080d;
-
-  --panel:#0a1018;
-  --panel2:#0d1520;
-  --panel3:#070c12;
-
-  --line:rgba(255,255,255,.075);
-  --line2:rgba(255,255,255,.12);
-
-  --text:#f5f7fa;
-
-  --muted:#7d8a9b;
-  --muted2:#a9b3c1;
-
-  --green:#3ee6a4;
-  --red:#ff647c;
-  --gold:#f3ca67;
-  --blue:#7d98ff;
-  --purple:#bc8cff;
-  --cyan:#69d8ff;
-  --orange:#ffaf64;
-
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
 }
 
 
-*{
+:root{
 
-  box-sizing:border-box;
+  --bg:#030507;
+  --bg2:#060a0f;
 
-  -webkit-tap-highlight-color:
-    transparent;
+  --card:#080d13;
+  --card2:#0b1119;
+  --card3:#0e151f;
+
+  --border:#1a222d;
+  --border2:#252f3c;
+
+  --text:#f5f7fa;
+  --muted:#7c899b;
+  --muted2:#a7b0bc;
+
+  --green:#3ae6a5;
+  --red:#ff657d;
+  --gold:#f4ca5d;
+  --blue:#7994ff;
+  --orange:#ff9b4a;
+
+  --shadow:
+    0 22px 70px
+    rgba(0,0,0,.30);
 
 }
 
@@ -90,16 +89,12 @@ body{
   background:
 
     radial-gradient(
-      circle at 50% -10%,
-      rgba(243,202,103,.08),
+      circle at 50% -15%,
+      rgba(72,94,130,.13),
       transparent 28%
     ),
 
-    linear-gradient(
-      180deg,
-      #05080d 0%,
-      #04070a 100%
-    );
+    var(--bg);
 
   color:
     var(--text);
@@ -109,14 +104,13 @@ body{
     BlinkMacSystemFont,
     "SF Pro Display",
     "Segoe UI",
-    Roboto,
-    Arial,
     sans-serif;
 
-  padding:
-    env(safe-area-inset-top)
-    0
-    env(safe-area-inset-bottom);
+  padding-bottom:
+    calc(
+      50px +
+      env(safe-area-inset-bottom)
+    );
 
 }
 
@@ -129,62 +123,73 @@ button{
 }
 
 
-.app{
+/* =========================================================
+   SHELL
+========================================================= */
+
+
+.shell{
 
   width:
     min(
       100%,
-      1180px
+      920px
     );
 
   margin:
-    0 auto;
+    auto;
 
   padding:
-    18px
-    14px
-    42px;
+
+    calc(
+      18px +
+      env(safe-area-inset-top)
+    )
+
+    16px
+
+    40px;
 
 }
 
 
 /* =========================================================
-   TOP BAR
+   HEADER
 ========================================================= */
 
 
-.topbar{
+.header{
 
   display:flex;
-
-  align-items:
-    flex-start;
 
   justify-content:
     space-between;
 
+  align-items:
+    flex-start;
+
   gap:
-    12px;
+    14px;
 
   margin-bottom:
-    14px;
+    20px;
 
 }
 
 
-.eyebrow{
+.brand-small{
 
   color:
     var(--gold);
 
   font-size:
-    10px;
-
-  letter-spacing:
-    .18em;
+    11px;
 
   font-weight:
-    800;
+    900;
+
+  letter-spacing:
+    .16em;
 
   text-transform:
     uppercase;
@@ -195,61 +200,52 @@ button{
 }
 
 
-h1{
-
-  margin:
-    0;
+.brand{
 
   font-size:
     clamp(
-      22px,
-      5vw,
-      34px
+      25px,
+      7vw,
+      38px
     );
-
-  letter-spacing:
-    -.035em;
 
   line-height:
     1;
+
+  font-weight:
+    900;
+
+  letter-spacing:
+    -.045em;
 
 }
 
 
 .subtitle{
 
-  margin-top:
-    7px;
-
   color:
     var(--muted);
 
   font-size:
-    12px;
+    13px;
 
-  line-height:
-    1.45;
-
-  max-width:
-    680px;
+  margin-top:
+    8px;
 
 }
 
 
 .refresh{
 
-  min-width:
-    46px;
-
-  height:
-    46px;
+  flex:
+    0 0 auto;
 
   border:
     1px solid
-    var(--line2);
+    var(--border2);
 
   background:
-    var(--panel2);
+    var(--card2);
 
   color:
     var(--text);
@@ -257,255 +253,191 @@ h1{
   border-radius:
     14px;
 
-  font-size:
-    19px;
+  min-width:
+    52px;
+
+  height:
+    46px;
+
+  padding:
+    0 15px;
 
   font-weight:
-    700;
-
-  display:grid;
-
-  place-items:
-    center;
-
-  cursor:
-    pointer;
-
-}
-
-
-.refresh:disabled{
-
-  opacity:
-    .55;
+    800;
 
 }
 
 
 /* =========================================================
-   STATUS PILLS
+   STATUS
 ========================================================= */
 
 
-.statusbar{
+.connection{
 
   display:flex;
+
+  align-items:
+    center;
 
   gap:
     8px;
 
-  overflow:auto;
-
-  padding-bottom:
-    3px;
-
-  scrollbar-width:
-    none;
-
   margin-bottom:
-    12px;
-
-}
-
-
-.statusbar::-webkit-scrollbar{
-
-  display:none;
-
-}
-
-
-.pill{
-
-  white-space:
-    nowrap;
-
-  border:
-    1px solid
-    var(--line);
-
-  border-radius:
-    999px;
-
-  background:
-    rgba(255,255,255,.025);
-
-  color:
-    var(--muted2);
-
-  font-size:
-    10px;
-
-  padding:
-    7px 9px;
-
-}
-
-
-.pill.live{
-
-  color:
-    var(--green);
-
-  border-color:
-    rgba(62,230,164,.24);
-
-}
-
-
-.pill.warn{
-
-  color:
-    var(--orange);
-
-  border-color:
-    rgba(255,175,100,.24);
-
-}
-
-
-/* =========================================================
-   GRID
-========================================================= */
-
-
-.grid{
-
-  display:grid;
-
-  gap:
-    10px;
-
-}
-
-
-.g2{
-
-  grid-template-columns:
-    repeat(
-      2,
-      minmax(0,1fr)
-    );
-
-}
-
-
-.g3{
-
-  grid-template-columns:
-    repeat(
-      3,
-      minmax(0,1fr)
-    );
-
-}
-
-
-.g5{
-
-  grid-template-columns:
-    repeat(
-      5,
-      minmax(0,1fr)
-    );
-
-}
-
-
-/* =========================================================
-   CARD
-========================================================= */
-
-
-.card{
-
-  min-width:
-    0;
-
-  background:
-
-    linear-gradient(
-      180deg,
-      var(--panel) 0%,
-      var(--panel3) 100%
-    );
-
-  border:
-    1px solid
-    var(--line);
-
-  border-radius:
-    17px;
-
-  padding:
-    13px;
-
-  overflow:
-    hidden;
-
-}
-
-
-.hero{
-
-  padding:
-    16px;
-
-  border-color:
-    rgba(243,202,103,.18);
-
-  background:
-
-    radial-gradient(
-      circle at 90% 0%,
-      rgba(243,202,103,.07),
-      transparent 36%
-    ),
-
-    linear-gradient(
-      180deg,
-      #0b1119,
-      #070b10
-    );
-
-}
-
-
-/* =========================================================
-   TEXT
-========================================================= */
-
-
-.label{
+    14px;
 
   color:
     var(--muted);
 
   font-size:
-    10px;
-
-  font-weight:
-    700;
-
-  letter-spacing:
-    .08em;
-
-  text-transform:
-    uppercase;
+    12px;
 
 }
 
 
-.value{
+.dot{
 
-  margin-top:
-    6px;
+  width:
+    8px;
+
+  height:
+    8px;
+
+  border-radius:
+    50%;
+
+  background:
+    var(--orange);
+
+  box-shadow:
+    0 0 15px
+    currentColor;
+
+}
+
+
+.dot.live{
+
+  background:
+    var(--green);
+
+}
+
+
+.dot.error{
+
+  background:
+    var(--red);
+
+}
+
+
+.error{
+
+  display:none;
+
+  background:
+    rgba(
+      255,
+      101,
+      125,
+      .08
+    );
+
+  color:
+    var(--red);
+
+  border:
+    1px solid
+    rgba(
+      255,
+      101,
+      125,
+      .18
+    );
+
+  padding:
+    14px;
+
+  border-radius:
+    15px;
+
+  margin-bottom:
+    16px;
 
   font-size:
-    20px;
+    13px;
+
+}
+
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+
+.card{
+
+  background:
+
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.018),
+      transparent
+    ),
+
+    var(--card);
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:
+    24px;
+
+  box-shadow:
+    var(--shadow);
+
+}
+
+
+.section{
+
+  margin-top:
+    30px;
+
+}
+
+
+.section-head{
+
+  display:flex;
+
+  align-items:
+    flex-end;
+
+  justify-content:
+    space-between;
+
+  gap:
+    12px;
+
+  margin:
+
+    0
+    4px
+    12px;
+
+}
+
+
+.section-title{
+
+  font-size:
+    21px;
 
   font-weight:
-    800;
+    900;
 
   letter-spacing:
     -.025em;
@@ -513,138 +445,16 @@ h1{
 }
 
 
-.value.sm{
-
-  font-size:
-    16px;
-
-}
-
-
-.value.xl{
-
-  font-size:
-    34px;
-
-}
-
-
-.muted{
-
-  color:
-    var(--muted);
-
-}
-
-
-.small{
-
-  font-size:
-    11px;
-
-}
-
-
-.tiny{
-
-  font-size:
-    10px;
-
-}
-
-
-.green{
-
-  color:
-    var(--green);
-
-}
-
-
-.red{
-
-  color:
-    var(--red);
-
-}
-
-
-.gold{
-
-  color:
-    var(--gold);
-
-}
-
-
-.blue{
-
-  color:
-    var(--blue);
-
-}
-
-
-.orange{
-
-  color:
-    var(--orange);
-
-}
-
-
-.purple{
-
-  color:
-    var(--purple);
-
-}
-
-
-/* =========================================================
-   SECTION TITLE
-========================================================= */
-
-
-.section-title{
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:
-    space-between;
-
-  gap:
-    10px;
-
-  margin:
-    20px 2px 9px;
-
-}
-
-
-.section-title h2{
-
-  margin:
-    0;
-
-  font-size:
-    14px;
-
-  letter-spacing:
-    -.01em;
-
-}
-
-
-.section-title span{
+.section-sub{
 
   color:
     var(--muted);
 
   font-size:
-    10px;
+    12px;
+
+  text-align:
+    right;
 
 }
 
@@ -652,6 +462,14 @@ h1{
 /* =========================================================
    HERO
 ========================================================= */
+
+
+.hero{
+
+  padding:
+    22px;
+
+}
 
 
 .hero-top{
@@ -665,25 +483,39 @@ h1{
     flex-start;
 
   gap:
-    10px;
+    12px;
+
+}
+
+
+.label{
+
+  color:
+    var(--muted);
+
+  font-size:
+    11px;
+
+  font-weight:
+    900;
+
+  letter-spacing:
+    .14em;
+
+  text-transform:
+    uppercase;
 
 }
 
 
 .price{
 
-  margin-top:
-    4px;
-
   font-size:
     clamp(
-      31px,
-      10vw,
-      52px
+      37px,
+      11vw,
+      58px
     );
-
-  line-height:
-    1;
 
   font-weight:
     900;
@@ -691,143 +523,193 @@ h1{
   letter-spacing:
     -.055em;
 
+  margin-top:
+    6px;
+
 }
 
 
-.rank-badge{
+.signal{
+
+  min-width:
+    92px;
+
+  text-align:
+    center;
+
+  padding:
+    12px 14px;
+
+  border-radius:
+    14px;
+
+  font-weight:
+    900;
+
+  font-size:
+    16px;
+
+  letter-spacing:
+    .05em;
+
+  background:
+    #10161e;
+
+  color:
+    var(--muted2);
 
   border:
     1px solid
-    rgba(243,202,103,.25);
+    var(--border2);
+
+}
+
+
+.signal.buy{
+
+  color:
+    var(--green);
+
+  background:
+    rgba(
+      58,
+      230,
+      165,
+      .09
+    );
+
+  border-color:
+    rgba(
+      58,
+      230,
+      165,
+      .20
+    );
+
+}
+
+
+.signal.sell{
+
+  color:
+    var(--red);
+
+  background:
+    rgba(
+      255,
+      101,
+      125,
+      .09
+    );
+
+  border-color:
+    rgba(
+      255,
+      101,
+      125,
+      .20
+    );
+
+}
+
+
+.signal.wait{
 
   color:
     var(--gold);
 
   background:
-    rgba(243,202,103,.07);
-
-  padding:
-    8px 10px;
-
-  border-radius:
-    12px;
-
-  font-size:
-    10px;
-
-  font-weight:
-    800;
-
-  text-align:
-    center;
-
-  min-width:
-    82px;
+    rgba(
+      244,
+      202,
+      93,
+      .07
+    );
 
 }
 
 
-.sweep-callout{
+.state-row{
 
   margin-top:
-    15px;
+    20px;
 
-  padding-top:
-    14px;
+  display:flex;
 
-  border-top:
-    1px solid
-    var(--line);
+  justify-content:
+    space-between;
 
-  display:grid;
+  align-items:
+    flex-end;
 
   gap:
-    11px;
+    16px;
 
 }
 
 
-.sweep-name{
+.state-name{
 
   font-size:
-    18px;
+    17px;
 
   font-weight:
     850;
 
-  letter-spacing:
-    -.025em;
+}
+
+
+.confidence{
+
+  text-align:
+    right;
 
 }
 
 
-.zone{
+.confidence-number{
 
-  display:flex;
+  font-size:
+    28px;
 
-  gap:
-    8px;
+  font-weight:
+    900;
 
-  flex-wrap:
-    wrap;
-
-  margin-top:
-    8px;
+  color:
+    var(--gold);
 
 }
 
 
-.zone-chip{
-
-  flex:
-    1 1 120px;
-
-  padding:
-    9px 10px;
-
-  border-radius:
-    12px;
-
-  background:
-    rgba(255,255,255,.035);
-
-  border:
-    1px solid
-    var(--line);
-
-}
-
-
-.meter{
+.progress{
 
   height:
-    7px;
+    6px;
 
-  border-radius:
-    999px;
+  background:
+    #121922;
 
   overflow:
     hidden;
 
-  background:
-    rgba(255,255,255,.06);
+  border-radius:
+    999px;
 
   margin-top:
-    9px;
+    17px;
 
 }
 
 
-.meter > div{
+.progress-fill{
+
+  width:
+    0%;
 
   height:
     100%;
 
-  width:
-    0;
-
   background:
-
     linear-gradient(
       90deg,
       var(--blue),
@@ -838,125 +720,288 @@ h1{
     inherit;
 
   transition:
-    width .35s ease;
+    width .3s ease;
 
 }
 
 
 /* =========================================================
-   SESSION CARDS
+   THESIS
 ========================================================= */
 
 
-.session{
+.thesis{
 
-  position:
-    relative;
+  margin-top:
+    16px;
 
-}
-
-
-.session::before{
-
-  content:
-    "";
-
-  position:
-    absolute;
-
-  left:
-    0;
-
-  top:
-    0;
-
-  bottom:
-    0;
-
-  width:
-    3px;
+  padding:
+    17px;
 
   background:
-    var(--muted);
+    var(--card2);
 
-  opacity:
-    .35;
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:
+    17px;
+
+  color:
+    #d7dde5;
+
+  line-height:
+    1.55;
+
+  font-size:
+    14px;
 
 }
 
 
-.session.active::before{
-
-  background:
-    var(--green);
-
-  opacity:
-    1;
-
-}
+/* =========================================================
+   TRADE PLAN
+========================================================= */
 
 
-.session-head{
+.trade-grid{
 
-  display:flex;
+  display:grid;
 
-  justify-content:
-    space-between;
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(
+        0,
+        1fr
+      )
+    );
 
   gap:
     10px;
 
-  align-items:
-    flex-start;
+  margin-top:
+    16px;
 
 }
 
 
-.dot{
+.metric{
 
-  width:
-    7px;
+  min-width:
+    0;
 
-  height:
-    7px;
+  padding:
+    15px;
+
+  background:
+    var(--card2);
+
+  border:
+    1px solid
+    var(--border);
 
   border-radius:
-    50%;
+    17px;
 
-  display:
-    inline-block;
+}
 
-  background:
+
+.metric-label{
+
+  color:
     var(--muted);
 
-  margin-right:
-    5px;
+  font-size:
+    10px;
+
+  font-weight:
+    900;
+
+  letter-spacing:
+    .12em;
+
+  text-transform:
+    uppercase;
 
 }
 
 
-.dot.on{
+.metric-value{
 
-  background:
+  margin-top:
+    7px;
+
+  font-size:
+    19px;
+
+  font-weight:
+    850;
+
+  overflow-wrap:
+    anywhere;
+
+}
+
+
+.metric-note{
+
+  color:
+    var(--muted);
+
+  margin-top:
+    4px;
+
+  font-size:
+    11px;
+
+  line-height:
+    1.35;
+
+}
+
+
+.gold{
+
+  color:
+    var(--gold);
+
+}
+
+
+.red{
+
+  color:
+    var(--red);
+
+}
+
+
+.green{
+
+  color:
     var(--green);
 
-  box-shadow:
-    0 0 10px
-    rgba(62,230,164,.55);
+}
+
+
+/* =========================================================
+   CHECKLIST
+========================================================= */
+
+
+.checklist{
+
+  overflow:
+    hidden;
 
 }
 
 
-.countdown{
+.check{
 
-  font-variant-numeric:
-    tabular-nums;
+  display:grid;
+
+  grid-template-columns:
+    34px
+    1fr;
+
+  gap:
+    10px;
+
+  padding:
+    15px 16px;
+
+  border-bottom:
+    1px solid
+    var(--border);
+
+}
+
+
+.check:last-child{
+
+  border-bottom:
+    0;
+
+}
+
+
+.check-icon{
+
+  width:
+    28px;
+
+  height:
+    28px;
+
+  border-radius:
+    10px;
+
+  display:flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
 
   font-size:
     13px;
 
   font-weight:
-    800;
+    900;
+
+  color:
+    var(--red);
+
+  background:
+    rgba(
+      255,
+      101,
+      125,
+      .08
+    );
+
+}
+
+
+.check.pass
+.check-icon{
+
+  color:
+    var(--green);
+
+  background:
+    rgba(
+      58,
+      230,
+      165,
+      .09
+    );
+
+}
+
+
+.check-title{
+
+  font-weight:
+    780;
+
+  font-size:
+    14px;
+
+}
+
+
+.check-detail{
+
+  color:
+    var(--muted);
+
+  font-size:
+    12px;
 
   margin-top:
     4px;
@@ -964,191 +1009,121 @@ h1{
 }
 
 
-.range-row{
+/* =========================================================
+   FOOTPRINT
+========================================================= */
+
+
+.foot-grid{
 
   display:grid;
 
   grid-template-columns:
-    1fr 1fr;
+    repeat(
+      2,
+      1fr
+    );
 
   gap:
-    7px;
-
-  margin-top:
     10px;
+
+  padding:
+    14px;
 
 }
 
 
-.mini{
+.foot-item{
 
   padding:
-    8px;
+    15px;
 
-  border-radius:
-    10px;
+  background:
+    var(--card2);
 
   border:
     1px solid
-    var(--line);
+    var(--border);
 
-  background:
-    rgba(255,255,255,.02);
-
-}
-
-
-/* =========================================================
-   TIMEFRAMES
-========================================================= */
-
-
-.tf{
-
-  text-align:
-    center;
-
-  min-height:
-    92px;
+  border-radius:
+    17px;
 
 }
 
 
-.tf-bias{
+.delta{
+
+  font-size:
+    25px;
 
   font-weight:
     900;
 
-  font-size:
-    12px;
-
   margin-top:
-    6px;
+    7px;
+
+}
+
+
+.delta.pos{
+
+  color:
+    var(--green);
+
+}
+
+
+.delta.neg{
+
+  color:
+    var(--red);
 
 }
 
 
 /* =========================================================
-   TABLE
+   LIQUIDITY CARDS
 ========================================================= */
 
 
-.table-wrap{
+.pool-list{
 
-  overflow-x:
-    auto;
+  display:grid;
 
-  border-radius:
-    14px;
-
-  border:
-    1px solid
-    var(--line);
-
-  background:
-    var(--panel3);
+  gap:
+    10px;
 
 }
 
 
-.liquidity-table{
-
-  width:
-    100%;
-
-  border-collapse:
-    collapse;
-
-  min-width:
-    730px;
-
-}
-
-
-.liquidity-table th,
-.liquidity-table td{
+.pool{
 
   padding:
-    10px 9px;
-
-  border-bottom:
-    1px solid
-    var(--line);
-
-  text-align:
-    left;
-
-  font-size:
-    11px;
-
-  vertical-align:
-    top;
+    17px;
 
 }
 
 
-.liquidity-table th{
+.pool-top{
 
-  position:
-    sticky;
-
-  top:
-    0;
-
-  background:
-    #0a1017;
-
-  color:
-    var(--muted);
-
-  font-size:
-    9px;
-
-  letter-spacing:
-    .08em;
-
-  text-transform:
-    uppercase;
-
-  z-index:
-    1;
-
-}
-
-
-.liquidity-table tr:last-child td{
-
-  border-bottom:
-    none;
-
-}
-
-
-.score{
-
-  min-width:
-    48px;
-
-  display:
-    inline-flex;
-
-  align-items:
-    center;
+  display:flex;
 
   justify-content:
-    center;
+    space-between;
 
-  padding:
-    5px 7px;
+  align-items:
+    flex-start;
 
-  border-radius:
-    8px;
+  gap:
+    12px;
 
-  background:
-    rgba(125,152,255,.08);
+}
 
-  color:
-    var(--blue);
+
+.pool-name{
+
+  font-size:
+    17px;
 
   font-weight:
     850;
@@ -1156,437 +1131,7 @@ h1{
 }
 
 
-.score.high{
-
-  background:
-    rgba(243,202,103,.09);
-
-  color:
-    var(--gold);
-
-}
-
-
-.score.low{
-
-  background:
-    rgba(255,255,255,.04);
-
-  color:
-    var(--muted2);
-
-}
-
-
-/* =========================================================
-   DELTA
-========================================================= */
-
-
-.delta-bar{
-
-  height:
-    8px;
-
-  background:
-    rgba(255,255,255,.05);
-
-  border-radius:
-    999px;
-
-  overflow:
-    hidden;
-
-  position:
-    relative;
-
-  margin-top:
-    8px;
-
-}
-
-
-.delta-zero{
-
-  position:
-    absolute;
-
-  left:
-    50%;
-
-  top:
-    0;
-
-  bottom:
-    0;
-
-  width:
-    1px;
-
-  background:
-    rgba(255,255,255,.2);
-
-}
-
-
-.delta-fill{
-
-  position:
-    absolute;
-
-  top:
-    0;
-
-  bottom:
-    0;
-
-  border-radius:
-    999px;
-
-}
-
-
-.delta-fill.pos{
-
-  left:
-    50%;
-
-  background:
-    var(--green);
-
-}
-
-
-.delta-fill.neg{
-
-  right:
-    50%;
-
-  background:
-    var(--red);
-
-}
-
-
-/* =========================================================
-   TRAP WINDOWS
-========================================================= */
-
-
-.trap{
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:
-    space-between;
-
-  gap:
-    12px;
-
-  padding:
-    10px 0;
-
-  border-bottom:
-    1px solid
-    var(--line);
-
-}
-
-
-.trap:last-child{
-
-  border-bottom:
-    none;
-
-}
-
-
-.risk{
-
-  flex:
-    0 0 auto;
-
-  font-size:
-    9px;
-
-  font-weight:
-    900;
-
-  padding:
-    6px 7px;
-
-  border-radius:
-    8px;
-
-  border:
-    1px solid
-    var(--line);
-
-}
-
-
-.risk.elevated{
-
-  color:
-    var(--orange);
-
-  border-color:
-    rgba(255,175,100,.25);
-
-}
-
-
-.risk.watch{
-
-  color:
-    var(--gold);
-
-  border-color:
-    rgba(243,202,103,.22);
-
-}
-
-
-.risk.normal{
-
-  color:
-    var(--muted2);
-
-}
-
-
-/* =========================================================
-   LIQUIDITY LADDER
-========================================================= */
-
-
-.ladder{
-
-  display:grid;
-
-  gap:
-    5px;
-
-}
-
-
-.ladder-row{
-
-  display:grid;
-
-  grid-template-columns:
-    80px
-    minmax(0,1fr)
-    76px;
-
-  gap:
-    8px;
-
-  align-items:center;
-
-  min-height:
-    34px;
-
-}
-
-
-.ladder-line{
-
-  position:
-    relative;
-
-  height:
-    2px;
-
-  background:
-    rgba(255,255,255,.08);
-
-}
-
-
-.ladder-line::after{
-
-  content:
-    "";
-
-  position:
-    absolute;
-
-  left:
-    0;
-
-  top:
-    -3px;
-
-  width:
-    8px;
-
-  height:
-    8px;
-
-  border-radius:
-    50%;
-
-  background:
-    var(--blue);
-
-}
-
-
-.ladder-row.current .ladder-line{
-
-  height:
-    3px;
-
-  background:
-    var(--gold);
-
-}
-
-
-.ladder-row.current .ladder-line::after{
-
-  background:
-    var(--gold);
-
-}
-
-
-/* =========================================================
-   REASONS
-========================================================= */
-
-
-.reasons{
-
-  margin:
-    8px 0 0;
-
-  padding:
-    0;
-
-  list-style:
-    none;
-
-  display:grid;
-
-  gap:
-    5px;
-
-}
-
-
-.reasons li{
-
-  color:
-    var(--muted2);
-
-  font-size:
-    10px;
-
-  line-height:
-    1.35;
-
-  padding-left:
-    11px;
-
-  position:
-    relative;
-
-}
-
-
-.reasons li::before{
-
-  content:
-    "•";
-
-  position:
-    absolute;
-
-  left:
-    0;
-
-  color:
-    var(--gold);
-
-}
-
-
-/* =========================================================
-   MACRO
-========================================================= */
-
-
-.macro-row{
-
-  display:grid;
-
-  grid-template-columns:
-    1fr auto auto;
-
-  gap:
-    8px;
-
-  align-items:
-    center;
-
-  padding:
-    8px 0;
-
-  border-bottom:
-    1px solid
-    var(--line);
-
-}
-
-
-.macro-row:last-child{
-
-  border-bottom:
-    none;
-
-}
-
-
-/* =========================================================
-   NOTICE / ERROR
-========================================================= */
-
-
-.notice{
-
-  padding:
-    11px 12px;
-
-  border-radius:
-    13px;
-
-  border:
-    1px solid
-    rgba(255,175,100,.18);
-
-  background:
-    rgba(255,175,100,.045);
-
-  color:
-    var(--muted2);
-
-  font-size:
-    10px;
-
-  line-height:
-    1.45;
-
-  margin-top:
-    14px;
-
-}
-
-
-.empty{
+.pool-type{
 
   color:
     var(--muted);
@@ -1594,157 +1139,303 @@ h1{
   font-size:
     11px;
 
-  padding:
-    10px 0;
+  margin-top:
+    3px;
 
 }
 
 
-.error{
+.pool-score{
 
-  display:
-    none;
+  min-width:
+    64px;
 
-  padding:
-    12px;
+  text-align:
+    center;
 
   border-radius:
     13px;
 
-  border:
-    1px solid
-    rgba(255,100,124,.25);
+  padding:
+    8px 9px;
 
-  background:
-    rgba(255,100,124,.06);
+  font-weight:
+    900;
 
   color:
-    #ff9aaa;
+    var(--gold);
+
+  background:
+    rgba(
+      244,
+      202,
+      93,
+      .08
+    );
+
+}
+
+
+.pool-grid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      1fr
+    );
+
+  gap:
+    13px;
+
+  margin-top:
+    16px;
+
+}
+
+
+.pool-key{
+
+  color:
+    var(--muted);
 
   font-size:
-    12px;
+    10px;
 
-  margin-bottom:
-    12px;
+  font-weight:
+    850;
 
-  white-space:
-    pre-wrap;
+  text-transform:
+    uppercase;
+
+  letter-spacing:
+    .1em;
+
+}
+
+
+.pool-value{
+
+  margin-top:
+    4px;
+
+  font-size:
+    15px;
+
+  font-weight:
+    750;
 
 }
 
 
 /* =========================================================
-   MOBILE
+   SESSIONS
 ========================================================= */
 
 
-@media(max-width:820px){
+.sessions{
 
-  .g5{
+  display:grid;
 
-    grid-template-columns:
-      repeat(
-        3,
-        minmax(0,1fr)
-      );
-
-  }
-
-
-  .session-grid{
-
-    grid-template-columns:
-      1fr;
-
-  }
-
-
-  .desktop-two{
-
-    grid-template-columns:
-      1fr;
-
-  }
+  gap:
+    10px;
 
 }
 
 
-@media(max-width:560px){
+.session{
 
-  .app{
+  padding:
+    16px;
 
-    padding-left:
-      11px;
+  display:flex;
 
-    padding-right:
-      11px;
+  justify-content:
+    space-between;
 
-  }
+  gap:
+    15px;
 
+  align-items:
+    center;
 
-  .g3{
-
-    grid-template-columns:
-      1fr;
-
-  }
+}
 
 
-  .g2{
+.session-name{
 
-    grid-template-columns:
-      1fr 1fr;
+  font-weight:
+    850;
 
-  }
+}
 
 
-  .g5{
+.session-phase{
+
+  color:
+    var(--muted);
+
+  font-size:
+    11px;
+
+  margin-top:
+    4px;
+
+}
+
+
+.session-right{
+
+  text-align:
+    right;
+
+}
+
+
+.active{
+
+  color:
+    var(--green);
+
+}
+
+
+.closed{
+
+  color:
+    var(--muted);
+
+}
+
+
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
+
+
+.notify{
+
+  width:
+    100%;
+
+  height:
+    50px;
+
+  border-radius:
+    16px;
+
+  margin-top:
+    12px;
+
+  background:
+    var(--card2);
+
+  color:
+    var(--text);
+
+  border:
+    1px solid
+    var(--border2);
+
+  font-weight:
+    850;
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+
+.footer{
+
+  color:
+    var(--muted);
+
+  font-size:
+    11px;
+
+  line-height:
+    1.6;
+
+  margin-top:
+    32px;
+
+  padding:
+    0 5px;
+
+}
+
+
+/* =========================================================
+   DESKTOP
+========================================================= */
+
+
+@media(
+  min-width:700px
+){
+
+  .trade-grid{
 
     grid-template-columns:
       repeat(
-        2,
-        minmax(0,1fr)
+        4,
+        1fr
       );
 
   }
 
 
-  .value.xl{
+  .foot-grid{
 
-    font-size:
-      28px;
+    grid-template-columns:
+      repeat(
+        4,
+        1fr
+      );
 
   }
 
 
-  .card{
+  .pool-list{
 
-    padding:
+    grid-template-columns:
+      repeat(
+        2,
+        1fr
+      );
+
+  }
+
+
+  .sessions{
+
+    grid-template-columns:
+      repeat(
+        3,
+        1fr
+      );
+
+  }
+
+
+  .session{
+
+    display:block;
+
+  }
+
+
+  .session-right{
+
+    text-align:
+      left;
+
+    margin-top:
       12px;
-
-  }
-
-
-  .hero{
-
-    padding:
-      14px;
-
-  }
-
-
-  .topbar{
-
-    align-items:
-      center;
-
-  }
-
-
-  .subtitle{
-
-    font-size:
-      11px;
 
   }
 
@@ -1758,3384 +1449,531 @@ h1{
 <body>
 
 
-<div class="app">
+<div class="shell">
 
 
-<!-- ======================================================
-     HEADER
-====================================================== -->
+  <header class="header">
 
+    <div>
 
-<div class="topbar">
+      <div class="brand-small">
+        MKAYFX
+      </div>
 
-  <div>
+      <div class="brand">
+        SWEEP STRATEGY
+      </div>
 
-    <div class="eyebrow">
-      XAU/USD · LIQUIDITY ENGINE
-    </div>
-
-    <h1>
-      Liquidity Intelligence
-    </h1>
-
-    <div class="subtitle">
-
-      Sessions · structure · liquidity pools · sweep depth ·
-      trap windows · footprint proxy · macro context
+      <div class="subtitle">
+        XAU/USD liquidity raid + reversal engine
+      </div>
 
     </div>
 
-  </div>
 
+    <button
+      class="refresh"
+      id="refreshBtn"
+    >
+      ↻
+    </button>
 
-  <button
-    id="refreshBtn"
-    class="refresh"
-    type="button"
-    aria-label="Refresh"
-  >
-    ↻
-  </button>
+  </header>
 
-</div>
 
-
-<div
-  id="errorBox"
-  class="error"
-></div>
-
-
-<!-- ======================================================
-     STATUS
-====================================================== -->
-
-
-<div class="statusbar">
-
-  <div
-    id="statusLive"
-    class="pill"
-  >
-    CONNECTING
-  </div>
-
-  <div
-    id="statusAge"
-    class="pill"
-  >
-    Data age —
-  </div>
-
-  <div
-    id="statusRegime"
-    class="pill"
-  >
-    Regime —
-  </div>
-
-  <div
-    id="statusFlow"
-    class="pill"
-  >
-    Footprint —
-  </div>
-
-</div>
-
-
-<!-- ======================================================
-     MAIN SWEEP RADAR
-====================================================== -->
-
-
-<section class="card hero">
-
-
-<div class="hero-top">
-
-
-<div>
-
-  <div class="label">
-    XAU/USD
-  </div>
-
-  <div
-    id="price"
-    class="price"
-  >
-    —
-  </div>
-
-  <div
-    id="updated"
-    class="muted tiny"
-    style="margin-top:7px"
-  >
-    Waiting for data…
-  </div>
-
-</div>
-
-
-<div
-  id="topLikelihood"
-  class="rank-badge"
->
-  SWEEP<br>—
-</div>
-
-
-</div>
-
-
-<div class="sweep-callout">
-
-
-<div>
-
-  <div class="label">
-    Highest-ranked liquidity raid
-  </div>
-
-  <div
-    id="bestPoolName"
-    class="sweep-name"
-  >
-    Waiting for analysis…
-  </div>
-
-  <div
-    id="bestPoolMeta"
-    class="muted small"
-    style="margin-top:4px"
-  >
-    —
-  </div>
-
-
-  <div class="meter">
-
-    <div id="bestMeter"></div>
-
-  </div>
-
-</div>
-
-
-<div class="zone">
-
-
-<div class="zone-chip">
-
-  <div class="label">
-    Liquidity level
-  </div>
-
-  <div
-    id="bestTarget"
-    class="value sm"
-  >
-    —
-  </div>
-
-</div>
-
-
-<div class="zone-chip">
-
-  <div class="label">
-    Likely sweep end
-  </div>
-
-  <div
-    id="bestEnd"
-    class="value sm gold"
-  >
-    —
-  </div>
-
-</div>
-
-
-<div class="zone-chip">
-
-  <div class="label">
-    Reversal / raid zone
-  </div>
-
-  <div
-    id="bestZone"
-    class="value sm"
-  >
-    —
-  </div>
-
-</div>
-
-
-<div class="zone-chip">
-
-  <div class="label">
-    Expected overshoot
-  </div>
-
-  <div
-    id="bestOvershoot"
-    class="value sm"
-  >
-    —
-  </div>
-
-</div>
-
-
-</div>
-
-
-<ul
-  id="bestReasons"
-  class="reasons"
-></ul>
-
-
-</div>
-
-
-</section>
-
-
-<!-- ======================================================
-     SESSIONS
-====================================================== -->
-
-
-<div class="section-title">
-
-  <h2>
-    Current sessions
-  </h2>
-
-  <span id="browserTime">
-    Local time —
-  </span>
-
-</div>
-
-
-<div
-  id="sessions"
-  class="grid g3 session-grid"
-></div>
-
-
-<!-- ======================================================
-     MARKET STATE
-====================================================== -->
-
-
-<div class="section-title">
-
-  <h2>
-    Market state
-  </h2>
-
-  <span>
-    live context
-  </span>
-
-</div>
-
-
-<div class="grid g5">
-
-
-<div class="card">
-
-  <div class="label">
-    M5 ATR
-  </div>
-
-  <div
-    id="atr5"
-    class="value sm"
-  >
-    —
-  </div>
-
-</div>
-
-
-<div class="card">
-
-  <div class="label">
-    M15 ATR
-  </div>
-
-  <div
-    id="atr15"
-    class="value sm"
-  >
-    —
-  </div>
-
-</div>
-
-
-<div class="card">
-
-  <div class="label">
-    H1 ATR
-  </div>
-
-  <div
-    id="atrH1"
-    class="value sm"
-  >
-    —
-  </div>
-
-</div>
-
-
-<div class="card">
-
-  <div class="label">
-    VWAP / proxy
-  </div>
-
-  <div
-    id="vwap"
-    class="value sm"
-  >
-    —
-  </div>
-
-  <div
-    id="vwapMeta"
-    class="muted tiny"
-    style="margin-top:4px"
-  >
-    —
-  </div>
-
-</div>
-
-
-<div class="card">
-
-  <div class="label">
-    Regime
-  </div>
-
-  <div
-    id="regime"
-    class="value sm"
-  >
-    —
-  </div>
-
-</div>
-
-
-</div>
-
-
-<!-- ======================================================
-     TIMEFRAMES
-====================================================== -->
-
-
-<div class="section-title">
-
-  <h2>
-    Timeframe structure
-  </h2>
-
-  <span>
-    trend + RSI + EMA stack
-  </span>
-
-</div>
-
-
-<div
-  id="timeframes"
-  class="grid g5"
-></div>
-
-
-<!-- ======================================================
-     LIQUIDITY LADDER
-====================================================== -->
-
-
-<div class="section-title">
-
-  <h2>
-    Liquidity ladder
-  </h2>
-
-  <span>
-    ranked magnets around price
-  </span>
-
-</div>
-
-
-<div class="card">
-
-  <div
-    id="ladder"
-    class="ladder"
-  ></div>
-
-</div>
-
-
-<!-- ======================================================
-     SWEEP PROJECTIONS
-====================================================== -->
-
-
-<div class="section-title">
-
-  <h2>
-    Sweep projections
-  </h2>
-
-  <span>
-    target + probable overshoot
-  </span>
-
-</div>
-
-
-<div class="table-wrap">
-
-
-<table class="liquidity-table">
-
-
-<thead>
-
-<tr>
-
-  <th>
-    Pool
-  </th>
-
-  <th>
-    Level
-  </th>
-
-  <th>
-    Distance
-  </th>
-
-  <th>
-    Likelihood
-  </th>
-
-  <th>
-    Raid style
-  </th>
-
-  <th>
-    Likely end
-  </th>
-
-  <th>
-    Zone
-  </th>
-
-  <th>
-    Footprint near level
-  </th>
-
-</tr>
-
-</thead>
-
-
-<tbody id="poolsBody"></tbody>
-
-
-</table>
-
-
-</div>
-
-
-<!-- ======================================================
-     TRAP WINDOWS
-====================================================== -->
-
-
-<div class="section-title">
-
-  <h2>
-    Trap / sweep timing
-  </h2>
-
-  <span>
-    when raid risk is elevated
-  </span>
-
-</div>
-
-
-<div class="grid g2 desktop-two">
-
-
-<div class="card">
-
-  <div id="trapWindows"></div>
-
-</div>
-
-
-<div class="card">
-
-  <div class="label">
-    How to read this
-  </div>
-
-  <div class="value sm">
-    Timing ≠ guarantee
-  </div>
-
-  <p
-    class="muted small"
-    style="line-height:1.55;margin-bottom:0"
-  >
-
-    The engine raises sweep risk around major session
-    openings and closings and when price is already close
-    to mapped liquidity.
-
-    It then uses current pressure and recent historical
-    sweep depth to estimate whether the level is more
-    likely to be tagged, shallowly raided, or pushed
-    through before reversing.
-
-  </p>
-
-</div>
-
-
-</div>
-
-
-<!-- ======================================================
-     FOOTPRINT
-====================================================== -->
-
-
-<div class="section-title">
-
-  <h2>
-    Footprint-style order flow
-  </h2>
-
-  <span id="footprintMode">
-    —
-  </span>
-
-</div>
-
-
-<div class="grid g2 desktop-two">
-
-
-<div class="card">
-
-
-<div class="grid g2">
-
-
-<div>
-
-  <div class="label">
-    5m delta
-  </div>
-
-  <div
-    id="delta5"
-    class="value"
-  >
-    —
-  </div>
-
-  <div
-    id="delta5bar"
-    class="delta-bar"
-  >
-
-    <div class="delta-zero"></div>
-
-  </div>
-
-</div>
-
-
-<div>
-
-  <div class="label">
-    15m delta
-  </div>
-
-  <div
-    id="delta15"
-    class="value"
-  >
-    —
-  </div>
-
-  <div
-    id="delta15bar"
-    class="delta-bar"
-  >
-
-    <div class="delta-zero"></div>
-
-  </div>
-
-</div>
-
-
-<div>
-
-  <div class="label">
-    30m delta
-  </div>
-
-  <div
-    id="delta30"
-    class="value"
-  >
-    —
-  </div>
-
-  <div
-    id="delta30bar"
-    class="delta-bar"
-  >
-
-    <div class="delta-zero"></div>
-
-  </div>
-
-</div>
-
-
-<div>
-
-  <div class="label">
-    60m delta
-  </div>
-
-  <div
-    id="delta60"
-    class="value"
-  >
-    —
-  </div>
-
-  <div
-    id="delta60bar"
-    class="delta-bar"
-  >
-
-    <div class="delta-zero"></div>
-
-  </div>
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-<div class="card">
-
-
-<div class="label">
-  Microstructure warnings
-</div>
-
-
-<div
-  style="margin-top:10px"
-  class="grid g2"
->
-
-
-<div class="mini">
-
-  <div class="label">
-    Delta divergence
-  </div>
-
-  <div
-    id="divergence"
-    class="value sm"
-  >
-    —
-  </div>
-
-</div>
-
-
-<div class="mini">
-
-  <div class="label">
-    Absorption
-  </div>
-
-  <div
-    id="absorption"
-    class="value sm"
-  >
-    —
-  </div>
-
-</div>
-
-
-<div class="mini">
-
-  <div class="label">
-    CVD proxy
-  </div>
-
-  <div
-    id="cvd"
-    class="value sm"
-  >
-    —
-  </div>
-
-</div>
-
-
-<div class="mini">
-
-  <div class="label">
-    Volume source
-  </div>
-
-  <div
-    id="volumeSource"
-    class="value sm"
-  >
-    —
-  </div>
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-<!-- ======================================================
-     ASIA SWEEP BEHAVIOUR
-====================================================== -->
-
-
-<div class="section-title">
-
-  <h2>
-    Asia sweep behavior
-  </h2>
-
-  <span>
-    recent measured raids
-  </span>
-
-</div>
-
-
-<div class="grid g2">
-
-
-<div class="card">
-
-  <div class="label">
-    Asia High raids
-  </div>
-
-  <div
-    id="asiaHighStats"
-    class="value sm"
-  >
-    —
-  </div>
-
-  <div
-    id="asiaHighMeta"
-    class="muted small"
-    style="margin-top:7px;line-height:1.5"
-  >
-    —
-  </div>
-
-</div>
-
-
-<div class="card">
-
-  <div class="label">
-    Asia Low raids
-  </div>
-
-  <div
-    id="asiaLowStats"
-    class="value sm"
-  >
-    —
-  </div>
-
-  <div
-    id="asiaLowMeta"
-    class="muted small"
-    style="margin-top:7px;line-height:1.5"
-  >
-    —
-  </div>
-
-</div>
-
-
-</div>
-
-
-<!-- ======================================================
-     REFERENCE LEVELS
-====================================================== -->
-
-
-<div class="section-title">
-
-  <h2>
-    Reference liquidity
-  </h2>
-
-  <span>
-    PDH · PDL · PWH · PWL · FVGs
-  </span>
-
-</div>
-
-
-<div class="grid g2 desktop-two">
-
-
-<div class="card">
-
-  <div class="label">
-    Previous day / week
-  </div>
-
-  <div
-    id="dayLevels"
-    style="margin-top:8px"
-  ></div>
-
-</div>
-
-
-<div class="card">
-
-  <div class="label">
-    Nearest M15 fair value gaps
-  </div>
-
-  <div
-    id="fvgs"
-    style="margin-top:8px"
-  ></div>
-
-</div>
-
-
-</div>
-
-
-<!-- ======================================================
-     MACRO
-====================================================== -->
-
-
-<div class="section-title">
-
-  <h2>
-    Macro pressure
-  </h2>
-
-  <span>
-    optional FRED context
-  </span>
-
-</div>
-
-
-<div class="card">
-
-
-<div
-  style="
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:12px
-  "
->
-
-
-<div>
-
-  <div class="label">
-    Gold macro backdrop
-  </div>
-
-  <div
-    id="macroBias"
-    class="value sm"
-  >
-    —
-  </div>
-
-  <div
-    id="macroNote"
-    class="muted tiny"
-    style="margin-top:5px"
-  >
-    —
-  </div>
-
-</div>
-
-
-<div
-  id="macroScore"
-  class="rank-badge"
->
-  —
-</div>
-
-
-</div>
-
-
-<div
-  id="macroRows"
-  style="margin-top:10px"
-></div>
-
-
-</div>
-
-
-<div class="notice">
-
-  <strong>
-    Important:
-  </strong>
-
-  this is market intelligence, not certainty.
-
-  “Likelihood” is a heuristic ranking rather than a
-  statistically calibrated probability.
-
-  The footprint is explicitly a proxy unless your feed
-  supplies true aggressor bid/ask volume.
-
-  A projected sweep zone can fail when price accepts beyond
-  the liquidity level instead of rejecting it.
-
-</div>
-
-
-</div>
-
-
-<script>
-
-(() => {
-
-
-/* =========================================================
-   SETTINGS
-========================================================= */
-
-
-const API =
-  "/api/xau";
-
-
-const AUTO_REFRESH_MS =
-  60_000;
-
-
-let data =
-  null;
-
-
-let busy =
-  false;
-
-
-/* =========================================================
-   DOM
-========================================================= */
-
-
-const $ =
-  id =>
-    document.getElementById(
-      id
-    );
-
-
-/* =========================================================
-   FORMATTERS
-========================================================= */
-
-
-const fmt = (
-  value,
-  decimals = 2
-) => {
-
-  const number =
-    Number(
-      value
-    );
-
-
-  if (
-    !Number.isFinite(
-      number
-    )
-  ) {
-
-    return "—";
-
-  }
-
-
-  return number.toLocaleString(
-
-    undefined,
-
-    {
-
-      minimumFractionDigits:
-        decimals,
-
-      maximumFractionDigits:
-        decimals
-
-    }
-
-  );
-
-};
-
-
-const pct = (
-  value,
-  decimals = 1
-) =>
-
-  `${fmt(value, decimals)}%`;
-
-
-function safe(
-  value,
-  fallback = "—"
-) {
-
-  return (
-
-    value === null
-
-    ||
-
-    value === undefined
-
-    ||
-
-    value === ""
-
-  )
-
-    ?
-
-    fallback
-
-    :
-
-    value;
-
-}
-
-
-/* =========================================================
-   COLORS
-========================================================= */
-
-
-function biasClass(
-  value
-) {
-
-  const text =
-    String(
-      value
-      ||
-      ""
-    )
-      .toUpperCase();
-
-
-  if (
-
-    text.includes(
-      "BULL"
-    )
-
-    ||
-
-    text.includes(
-      "BUY"
-    )
-
-    ||
-
-    text.includes(
-      "SUPPORTIVE"
-    )
-
-  ) {
-
-    return "green";
-
-  }
-
-
-  if (
-
-    text.includes(
-      "BEAR"
-    )
-
-    ||
-
-    text.includes(
-      "SELL"
-    )
-
-    ||
-
-    text.includes(
-      "HEADWIND"
-    )
-
-  ) {
-
-    return "red";
-
-  }
-
-
-  if (
-
-    text.includes(
-      "HIGH"
-    )
-
-    ||
-
-    text.includes(
-      "ELEVATED"
-    )
-
-  ) {
-
-    return "gold";
-
-  }
-
-
-  return "muted";
-
-}
-
-
-function scoreClass(
-  value
-) {
-
-  const n =
-    Number(
-      value
-    )
-    ||
-    0;
-
-
-  if (
-    n >= 75
-  ) {
-
-    return "high";
-
-  }
-
-
-  if (
-    n < 58
-  ) {
-
-    return "low";
-
-  }
-
-
-  return "";
-
-}
-
-
-/* =========================================================
-   TIME
-========================================================= */
-
-
-function eventCountdown(
-  iso
-) {
-
-  if (
-    !iso
-  ) {
-
-    return "—";
-
-  }
-
-
-  const milliseconds =
-
-    new Date(
-      iso
-    )
-      .getTime()
-
-    -
-
-    Date.now();
-
-
-  if (
-    !Number.isFinite(
-      milliseconds
-    )
-  ) {
-
-    return "—";
-
-  }
-
-
-  if (
-    milliseconds <= 0
-  ) {
-
-    return "now";
-
-  }
-
-
-  const total =
-    Math.floor(
-
-      milliseconds /
-      1000
-
-    );
-
-
-  const hours =
-    Math.floor(
-
-      total /
-      3600
-
-    );
-
-
-  const minutes =
-    Math.floor(
-
-      (
-        total %
-        3600
-      )
-
-      /
-
-      60
-
-    );
-
-
-  const seconds =
-    total %
-    60;
-
-
-  if (
-    hours > 0
-  ) {
-
-    return (
-
-      `${hours}h ` +
-
-      `${String(minutes).padStart(2,"0")}m ` +
-
-      `${String(seconds).padStart(2,"0")}s`
-
-    );
-
-  }
-
-
-  return (
-
-    `${minutes}m ` +
-
-    `${String(seconds).padStart(2,"0")}s`
-
-  );
-
-}
-
-
-function localClock(
-  iso
-) {
-
-  if (
-    !iso
-  ) {
-
-    return "—";
-
-  }
-
-
-  return new Intl.DateTimeFormat(
-
-    undefined,
-
-    {
-
-      weekday:
-        "short",
-
-      hour:
-        "2-digit",
-
-      minute:
-        "2-digit",
-
-      hour12:
-        false
-
-    }
-
-  )
-    .format(
-
-      new Date(
-        iso
-      )
-
-    );
-
-}
-
-
-/* =========================================================
-   ERROR
-========================================================= */
-
-
-function setError(
-  message
-) {
-
-  const element =
-    $("errorBox");
-
-
-  if (
-    !message
-  ) {
-
-    element.style.display =
-      "none";
-
-
-    element.textContent =
-      "";
-
-
-    return;
-
-  }
-
-
-  element.textContent =
-    message;
-
-
-  element.style.display =
-    "block";
-
-}
-
-
-/* =========================================================
-   LOAD DATA
-========================================================= */
-
-
-async function load() {
-
-  if (
-    busy
-  ) {
-
-    return;
-
-  }
-
-
-  busy =
-    true;
-
-
-  $("refreshBtn").disabled =
-    true;
-
-
-  $("statusLive").textContent =
-    "ANALYZING";
-
-
-  $("statusLive").className =
-    "pill warn";
-
-
-  try {
-
-    const response =
-      await fetch(
-
-        `${API}?t=${Date.now()}`,
-
-        {
-          cache:
-            "no-store"
-        }
-
-      );
-
-
-    const json =
-      await response.json();
-
-
-    if (
-
-      !response.ok
-
-      ||
-
-      !json.ok
-
-    ) {
-
-      throw new Error(
-
-        json.error
-
-        ||
-
-        `HTTP ${response.status}`
-
-      );
-
-    }
-
-
-    data =
-      json;
-
-
-    setError(
-      ""
-    );
-
-
-    render(
-      json
-    );
-
-
-  } catch (
-    error
-  ) {
-
-    setError(
-
-      `Could not load XAU intelligence.\n\n` +
-
-      `${error.message}\n\n` +
-
-      `Check TWELVE_DATA_API_KEY in Vercel and redeploy.`
-
-    );
-
-
-    $("statusLive").textContent =
-      "ERROR";
-
-
-    $("statusLive").className =
-      "pill warn";
-
-
-  } finally {
-
-    busy =
-      false;
-
-
-    $("refreshBtn").disabled =
-      false;
-
-  }
-
-}
-
-
-/* =========================================================
-   MAIN RENDER
-========================================================= */
-
-
-function render(
-  d
-) {
-
-  $("statusLive").textContent =
-
-    d.cache
-
-      ?
-
-      "LIVE · CACHED"
-
-      :
-
-      "LIVE";
-
-
-  $("statusLive").className =
-    "pill live";
-
-
-  $("statusAge").textContent =
-
-    `Data age ${d.dataAgeSeconds}s`;
-
-
-  $("statusRegime").textContent =
-
-    safe(
-      d.market?.regime?.label
-    );
-
-
-  $("statusFlow").textContent =
-
-    d.footprint?.hasProviderVolume
-
-      ?
-
-      "Volume proxy: provider"
-
-      :
-
-      "Volume proxy: synthetic";
-
-
-  $("price").textContent =
-    fmt(
-      d.price,
-      3
-    );
-
-
-  $("updated").textContent =
-
-    `Latest bar ${localClock(d.latestBarTime)} · ` +
-
-    `refreshed ${new Date().toLocaleTimeString([],{
-
-      hour:"2-digit",
-
-      minute:"2-digit",
-
-      second:"2-digit"
-
-    })}`;
-
-
-  renderBest(
-    d.liquidityPools?.[0]
-  );
-
-
-  renderSessions(
-    d.sessions
-    ||
-    []
-  );
-
-
-  renderMarket(
-    d.market
-    ||
-    {}
-  );
-
-
-  renderTimeframes(
-    d.structure
-    ||
-    {}
-  );
-
-
-  renderLadder(
-    d
-  );
-
-
-  renderPools(
-    d.liquidityPools
-    ||
-    []
-  );
-
-
-  renderTraps(
-    d.trapWindows
-    ||
-    []
-  );
-
-
-  renderFootprint(
-    d.footprint
-    ||
-    {}
-  );
-
-
-  renderSweepStats(
-    d.sweepHistory
-    ||
-    {}
-  );
-
-
-  renderReference(
-
-    d.dayLevels
-    ||
-    {},
-
-    d.fvgs
-    ||
-    []
-
-  );
-
-
-  renderMacro(
-    d.macro
-    ||
-    {}
-  );
-
-}
-
-
-/* =========================================================
-   BEST SWEEP
-========================================================= */
-
-
-function renderBest(
-  pool
-) {
-
-  if (
-    !pool
-  ) {
-
-    return;
-
-  }
-
-
-  $("topLikelihood").innerHTML =
-
-    `${safe(pool.likelihood)}<br>` +
-
-    `${fmt(pool.likelihoodScore,0)}`;
-
-
-  $("bestPoolName").textContent =
-
-    `${
-      pool.side === "HIGH"
-        ? "Upside"
-        : "Downside"
-    } → ${pool.name}`;
-
-
-  $("bestPoolMeta").textContent =
-
-    `${pool.raidStyle} · ` +
-
-    `${fmt(pool.distanceAtr,2)}× M15 ATR away`;
-
-
-  $("bestTarget").textContent =
-    fmt(
-      pool.level,
-      3
-    );
-
-
-  $("bestEnd").textContent =
-    fmt(
-      pool.projectedSweep?.likelyEnd,
-      3
-    );
-
-
-  $("bestZone").textContent =
-
-    `${fmt(pool.projectedSweep?.zoneLow,3)} – ` +
-
-    `${fmt(pool.projectedSweep?.zoneHigh,3)}`;
-
-
-  $("bestOvershoot").textContent =
-
-    `${fmt(pool.projectedSweep?.overshoot,3)} · ` +
-
-    `${fmt(pool.projectedSweep?.overshootAtr,2)} ATR`;
-
-
-  $("bestMeter").style.width =
-
-    `${Math.max(
-
-      0,
-
-      Math.min(
-
-        100,
-
-        Number(
-          pool.likelihoodScore
-        )
-        ||
-        0
-
-      )
-
-    )}%`;
-
-
-  $("bestReasons").innerHTML =
-
-    (
-      pool.reasons
-      ||
-      []
-    )
-
-      .slice(
-        0,
-        6
-      )
-
-      .map(
-
-        reason =>
-
-          `<li>${escapeHtml(reason)}</li>`
-
-      )
-
-      .join(
-        ""
-      );
-
-}
-
-
-/* =========================================================
-   SESSIONS
-========================================================= */
-
-
-function renderSessions(
-  sessions
-) {
-
-  $("sessions").innerHTML =
-
-    sessions.map(
-      session => {
-
-        const range =
-          session.range;
-
-
-        return `
-
-<div
-  class="card session ${session.active ? "active" : ""}"
-  data-session="${escapeHtml(session.id)}"
->
-
-<div class="session-head">
-
-<div>
-
-  <div class="label">
+  <div class="connection">
 
     <span
-      class="dot ${session.active ? "on" : ""}"
+      class="dot"
+      id="statusDot"
     ></span>
 
-    ${escapeHtml(session.name)}
+    <span id="statusText">
+      Connecting…
+    </span>
+
+    <span>
+      ·
+    </span>
+
+    <span id="lastUpdated">
+      —
+    </span>
 
   </div>
 
-  <div class="value sm">
-
-    ${session.active ? "OPEN" : "CLOSED"}
-
-  </div>
 
   <div
-    class="muted tiny"
-    style="margin-top:3px"
-  >
+    class="error"
+    id="error"
+  ></div>
 
-    ${escapeHtml(session.phase)}
-    ·
-    ${escapeHtml(session.localTime)}
-    local
+
+  <!-- =====================================================
+       HERO
+  ====================================================== -->
+
+
+  <section class="card hero">
+
+    <div class="hero-top">
+
+      <div>
+
+        <div class="label">
+          XAU/USD
+        </div>
+
+        <div
+          class="price"
+          id="price"
+        >
+          —
+        </div>
+
+        <div
+          class="subtitle"
+          id="dataAge"
+        >
+          Waiting for market data
+        </div>
+
+      </div>
+
+
+      <div
+        class="signal wait"
+        id="signal"
+      >
+        WAIT
+      </div>
+
+    </div>
+
+
+    <div class="state-row">
+
+      <div>
+
+        <div class="label">
+          Strategy state
+        </div>
+
+        <div
+          class="state-name"
+          id="stateName"
+        >
+          Analysing…
+        </div>
+
+      </div>
+
+
+      <div class="confidence">
+
+        <div class="label">
+          Confidence
+        </div>
+
+        <div
+          class="confidence-number"
+          id="confidence"
+        >
+          —
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="progress">
+
+      <div
+        class="progress-fill"
+        id="confidenceBar"
+      ></div>
+
+    </div>
+
+
+    <div
+      class="thesis"
+      id="thesis"
+    >
+      Building liquidity thesis…
+    </div>
+
+
+    <button
+      class="notify"
+      id="notifyBtn"
+    >
+      Enable trade alerts
+    </button>
+
+  </section>
+
+
+  <!-- =====================================================
+       TRADE PLAN
+  ====================================================== -->
+
+
+  <section class="section">
+
+    <div class="section-head">
+
+      <div class="section-title">
+        Trade plan
+      </div>
+
+      <div class="section-sub">
+        only activates after confirmation
+      </div>
+
+    </div>
+
+
+    <div
+      class="card"
+      style="padding:14px"
+    >
+
+      <div class="trade-grid">
+
+
+        <div class="metric">
+
+          <div class="metric-label">
+            Focus pool
+          </div>
+
+          <div
+            class="metric-value gold"
+            id="focusPool"
+          >
+            —
+          </div>
+
+          <div
+            class="metric-note"
+            id="focusScore"
+          >
+            —
+          </div>
+
+        </div>
+
+
+        <div class="metric">
+
+          <div class="metric-label">
+            Liquidity level
+          </div>
+
+          <div
+            class="metric-value"
+            id="poolLevel"
+          >
+            —
+          </div>
+
+          <div
+            class="metric-note"
+            id="raidStyle"
+          >
+            —
+          </div>
+
+        </div>
+
+
+        <div class="metric">
+
+          <div class="metric-label">
+            Likely sweep end
+          </div>
+
+          <div
+            class="metric-value gold"
+            id="likelyEnd"
+          >
+            —
+          </div>
+
+          <div
+            class="metric-note"
+            id="sweepZone"
+          >
+            —
+          </div>
+
+        </div>
+
+
+        <div class="metric">
+
+          <div class="metric-label">
+            Planned entry
+          </div>
+
+          <div
+            class="metric-value"
+            id="entry"
+          >
+            —
+          </div>
+
+          <div class="metric-note">
+            after confirmation
+          </div>
+
+        </div>
+
+
+        <div class="metric">
+
+          <div class="metric-label">
+            Stop loss
+          </div>
+
+          <div
+            class="metric-value red"
+            id="stop"
+          >
+            —
+          </div>
+
+          <div class="metric-note">
+            beyond sweep invalidation
+          </div>
+
+        </div>
+
+
+        <div class="metric">
+
+          <div class="metric-label">
+            TP1
+          </div>
+
+          <div
+            class="metric-value green"
+            id="tp1"
+          >
+            —
+          </div>
+
+          <div
+            class="metric-note"
+            id="tp1Name"
+          >
+            —
+          </div>
+
+        </div>
+
+
+        <div class="metric">
+
+          <div class="metric-label">
+            TP2
+          </div>
+
+          <div
+            class="metric-value green"
+            id="tp2"
+          >
+            —
+          </div>
+
+          <div
+            class="metric-note"
+            id="tp2Name"
+          >
+            —
+          </div>
+
+        </div>
+
+
+        <div class="metric">
+
+          <div class="metric-label">
+            Reward / Risk
+          </div>
+
+          <div
+            class="metric-value gold"
+            id="rr"
+          >
+            —
+          </div>
+
+          <div
+            class="metric-note"
+            id="riskPoints"
+          >
+            —
+          </div>
+
+        </div>
+
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       CONFIRMATIONS
+  ====================================================== -->
+
+
+  <section class="section">
+
+    <div class="section-head">
+
+      <div class="section-title">
+        Entry confirmation
+      </div>
+
+      <div
+        class="section-sub"
+        id="confirmCount"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div
+      class="card checklist"
+      id="checklist"
+    ></div>
+
+  </section>
+
+
+  <!-- =====================================================
+       FOOTPRINT
+  ====================================================== -->
+
+
+  <section class="section">
+
+    <div class="section-head">
+
+      <div class="section-title">
+        Order-flow proxy
+      </div>
+
+      <div class="section-sub">
+        synthetic footprint intelligence
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div
+        class="foot-grid"
+        id="footprint"
+      ></div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       LIQUIDITY
+  ====================================================== -->
+
+
+  <section class="section">
+
+    <div class="section-head">
+
+      <div class="section-title">
+        Liquidity map
+      </div>
+
+      <div class="section-sub">
+        strongest nearby pools
+      </div>
+
+    </div>
+
+
+    <div
+      class="pool-list"
+      id="poolList"
+    ></div>
+
+  </section>
+
+
+  <!-- =====================================================
+       SESSIONS
+  ====================================================== -->
+
+
+  <section class="section">
+
+    <div class="section-head">
+
+      <div class="section-title">
+        Sessions
+      </div>
+
+      <div class="section-sub">
+        live liquidity windows
+      </div>
+
+    </div>
+
+
+    <div
+      class="sessions"
+      id="sessions"
+    ></div>
+
+  </section>
+
+
+  <div class="footer">
+
+    This model waits for a liquidity raid and reversal
+    confirmation instead of automatically buying lows or
+    selling highs.
+
+    <br><br>
+
+    Footprint delta is an OHLC/volume-derived proxy and is
+    not centralized exchange bid/ask footprint data.
+
+    <br><br>
+
+    A profitable historical edge must still be verified
+    through backtesting, forward testing, spread/slippage
+    modelling and out-of-sample testing.
 
   </div>
+
 
 </div>
 
 
-<div style="text-align:right">
-
-  <div class="label">
-
-    ${session.nextEvent === "OPEN" ? "Opens in" : "Closes in"}
-
-  </div>
-
-  <div
-    class="countdown next-count"
-    data-iso="${escapeHtml(session.nextEventAt)}"
-  >
-
-    ${eventCountdown(session.nextEventAt)}
-
-  </div>
-
-  <div class="muted tiny">
-
-    ${localClock(session.nextEventAt)}
-    your time
-
-  </div>
-
-</div>
-
-</div>
-
-
-<div class="range-row">
-
-
-<div class="mini">
-
-  <div class="label">
-    Session high
-  </div>
-
-  <div class="value sm">
-
-    ${range ? fmt(range.high,3) : "—"}
-
-  </div>
-
-</div>
-
-
-<div class="mini">
-
-  <div class="label">
-    Session low
-  </div>
-
-  <div class="value sm">
-
-    ${range ? fmt(range.low,3) : "—"}
-
-  </div>
-
-</div>
-
-
-</div>
-
-
-<div
-  class="muted tiny"
-  style="margin-top:8px"
->
-
-  Local hours
-  ${escapeHtml(session.openLocal)}
-  –
-  ${escapeHtml(session.closeLocal)}
-
-  · range
-
-  ${range ? fmt(range.range,3) : "—"}
-
-</div>
-
-
-</div>
-
-`;
-
-      }
-    )
-      .join(
-        ""
-      );
-
-}
-
-
-/* =========================================================
-   MARKET
-========================================================= */
-
-
-function renderMarket(
-  market
-) {
-
-  $("atr5").textContent =
-    fmt(
-      market.atr5,
-      3
-    );
-
-
-  $("atr15").textContent =
-    fmt(
-      market.atr15,
-      3
-    );
-
-
-  $("atrH1").textContent =
-    fmt(
-      market.atrH1,
-      3
-    );
-
-
-  $("vwap").textContent =
-    fmt(
-      market.vwap,
-      3
-    );
-
-
-  $("vwapMeta").textContent =
-
-    `${safe(market.vwapMode)} · ` +
-
-    `Δ ${fmt(market.vwapDistance,3)}`;
-
-
-  $("regime").textContent =
-    safe(
-      market.regime?.label
-    );
-
-
-  $("regime").className =
-
-    `value sm ${biasClass(
-
-      market.regime?.trend
-
-    )}`;
-
-}
-
-
-/* =========================================================
-   TIMEFRAMES
-========================================================= */
-
-
-function renderTimeframes(
-  structure
-) {
-
-  const order = [
-    "m5",
-    "m15",
-    "h1",
-    "h4",
-    "d1"
-  ];
-
-
-  const labels = {
-
-    m5:
-      "M5",
-
-    m15:
-      "M15",
-
-    h1:
-      "H1",
-
-    h4:
-      "H4",
-
-    d1:
-      "D1"
-
-  };
-
-
-  $("timeframes").innerHTML =
-
-    order.map(
-      key => {
-
-        const item =
-          structure[key]
-          ||
-          {};
-
-
-        return `
-
-<div class="card tf">
-
-  <div class="label">
-    ${labels[key]}
-  </div>
-
-  <div
-    class="tf-bias ${biasClass(item.bias)}"
-  >
-    ${safe(item.bias)}
-  </div>
-
-  <div
-    class="muted tiny"
-    style="margin-top:7px"
-  >
-    RSI ${fmt(item.rsi14,1)}
-  </div>
-
-  <div class="muted tiny">
-    ATR ${fmt(item.atr14,3)}
-  </div>
-
-</div>
-
-`;
-
-      }
-    )
-      .join(
-        ""
-      );
-
-}
-
-
-/* =========================================================
-   LIQUIDITY LADDER
-========================================================= */
-
-
-function renderLadder(
-  d
-) {
-
-  const rows =
-
-    (
-      d.liquidityPools
-      ||
-      []
-    )
-
-      .slice(
-        0,
-        9
-      )
-
-      .map(
-        pool => ({
-
-          name:
-            pool.name,
-
-          price:
-            pool.level,
-
-          side:
-            pool.side,
-
-          score:
-            pool.likelihoodScore,
-
-          current:
-            false
-
-        })
-      );
-
-
-  rows.push({
-
-    name:
-      "CURRENT PRICE",
-
-    price:
-      d.price,
-
-    side:
-      "CURRENT",
-
-    score:
-      null,
-
-    current:
-      true
-
-  });
-
-
-  rows.sort(
-
-    (a, b) =>
-      b.price -
-      a.price
-
-  );
-
-
-  $("ladder").innerHTML =
-
-    rows.map(
-      row => `
-
-<div
-  class="ladder-row ${row.current ? "current" : ""}"
->
-
-<div
-  class="tiny ${row.current ? "gold" : "muted"}"
-  style="
-    font-weight:800;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap
-  "
->
-  ${escapeHtml(row.name)}
-</div>
-
-
-<div class="ladder-line"></div>
-
-
-<div style="text-align:right">
-
-  <div
-    class="tiny ${row.current ? "gold" : ""}"
-    style="font-weight:850"
-  >
-    ${fmt(row.price,3)}
-  </div>
-
-  ${
-    row.current
-      ?
-      ""
-      :
-      `<div class="muted tiny">
-        score ${fmt(row.score,0)}
-      </div>`
-  }
-
-</div>
-
-
-</div>
-
-`
-    )
-      .join(
-        ""
-      );
-
-}
-
-
-/* =========================================================
-   SWEEP TABLE
-========================================================= */
-
-
-function renderPools(
-  pools
-) {
-
-  $("poolsBody").innerHTML =
-
-    pools.map(
-      pool => `
-
-<tr>
-
-
-<td>
-
-  <strong>
-    ${escapeHtml(pool.name)}
-  </strong>
-
-  <div class="muted tiny">
-
-    ${escapeHtml(pool.type)}
-
-    ${
-      pool.aliases?.length
-        ?
-        `· +${pool.aliases.length} confluence`
-        :
-        ""
-    }
-
-  </div>
-
-</td>
-
-
-<td>
-
-  <strong>
-    ${fmt(pool.level,3)}
-  </strong>
-
-</td>
-
-
-<td>
-
-  ${fmt(pool.distance,3)}
-
-  <div class="muted tiny">
-
-    ${fmt(pool.distanceAtr,2)}
-    ATR
-
-  </div>
-
-</td>
-
-
-<td>
-
-  <span
-    class="score ${scoreClass(pool.likelihoodScore)}"
-  >
-
-    ${fmt(pool.likelihoodScore,0)}
-
-  </span>
-
-  <div
-    class="muted tiny"
-    style="margin-top:4px"
-  >
-
-    ${escapeHtml(pool.likelihood)}
-
-  </div>
-
-</td>
-
-
-<td>
-
-  ${escapeHtml(pool.raidStyle)}
-
-</td>
-
-
-<td>
-
-  <strong class="gold">
-
-    ${fmt(pool.projectedSweep?.likelyEnd,3)}
-
-  </strong>
-
-  <div class="muted tiny">
-
-    +${fmt(pool.projectedSweep?.overshoot,3)}
-    depth
-
-  </div>
-
-</td>
-
-
-<td>
-
-  ${fmt(pool.projectedSweep?.zoneLow,3)}
-
-  <br>
-
-  ${fmt(pool.projectedSweep?.zoneHigh,3)}
-
-</td>
-
-
-<td>
-
-  ${
-    escapeHtml(
-      pool.nearLevelFootprint?.state
-      ||
-      "—"
-    )
-  }
-
-  <div class="muted tiny">
-
-    Δ
-    ${
-      pct(
-        pool.nearLevelFootprint?.deltaPct
-        ||
-        0
-      )
-    }
-
-  </div>
-
-</td>
-
-
-</tr>
-
-`
-    )
-      .join(
-        ""
-      );
-
-}
-
-
-/* =========================================================
-   TRAP WINDOWS
-========================================================= */
-
-
-function renderTraps(
-  items
-) {
-
-  if (
-    !items.length
-  ) {
-
-    $("trapWindows").innerHTML =
-
-      `<div class="empty">
-        No elevated trap window detected.
-      </div>`;
-
-
-    return;
-
-  }
-
-
-  $("trapWindows").innerHTML =
-
-    items.map(
-      item => `
-
-<div class="trap">
-
-
-<div style="min-width:0">
-
-  <div
-    style="
-      font-size:12px;
-      font-weight:800
-    "
-  >
-    ${escapeHtml(item.session)}
-  </div>
-
-  <div
-    class="muted tiny"
-    style="margin-top:3px"
-  >
-    ${escapeHtml(item.phase)}
-  </div>
-
-  <div
-    class="muted tiny"
-    style="margin-top:4px"
-  >
-
-    ${
-      (
-        item.reasons
-        ||
-        []
-      )
-
-        .map(
-          escapeHtml
-        )
-
-        .join(
-          " · "
-        )
-    }
-
-  </div>
-
-</div>
-
-
-<div style="text-align:right">
-
-  <div
-    class="risk ${String(item.risk || "").toLowerCase()}"
-  >
-    ${escapeHtml(item.risk)}
-  </div>
-
-  <div
-    class="muted tiny"
-    style="margin-top:5px"
-  >
-    ${fmt(item.score,0)}/100
-  </div>
-
-</div>
-
-
-</div>
-
-`
-    )
-      .join(
-        ""
-      );
-
-}
-
-
-/* =========================================================
-   FOOTPRINT
-========================================================= */
-
-
-function renderFootprint(
-  footprint
-) {
-
-  $("footprintMode").textContent =
-    safe(
-      footprint.mode
-    );
-
-
-  setDelta(
-
-    "delta5",
-
-    "delta5bar",
-
-    footprint.last5?.deltaPct
-
-  );
-
-
-  setDelta(
-
-    "delta15",
-
-    "delta15bar",
-
-    footprint.last15?.deltaPct
-
-  );
-
-
-  setDelta(
-
-    "delta30",
-
-    "delta30bar",
-
-    footprint.last30?.deltaPct
-
-  );
-
-
-  setDelta(
-
-    "delta60",
-
-    "delta60bar",
-
-    footprint.last60?.deltaPct
-
-  );
-
-
-  $("divergence").textContent =
-    safe(
-      footprint.divergence
-    );
-
-
-  $("absorption").textContent =
-    safe(
-      footprint.absorption
-    );
-
-
-  $("cvd").textContent =
-    fmt(
-      footprint.cvd,
-      1
-    );
-
-
-  $("volumeSource").textContent =
-
-    footprint.hasProviderVolume
-
-      ?
-
-      "PROVIDER"
-
-      :
-
-      "SYNTHETIC";
-
-
-  $("divergence").className =
-
-    `value sm ${
-
-      footprint.divergence
-
-      &&
-
-      footprint.divergence !==
-      "NONE"
-
-        ?
-
-        "orange"
-
-        :
-
-        "muted"
-
-    }`;
-
-
-  $("absorption").className =
-
-    `value sm ${
-
-      footprint.absorption
-
-      &&
-
-      footprint.absorption !==
-      "NONE"
-
-        ?
-
-        "orange"
-
-        :
-
-        "muted"
-
-    }`;
-
-}
-
-
-function setDelta(
-  valueId,
-  barId,
-  value
-) {
-
-  const number =
-    Number(
-      value
-    )
-    ||
-    0;
-
-
-  const element =
-    $(
-      valueId
-    );
-
-
-  element.textContent =
-
-    `${number >= 0 ? "+" : ""}` +
-
-    `${fmt(number,1)}%`;
-
-
-  element.className =
-
-    `value ${
-
-      number > 3
-
-        ?
-
-        "green"
-
-        :
-
-        number < -3
-
-          ?
-
-          "red"
-
-          :
-
-          "muted"
-
-    }`;
-
-
-  const bar =
-    $(
-      barId
-    );
-
-
-  bar
-    .querySelectorAll(
-      ".delta-fill"
-    )
-    .forEach(
-      el =>
-        el.remove()
-    );
-
-
-  const fill =
-    document.createElement(
-      "div"
-    );
-
-
-  fill.className =
-
-    `delta-fill ${
-
-      number >= 0
-
-        ?
-
-        "pos"
-
-        :
-
-        "neg"
-
-    }`;
-
-
-  fill.style.width =
-
-    `${Math.min(
-
-      50,
-
-      Math.abs(
-        number
-      )
-      /
-      2
-
-    )}%`;
-
-
-  bar.appendChild(
-    fill
-  );
-
-}
-
-
-/* =========================================================
-   ASIA SWEEP HISTORY
-========================================================= */
-
-
-function renderSweepStats(
-  history
-) {
-
-  const high =
-    history.asiaHigh
-    ||
-    {};
-
-
-  const low =
-    history.asiaLow
-    ||
-    {};
-
-
-  $("asiaHighStats").textContent =
-
-    `${fmt(high.sweepRatePct,1)}% sweep rate · ` +
-
-    `${fmt(high.reversalRatePct,1)}% return rate`;
-
-
-  $("asiaHighMeta").textContent =
-
-    `${safe(high.sweeps,0)} raids across ` +
-
-    `${safe(history.lookbackDays,0)} eligible days. ` +
-
-    `Median extension ${fmt(high.medianOvershootAtr,2)}× ATR; ` +
-
-    `75th percentile ${fmt(high.p75OvershootAtr,2)}× ATR.`;
-
-
-  $("asiaLowStats").textContent =
-
-    `${fmt(low.sweepRatePct,1)}% sweep rate · ` +
-
-    `${fmt(low.reversalRatePct,1)}% return rate`;
-
-
-  $("asiaLowMeta").textContent =
-
-    `${safe(low.sweeps,0)} raids across ` +
-
-    `${safe(history.lookbackDays,0)} eligible days. ` +
-
-    `Median extension ${fmt(low.medianOvershootAtr,2)}× ATR; ` +
-
-    `75th percentile ${fmt(low.p75OvershootAtr,2)}× ATR.`;
-
-}
-
-
-/* =========================================================
-   REFERENCE LEVELS
-========================================================= */
-
-
-function renderReference(
-  levels,
-  fvgs
-) {
-
-  const previousDay =
-    levels.previousDay;
-
-
-  const previousWeek =
-    levels.previousWeek;
-
-
-  $("dayLevels").innerHTML = `
-
-
-<div class="macro-row">
-
-  <span class="muted small">
-    PDH
-  </span>
-
-  <strong>
-    ${
-      previousDay
-        ?
-        fmt(previousDay.high,3)
-        :
-        "—"
-    }
-  </strong>
-
-  <span></span>
-
-</div>
-
-
-<div class="macro-row">
-
-  <span class="muted small">
-    PDL
-  </span>
-
-  <strong>
-    ${
-      previousDay
-        ?
-        fmt(previousDay.low,3)
-        :
-        "—"
-    }
-  </strong>
-
-  <span></span>
-
-</div>
-
-
-<div class="macro-row">
-
-  <span class="muted small">
-    Previous day midpoint
-  </span>
-
-  <strong>
-    ${
-      previousDay
-        ?
-        fmt(previousDay.midpoint,3)
-        :
-        "—"
-    }
-  </strong>
-
-  <span></span>
-
-</div>
-
-
-<div class="macro-row">
-
-  <span class="muted small">
-    PWH
-  </span>
-
-  <strong>
-    ${
-      previousWeek
-        ?
-        fmt(previousWeek.high,3)
-        :
-        "—"
-    }
-  </strong>
-
-  <span></span>
-
-</div>
-
-
-<div class="macro-row">
-
-  <span class="muted small">
-    PWL
-  </span>
-
-  <strong>
-    ${
-      previousWeek
-        ?
-        fmt(previousWeek.low,3)
-        :
-        "—"
-    }
-  </strong>
-
-  <span></span>
-
-</div>
-
-
-`;
-
-
-  $("fvgs").innerHTML =
-
-    fvgs.length
-
-      ?
-
-      fvgs
-        .slice(
-          0,
-          5
-        )
-        .map(
-          fvg => `
-
-<div class="macro-row">
-
-  <span
-    class="small ${
-      fvg.type.includes("BULL")
-        ?
-        "green"
-        :
-        "red"
-    }"
-  >
-    ${escapeHtml(fvg.type)}
-  </span>
-
-  <strong>
-
-    ${fmt(fvg.low,3)}
-    –
-    ${fmt(fvg.high,3)}
-
-  </strong>
-
-  <span class="muted tiny">
-
-    Δ
-    ${fmt(fvg.distance,3)}
-
-  </span>
-
-</div>
-
-`
-        )
-        .join(
-          ""
-        )
-
-      :
-
-      `<div class="empty">
-        No nearby gap detected.
-      </div>`;
-
-}
-
-
-/* =========================================================
-   MACRO
-========================================================= */
-
-
-function renderMacro(
-  macro
-) {
-
-  $("macroBias").textContent =
-    safe(
-      macro.bias
-    );
-
-
-  $("macroBias").className =
-
-    `value sm ${biasClass(macro.bias)}`;
-
-
-  $("macroNote").textContent =
-    safe(
-      macro.note
-    );
-
-
-  $("macroScore").textContent =
-
-    macro.enabled
-
-      ?
-
-      `${Number(macro.score) >= 0 ? "+" : ""}` +
-
-      `${fmt(macro.score,0)}`
-
-      :
-
-      "OFF";
-
-
-  $("macroRows").innerHTML =
-
-    macro.enabled
-
-    &&
-
-    Array.isArray(
-      macro.series
-    )
-
-      ?
-
-      macro.series.map(
-        series => `
-
-<div class="macro-row">
-
-
-<div>
-
-  <div
-    class="small"
-    style="font-weight:750"
-  >
-    ${escapeHtml(series.label)}
-  </div>
-
-  <div class="muted tiny">
-    ${escapeHtml(series.date || "")}
-  </div>
-
-</div>
-
-
-<strong>
-
-  ${fmt(series.value,3)}
-
-</strong>
-
-
-<span
-  class="tiny ${
-
-    Number(series.goldPressure) > 0
-
-      ?
-
-      "green"
-
-      :
-
-      Number(series.goldPressure) < 0
-
-        ?
-
-        "red"
-
-        :
-
-        "muted"
-
-  }"
->
-
-  ${Number(series.goldPressure) >= 0 ? "+" : ""}
-
-  ${fmt(series.goldPressure,1)}
-
-  gold
-
-</span>
-
-
-</div>
-
-`
-      )
-        .join(
-          ""
-        )
-
-      :
-
-      `<div class="empty">
-
-        Add
-        <strong>FRED_API_KEY</strong>
-        in Vercel to enable this section.
-
-      </div>`;
-
-}
-
-
-/* =========================================================
-   LIVE CLOCK
-========================================================= */
-
-
-function tick() {
-
-  $("browserTime").textContent =
-
-    new Intl.DateTimeFormat(
-
-      undefined,
-
-      {
-
-        weekday:
-          "short",
-
-        hour:
-          "2-digit",
-
-        minute:
-          "2-digit",
-
-        second:
-          "2-digit",
-
-        hour12:
-          false,
-
-        timeZoneName:
-          "short"
-
-      }
-
-    )
-      .format(
-        new Date()
-      );
-
-
-  document
-
-    .querySelectorAll(
-      ".next-count[data-iso]"
-    )
-
-    .forEach(
-      element => {
-
-        element.textContent =
-          eventCountdown(
-            element.dataset.iso
-          );
-
-      }
-    );
-
-
-  if (
-    data?.latestBarTime
-  ) {
-
-    const age =
-      Math.max(
-
-        0,
-
-        Math.floor(
-
-          (
-            Date.now()
-
-            -
-
-            new Date(
-              data.latestBarTime
-            )
-              .getTime()
-          )
-
-          /
-
-          1000
-
-        )
-
-      );
-
-
-    $("statusAge").textContent =
-      `Data age ${age}s`;
-
-
-    $("statusAge").className =
-
-      age > 180
-
-        ?
-
-        "pill warn"
-
-        :
-
-        "pill";
-
-  }
-
-}
-
-
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
-
-
-function escapeHtml(
-  value
-) {
-
-  return String(
-    value
-    ??
-    ""
-  )
-
-    .replaceAll(
-      "&",
-      "&amp;"
-    )
-
-    .replaceAll(
-      "<",
-      "&lt;"
-    )
-
-    .replaceAll(
-      ">",
-      "&gt;"
-    )
-
-    .replaceAll(
-      '"',
-      "&quot;"
-    )
-
-    .replaceAll(
-      "'",
-      "&#039;"
-    );
-
-}
-
-
-/* =========================================================
-   START
-========================================================= */
-
-
-$("refreshBtn")
-  .addEventListener(
-    "click",
-    load
-  );
-
-
-load();
-
-
-tick();
-
-
-setInterval(
-  tick,
-  1000
-);
-
-
-setInterval(
-  load,
-  AUTO_REFRESH_MS
-);
-
-
-})();
-
-</script>
+<script
+  type="module"
+  src="/app.js"
+></script>
 
 
 </body>
