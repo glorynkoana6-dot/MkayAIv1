@@ -31,82 +31,163 @@
   content="MKAYFX BTC"
 >
 
-<title>MKAYFX BTC Intelligence</title>
+<title>
+  MKAYFX BTC Intelligence
+</title>
 
 
 <style>
 
+/* =========================================================
+   RESET
+========================================================= */
+
 *{
+
   box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
+
+  -webkit-tap-highlight-color:
+    transparent;
+
 }
+
 
 :root{
 
-  --bg:#03060a;
-  --card:#091019;
-  --card2:#0d1622;
+  --bg:
+    #03060a;
 
-  --border:rgba(255,255,255,.075);
+  --card:
+    #091019;
 
-  --text:#f4f7fb;
-  --muted:#778496;
+  --card2:
+    #0d1622;
 
-  --green:#30e79a;
-  --red:#ff5870;
-  --orange:#f5a623;
-  --gold:#f4ca64;
-  --blue:#7194ff;
+  --border:
+    rgba(
+      255,
+      255,
+      255,
+      .075
+    );
+
+  --text:
+    #f4f7fb;
+
+  --muted:
+    #778496;
+
+  --green:
+    #30e79a;
+
+  --red:
+    #ff5870;
+
+  --orange:
+    #f5a623;
+
+  --gold:
+    #f4ca64;
+
+  --blue:
+    #7194ff;
+
 }
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+html{
+
+  background:
+    var(--bg);
+
+}
+
 
 body{
 
   margin:0;
 
-  min-height:100vh;
+  min-height:
+    100vh;
 
   background:
+
     radial-gradient(
+
       circle at top,
+
       #101927 0,
-      #05090e 33%,
+
+      #05090e 34%,
+
       #020407 100%
+
     );
 
-  color:var(--text);
+  color:
+    var(--text);
 
   font-family:
+
     -apple-system,
+
     BlinkMacSystemFont,
+
     "Segoe UI",
+
     Roboto,
+
     sans-serif;
 
+
   padding:
-    env(safe-area-inset-top)
+
+    env(
+      safe-area-inset-top
+    )
+
     13px
+
     calc(
       30px +
-      env(safe-area-inset-bottom)
+      env(
+        safe-area-inset-bottom
+      )
     );
 
 }
 
+
 .container{
 
-  max-width:900px;
+  max-width:
+    900px;
 
   margin:auto;
 
 }
 
+
+/* =========================================================
+   HEADER
+========================================================= */
+
 .header{
 
   padding:
-    14px 3px
+
+    14px
+
+    3px
+
     16px;
 
 }
+
 
 .brand{
 
@@ -121,30 +202,41 @@ body{
 
 }
 
+
 .title{
 
-  font-size:19px;
+  font-size:
+    19px;
 
-  font-weight:850;
+  font-weight:
+    900;
 
-  letter-spacing:.4px;
+  letter-spacing:
+    .4px;
 
 }
+
 
 .subtitle{
 
-  color:var(--muted);
+  color:
+    var(--muted);
 
-  font-size:11px;
+  font-size:
+    11px;
 
-  margin-top:4px;
+  margin-top:
+    4px;
 
 }
+
 
 .live{
 
   border:
+
     1px solid
+
     rgba(
       48,
       231,
@@ -152,9 +244,11 @@ body{
       .25
     );
 
-  color:var(--green);
+  color:
+    var(--green);
 
   background:
+
     rgba(
       48,
       231,
@@ -163,120 +257,151 @@ body{
     );
 
   padding:
-    6px 9px;
+
+    6px
+
+    9px;
 
   border-radius:
     999px;
 
-  font-size:10px;
+  font-size:
+    10px;
 
-  font-weight:800;
+  font-weight:
+    850;
 
 }
+
+
+/* =========================================================
+   CARD
+========================================================= */
 
 .card{
 
   background:
+
     linear-gradient(
+
       145deg,
+
       rgba(
         12,
         20,
         31,
-        .96
+        .97
       ),
+
       rgba(
         5,
         10,
         16,
-        .96
+        .97
       )
+
     );
 
   border:
+
     1px solid
+
     var(--border);
 
   border-radius:
     18px;
 
-  padding:15px;
+  padding:
+    15px;
 
-  margin-bottom:11px;
+  margin-bottom:
+    11px;
 
   box-shadow:
-    0 12px 35px
+
+    0
+
+    12px
+
+    35px
+
     rgba(
       0,
       0,
       0,
-      .2
+      .20
     );
 
 }
 
+
 .section-title{
 
-  font-size:10px;
+  font-size:
+    10px;
 
-  color:var(--muted);
+  color:
+    var(--muted);
 
-  letter-spacing:1.2px;
+  letter-spacing:
+    1.2px;
 
-  font-weight:800;
+  font-weight:
+    850;
 
-  margin-bottom:12px;
+  margin-bottom:
+    12px;
 
 }
+
+
+/* =========================================================
+   PRICE
+========================================================= */
 
 .price{
 
   font-size:
+
     clamp(
       35px,
       10vw,
       55px
     );
 
-  font-weight:900;
+  font-weight:
+    950;
 
-  letter-spacing:-2px;
+  letter-spacing:
+    -2px;
 
 }
+
 
 .small{
 
-  color:var(--muted);
+  color:
+    var(--muted);
 
-  font-size:11px;
+  font-size:
+    11px;
 
-}
-
-.signal{
-
-  font-size:34px;
-
-  font-weight:950;
+  line-height:
+    1.45;
 
 }
 
-.signal.BUY{
-  color:var(--green);
-}
 
-.signal.SELL{
-  color:var(--red);
-}
-
-.signal.WAIT{
-  color:var(--gold);
-}
+/* =========================================================
+   GRID
+========================================================= */
 
 .grid{
 
   display:grid;
 
   grid-template-columns:
+
     repeat(
       2,
       minmax(
@@ -285,15 +410,18 @@ body{
       )
     );
 
-  gap:9px;
+  gap:
+    9px;
 
 }
+
 
 .grid4{
 
   display:grid;
 
   grid-template-columns:
+
     repeat(
       4,
       minmax(
@@ -302,13 +430,16 @@ body{
       )
     );
 
-  gap:8px;
+  gap:
+    8px;
 
 }
+
 
 .metric{
 
   background:
+
     rgba(
       255,
       255,
@@ -317,7 +448,9 @@ body{
     );
 
   border:
+
     1px solid
+
     rgba(
       255,
       255,
@@ -325,84 +458,178 @@ body{
       .055
     );
 
-  border-radius:13px;
+  border-radius:
+    13px;
 
-  padding:11px;
+  padding:
+    11px;
 
 }
+
 
 .metric-label{
 
-  color:var(--muted);
+  color:
+    var(--muted);
 
-  font-size:9px;
+  font-size:
+    9px;
 
-  font-weight:700;
+  font-weight:
+    750;
 
-  text-transform:uppercase;
+  text-transform:
+    uppercase;
 
-  letter-spacing:.55px;
+  letter-spacing:
+    .55px;
 
 }
+
 
 .metric-value{
 
-  margin-top:5px;
+  margin-top:
+    5px;
 
-  font-size:14px;
+  font-size:
+    14px;
 
-  font-weight:800;
+  font-weight:
+    850;
 
-  word-break:break-word;
+  word-break:
+    break-word;
 
 }
+
+
+/* =========================================================
+   COLORS
+========================================================= */
 
 .green{
-  color:var(--green);
+
+  color:
+    var(--green);
+
 }
+
 
 .red{
-  color:var(--red);
+
+  color:
+    var(--red);
+
 }
+
 
 .orange{
-  color:var(--orange);
+
+  color:
+    var(--orange);
+
 }
+
 
 .gold{
-  color:var(--gold);
+
+  color:
+    var(--gold);
+
 }
 
+
 .blue{
-  color:var(--blue);
+
+  color:
+    var(--blue);
+
 }
+
+
+/* =========================================================
+   SIGNAL
+========================================================= */
+
+.signal{
+
+  font-size:
+    36px;
+
+  font-weight:
+    950;
+
+}
+
+
+.signal.BUY{
+
+  color:
+    var(--green);
+
+}
+
+
+.signal.SELL{
+
+  color:
+    var(--red);
+
+}
+
+
+.signal.WAIT{
+
+  color:
+    var(--gold);
+
+}
+
+
+/* =========================================================
+   BIAS
+========================================================= */
 
 .bias{
 
-  display:inline-flex;
+  display:
+    inline-flex;
 
-  align-items:center;
+  align-items:
+    center;
 
-  justify-content:center;
+  justify-content:
+    center;
 
-  min-width:80px;
+  min-width:
+    80px;
 
   padding:
-    6px 8px;
 
-  border-radius:9px;
+    6px
 
-  font-size:10px;
+    8px;
 
-  font-weight:850;
+  border-radius:
+    9px;
+
+  font-size:
+    10px;
+
+  font-weight:
+    900;
 
 }
 
+
 .bias.BULLISH{
 
-  color:var(--green);
+  color:
+    var(--green);
 
   background:
+
     rgba(
       48,
       231,
@@ -412,11 +639,14 @@ body{
 
 }
 
+
 .bias.BEARISH{
 
-  color:var(--red);
+  color:
+    var(--red);
 
   background:
+
     rgba(
       255,
       88,
@@ -426,12 +656,15 @@ body{
 
 }
 
+
 .bias.NEUTRAL,
 .bias.MIXED{
 
-  color:var(--gold);
+  color:
+    var(--gold);
 
   background:
+
     rgba(
       244,
       202,
@@ -441,195 +674,66 @@ body{
 
 }
 
-.progress{
 
-  width:100%;
-
-  height:8px;
-
-  background:
-    rgba(
-      255,
-      255,
-      255,
-      .05
-    );
-
-  border-radius:99px;
-
-  overflow:hidden;
-
-  margin-top:8px;
-
-}
-
-.progress > div{
-
-  height:100%;
-
-  width:0%;
-
-  background:
-    linear-gradient(
-      90deg,
-      #f5c55d,
-      #ff665f
-    );
-
-  transition:
-    width .4s ease;
-
-}
-
-.level{
-
-  display:flex;
-
-  justify-content:
-    space-between;
-
-  gap:10px;
-
-  border-bottom:
-    1px solid
-    rgba(
-      255,
-      255,
-      255,
-      .045
-    );
-
-  padding:
-    9px 0;
-
-}
-
-.level:last-child{
-
-  border-bottom:none;
-
-}
-
-.level-name{
-
-  font-size:12px;
-
-}
-
-.level-price{
-
-  font-size:12px;
-
-  font-weight:800;
-
-}
-
-.reason{
-
-  font-size:11px;
-
-  padding:
-    7px 0;
-
-  color:#cbd4df;
-
-  border-bottom:
-    1px solid
-    rgba(
-      255,
-      255,
-      255,
-      .04
-    );
-
-}
-
-.reason:last-child{
-
-  border-bottom:none;
-
-}
-
-.btn{
-
-  width:100%;
-
-  border:none;
-
-  border-radius:13px;
-
-  padding:13px;
-
-  font-weight:850;
-
-  font-size:12px;
-
-  color:#06100d;
-
-  background:var(--green);
-
-  cursor:pointer;
-
-}
-
-.btn:active{
-
-  transform:
-    scale(.99);
-
-}
-
-.status{
-
-  margin-top:8px;
-
-  text-align:center;
-
-  color:var(--muted);
-
-  font-size:10px;
-
-}
+/* =========================================================
+   RAID
+========================================================= */
 
 .raid-title{
 
-  font-size:19px;
+  font-size:
+    19px;
 
-  font-weight:900;
-
-  line-height:1.25;
+  font-weight:
+    900;
 
 }
+
 
 .raid-score{
 
-  font-size:31px;
+  font-size:
+    31px;
 
-  font-weight:950;
+  font-weight:
+    950;
 
 }
 
+
 .pill{
 
-  display:inline-block;
+  display:
+    inline-block;
 
   padding:
-    5px 8px;
 
-  border-radius:999px;
+    5px
 
-  margin-top:7px;
+    8px;
 
-  font-size:9px;
+  border-radius:
+    999px;
 
-  font-weight:900;
+  margin-top:
+    7px;
 
-  letter-spacing:.5px;
+  font-size:
+    9px;
 
-  color:var(--orange);
+  font-weight:
+    900;
+
+  letter-spacing:
+    .5px;
+
+  color:
+    var(--orange);
 
   border:
+
     1px solid
+
     rgba(
       245,
       166,
@@ -638,6 +742,7 @@ body{
     );
 
   background:
+
     rgba(
       245,
       166,
@@ -647,13 +752,262 @@ body{
 
 }
 
-.error{
 
-  color:var(--red);
+.progress{
 
-  font-size:12px;
+  width:
+    100%;
+
+  height:
+    8px;
+
+  background:
+
+    rgba(
+      255,
+      255,
+      255,
+      .05
+    );
+
+  border-radius:
+    99px;
+
+  overflow:
+    hidden;
+
+  margin-top:
+    8px;
 
 }
+
+
+.progress > div{
+
+  height:
+    100%;
+
+  width:
+    0%;
+
+  background:
+
+    linear-gradient(
+
+      90deg,
+
+      #f5c55d,
+
+      #ff665f
+
+    );
+
+  transition:
+
+    width
+
+    .4s
+
+    ease;
+
+}
+
+
+/* =========================================================
+   LEVELS
+========================================================= */
+
+.level{
+
+  display:flex;
+
+  justify-content:
+    space-between;
+
+  align-items:
+    center;
+
+  gap:
+    12px;
+
+  border-bottom:
+
+    1px solid
+
+    rgba(
+      255,
+      255,
+      255,
+      .045
+    );
+
+  padding:
+
+    10px
+
+    0;
+
+}
+
+
+.level:last-child{
+
+  border-bottom:
+    none;
+
+}
+
+
+.level-name{
+
+  font-size:
+    12px;
+
+  font-weight:
+    700;
+
+}
+
+
+.level-price{
+
+  font-size:
+    12px;
+
+  font-weight:
+    850;
+
+}
+
+
+/* =========================================================
+   REASONS
+========================================================= */
+
+.reason{
+
+  font-size:
+    11px;
+
+  padding:
+
+    7px
+
+    0;
+
+  color:
+    #cbd4df;
+
+  line-height:
+    1.4;
+
+  border-bottom:
+
+    1px solid
+
+    rgba(
+      255,
+      255,
+      255,
+      .04
+    );
+
+}
+
+
+.reason:last-child{
+
+  border-bottom:
+    none;
+
+}
+
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+.btn{
+
+  width:
+    100%;
+
+  border:
+    none;
+
+  border-radius:
+    13px;
+
+  padding:
+    14px;
+
+  font-weight:
+    900;
+
+  font-size:
+    12px;
+
+  color:
+    #06100d;
+
+  background:
+    var(--green);
+
+  cursor:
+    pointer;
+
+}
+
+
+.btn:disabled{
+
+  opacity:
+    .55;
+
+}
+
+
+.btn:active{
+
+  transform:
+    scale(
+      .99
+    );
+
+}
+
+
+.status{
+
+  margin-top:
+    10px;
+
+  text-align:
+    center;
+
+  color:
+    var(--muted);
+
+  font-size:
+    10px;
+
+  word-break:
+    break-word;
+
+}
+
+
+.error{
+
+  color:
+    var(--red);
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
 
 @media(
   max-width:600px
@@ -662,6 +1016,7 @@ body{
   .grid4{
 
     grid-template-columns:
+
       repeat(
         2,
         1fr
@@ -696,10 +1051,11 @@ body{
       </div>
 
       <div class="subtitle">
-        COINBASE LIQUIDITY INTELLIGENCE
+        COINBASE LIQUIDITY INTELLIGENCE V2
       </div>
 
     </div>
+
 
     <div class="live">
       ● LIVE
@@ -711,7 +1067,7 @@ body{
 
 
 <!-- ======================================================
-     PRICE
+     MARKET PRICE
 ====================================================== -->
 
 <div class="card">
@@ -720,12 +1076,14 @@ body{
     BTC / USD
   </div>
 
+
   <div
     class="price"
     id="price"
   >
     —
   </div>
+
 
   <div
     class="small"
@@ -747,12 +1105,14 @@ body{
     CURRENT INTELLIGENCE
   </div>
 
+
   <div
-    class="signal WAIT"
     id="signal"
+    class="signal WAIT"
   >
     WAIT
   </div>
+
 
   <div
     class="small"
@@ -839,14 +1199,12 @@ body{
      TRADE
 ====================================================== -->
 
-<div
-  class="card"
-  id="tradeCard"
->
+<div class="card">
 
   <div class="section-title">
     TRADE LEVELS
   </div>
+
 
   <div class="grid4">
 
@@ -928,12 +1286,14 @@ body{
     HIGHEST-PRIORITY LIQUIDITY
   </div>
 
+
   <div
     class="raid-title"
     id="raidTarget"
   >
     Analysing…
   </div>
+
 
   <div
     class="small"
@@ -942,6 +1302,7 @@ body{
   >
     —
   </div>
+
 
   <div
     class="pill"
@@ -958,6 +1319,7 @@ body{
   >
     —
   </div>
+
 
   <div class="small">
     RAID SCORE
@@ -1015,7 +1377,7 @@ body{
 
 
 <!-- ======================================================
-     TIMEFRAMES
+     MTF
 ====================================================== -->
 
 <div class="card">
@@ -1023,6 +1385,7 @@ body{
   <div class="section-title">
     MULTI-TIMEFRAME STRUCTURE
   </div>
+
 
   <div class="grid4">
 
@@ -1095,14 +1458,15 @@ body{
 
 
 <!-- ======================================================
-     FLOW
+     ORDER FLOW
 ====================================================== -->
 
 <div class="card">
 
   <div class="section-title">
-    ORDER FLOW
+    COINBASE ORDER FLOW
   </div>
+
 
   <div class="grid4">
 
@@ -1171,11 +1535,20 @@ body{
 
   </div>
 
+
+  <div
+    class="small"
+    id="flowInfo"
+    style="margin-top:12px"
+  >
+    —
+  </div>
+
 </div>
 
 
 <!-- ======================================================
-     MARKET REFERENCE
+     LEVELS
 ====================================================== -->
 
 <div class="card">
@@ -1183,6 +1556,7 @@ body{
   <div class="section-title">
     REFERENCE LEVELS
   </div>
+
 
   <div class="grid">
 
@@ -1301,7 +1675,7 @@ body{
     <div class="metric">
 
       <div class="metric-label">
-        5M ATR
+        M5 ATR
       </div>
 
       <div
@@ -1319,7 +1693,7 @@ body{
 
 
 <!-- ======================================================
-     SESSIONS
+     SESSION
 ====================================================== -->
 
 <div class="card">
@@ -1328,6 +1702,7 @@ body{
     CRYPTO SESSION INTELLIGENCE
   </div>
 
+
   <div
     class="small"
     id="activeSession"
@@ -1335,6 +1710,7 @@ body{
   >
     —
   </div>
+
 
   <div class="grid">
 
@@ -1407,7 +1783,7 @@ body{
 
 
 <!-- ======================================================
-     LIQUIDITY LIST
+     LIQUIDITY
 ====================================================== -->
 
 <div class="card">
@@ -1416,8 +1792,13 @@ body{
     LIQUIDITY MAP
   </div>
 
+
   <div id="liquidity">
-    Loading…
+
+    <div class="small">
+      Loading liquidity map…
+    </div>
+
   </div>
 
 </div>
@@ -1433,15 +1814,20 @@ body{
     RAID MODEL REASONS
   </div>
 
+
   <div id="raidReasons">
-    —
+
+    <div class="small">
+      Waiting for analysis…
+    </div>
+
   </div>
 
 </div>
 
 
 <!-- ======================================================
-     SIGNAL REASONS
+     SIGNAL COMPONENTS
 ====================================================== -->
 
 <div class="card">
@@ -1449,6 +1835,7 @@ body{
   <div class="section-title">
     SIGNAL COMPONENTS
   </div>
+
 
   <div
     class="grid"
@@ -1461,12 +1848,13 @@ body{
         class="green"
         style="
           font-size:11px;
-          font-weight:850;
+          font-weight:900;
           margin-bottom:8px;
         "
       >
         BUY
       </div>
+
 
       <div id="buyReasons">
         —
@@ -1481,12 +1869,13 @@ body{
         class="red"
         style="
           font-size:11px;
-          font-weight:850;
+          font-weight:900;
           margin-bottom:8px;
         "
       >
         SELL
       </div>
+
 
       <div id="sellReasons">
         —
@@ -1500,7 +1889,88 @@ body{
 
 
 <!-- ======================================================
-     REFRESH
+     SYSTEM
+====================================================== -->
+
+<div class="card">
+
+  <div class="section-title">
+    ENGINE STATUS
+  </div>
+
+
+  <div class="grid">
+
+    <div class="metric">
+
+      <div class="metric-label">
+        SOURCE
+      </div>
+
+      <div
+        class="metric-value"
+        id="source"
+      >
+        Coinbase
+      </div>
+
+    </div>
+
+
+    <div class="metric">
+
+      <div class="metric-label">
+        API LATENCY
+      </div>
+
+      <div
+        class="metric-value"
+        id="latency"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="metric">
+
+      <div class="metric-label">
+        M5 BARS
+      </div>
+
+      <div
+        class="metric-value"
+        id="m5Bars"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="metric">
+
+      <div class="metric-label">
+        H1 BARS
+      </div>
+
+      <div
+        class="metric-value"
+        id="h1Bars"
+      >
+        —
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ======================================================
+     FORCE ANALYSIS
 ====================================================== -->
 
 <div class="card">
@@ -1513,11 +1983,12 @@ body{
     FORCE NEW ANALYSIS
   </button>
 
+
   <div
     class="status"
     id="status"
   >
-    —
+    Starting BTC engine…
   </div>
 
 </div>
@@ -1529,7 +2000,7 @@ body{
 <script>
 
 /* =========================================================
-   MKAYFX BTC FRONTEND
+   MKAYFX BTC FRONTEND V2
 ========================================================= */
 
 const REFRESH_MS =
@@ -1540,21 +2011,41 @@ let loading =
   false;
 
 
-function $(id){
+/* =========================================================
+   DOM
+========================================================= */
+
+function $(
+  id
+){
 
   return document
-    .getElementById(id);
+    .getElementById(
+      id
+    );
 
 }
 
 
-function money(value){
+/* =========================================================
+   FORMAT
+========================================================= */
+
+function money(
+  value
+){
+
+  const number =
+    Number(
+      value
+    );
+
 
   if(
     value === null ||
     value === undefined ||
     !Number.isFinite(
-      Number(value)
+      number
     )
   ){
 
@@ -1565,14 +2056,18 @@ function money(value){
 
   return (
     "$" +
-    Number(value)
-      .toLocaleString(
-        "en-US",
-        {
-          minimumFractionDigits:2,
-          maximumFractionDigits:2
-        }
-      )
+    number.toLocaleString(
+      "en-US",
+      {
+
+        minimumFractionDigits:
+          2,
+
+        maximumFractionDigits:
+          2
+
+      }
+    )
   );
 
 }
@@ -1583,11 +2078,17 @@ function number(
   digits = 2
 ){
 
+  const n =
+    Number(
+      value
+    );
+
+
   if(
     value === null ||
     value === undefined ||
     !Number.isFinite(
-      Number(value)
+      n
     )
   ){
 
@@ -1596,47 +2097,85 @@ function number(
   }
 
 
-  return Number(value)
-    .toLocaleString(
-      "en-US",
-      {
-        maximumFractionDigits:
-          digits
-      }
-    );
+  return n.toLocaleString(
+    "en-US",
+    {
+
+      maximumFractionDigits:
+        digits
+
+    }
+  );
 
 }
 
+
+function rangeText(
+  range
+){
+
+  if(
+    !range
+  ){
+
+    return "Not formed";
+
+  }
+
+
+  return (
+    `${money(
+      range.low
+    )} → ${money(
+      range.high
+    )}`
+  );
+
+}
+
+
+/* =========================================================
+   BIAS
+========================================================= */
 
 function setBias(
   id,
-  value
+  bias
 ){
 
-  const el =
-    $(id);
-
-
-  el.textContent =
-    value || "—";
-
-
-  el.className =
-    "bias " +
-    (
-      value ||
-      "NEUTRAL"
+  const element =
+    $(
+      id
     );
+
+
+  const value =
+    bias ||
+    "NEUTRAL";
+
+
+  element.textContent =
+    value;
+
+
+  element.className =
+    `bias ${value}`;
 
 }
 
+
+/* =========================================================
+   REASONS
+========================================================= */
 
 function reasonsHTML(
   reasons
 ){
 
   if(
-    !reasons ||
+    !Array.isArray(
+      reasons
+    ) ||
     !reasons.length
   ){
 
@@ -1651,29 +2190,50 @@ function reasonsHTML(
 
   return reasons
     .map(
-      reason =>
-        `<div class="reason">• ${reason}</div>`
+      reason => (
+
+        `<div class="reason">` +
+        `• ${escapeHTML(reason)}` +
+        `</div>`
+
+      )
     )
     .join("");
 
 }
 
 
-function rangeText(
-  session
+/* =========================================================
+   BASIC HTML ESCAPE
+========================================================= */
+
+function escapeHTML(
+  input
 ){
 
-  if(!session){
-
-    return "Not formed yet";
-
-  }
-
-
-  return (
-    `${money(session.low)} → ` +
-    `${money(session.high)}`
-  );
+  return String(
+    input
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
 
 }
 
@@ -1682,179 +2242,329 @@ function rangeText(
    RENDER
 ========================================================= */
 
-function render(data){
+function render(
+  data
+){
 
   const market =
-    data.market;
+    data.market ||
+    {};
 
 
   const signal =
-    data.signal;
+    data.signal ||
+    {};
 
 
   const raid =
     data.raid;
 
 
-  $("price").textContent =
-    money(
-      market.price
-    );
+  /* =======================================================
+     MARKET
+  ======================================================= */
+
+  $("price")
+    .textContent =
+      money(
+        market.price
+      );
 
 
-  $("marketInfo").textContent =
-    `Coinbase BTC-USD • ` +
-    `Bid ${money(market.bid)} • ` +
-    `Ask ${money(market.ask)} • ` +
-    `API ${data.latencyMs}ms`;
+  $("marketInfo")
+    .textContent =
+
+      `Coinbase BTC-USD • ` +
+
+      `Bid ${money(
+        market.bid
+      )} • ` +
+
+      `Ask ${money(
+        market.ask
+      )} • ` +
+
+      `Spread ${money(
+        market.spread
+      )}`;
 
 
   /* =======================================================
      SIGNAL
   ======================================================= */
 
-  $("signal").textContent =
-    signal.signal;
+  const signalValue =
+    signal.signal ||
+    "WAIT";
 
 
-  $("signal").className =
-    `signal ${signal.signal}`;
-
-
-  $("signalConfidence")
+  $("signal")
     .textContent =
-      signal.signal ===
-      "WAIT"
+      signalValue;
 
-      ? (
+
+  $("signal")
+    .className =
+      `signal ${signalValue}`;
+
+
+  if(
+    signalValue ===
+    "WAIT"
+  ){
+
+    $("signalConfidence")
+      .textContent =
+
         `No confirmed trade • ` +
-        `highest score ${number(signal.confidence,1)}`
-      )
 
-      : (
-        `${number(signal.confidence,1)}% model score • ` +
-        `gap ${number(signal.scoreGap,1)}`
+        `highest score ` +
+
+        `${number(
+          signal.confidence,
+          1
+        )}/100`;
+
+  }
+
+  else{
+
+    $("signalConfidence")
+      .textContent =
+
+        `${number(
+          signal.confidence,
+          1
+        )}/100 confidence • ` +
+
+        `score gap ` +
+
+        `${number(
+          signal.scoreGap,
+          1
+        )}`;
+
+  }
+
+
+  $("buyScore")
+    .textContent =
+      number(
+        signal.buyScore,
+        1
       );
 
 
-  $("buyScore").textContent =
-    number(
-      signal.buyScore,
-      1
-    );
+  $("sellScore")
+    .textContent =
+      number(
+        signal.sellScore,
+        1
+      );
 
 
-  $("sellScore").textContent =
-    number(
-      signal.sellScore,
-      1
-    );
+  /* =======================================================
+     MACRO
+  ======================================================= */
+
+  $("macroBias")
+    .textContent =
+      data.macroBias ||
+      "MIXED";
 
 
-  $("macroBias").textContent =
-    data.macroBias;
+  $("macroBias")
+    .className =
+
+      "metric-value " +
+
+      (
+        data.macroBias ===
+        "BULLISH"
+
+          ? "green"
+
+          :
+
+        data.macroBias ===
+        "BEARISH"
+
+          ? "red"
+
+          : "gold"
+      );
 
 
-  $("macroBias").className =
-    "metric-value " +
-    (
-      data.macroBias ===
-      "BULLISH"
-        ? "green"
-        :
-      data.macroBias ===
-      "BEARISH"
-        ? "red"
-        :
-        "gold"
-    );
-
-
-  $("volatility").textContent =
-    data.volatility.regime;
+  $("volatility")
+    .textContent =
+      data.volatility
+        ?.regime ||
+      "—";
 
 
   /* =======================================================
      TRADE LEVELS
   ======================================================= */
 
-  $("entry").textContent =
-    money(
-      signal.entry
-    );
+  $("entry")
+    .textContent =
+      money(
+        signal.entry
+      );
 
 
-  $("stop").textContent =
-    money(
-      signal.stopLoss
-    );
+  $("stop")
+    .textContent =
+      money(
+        signal.stopLoss
+      );
 
 
-  $("tp1").textContent =
-    money(
-      signal.takeProfit1
-    );
+  $("tp1")
+    .textContent =
+      money(
+        signal.takeProfit1
+      );
 
 
-  $("tp2").textContent =
-    money(
-      signal.takeProfit2
-    );
+  $("tp2")
+    .textContent =
+      money(
+        signal.takeProfit2
+      );
 
 
   /* =======================================================
      RAID
   ======================================================= */
 
-  if(raid){
+  if(
+    raid
+  ){
 
-    $("raidTarget").textContent =
-      raid.target;
-
-
-    $("raidInfo").textContent =
-      `${money(raid.level)} • ` +
-      `${money(raid.distance)} away • ` +
-      `${number(raid.distanceATR,2)} ATR`;
+    $("raidTarget")
+      .textContent =
+        raid.target ||
+        "Unknown liquidity";
 
 
-    $("raidStage").textContent =
-      raid.stage;
+    $("raidInfo")
+      .textContent =
+
+        `${money(
+          raid.level
+        )} • ` +
+
+        `${money(
+          raid.distance
+        )} away • ` +
+
+        `${number(
+          raid.distanceATR,
+          2
+        )} ATR`;
 
 
-    $("raidScore").textContent =
-      `${number(raid.score,0)} / ${raid.maxScore}`;
+    $("raidStage")
+      .textContent =
+        raid.stage ||
+        "MONITORING";
 
 
-    $("raidProgress").style.width =
-      `${Math.min(
+    $("raidScore")
+      .textContent =
+
+        `${number(
+          raid.score,
+          0
+        )} / ${raid.maxScore || 95}`;
+
+
+    const percentage =
+      Math.min(
         100,
-        raid.score /
-        raid.maxScore *
-        100
-      )}%`;
-
-
-    $("sweepLow").textContent =
-      money(
-        raid
-          .projectedSweepZone
-          .low
+        Math.max(
+          0,
+          (
+            Number(
+              raid.score
+            ) /
+            Number(
+              raid.maxScore ||
+              95
+            )
+          ) *
+          100
+        )
       );
 
 
-    $("sweepHigh").textContent =
-      money(
-        raid
-          .projectedSweepZone
-          .high
-      );
+    $("raidProgress")
+      .style.width =
+        `${percentage}%`;
 
 
-    $("raidReasons").innerHTML =
-      reasonsHTML(
-        raid.reasons
-      );
+    $("sweepLow")
+      .textContent =
+        money(
+          raid
+            .projectedSweepZone
+            ?.low
+        );
+
+
+    $("sweepHigh")
+      .textContent =
+        money(
+          raid
+            .projectedSweepZone
+            ?.high
+        );
+
+
+    $("raidReasons")
+      .innerHTML =
+        reasonsHTML(
+          raid.reasons
+        );
+
+  }
+
+  else{
+
+    $("raidTarget")
+      .textContent =
+        "No primary liquidity target";
+
+
+    $("raidInfo")
+      .textContent =
+        "Waiting for sufficient market data";
+
+
+    $("raidStage")
+      .textContent =
+        "MONITORING";
+
+
+    $("raidScore")
+      .textContent =
+        "—";
+
+
+    $("raidProgress")
+      .style.width =
+        "0%";
+
+
+    $("sweepLow")
+      .textContent =
+        "—";
+
+
+    $("sweepHigh")
+      .textContent =
+        "—";
 
   }
 
@@ -1865,274 +2575,482 @@ function render(data){
 
   setBias(
     "m5",
-    data.timeframes.M5.bias
+    data.timeframes
+      ?.M5
+      ?.bias
   );
 
 
   setBias(
     "m15",
-    data.timeframes.M15.bias
+    data.timeframes
+      ?.M15
+      ?.bias
   );
 
 
   setBias(
     "h1",
-    data.timeframes.H1.bias
+    data.timeframes
+      ?.H1
+      ?.bias
   );
 
 
   setBias(
     "h4",
-    data.timeframes.H4.bias
+    data.timeframes
+      ?.H4
+      ?.bias
   );
 
 
   /* =======================================================
-     FLOW
+     ORDER FLOW
   ======================================================= */
 
   const delta =
-    data.flow
-      .deltaPercent;
-
-
-  $("delta").textContent =
-    `${number(delta,2)}%`;
-
-
-  $("delta").className =
-    "metric-value " +
-    (
-      delta > 0
-        ? "green"
-        :
-      delta < 0
-        ? "red"
-        :
-        ""
+    Number(
+      data.flow
+        ?.deltaPercent ||
+      0
     );
 
 
-  $("cvd").textContent =
-    number(
-      data.flow.cvd,
-      4
-    );
+  $("delta")
+    .textContent =
+      `${number(
+        delta,
+        2
+      )}%`;
 
 
-  $("book").textContent =
-    `${number(
+  $("delta")
+    .className =
+
+      "metric-value " +
+
+      (
+        delta >
+        0
+
+          ? "green"
+
+          :
+
+        delta <
+        0
+
+          ? "red"
+
+          : ""
+      );
+
+
+  $("cvd")
+    .textContent =
+      number(
+        data.flow
+          ?.cvd,
+        5
+      );
+
+
+  const bookImbalance =
+    Number(
       data.orderBook
-        .imbalancePercent,
-      2
-    )}%`;
+        ?.imbalancePercent ||
+      0
+    );
 
 
-  $("volume").textContent =
-    `${number(
-      data.volume.ratio,
-      2
-    )}x ${data.volume.state}`;
+  $("book")
+    .textContent =
+      `${number(
+        bookImbalance,
+        2
+      )}%`;
+
+
+  $("book")
+    .className =
+
+      "metric-value " +
+
+      (
+        bookImbalance >
+        0
+
+          ? "green"
+
+          :
+
+        bookImbalance <
+        0
+
+          ? "red"
+
+          : ""
+      );
+
+
+  $("volume")
+    .textContent =
+
+      `${number(
+        data.volume
+          ?.ratio,
+        2
+      )}x ` +
+
+      `${data.volume
+        ?.state ||
+        "—"}`;
+
+
+  $("flowInfo")
+    .textContent =
+
+      `${data.flow
+        ?.pressure ||
+        "BALANCED"} • ` +
+
+      `${data.orderBook
+        ?.pressure ||
+        "BALANCED"} • ` +
+
+      `${number(
+        data.flow
+          ?.trades,
+        0
+      )} recent trades analysed`;
 
 
   /* =======================================================
-     REFERENCE LEVELS
+     LEVELS
   ======================================================= */
 
-  $("pdh").textContent =
-    money(
-      data.levels
-        .previousDayHigh
-    );
+  $("pdh")
+    .textContent =
+      money(
+        data.levels
+          ?.previousDayHigh
+      );
 
 
-  $("pdl").textContent =
-    money(
-      data.levels
-        .previousDayLow
-    );
+  $("pdl")
+    .textContent =
+      money(
+        data.levels
+          ?.previousDayLow
+      );
 
 
-  $("pwh").textContent =
-    money(
-      data.levels
-        .previousWeekHigh
-    );
+  $("pwh")
+    .textContent =
+      money(
+        data.levels
+          ?.previousWeekHigh
+      );
 
 
-  $("pwl").textContent =
-    money(
-      data.levels
-        .previousWeekLow
-    );
+  $("pwl")
+    .textContent =
+      money(
+        data.levels
+          ?.previousWeekLow
+      );
 
 
-  $("dailyOpen").textContent =
-    money(
-      data.levels
-        .dailyOpen
-    );
+  $("dailyOpen")
+    .textContent =
+      money(
+        data.levels
+          ?.dailyOpen
+      );
 
 
-  $("weeklyOpen").textContent =
-    money(
-      data.levels
-        .weeklyOpen
-    );
+  $("weeklyOpen")
+    .textContent =
+      money(
+        data.levels
+          ?.weeklyOpen
+      );
 
 
-  $("vwap").textContent =
-    money(
-      data.vwap.daily
-    );
+  $("vwap")
+    .textContent =
+      money(
+        data.vwap
+          ?.daily
+      );
 
 
-  $("atr").textContent =
-    money(
-      data.volatility
-        .atr5m
-    );
+  $("atr")
+    .textContent =
+      money(
+        data.volatility
+          ?.atr5m
+      );
 
 
   /* =======================================================
      SESSION
   ======================================================= */
 
-  $("activeSession").textContent =
-    `Active: ` +
-    data.session.active.join(
-      " + "
-    );
+  const activeSessions =
+    Array.isArray(
+      data.session
+        ?.active
+    )
+
+      ? data.session
+        .active
+        .join(
+          " + "
+        )
+
+      : "CRYPTO 24/7";
 
 
-  $("asia").textContent =
-    rangeText(
-      data.sessionLevels.asia
-    );
+  $("activeSession")
+    .textContent =
+
+      `Active: ${activeSessions} • ` +
+
+      `${data.session
+        ?.day ||
+        ""}`;
 
 
-  $("london").textContent =
-    rangeText(
-      data.sessionLevels.london
-    );
+  $("asia")
+    .textContent =
+      rangeText(
+        data.sessionLevels
+          ?.asia
+      );
 
 
-  $("newYork").textContent =
-    rangeText(
-      data.sessionLevels.newYork
-    );
+  $("london")
+    .textContent =
+      rangeText(
+        data.sessionLevels
+          ?.london
+      );
 
 
-  $("weekend").textContent =
-    data.session.weekend
-      ? "YES"
-      : "NO";
+  $("newYork")
+    .textContent =
+      rangeText(
+        data.sessionLevels
+          ?.newYork
+      );
+
+
+  $("weekend")
+    .textContent =
+      data.session
+        ?.weekend
+
+        ? "YES"
+
+        : "NO";
 
 
   /* =======================================================
      LIQUIDITY MAP
   ======================================================= */
 
-  $("liquidity").innerHTML =
-    data.liquidityPools
-      .slice(
-        0,
-        10
-      )
-      .map(
-        level => `
+  const pools =
+    Array.isArray(
+      data.liquidityPools
+    )
 
-          <div class="level">
+      ? data.liquidityPools
 
-            <div>
+      : [];
 
-              <div class="level-name">
 
-                ${level.name}
+  if(
+    !pools.length
+  ){
+
+    $("liquidity")
+      .innerHTML =
+
+        '<div class="small">' +
+        'No nearby liquidity pools detected.' +
+        '</div>';
+
+  }
+
+  else{
+
+    $("liquidity")
+      .innerHTML =
+
+        pools
+          .slice(
+            0,
+            12
+          )
+          .map(
+            level => (
+
+              `
+
+              <div class="level">
+
+                <div>
+
+                  <div class="level-name">
+
+                    ${escapeHTML(
+                      level.name
+                    )}
+
+                  </div>
+
+                  <div class="small">
+
+                    ${escapeHTML(
+                      String(
+                        level.side
+                      ).replace(
+                        "_",
+                        " "
+                      )
+                    )}
+
+                    •
+
+                    ${number(
+                      level.distanceATR,
+                      2
+                    )} ATR away
+
+                  </div>
+
+                </div>
+
+
+                <div
+                  style="
+                    text-align:right;
+                    flex-shrink:0;
+                  "
+                >
+
+                  <div class="level-price">
+
+                    ${money(
+                      level.level
+                    )}
+
+                  </div>
+
+                  <div class="small">
+
+                    score
+
+                    ${number(
+                      level.score,
+                      0
+                    )}
+
+                  </div>
+
+                </div>
 
               </div>
 
-              <div class="small">
+              `
 
-                ${level.side.replace(
-                  "_",
-                  " "
-                )}
+            )
+          )
+          .join("");
 
-                •
-
-                ${number(
-                  level.distanceATR,
-                  2
-                )} ATR away
-
-              </div>
-
-            </div>
-
-            <div
-              style="text-align:right"
-            >
-
-              <div class="level-price">
-
-                ${money(
-                  level.level
-                )}
-
-              </div>
-
-              <div class="small">
-
-                score
-                ${number(
-                  level.score,
-                  0
-                )}
-
-              </div>
-
-            </div>
-
-          </div>
-
-        `
-      )
-      .join("");
+  }
 
 
   /* =======================================================
      SIGNAL REASONS
   ======================================================= */
 
-  $("buyReasons").innerHTML =
-    reasonsHTML(
-      signal.buyReasons
-    );
+  $("buyReasons")
+    .innerHTML =
+      reasonsHTML(
+        signal.buyReasons
+      );
 
 
-  $("sellReasons").innerHTML =
-    reasonsHTML(
-      signal.sellReasons
-    );
+  $("sellReasons")
+    .innerHTML =
+      reasonsHTML(
+        signal.sellReasons
+      );
 
 
-  $("status").textContent =
-    `Updated ${new Date().toLocaleTimeString()} • ` +
-    `refreshes every ${REFRESH_MS / 1000}s`;
+  /* =======================================================
+     SYSTEM
+  ======================================================= */
+
+  $("source")
+    .textContent =
+      data.source ||
+      "Coinbase Exchange";
+
+
+  $("latency")
+    .textContent =
+      `${number(
+        data.latencyMs,
+        0
+      )} ms`;
+
+
+  $("m5Bars")
+    .textContent =
+      number(
+        data.candles
+          ?.M5,
+        0
+      );
+
+
+  $("h1Bars")
+    .textContent =
+      number(
+        data.candles
+          ?.H1,
+        0
+      );
+
+
+  $("status")
+    .textContent =
+
+      `Updated ${new Date()
+        .toLocaleTimeString()} • ` +
+
+      `automatic refresh every ` +
+
+      `${REFRESH_MS / 1000}s`;
 
 }
 
 
 /* =========================================================
-   LOAD
+   LOAD DATA
 ========================================================= */
 
 async function loadData(
   forced = false
 ){
 
-  if(loading){
+  if(
+    loading
+  ){
 
     return;
 
@@ -2143,52 +3061,134 @@ async function loadData(
     true;
 
 
-  $("status").textContent =
-    forced
-      ? "Running new Coinbase analysis…"
-      : "Refreshing…";
+  $("refreshBtn")
+    .disabled =
+      true;
 
 
-  $("refreshBtn").disabled =
-    true;
+  $("status")
+    .textContent =
+
+      forced
+
+        ? "Running fresh Coinbase analysis…"
+
+        : "Refreshing Coinbase intelligence…";
 
 
   try{
 
+    /*
+       IMPORTANT:
+
+       No timestamp query string.
+
+       This prevents the Safari/Vercel URL issue
+       that produced:
+
+       "The string did not match the expected pattern."
+    */
+
     const response =
       await fetch(
-        `/api/btc?t=${Date.now()}`,
+        "/api/btc",
         {
-          cache:"no-store"
+
+          method:
+            "GET",
+
+          cache:
+            "no-store",
+
+          headers:{
+
+            Accept:
+              "application/json"
+
+          }
+
         }
       );
 
 
-    const data =
-      await response.json();
+    const raw =
+      await response.text();
 
 
-    if(
-      !response.ok ||
-      !data.ok
-    ){
+    let data;
+
+
+    try{
+
+      data =
+        JSON.parse(
+          raw
+        );
+
+    }
+
+    catch{
 
       throw new Error(
-        data.error ||
-        "BTC engine failed"
+        `API returned invalid JSON: ${raw.slice(
+          0,
+          180
+        )}`
       );
 
     }
 
 
-    render(data);
+    if(
+      !response.ok
+    ){
+
+      throw new Error(
+        data.error ||
+        `HTTP ${response.status}`
+      );
+
+    }
+
+
+    if(
+      !data.ok
+    ){
+
+      throw new Error(
+        data.error ||
+        "BTC engine returned ok:false"
+      );
+
+    }
+
+
+    render(
+      data
+    );
 
   }
 
-  catch(error){
+  catch(
+    error
+  ){
 
-    $("status").innerHTML =
-      `<span class="error">${error.message}</span>`;
+    console.error(
+      error
+    );
+
+
+    $("status")
+      .innerHTML =
+
+        `<span class="error">` +
+
+        `${escapeHTML(
+          error.message ||
+          "Unknown error"
+        )}` +
+
+        `</span>`;
 
   }
 
@@ -2198,8 +3198,9 @@ async function loadData(
       false;
 
 
-    $("refreshBtn").disabled =
-      false;
+    $("refreshBtn")
+      .disabled =
+        false;
 
   }
 
@@ -2210,12 +3211,58 @@ async function loadData(
    START
 ========================================================= */
 
-loadData();
+loadData(
+  true
+);
 
+
+/* =========================================================
+   AUTOMATIC REFRESH
+========================================================= */
 
 setInterval(
-  () => loadData(false),
+
+  () => {
+
+    if(
+      !document.hidden
+    ){
+
+      loadData(
+        false
+      );
+
+    }
+
+  },
+
   REFRESH_MS
+
+);
+
+
+/* =========================================================
+   REFRESH WHEN APP RETURNS TO FOREGROUND
+========================================================= */
+
+document.addEventListener(
+
+  "visibilitychange",
+
+  () => {
+
+    if(
+      !document.hidden
+    ){
+
+      loadData(
+        false
+      );
+
+    }
+
+  }
+
 );
 
 </script>
