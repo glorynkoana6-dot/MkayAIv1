@@ -1,40 +1,53 @@
 /* =========================================================
-   XAU LIQUIDITY INTELLIGENCE ENGINE
+   MKAYFX XAU LIQUIDITY INTELLIGENCE + LIVE INDICATOR
    /api/xau.js
 
-   PURPOSE
-   -------
-   XAU/USD intelligence only.
-   This is NOT a forced BUY / SELL strategy.
+   SYMBOL
+   ------
+   XAU/USD
 
-   FEATURES
-   --------
-   - Session intelligence
-   - Asia / London / NY highs and lows
-   - PDH / PDL
-   - PWH / PWL
-   - Equal highs / lows
-   - H1 swing liquidity
-   - M15 FVGs
-   - MTF structure
-   - ATR / volatility
-   - VWAP
-   - Footprint-style volume delta proxy
-   - CVD proxy
-   - Absorption
-   - Delta divergence
-   - Historical Asia sweep behaviour
-   - Estimated sweep overshoot
-   - Potential reversal / raid zones
-   - Liquidity trap windows
-   - Optional FRED macro pressure
+   LIVE / BACKTEST MATCH
+   ---------------------
+   Execution:       M5
+   Confirmation:    M15 + H1
+
+   Reference days:  70
+   Start balance:   R200
+   Risk:            7%
+   Minimum score:   68
+
+   TP1:             1.5R
+   TP1 exit:        50%
+
+   TP2:             2.7R
+   TP2 exit:        50%
+
+   Spread:          0
+   Slippage:        0
+
+   Max hold:        72 M5 bars
+                    = 6 hours
+
+   Max trades:      1000
+
+   IMPORTANT
+   ---------
+   Signal decisions are based on COMPLETED M5 candles.
+
+   M15 and H1 structure are also built from completed
+   M5 data to reduce repainting and make live logic
+   closer to backtesting.
 
    ENVIRONMENT VARIABLES
    ---------------------
    TWELVE_DATA_API_KEY
-   FRED_API_KEY          optional
+   FRED_API_KEY             optional
 ========================================================= */
 
+
+/* =========================================================
+   ENVIRONMENT
+========================================================= */
 
 const TD_KEY =
   process.env.TWELVE_DATA_API_KEY;
@@ -56,8 +69,136 @@ const SYMBOL =
   "XAU/USD";
 
 
+/* =========================================================
+   LIVE SETTINGS
+========================================================= */
+
+const LIVE_SETTINGS = {
+
+  historicalReferenceDays:
+    70,
+
+  executionTimeframe:
+    "M5",
+
+  confirmationTimeframes: [
+    "M15",
+    "H1"
+  ],
+
+  startBalance:
+    200,
+
+  riskPct:
+    7,
+
+  minScore:
+    68,
+
+  tp1R:
+    1.5,
+
+  tp2R:
+    2.7,
+
+  tp1ExitPct:
+    50,
+
+  tp2ExitPct:
+    50,
+
+  spread:
+    0,
+
+  slippage:
+    0,
+
+  maxHoldBars:
+    72,
+
+  maxHoldMinutes:
+    72 * 5,
+
+  maxTrades:
+    1000,
+
+  /*
+   * Stop-loss protection.
+   *
+   * Stop uses recent M5 structure plus ATR.
+   */
+
+  stopAtrBuffer:
+    0.18,
+
+  minStopAtr:
+    0.60,
+
+  maxStopAtr:
+    2.25,
+
+  /*
+   * M15 + H1 confirmation.
+   */
+
+  requireM15Confirmation:
+    true,
+
+  requireH1Confirmation:
+    true,
+
+  /*
+   * M5 is execution.
+   *
+   * We allow M5 NEUTRAL but prevent a trade
+   * if M5 is clearly opposite.
+   */
+
+  requireM5NotOpposite:
+    true,
+
+  /*
+   * Prevent BUY and SELL scores that are
+   * essentially identical.
+   */
+
+  minimumScoreGap:
+    3
+
+};
+
+
+/* =========================================================
+   DATA SETTINGS
+========================================================= */
+
+/*
+ * Twelve Data commonly returns a maximum of about
+ * 5000 candles from one standard time_series request.
+ *
+ * The 70-day setting is retained in LIVE_SETTINGS as the
+ * strategy/backtest reference.
+ */
+
+const M1_OUTPUTSIZE =
+  1800;
+
+
+const M5_OUTPUTSIZE =
+  5000;
+
+
+const D1_OUTPUTSIZE =
+  120;
+
+
+/*
+ * Shorter than the old 55-second cache so the dashboard
+ * feels more live while still protecting API usage.
+ */
+
 const PRICE_CACHE_MS =
-  55_000;
+  20_000;
 
 
 const MACRO_CACHE_MS =
@@ -65,68 +206,100 @@ const MACRO_CACHE_MS =
 
 
 let priceCache = {
-  at: 0,
-  payload: null
+
+  at:
+    0,
+
+  payload:
+    null
+
 };
 
 
 let macroCache = {
-  at: 0,
-  payload: null
+
+  at:
+    0,
+
+  payload:
+    null
+
 };
 
 
 /* =========================================================
    SESSION DEFINITIONS
-
-   These are regional trading-analysis windows.
-
-   Tokyo
-   -----
-   09:00 - 18:00 Tokyo local
-
-   London
-   ------
-   08:00 - 17:00 London local
-
-   New York
-   --------
-   08:00 - 17:00 New York local
-
-   Using IANA timezones means DST is handled automatically.
 ========================================================= */
-
 
 const SESSION_DEFS = [
 
   {
-    id: "tokyo",
-    name: "Tokyo / Asia",
-    short: "ASIA",
-    zone: "Asia/Tokyo",
-    open: 9 * 60,
-    close: 18 * 60,
-    risk: 0.55
+    id:
+      "tokyo",
+
+    name:
+      "Tokyo / Asia",
+
+    short:
+      "ASIA",
+
+    zone:
+      "Asia/Tokyo",
+
+    open:
+      9 * 60,
+
+    close:
+      18 * 60,
+
+    risk:
+      0.55
   },
 
   {
-    id: "london",
-    name: "London",
-    short: "LONDON",
-    zone: "Europe/London",
-    open: 8 * 60,
-    close: 17 * 60,
-    risk: 1
+    id:
+      "london",
+
+    name:
+      "London",
+
+    short:
+      "LONDON",
+
+    zone:
+      "Europe/London",
+
+    open:
+      8 * 60,
+
+    close:
+      17 * 60,
+
+    risk:
+      1
   },
 
   {
-    id: "newyork",
-    name: "New York",
-    short: "NEW YORK",
-    zone: "America/New_York",
-    open: 8 * 60,
-    close: 17 * 60,
-    risk: 1
+    id:
+      "newyork",
+
+    name:
+      "New York",
+
+    short:
+      "NEW YORK",
+
+    zone:
+      "America/New_York",
+
+    open:
+      8 * 60,
+
+    close:
+      17 * 60,
+
+    risk:
+      1
   }
 
 ];
@@ -135,7 +308,6 @@ const SESSION_DEFS = [
 /* =========================================================
    MAIN API
 ========================================================= */
-
 
 export default async function handler(
   req,
@@ -167,7 +339,8 @@ export default async function handler(
 
 
   if (
-    req.method === "OPTIONS"
+    req.method ===
+    "OPTIONS"
   ) {
 
     return res
@@ -178,13 +351,20 @@ export default async function handler(
 
 
   if (
-    req.method !== "GET"
+    req.method !==
+    "GET"
   ) {
 
     return res
       .status(405)
       .json({
-        error: "GET only"
+
+        ok:
+          false,
+
+        error:
+          "GET only"
+
       });
 
   }
@@ -198,7 +378,8 @@ export default async function handler(
       .status(500)
       .json({
 
-        ok: false,
+        ok:
+          false,
 
         error:
           "Missing TWELVE_DATA_API_KEY environment variable."
@@ -218,10 +399,11 @@ export default async function handler(
        CACHE
     ===================================================== */
 
-
     if (
 
-      priceCache.payload &&
+      priceCache.payload
+
+      &&
 
       now -
       priceCache.at <
@@ -235,7 +417,8 @@ export default async function handler(
 
           ...priceCache.payload,
 
-          cache: true,
+          cache:
+            true,
 
           servedAt:
             new Date()
@@ -247,18 +430,8 @@ export default async function handler(
 
 
     /* =====================================================
-       DATA
-
-       M1:
-       current microstructure
-
-       M5:
-       longer historical liquidity behaviour
-
-       D1:
-       day/week reference levels
+       FETCH DATA
     ===================================================== */
-
 
     const [
 
@@ -271,23 +444,27 @@ export default async function handler(
 
       fetchTdSeries(
         "1min",
-        1800
+        M1_OUTPUTSIZE
       ),
 
       fetchTdSeries(
         "5min",
-        5000
+        M5_OUTPUTSIZE
       ),
 
       fetchTdSeries(
         "1day",
-        120
+        D1_OUTPUTSIZE
       ),
 
       getMacroContext()
 
     ]);
 
+
+    /* =====================================================
+       PARSE DATA
+    ===================================================== */
 
     const m1 =
       parseTdSeries(
@@ -296,7 +473,7 @@ export default async function handler(
       );
 
 
-    const m5 =
+    const m5All =
       parseTdSeries(
         m5Raw,
         true
@@ -312,11 +489,18 @@ export default async function handler(
 
     if (
 
-      m1.length < 100 ||
+      m1.length <
+      100
 
-      m5.length < 300 ||
+      ||
 
-      d1.length < 20
+      m5All.length <
+      300
+
+      ||
+
+      d1.length <
+      20
 
     ) {
 
@@ -326,7 +510,7 @@ export default async function handler(
 
         `M1=${m1.length}, ` +
 
-        `M5=${m5.length}, ` +
+        `M5=${m5All.length}, ` +
 
         `D1=${d1.length}`
 
@@ -336,34 +520,85 @@ export default async function handler(
 
 
     /* =====================================================
-       CREATE HIGHER TIMEFRAMES
+       COMPLETED CANDLES
+
+       This is very important.
+
+       Backtests normally use closed candles.
+
+       Therefore the LIVE signal engine also uses
+       completed M5 / M15 / H1 candles.
     ===================================================== */
+
+    const m5 =
+      completedBars(
+        m5All,
+        5
+      );
+
+
+    if (
+      m5.length <
+      250
+    ) {
+
+      throw new Error(
+        "Not enough completed M5 candles."
+      );
+
+    }
 
 
     const m15 =
-      resample(
-        m5,
+      completedBars(
+
+        resample(
+          m5,
+          15
+        ),
+
         15
+
       );
 
 
     const h1 =
-      resample(
-        m5,
+      completedBars(
+
+        resample(
+          m5,
+          60
+        ),
+
         60
+
       );
 
 
     const h4 =
-      resample(
-        m5,
+      completedBars(
+
+        resample(
+          m5,
+          240
+        ),
+
         240
+
       );
+
+
+    const executionBar =
+      m5[
+        m5.length -
+        1
+      ];
 
 
     const current =
       m1[
-        m1.length - 1
+        m1.length -
+        1
       ];
 
 
@@ -374,7 +609,6 @@ export default async function handler(
     /* =====================================================
        VOLATILITY
     ===================================================== */
-
 
     const atr5 =
 
@@ -425,7 +659,6 @@ export default async function handler(
        SESSION ENGINE
     ===================================================== */
 
-
     const sessions =
       buildSessionState(
         m1
@@ -433,9 +666,8 @@ export default async function handler(
 
 
     /* =====================================================
-       DAILY / WEEKLY LIQUIDITY
+       DAY / WEEK LEVELS
     ===================================================== */
-
 
     const dayLevels =
       buildDayLevels(
@@ -445,9 +677,8 @@ export default async function handler(
 
 
     /* =====================================================
-       MTF STRUCTURE
+       MULTI-TIMEFRAME STRUCTURE
     ===================================================== */
-
 
     const structure = {
 
@@ -483,7 +714,6 @@ export default async function handler(
        LIQUIDITY STRUCTURE
     ===================================================== */
 
-
     const equalLevels =
       detectEqualLevels(
         m15,
@@ -511,7 +741,6 @@ export default async function handler(
        FOOTPRINT PROXY
     ===================================================== */
 
-
     const footprint =
       buildFootprint(
         m1,
@@ -523,7 +752,6 @@ export default async function handler(
        VWAP
     ===================================================== */
 
-
     const vwap =
       buildVwap(
         m1
@@ -534,7 +762,6 @@ export default async function handler(
        HISTORICAL SWEEP MODEL
     ===================================================== */
 
-
     const sweepHistory =
       buildSweepHistory(
         m5
@@ -542,9 +769,8 @@ export default async function handler(
 
 
     /* =====================================================
-       BUILD RAW LIQUIDITY MAP
+       LIQUIDITY MAP
     ===================================================== */
-
 
     const rawPools =
       buildLiquidityPools({
@@ -562,11 +788,6 @@ export default async function handler(
         atrH1
 
       });
-
-
-    /* =====================================================
-       PROJECT SWEEP DEPTH
-    ===================================================== */
 
 
     const pools =
@@ -598,7 +819,10 @@ export default async function handler(
         )
 
         .sort(
-          (a, b) =>
+          (
+            a,
+            b
+          ) =>
             b.likelihoodScore -
             a.likelihoodScore
         )
@@ -612,7 +836,6 @@ export default async function handler(
     /* =====================================================
        TRAP WINDOWS
     ===================================================== */
-
 
     const trapWindows =
       buildTrapWindows({
@@ -635,7 +858,6 @@ export default async function handler(
        MARKET REGIME
     ===================================================== */
 
-
     const regime =
       buildRegime({
 
@@ -653,9 +875,76 @@ export default async function handler(
 
 
     /* =====================================================
-       DATA AGE
+       ACCOUNT BALANCE
+
+       URL example:
+
+       /api/xau?balance=300
+
+       If omitted, default = R200.
     ===================================================== */
 
+    const requestedBalance =
+      Number(
+        req.query?.balance
+      );
+
+
+    const accountBalance =
+
+      Number.isFinite(
+        requestedBalance
+      )
+
+      &&
+
+      requestedBalance >
+      0
+
+        ?
+
+        requestedBalance
+
+        :
+
+        LIVE_SETTINGS.startBalance;
+
+
+    /* =====================================================
+       LIVE SIGNAL
+    ===================================================== */
+
+    const liveSignal =
+      buildLiveSignal({
+
+        price,
+
+        executionBar,
+
+        m5,
+
+        atr5,
+
+        atr15,
+
+        structure,
+
+        footprint,
+
+        pools,
+
+        sessions,
+
+        regime,
+
+        accountBalance
+
+      });
+
+
+    /* =====================================================
+       DATA AGE
+    ===================================================== */
 
     const latestTs =
       current.ts;
@@ -686,10 +975,10 @@ export default async function handler(
        RESPONSE
     ===================================================== */
 
-
     const payload = {
 
-      ok: true,
+      ok:
+        true,
 
       symbol:
         SYMBOL,
@@ -716,16 +1005,121 @@ export default async function handler(
       latestBarTime:
         new Date(
           latestTs
-        ).toISOString(),
+        )
+          .toISOString(),
+
+
+      lastCompletedM5:
+        new Date(
+          executionBar.ts
+        )
+          .toISOString(),
 
 
       dataAgeSeconds,
+
+
+      strategySettings: {
+
+        historicalReferenceDays:
+          LIVE_SETTINGS
+            .historicalReferenceDays,
+
+        executionTimeframe:
+          LIVE_SETTINGS
+            .executionTimeframe,
+
+        confirmationTimeframes:
+          LIVE_SETTINGS
+            .confirmationTimeframes,
+
+        startBalance:
+          LIVE_SETTINGS
+            .startBalance,
+
+        currentBalance:
+          round(
+            accountBalance,
+            2
+          ),
+
+        riskPct:
+          LIVE_SETTINGS
+            .riskPct,
+
+        riskAmount:
+          round(
+
+            accountBalance
+
+            *
+
+            (
+              LIVE_SETTINGS.riskPct /
+              100
+            ),
+
+            2
+
+          ),
+
+        minScore:
+          LIVE_SETTINGS
+            .minScore,
+
+        minimumScoreGap:
+          LIVE_SETTINGS
+            .minimumScoreGap,
+
+        tp1R:
+          LIVE_SETTINGS
+            .tp1R,
+
+        tp2R:
+          LIVE_SETTINGS
+            .tp2R,
+
+        tp1ExitPct:
+          LIVE_SETTINGS
+            .tp1ExitPct,
+
+        tp2ExitPct:
+          LIVE_SETTINGS
+            .tp2ExitPct,
+
+        spread:
+          LIVE_SETTINGS
+            .spread,
+
+        slippage:
+          LIVE_SETTINGS
+            .slippage,
+
+        maxHoldBars:
+          LIVE_SETTINGS
+            .maxHoldBars,
+
+        maxHoldMinutes:
+          LIVE_SETTINGS
+            .maxHoldMinutes,
+
+        maxTrades:
+          LIVE_SETTINGS
+            .maxTrades
+
+      },
+
+
+      liveSignal,
 
 
       source: {
 
         price:
           "Twelve Data XAU/USD",
+
+        execution:
+          "Completed Twelve Data M5 candles",
 
         footprint:
           footprint.mode,
@@ -735,8 +1129,10 @@ export default async function handler(
 
         macro:
           macro.enabled
-            ? "FRED"
-            : "disabled"
+            ?
+            "FRED"
+            :
+            "disabled"
 
       },
 
@@ -809,11 +1205,21 @@ export default async function handler(
 
       warnings: [
 
-        "Sweep likelihood is a heuristic ranking, not a calibrated probability or guarantee.",
+        "Live signal decisions use completed M5 candles to reduce repainting.",
 
-        "The footprint section is an OHLCV-derived order-flow proxy unless your feed supplies true aggressor bid/ask volume.",
+        "M15 and H1 confirmation are required to match the selected backtest setup.",
 
-        "Spot XAU/USD volume can represent provider or broker activity rather than centralized exchange volume."
+        "7% risk per trade is aggressive and can cause large account drawdowns.",
+
+        "Spread and slippage are set to zero to match the backtest settings, although real execution can have both.",
+
+        "The API is stateless. The frontend should lock an accepted trade until SL, TP2, expiry or manual reset.",
+
+        "Sweep likelihood is a heuristic ranking, not a guaranteed probability.",
+
+        "Footprint values are OHLCV-derived proxies unless a true aggressor bid/ask feed is supplied.",
+
+        "Spot XAU/USD provider volume is not centralized exchange volume."
 
       ]
 
@@ -851,7 +1257,8 @@ export default async function handler(
       .status(500)
       .json({
 
-        ok: false,
+        ok:
+          false,
 
         error:
           error?.message
@@ -866,9 +1273,1791 @@ export default async function handler(
 
 
 /* =========================================================
-   TWELVE DATA
+   LIVE SIGNAL ENGINE
 ========================================================= */
 
+function buildLiveSignal({
+
+  price,
+
+  executionBar,
+
+  m5,
+
+  atr5,
+
+  atr15,
+
+  structure,
+
+  footprint,
+
+  pools,
+
+  sessions,
+
+  regime,
+
+  accountBalance
+
+}) {
+
+  const riskAmount =
+
+    accountBalance
+
+    *
+
+    (
+      LIVE_SETTINGS.riskPct /
+      100
+    );
+
+
+  /* =====================================================
+     FIND BEST UPSIDE / DOWNSIDE LIQUIDITY
+  ===================================================== */
+
+  const highPools =
+    pools
+
+      .filter(
+        p =>
+          p.side ===
+          "HIGH"
+      )
+
+      .sort(
+        (
+          a,
+          b
+        ) =>
+          b.likelihoodScore -
+          a.likelihoodScore
+      );
+
+
+  const lowPools =
+    pools
+
+      .filter(
+        p =>
+          p.side ===
+          "LOW"
+      )
+
+      .sort(
+        (
+          a,
+          b
+        ) =>
+          b.likelihoodScore -
+          a.likelihoodScore
+      );
+
+
+  const buyPool =
+    highPools[0]
+    ||
+    null;
+
+
+  const sellPool =
+    lowPools[0]
+    ||
+    null;
+
+
+  let buyScore =
+    buyPool
+      ?
+      buyPool.likelihoodScore
+      :
+      20;
+
+
+  let sellScore =
+    sellPool
+      ?
+      sellPool.likelihoodScore
+      :
+      20;
+
+
+  const buyReasons =
+    [];
+
+
+  const sellReasons =
+    [];
+
+
+  /* =====================================================
+     LIQUIDITY BASE
+  ===================================================== */
+
+  if (
+    buyPool
+  ) {
+
+    buyReasons.push(
+
+      `${buyPool.name} liquidity target at ${buyPool.level}`
+
+    );
+
+  }
+
+
+  if (
+    sellPool
+  ) {
+
+    sellReasons.push(
+
+      `${sellPool.name} liquidity target at ${sellPool.level}`
+
+    );
+
+  }
+
+
+  /* =====================================================
+     M5 EXECUTION BIAS
+  ===================================================== */
+
+  if (
+    structure.m5.bias ===
+    "BULLISH"
+  ) {
+
+    buyScore +=
+      6;
+
+    sellScore -=
+      6;
+
+    buyReasons.push(
+      "M5 execution structure bullish"
+    );
+
+  }
+
+
+  if (
+    structure.m5.bias ===
+    "BEARISH"
+  ) {
+
+    sellScore +=
+      6;
+
+    buyScore -=
+      6;
+
+    sellReasons.push(
+      "M5 execution structure bearish"
+    );
+
+  }
+
+
+  /* =====================================================
+     M15 CONFIRMATION
+  ===================================================== */
+
+  if (
+    structure.m15.bias ===
+    "BULLISH"
+  ) {
+
+    buyScore +=
+      10;
+
+    sellScore -=
+      10;
+
+    buyReasons.push(
+      "M15 confirmation bullish"
+    );
+
+  }
+
+
+  if (
+    structure.m15.bias ===
+    "BEARISH"
+  ) {
+
+    sellScore +=
+      10;
+
+    buyScore -=
+      10;
+
+    sellReasons.push(
+      "M15 confirmation bearish"
+    );
+
+  }
+
+
+  /* =====================================================
+     H1 CONFIRMATION
+  ===================================================== */
+
+  if (
+    structure.h1.bias ===
+    "BULLISH"
+  ) {
+
+    buyScore +=
+      10;
+
+    sellScore -=
+      10;
+
+    buyReasons.push(
+      "H1 confirmation bullish"
+    );
+
+  }
+
+
+  if (
+    structure.h1.bias ===
+    "BEARISH"
+  ) {
+
+    sellScore +=
+      10;
+
+    buyScore -=
+      10;
+
+    sellReasons.push(
+      "H1 confirmation bearish"
+    );
+
+  }
+
+
+  /* =====================================================
+     H4 CONTEXT
+
+     H4 does not block a trade.
+     It only adjusts confidence.
+  ===================================================== */
+
+  if (
+    structure.h4.bias ===
+    "BULLISH"
+  ) {
+
+    buyScore +=
+      3;
+
+    sellScore -=
+      2;
+
+    buyReasons.push(
+      "H4 context supports upside"
+    );
+
+  }
+
+
+  if (
+    structure.h4.bias ===
+    "BEARISH"
+  ) {
+
+    sellScore +=
+      3;
+
+    buyScore -=
+      2;
+
+    sellReasons.push(
+      "H4 context supports downside"
+    );
+
+  }
+
+
+  /* =====================================================
+     FOOTPRINT / DELTA
+  ===================================================== */
+
+  const delta =
+    footprint.last15?.deltaPct
+    ||
+    0;
+
+
+  if (
+    delta >=
+    8
+  ) {
+
+    const bonus =
+      clamp(
+        delta / 4,
+        2,
+        8
+      );
+
+
+    buyScore +=
+      bonus;
+
+    sellScore -=
+      bonus *
+      0.5;
+
+
+    buyReasons.push(
+
+      `15m delta proxy supports buyers (${round(delta, 1)}%)`
+
+    );
+
+  }
+
+
+  if (
+    delta <=
+    -8
+  ) {
+
+    const bonus =
+      clamp(
+        Math.abs(delta) / 4,
+        2,
+        8
+      );
+
+
+    sellScore +=
+      bonus;
+
+    buyScore -=
+      bonus *
+      0.5;
+
+
+    sellReasons.push(
+
+      `15m delta proxy supports sellers (${round(delta, 1)}%)`
+
+    );
+
+  }
+
+
+  /* =====================================================
+     DELTA DIVERGENCE
+  ===================================================== */
+
+  if (
+    footprint.divergence ===
+    "PRICE DOWN / DELTA UP"
+  ) {
+
+    buyScore +=
+      4;
+
+    buyReasons.push(
+      "Bullish price/delta divergence"
+    );
+
+  }
+
+
+  if (
+    footprint.divergence ===
+    "PRICE UP / DELTA DOWN"
+  ) {
+
+    sellScore +=
+      4;
+
+    sellReasons.push(
+      "Bearish price/delta divergence"
+    );
+
+  }
+
+
+  /* =====================================================
+     ABSORPTION
+  ===================================================== */
+
+  if (
+    footprint.absorption ===
+    "SELLING ABSORBED / TRAPPED SELLER RISK"
+  ) {
+
+    buyScore +=
+      5;
+
+    buyReasons.push(
+      "Selling absorption detected"
+    );
+
+  }
+
+
+  if (
+    footprint.absorption ===
+    "BUYING ABSORBED / TRAPPED BUYER RISK"
+  ) {
+
+    sellScore +=
+      5;
+
+    sellReasons.push(
+      "Buying absorption detected"
+    );
+
+  }
+
+
+  /* =====================================================
+     REGIME
+  ===================================================== */
+
+  if (
+    regime.trend ===
+    "BULLISH"
+  ) {
+
+    buyScore +=
+      5;
+
+    sellScore -=
+      3;
+
+    buyReasons.push(
+      "Market regime bullish"
+    );
+
+  }
+
+
+  if (
+    regime.trend ===
+    "BEARISH"
+  ) {
+
+    sellScore +=
+      5;
+
+    buyScore -=
+      3;
+
+    sellReasons.push(
+      "Market regime bearish"
+    );
+
+  }
+
+
+  /* =====================================================
+     SESSION LIQUIDITY
+
+     London / NY opening windows receive a small boost.
+  ===================================================== */
+
+  const activeMajorOpening =
+    sessions.find(
+
+      s =>
+
+        (
+          s.id ===
+          "london"
+
+          ||
+
+          s.id ===
+          "newyork"
+        )
+
+        &&
+
+        s.phase ===
+        "OPENING LIQUIDITY WINDOW"
+
+    );
+
+
+  if (
+    activeMajorOpening
+  ) {
+
+    buyScore +=
+      2;
+
+    sellScore +=
+      2;
+
+  }
+
+
+  /* =====================================================
+     DISTANCE PENALTY
+
+     Don't heavily reward liquidity that is extremely
+     far away from current price.
+  ===================================================== */
+
+  if (
+    buyPool?.distanceAtr >
+    2
+  ) {
+
+    const penalty =
+      Math.min(
+
+        12,
+
+        (
+          buyPool.distanceAtr -
+          2
+        )
+
+        *
+
+        5
+
+      );
+
+
+    buyScore -=
+      penalty;
+
+  }
+
+
+  if (
+    sellPool?.distanceAtr >
+    2
+  ) {
+
+    const penalty =
+      Math.min(
+
+        12,
+
+        (
+          sellPool.distanceAtr -
+          2
+        )
+
+        *
+
+        5
+
+      );
+
+
+    sellScore -=
+      penalty;
+
+  }
+
+
+  /* =====================================================
+     FINAL SCORES
+  ===================================================== */
+
+  buyScore =
+    clamp(
+      buyScore,
+      0,
+      100
+    );
+
+
+  sellScore =
+    clamp(
+      sellScore,
+      0,
+      100
+    );
+
+
+  /* =====================================================
+     CONFIRMATION RULES
+  ===================================================== */
+
+  const buyM15Confirmed =
+
+    !LIVE_SETTINGS
+      .requireM15Confirmation
+
+    ||
+
+    structure.m15.bias ===
+    "BULLISH";
+
+
+  const buyH1Confirmed =
+
+    !LIVE_SETTINGS
+      .requireH1Confirmation
+
+    ||
+
+    structure.h1.bias ===
+    "BULLISH";
+
+
+  const buyM5Allowed =
+
+    !LIVE_SETTINGS
+      .requireM5NotOpposite
+
+    ||
+
+    structure.m5.bias !==
+    "BEARISH";
+
+
+  const sellM15Confirmed =
+
+    !LIVE_SETTINGS
+      .requireM15Confirmation
+
+    ||
+
+    structure.m15.bias ===
+    "BEARISH";
+
+
+  const sellH1Confirmed =
+
+    !LIVE_SETTINGS
+      .requireH1Confirmation
+
+    ||
+
+    structure.h1.bias ===
+    "BEARISH";
+
+
+  const sellM5Allowed =
+
+    !LIVE_SETTINGS
+      .requireM5NotOpposite
+
+    ||
+
+    structure.m5.bias !==
+    "BULLISH";
+
+
+  const buyRequirements =
+
+    buyM15Confirmed
+
+    &&
+
+    buyH1Confirmed
+
+    &&
+
+    buyM5Allowed;
+
+
+  const sellRequirements =
+
+    sellM15Confirmed
+
+    &&
+
+    sellH1Confirmed
+
+    &&
+
+    sellM5Allowed;
+
+
+  const scoreGap =
+    Math.abs(
+      buyScore -
+      sellScore
+    );
+
+
+  let signal =
+    "WAIT";
+
+
+  let score =
+    Math.max(
+      buyScore,
+      sellScore
+    );
+
+
+  let selectedPool =
+    null;
+
+
+  let reasons =
+    [];
+
+
+  const blockedBy =
+    [];
+
+
+  /* =====================================================
+     BUY DECISION
+  ===================================================== */
+
+  if (
+
+    buyScore >=
+    LIVE_SETTINGS.minScore
+
+    &&
+
+    buyScore >
+    sellScore
+
+    &&
+
+    scoreGap >=
+    LIVE_SETTINGS.minimumScoreGap
+
+    &&
+
+    buyRequirements
+
+  ) {
+
+    signal =
+      "BUY";
+
+    score =
+      buyScore;
+
+    selectedPool =
+      buyPool;
+
+    reasons =
+      buyReasons;
+
+  }
+
+
+  /* =====================================================
+     SELL DECISION
+  ===================================================== */
+
+  if (
+
+    sellScore >=
+    LIVE_SETTINGS.minScore
+
+    &&
+
+    sellScore >
+    buyScore
+
+    &&
+
+    scoreGap >=
+    LIVE_SETTINGS.minimumScoreGap
+
+    &&
+
+    sellRequirements
+
+  ) {
+
+    signal =
+      "SELL";
+
+    score =
+      sellScore;
+
+    selectedPool =
+      sellPool;
+
+    reasons =
+      sellReasons;
+
+  }
+
+
+  /* =====================================================
+     WAIT REASONS
+  ===================================================== */
+
+  if (
+    signal ===
+    "WAIT"
+  ) {
+
+    if (
+
+      buyScore <
+      LIVE_SETTINGS.minScore
+
+      &&
+
+      sellScore <
+      LIVE_SETTINGS.minScore
+
+    ) {
+
+      blockedBy.push(
+
+        `Neither direction reached minimum score ${LIVE_SETTINGS.minScore}`
+
+      );
+
+    }
+
+
+    if (
+      scoreGap <
+      LIVE_SETTINGS.minimumScoreGap
+    ) {
+
+      blockedBy.push(
+
+        `BUY/SELL score gap below ${LIVE_SETTINGS.minimumScoreGap}`
+
+      );
+
+    }
+
+
+    if (
+
+      buyScore >
+      sellScore
+
+      &&
+
+      !buyM15Confirmed
+
+    ) {
+
+      blockedBy.push(
+        "BUY blocked: M15 is not bullish"
+      );
+
+    }
+
+
+    if (
+
+      buyScore >
+      sellScore
+
+      &&
+
+      !buyH1Confirmed
+
+    ) {
+
+      blockedBy.push(
+        "BUY blocked: H1 is not bullish"
+      );
+
+    }
+
+
+    if (
+
+      buyScore >
+      sellScore
+
+      &&
+
+      !buyM5Allowed
+
+    ) {
+
+      blockedBy.push(
+        "BUY blocked: M5 execution structure is bearish"
+      );
+
+    }
+
+
+    if (
+
+      sellScore >
+      buyScore
+
+      &&
+
+      !sellM15Confirmed
+
+    ) {
+
+      blockedBy.push(
+        "SELL blocked: M15 is not bearish"
+      );
+
+    }
+
+
+    if (
+
+      sellScore >
+      buyScore
+
+      &&
+
+      !sellH1Confirmed
+
+    ) {
+
+      blockedBy.push(
+        "SELL blocked: H1 is not bearish"
+      );
+
+    }
+
+
+    if (
+
+      sellScore >
+      buyScore
+
+      &&
+
+      !sellM5Allowed
+
+    ) {
+
+      blockedBy.push(
+        "SELL blocked: M5 execution structure is bullish"
+      );
+
+    }
+
+
+    reasons =
+
+      buyScore >=
+      sellScore
+
+        ?
+
+        buyReasons
+
+        :
+
+        sellReasons;
+
+  }
+
+
+  /* =====================================================
+     ENTRY
+
+     Use completed M5 close to stay aligned with the
+     backtest decision process.
+  ===================================================== */
+
+  const referenceEntry =
+    executionBar.close;
+
+
+  let entry =
+    null;
+
+
+  let stopLoss =
+    null;
+
+
+  let stopDistance =
+    null;
+
+
+  let tp1 =
+    null;
+
+
+  let tp2 =
+    null;
+
+
+  let riskReward1 =
+    null;
+
+
+  let riskReward2 =
+    null;
+
+
+  if (
+    signal !==
+    "WAIT"
+  ) {
+
+    entry =
+      referenceEntry;
+
+
+    stopLoss =
+      buildLiveStop({
+
+        side:
+          signal,
+
+        entry,
+
+        m5,
+
+        atr5
+
+      });
+
+
+    stopDistance =
+      Math.abs(
+
+        entry -
+        stopLoss
+
+      );
+
+
+    if (
+      signal ===
+      "BUY"
+    ) {
+
+      tp1 =
+
+        entry
+
+        +
+
+        stopDistance *
+        LIVE_SETTINGS.tp1R;
+
+
+      tp2 =
+
+        entry
+
+        +
+
+        stopDistance *
+        LIVE_SETTINGS.tp2R;
+
+    }
+
+
+    if (
+      signal ===
+      "SELL"
+    ) {
+
+      tp1 =
+
+        entry
+
+        -
+
+        stopDistance *
+        LIVE_SETTINGS.tp1R;
+
+
+      tp2 =
+
+        entry
+
+        -
+
+        stopDistance *
+        LIVE_SETTINGS.tp2R;
+
+    }
+
+
+    riskReward1 =
+      LIVE_SETTINGS.tp1R;
+
+
+    riskReward2 =
+      LIVE_SETTINGS.tp2R;
+
+  }
+
+
+  /* =====================================================
+     SIGNAL ID
+
+     Stable for each completed M5 setup.
+  ===================================================== */
+
+  const signalId =
+
+    signal ===
+    "WAIT"
+
+      ?
+
+      `XAU-M5-${executionBar.ts}-WAIT`
+
+      :
+
+      `XAU-M5-${executionBar.ts}-${signal}`;
+
+
+  const entryBarCloseTime =
+
+    executionBar.ts
+
+    +
+
+    5 *
+    60_000;
+
+
+  const expiresAt =
+
+    entryBarCloseTime
+
+    +
+
+    LIVE_SETTINGS.maxHoldMinutes *
+    60_000;
+
+
+  /* =====================================================
+     DISTANCE FROM LIVE PRICE TO REFERENCE ENTRY
+  ===================================================== */
+
+  const entryDrift =
+
+    signal ===
+    "WAIT"
+
+      ?
+
+      null
+
+      :
+
+      price -
+      entry;
+
+
+  const entryDriftAtr =
+
+    signal ===
+    "WAIT"
+
+      ?
+
+      null
+
+      :
+
+      (
+        price -
+        entry
+      )
+
+      /
+
+      Math.max(
+        atr5,
+        1e-9
+      );
+
+
+  let entryState =
+    "NO TRADE";
+
+
+  if (
+    signal !==
+    "WAIT"
+  ) {
+
+    if (
+      Math.abs(
+        entryDriftAtr
+      ) <=
+      0.20
+    ) {
+
+      entryState =
+        "ENTRY STILL CLOSE";
+
+    }
+
+    else if (
+      Math.abs(
+        entryDriftAtr
+      ) <=
+      0.50
+    ) {
+
+      entryState =
+        "ENTRY MOVED";
+
+    }
+
+    else {
+
+      entryState =
+        "PRICE TOO FAR FROM REFERENCE ENTRY";
+
+    }
+
+  }
+
+
+  return {
+
+    status:
+
+      signal ===
+      "WAIT"
+
+        ?
+
+        "WAITING"
+
+        :
+
+        "SIGNAL",
+
+
+    signal,
+
+
+    signalId,
+
+
+    score:
+      round(
+        score,
+        1
+      ),
+
+
+    minimumScore:
+      LIVE_SETTINGS.minScore,
+
+
+    scoreGap:
+      round(
+        scoreGap,
+        1
+      ),
+
+
+    buyScore:
+      round(
+        buyScore,
+        1
+      ),
+
+
+    sellScore:
+      round(
+        sellScore,
+        1
+      ),
+
+
+    generatedFromBar:
+      new Date(
+        executionBar.ts
+      )
+        .toISOString(),
+
+
+    generatedFromBarClose:
+      new Date(
+        entryBarCloseTime
+      )
+        .toISOString(),
+
+
+    marketPrice:
+      round(
+        price,
+        3
+      ),
+
+
+    entry:
+      round(
+        entry,
+        3
+      ),
+
+
+    referenceEntry:
+      round(
+        referenceEntry,
+        3
+      ),
+
+
+    entryState,
+
+
+    entryDrift:
+      round(
+        entryDrift,
+        3
+      ),
+
+
+    entryDriftAtr:
+      round(
+        entryDriftAtr,
+        2
+      ),
+
+
+    stopLoss:
+      round(
+        stopLoss,
+        3
+      ),
+
+
+    stopDistance:
+      round(
+        stopDistance,
+        3
+      ),
+
+
+    tp1:
+      round(
+        tp1,
+        3
+      ),
+
+
+    tp2:
+      round(
+        tp2,
+        3
+      ),
+
+
+    tp1R:
+      riskReward1,
+
+
+    tp2R:
+      riskReward2,
+
+
+    exits: {
+
+      tp1: {
+
+        percentage:
+          LIVE_SETTINGS.tp1ExitPct,
+
+        r:
+          LIVE_SETTINGS.tp1R,
+
+        price:
+          round(
+            tp1,
+            3
+          )
+
+      },
+
+      tp2: {
+
+        percentage:
+          LIVE_SETTINGS.tp2ExitPct,
+
+        r:
+          LIVE_SETTINGS.tp2R,
+
+        price:
+          round(
+            tp2,
+            3
+          )
+
+      }
+
+    },
+
+
+    account: {
+
+      balance:
+        round(
+          accountBalance,
+          2
+        ),
+
+      currency:
+        "ZAR",
+
+      riskPct:
+        LIVE_SETTINGS.riskPct,
+
+      maxRiskZar:
+        round(
+          riskAmount,
+          2
+        )
+
+    },
+
+
+    execution: {
+
+      timeframe:
+        "M5",
+
+      confirmation:
+        [
+          "M15",
+          "H1"
+        ],
+
+      spread:
+        LIVE_SETTINGS.spread,
+
+      slippage:
+        LIVE_SETTINGS.slippage,
+
+      maxHoldBars:
+        LIVE_SETTINGS.maxHoldBars,
+
+      maxHoldMinutes:
+        LIVE_SETTINGS.maxHoldMinutes,
+
+      maxTrades:
+        LIVE_SETTINGS.maxTrades,
+
+      expiresAt:
+
+        signal ===
+        "WAIT"
+
+          ?
+
+          null
+
+          :
+
+          new Date(
+            expiresAt
+          )
+            .toISOString()
+
+    },
+
+
+    confirmation: {
+
+      m5:
+        structure.m5.bias,
+
+      m15:
+        structure.m15.bias,
+
+      h1:
+        structure.h1.bias,
+
+      h4:
+        structure.h4.bias,
+
+      m15Required:
+        LIVE_SETTINGS
+          .requireM15Confirmation,
+
+      h1Required:
+        LIVE_SETTINGS
+          .requireH1Confirmation,
+
+      buyM15Confirmed,
+
+      buyH1Confirmed,
+
+      sellM15Confirmed,
+
+      sellH1Confirmed
+
+    },
+
+
+    liquidityTarget:
+
+      selectedPool
+
+        ?
+
+        {
+
+          name:
+            selectedPool.name,
+
+          side:
+            selectedPool.side,
+
+          type:
+            selectedPool.type,
+
+          level:
+            selectedPool.level,
+
+          likelihoodScore:
+            selectedPool.likelihoodScore,
+
+          likelihood:
+            selectedPool.likelihood,
+
+          projectedSweep:
+            selectedPool.projectedSweep
+
+        }
+
+        :
+
+        null,
+
+
+    reasons:
+      reasons.slice(
+        0,
+        10
+      ),
+
+
+    blockedBy,
+
+
+    note:
+
+      signal ===
+      "WAIT"
+
+        ?
+
+        `No valid trade until score >= ${LIVE_SETTINGS.minScore} with M15 + H1 confirmation.`
+
+        :
+
+        `Signal meets score ${LIVE_SETTINGS.minScore}+ with M15 + H1 confirmation. TP1 closes 50% at ${LIVE_SETTINGS.tp1R}R and TP2 closes the remaining 50% at ${LIVE_SETTINGS.tp2R}R.`
+
+  };
+
+}
+
+
+/* =========================================================
+   LIVE STOP LOSS
+========================================================= */
+
+function buildLiveStop({
+
+  side,
+
+  entry,
+
+  m5,
+
+  atr5
+
+}) {
+
+  const recent =
+    m5.slice(
+      -18
+    );
+
+
+  const minDistance =
+    atr5 *
+    LIVE_SETTINGS.minStopAtr;
+
+
+  const maxDistance =
+    atr5 *
+    LIVE_SETTINGS.maxStopAtr;
+
+
+  const buffer =
+    atr5 *
+    LIVE_SETTINGS.stopAtrBuffer;
+
+
+  if (
+    side ===
+    "BUY"
+  ) {
+
+    const structureLow =
+      Math.min(
+
+        ...recent.map(
+          b =>
+            b.low
+        )
+
+      );
+
+
+    let candidate =
+      structureLow -
+      buffer;
+
+
+    let distance =
+      entry -
+      candidate;
+
+
+    if (
+      !Number.isFinite(
+        distance
+      )
+
+      ||
+
+      distance <=
+      0
+
+    ) {
+
+      distance =
+        minDistance;
+
+    }
+
+
+    distance =
+      clamp(
+
+        distance,
+
+        minDistance,
+
+        maxDistance
+
+      );
+
+
+    return entry -
+      distance;
+
+  }
+
+
+  const structureHigh =
+    Math.max(
+
+      ...recent.map(
+        b =>
+          b.high
+      )
+
+    );
+
+
+  let candidate =
+    structureHigh +
+    buffer;
+
+
+  let distance =
+    candidate -
+    entry;
+
+
+  if (
+    !Number.isFinite(
+      distance
+    )
+
+    ||
+
+    distance <=
+    0
+
+  ) {
+
+    distance =
+      minDistance;
+
+  }
+
+
+  distance =
+    clamp(
+
+      distance,
+
+      minDistance,
+
+      maxDistance
+
+    );
+
+
+  return entry +
+    distance;
+
+}
+
+
+/* =========================================================
+   COMPLETED CANDLES
+========================================================= */
+
+function completedBars(
+  bars,
+  timeframeMinutes
+) {
+
+  const duration =
+    timeframeMinutes *
+    60_000;
+
+
+  const now =
+    Date.now();
+
+
+  return bars.filter(
+
+    b =>
+
+      b.ts +
+      duration <=
+      now
+
+  );
+
+}
+
+
+/* =========================================================
+   TWELVE DATA
+========================================================= */
 
 async function fetchTdSeries(
   interval,
@@ -927,7 +3116,7 @@ async function fetchTdSeries(
         headers: {
 
           "User-Agent":
-            "XAU-Liquidity-Intelligence/1.0"
+            "MKAYFX-XAU-Liquidity/2.0"
 
         }
 
@@ -953,7 +3142,8 @@ async function fetchTdSeries(
 
 
   if (
-    json.status === "error"
+    json.status ===
+    "error"
   ) {
 
     throw new Error(
@@ -994,9 +3184,8 @@ async function fetchTdSeries(
 
 
 /* =========================================================
-   PARSE DATA
+   PARSE TWELVE DATA
 ========================================================= */
-
 
 function parseTdSeries(
   json,
@@ -1082,7 +3271,10 @@ function parseTdSeries(
     )
 
     .sort(
-      (a, b) =>
+      (
+        a,
+        b
+      ) =>
         a.ts -
         b.ts
     );
@@ -1139,7 +3331,6 @@ function parseTdTime(
 /* =========================================================
    FRED MACRO
 ========================================================= */
-
 
 async function getMacroContext() {
 
@@ -1291,9 +3482,13 @@ async function getMacroContext() {
         s.id ===
         "DTWEXBGS"
 
-          ? 0.35
+          ?
 
-          : 0.08;
+          0.35
+
+          :
+
+          0.08;
 
 
       const component =
@@ -1324,9 +3519,13 @@ async function getMacroContext() {
         s.id ===
         "DFII10"
 
-          ? 1.3
+          ?
 
-          : 1;
+          1.3
+
+          :
+
+          1;
 
 
       weighted +=
@@ -1354,10 +3553,14 @@ async function getMacroContext() {
         ?
 
         clamp(
+
           weighted /
           weightSum,
+
           -100,
+
           100
+
         )
 
         :
@@ -1378,7 +3581,8 @@ async function getMacroContext() {
 
       bias:
 
-        score >= 20
+        score >=
+        20
 
           ?
 
@@ -1386,7 +3590,8 @@ async function getMacroContext() {
 
           :
 
-          score <= -20
+          score <=
+          -20
 
             ?
 
@@ -1396,10 +3601,8 @@ async function getMacroContext() {
 
             "MIXED / NEUTRAL",
 
-
       note:
         "FRED macro data can be delayed. Use it as context, not an execution feed.",
-
 
       series:
         values.map(
@@ -1499,9 +3702,7 @@ async function fetchFredSeries(
 
   const url =
     new URL(
-
       `${FRED_BASE}/series/observations`
-
     );
 
 
@@ -1574,7 +3775,8 @@ async function fetchFredSeries(
       .filter(
         x =>
 
-          x.value !== "."
+          x.value !==
+          "."
 
           &&
 
@@ -1592,7 +3794,8 @@ async function fetchFredSeries(
 
 
   if (
-    valid.length < 2
+    valid.length <
+    2
   ) {
 
     throw new Error(
@@ -1623,7 +3826,8 @@ async function fetchFredSeries(
 
   const changePct =
 
-    previous !== 0
+    previous !==
+    0
 
       ?
 
@@ -1668,7 +3872,6 @@ async function fetchFredSeries(
 /* =========================================================
    SESSION ENGINE
 ========================================================= */
-
 
 function buildSessionState(
   m1
@@ -1799,11 +4002,13 @@ function sessionActiveAt(
 
   if (
 
-    p.weekday === 0
+    p.weekday ===
+    0
 
     ||
 
-    p.weekday === 6
+    p.weekday ===
+    6
 
   ) {
 
@@ -1870,11 +4075,13 @@ function sessionPhase(
 
     const beforeOpen =
 
-      p.weekday >= 1
+      p.weekday >=
+      1
 
       &&
 
-      p.weekday <= 5
+      p.weekday <=
+      5
 
       &&
 
@@ -1897,7 +4104,8 @@ function sessionPhase(
 
 
     if (
-      minsToOpen <= 75
+      minsToOpen <=
+      75
     ) {
 
       return {
@@ -1956,7 +4164,8 @@ function sessionPhase(
 
 
   if (
-    elapsed <= 90
+    elapsed <=
+    90
   ) {
 
     return {
@@ -1977,7 +4186,8 @@ function sessionPhase(
 
   if (
     def.close -
-    minute <= 60
+    minute <=
+    60
   ) {
 
     return {
@@ -2038,7 +4248,8 @@ function nextSessionTransition(
 
   for (
 
-    let i = 1;
+    let i =
+      1;
 
     i <=
     8 *
@@ -2070,15 +4281,18 @@ function nextSessionTransition(
 
 
     if (
-      state !== previous
+      state !==
+      previous
     ) {
 
       return {
 
         type:
           state
-            ? "OPEN"
-            : "CLOSE",
+            ?
+            "OPEN"
+            :
+            "CLOSE",
 
         at:
           date
@@ -2098,8 +4312,10 @@ function nextSessionTransition(
 
     type:
       previous
-        ? "CLOSE"
-        : "OPEN",
+        ?
+        "CLOSE"
+        :
+        "OPEN",
 
     at:
       new Date(
@@ -2147,11 +4363,13 @@ function latestSessionRange(
 
     if (
 
-      p.weekday === 0
+      p.weekday ===
+      0
 
       ||
 
-      p.weekday === 6
+      p.weekday ===
+      6
 
     ) {
 
@@ -2229,7 +4447,8 @@ function latestSessionRange(
 
   const key =
     keys[
-      keys.length - 1
+      keys.length -
+      1
     ];
 
 
@@ -2250,19 +4469,23 @@ function latestSessionRange(
 
   const high =
     Math.max(
+
       ...rows.map(
         b =>
           b.high
       )
+
     );
 
 
   const low =
     Math.min(
+
       ...rows.map(
         b =>
           b.low
       )
+
     );
 
 
@@ -2272,7 +4495,8 @@ function latestSessionRange(
 
   const close =
     rows[
-      rows.length - 1
+      rows.length -
+      1
     ].close;
 
 
@@ -2307,13 +4531,18 @@ function latestSessionRange(
 
     midpoint:
       round(
+
         (
           high +
           low
         )
+
         /
+
         2,
+
         3
+
       ),
 
     range:
@@ -2415,13 +4644,26 @@ function zonedParts(
 
   const week = {
 
-    Sun: 0,
-    Mon: 1,
-    Tue: 2,
-    Wed: 3,
-    Thu: 4,
-    Fri: 5,
-    Sat: 6
+    Sun:
+      0,
+
+    Mon:
+      1,
+
+    Tue:
+      2,
+
+    Wed:
+      3,
+
+    Thu:
+      4,
+
+    Fri:
+      5,
+
+    Sat:
+      6
 
   };
 
@@ -2503,7 +4745,6 @@ function zonedClock(
    RESAMPLING
 ========================================================= */
 
-
 function resample(
   bars,
   minutes
@@ -2514,7 +4755,8 @@ function resample(
     60_000;
 
 
-  const out = [];
+  const out =
+    [];
 
 
   let current =
@@ -2594,9 +4836,9 @@ function resample(
 
       };
 
+    }
 
-    } else {
-
+    else {
 
       current.high =
         Math.max(
@@ -2659,10 +4901,47 @@ function resample(
    TIMEFRAME STATE
 ========================================================= */
 
-
 function timeframeState(
   bars
 ) {
+
+  if (
+    !bars.length
+  ) {
+
+    return {
+
+      bias:
+        "NEUTRAL",
+
+      score:
+        0,
+
+      close:
+        null,
+
+      ema20:
+        null,
+
+      ema50:
+        null,
+
+      ema200:
+        null,
+
+      rsi14:
+        50,
+
+      atr14:
+        null,
+
+      slope:
+        0
+
+    };
+
+  }
+
 
   const closes =
     bars.map(
@@ -2726,7 +5005,8 @@ function timeframeState(
 
   const last =
     bars[
-      bars.length - 1
+      bars.length -
+      1
     ];
 
 
@@ -2769,7 +5049,8 @@ function timeframeState(
 
       5,
 
-      e20.length - 1
+      e20.length -
+      1
 
     );
 
@@ -2793,7 +5074,14 @@ function timeframeState(
 
     &&
 
-    atrv > 0
+    Number.isFinite(
+      e20v
+    )
+
+    &&
+
+    atrv >
+    0
 
       ?
 
@@ -2816,13 +5104,23 @@ function timeframeState(
 
 
   if (
+
+    Number.isFinite(
+      e20v
+    )
+
+    &&
+
     last.close >
     e20v
+
   ) {
 
     score++;
 
-  } else {
+  }
+
+  else {
 
     score--;
 
@@ -2830,13 +5128,29 @@ function timeframeState(
 
 
   if (
+
+    Number.isFinite(
+      e20v
+    )
+
+    &&
+
+    Number.isFinite(
+      e50v
+    )
+
+    &&
+
     e20v >
     e50v
+
   ) {
 
     score++;
 
-  } else {
+  }
+
+  else {
 
     score--;
 
@@ -2844,13 +5158,29 @@ function timeframeState(
 
 
   if (
+
+    Number.isFinite(
+      e50v
+    )
+
+    &&
+
+    Number.isFinite(
+      e200v
+    )
+
+    &&
+
     e50v >
     e200v
+
   ) {
 
     score++;
 
-  } else {
+  }
+
+  else {
 
     score--;
 
@@ -2904,7 +5234,8 @@ function timeframeState(
 
 
   if (
-    score >= 2
+    score >=
+    2
   ) {
 
     bias =
@@ -2914,7 +5245,8 @@ function timeframeState(
 
 
   if (
-    score <= -2
+    score <=
+    -2
   ) {
 
     bias =
@@ -2984,7 +5316,6 @@ function timeframeState(
    EMA
 ========================================================= */
 
-
 function ema(
   values,
   period
@@ -3025,8 +5356,12 @@ function ema(
 
 
   for (
-    let i = 1;
-    i < values.length;
+    let i =
+      1;
+
+    i <
+      values.length;
+
     i++
   ) {
 
@@ -3058,7 +5393,6 @@ function ema(
 /* =========================================================
    RSI
 ========================================================= */
-
 
 function rsi(
   values,
@@ -3093,8 +5427,12 @@ function rsi(
 
 
   for (
-    let i = 1;
-    i <= period;
+    let i =
+      1;
+
+    i <=
+      period;
+
     i++
   ) {
 
@@ -3132,7 +5470,8 @@ function rsi(
 
   out[period] =
 
-    averageLoss === 0
+    averageLoss ===
+    0
 
       ?
 
@@ -3159,7 +5498,7 @@ function rsi(
       1;
 
     i <
-    values.length;
+      values.length;
 
     i++
 
@@ -3217,7 +5556,8 @@ function rsi(
 
     out[i] =
 
-      averageLoss === 0
+      averageLoss ===
+      0
 
         ?
 
@@ -3248,7 +5588,6 @@ function rsi(
    ATR
 ========================================================= */
 
-
 function atr(
   bars,
   period = 14
@@ -3263,13 +5602,12 @@ function atr(
       ) => {
 
         if (
-          i === 0
+          i ===
+          0
         ) {
 
-          return (
-            b.high -
-            b.low
-          );
+          return b.high -
+            b.low;
 
         }
 
@@ -3326,8 +5664,12 @@ function atr(
 
 
   for (
-    let i = 0;
-    i < period;
+    let i =
+      0;
+
+    i <
+      period;
+
     i++
   ) {
 
@@ -3355,7 +5697,7 @@ function atr(
       period;
 
     i <
-    trueRanges.length;
+      trueRanges.length;
 
     i++
 
@@ -3395,7 +5737,6 @@ function atr(
 /* =========================================================
    PREVIOUS DAY / WEEK
 ========================================================= */
-
 
 function buildDayLevels(
   d1,
@@ -3542,7 +5883,6 @@ function buildDayLevels(
 
   return {
 
-
     previousDay:
 
       previousDay
@@ -3610,7 +5950,6 @@ function buildDayLevels(
                   1e-9
 
                 )
-
               )
 
               *
@@ -3773,7 +6112,9 @@ function isoWeekKey(
 
   return (
 
-    `${d.getUTCFullYear()}-W` +
+    `${d.getUTCFullYear()}-W`
+
+    +
 
     `${pad2(week)}`
 
@@ -3785,7 +6126,6 @@ function isoWeekKey(
 /* =========================================================
    SWING LEVELS
 ========================================================= */
-
 
 function detectSwingLevels(
   bars,
@@ -3818,8 +6158,8 @@ function detectSwingLevels(
       start;
 
     i <
-    bars.length -
-    pivot;
+      bars.length -
+      pivot;
 
     i++
 
@@ -3840,15 +6180,16 @@ function detectSwingLevels(
         pivot;
 
       j <=
-      i +
-      pivot;
+        i +
+        pivot;
 
       j++
 
     ) {
 
       if (
-        j === i
+        j ===
+        i
       ) {
 
         continue;
@@ -3918,7 +6259,6 @@ function detectSwingLevels(
 
   return {
 
-
     highs:
       highs
 
@@ -3980,9 +6320,8 @@ function detectSwingLevels(
 
 
 /* =========================================================
-   EQUAL HIGH / LOW LIQUIDITY
+   EQUAL HIGH / LOWS
 ========================================================= */
-
 
 function detectEqualLevels(
   bars,
@@ -3999,7 +6338,9 @@ function detectEqualLevels(
     detectSwingLevels(
 
       recent,
+
       2,
+
       recent.length
 
     );
@@ -4061,10 +6402,11 @@ function clusterEqual(
 
   for (
 
-    let i = 0;
+    let i =
+      0;
 
     i <
-    levels.length;
+      levels.length;
 
     i++
 
@@ -4097,7 +6439,7 @@ function clusterEqual(
         i + 1;
 
       j <
-      levels.length;
+        levels.length;
 
       j++
 
@@ -4147,7 +6489,8 @@ function clusterEqual(
 
 
     if (
-      group.length >= 2
+      group.length >=
+      2
     ) {
 
       clusters.push({
@@ -4198,7 +6541,6 @@ function clusterEqual(
    FAIR VALUE GAPS
 ========================================================= */
 
-
 function detectFvgs(
   bars,
   price,
@@ -4226,7 +6568,7 @@ function detectFvgs(
       start;
 
     i <
-    bars.length;
+      bars.length;
 
     i++
 
@@ -4241,8 +6583,6 @@ function detectFvgs(
     const third =
       bars[i];
 
-
-    /* Bullish gap */
 
     if (
       third.low >
@@ -4324,8 +6664,6 @@ function detectFvgs(
 
     }
 
-
-    /* Bearish gap */
 
     if (
       third.high <
@@ -4413,7 +6751,10 @@ function detectFvgs(
   return out
 
     .sort(
-      (a, b) =>
+      (
+        a,
+        b
+      ) =>
         a.distance -
         b.distance
     )
@@ -4427,26 +6768,8 @@ function detectFvgs(
 
 
 /* =========================================================
-   FOOTPRINT STYLE PROXY
-
-   IMPORTANT
-   ---------
-   This is NOT a true exchange footprint.
-
-   True footprint requires actual aggressor bid/ask
-   transaction data.
-
-   This model estimates delta using:
-
-   - provider volume if available
-   - candle location
-   - candle direction
-   - wick structure
-   - relative range
-
-   If provider volume is missing, range activity is used.
+   FOOTPRINT PROXY
 ========================================================= */
-
 
 function buildFootprint(
   m1,
@@ -4470,7 +6793,8 @@ function buildFootprint(
 
         &&
 
-        b.volume > 0
+        b.volume >
+        0
 
     );
 
@@ -4518,9 +6842,7 @@ function buildFootprint(
 
   const rows =
     recent.map(
-
       b => {
-
 
         const range =
           Math.max(
@@ -4681,7 +7003,6 @@ function buildFootprint(
         };
 
       }
-
     );
 
 
@@ -4812,7 +7133,6 @@ function buildFootprint(
 
 
     latestBars:
-
       rows
 
         .slice(
@@ -4968,7 +7288,8 @@ function detectDeltaDivergence(
 ) {
 
   if (
-    rows.length < 10
+    rows.length <
+    10
   ) {
 
     return "NONE";
@@ -5001,7 +7322,8 @@ function detectDeltaDivergence(
   const priceChange =
 
     second[
-      second.length - 1
+      second.length -
+      1
     ].price
 
     -
@@ -5022,11 +7344,13 @@ function detectDeltaDivergence(
 
   if (
 
-    priceChange > 0
+    priceChange >
+    0
 
     &&
 
-    deltaChange < 0
+    deltaChange <
+    0
 
   ) {
 
@@ -5037,11 +7361,13 @@ function detectDeltaDivergence(
 
   if (
 
-    priceChange < 0
+    priceChange <
+    0
 
     &&
 
-    deltaChange > 0
+    deltaChange >
+    0
 
   ) {
 
@@ -5058,7 +7384,6 @@ function detectDeltaDivergence(
 /* =========================================================
    ABSORPTION PROXY
 ========================================================= */
-
 
 function detectAbsorption(
   bars,
@@ -5106,10 +7431,11 @@ function detectAbsorption(
 
   for (
 
-    let i = 0;
+    let i =
+      0;
 
     i <
-    rows.length;
+      rows.length;
 
     i++
 
@@ -5207,7 +7533,8 @@ function detectAbsorption(
 
 
   if (
-    highAbsorb >= 2
+    highAbsorb >=
+    2
   ) {
 
     return "BUYING ABSORBED / TRAPPED BUYER RISK";
@@ -5216,7 +7543,8 @@ function detectAbsorption(
 
 
   if (
-    lowAbsorb >= 2
+    lowAbsorb >=
+    2
   ) {
 
     return "SELLING ABSORBED / TRAPPED SELLER RISK";
@@ -5230,9 +7558,8 @@ function detectAbsorption(
 
 
 /* =========================================================
-   FOOTPRINT AROUND SPECIFIC LIQUIDITY LEVEL
+   FOOTPRINT AT LIQUIDITY LEVEL
 ========================================================= */
-
 
 function footprintAtLevel(
   level,
@@ -5392,7 +7719,8 @@ function footprintAtLevel(
 
       &&
 
-      b.volume > 0
+      b.volume >
+      0
 
         ?
 
@@ -5460,7 +7788,8 @@ function footprintAtLevel(
 
     if (
 
-      side === "HIGH"
+      side ===
+      "HIGH"
 
       &&
 
@@ -5482,7 +7811,8 @@ function footprintAtLevel(
 
     if (
 
-      side === "LOW"
+      side ===
+      "LOW"
 
       &&
 
@@ -5526,7 +7856,8 @@ function footprintAtLevel(
 
   const last =
     recent[
-      recent.length - 1
+      recent.length -
+      1
     ];
 
 
@@ -5535,7 +7866,8 @@ function footprintAtLevel(
 
 
   if (
-    side === "HIGH"
+    side ===
+    "HIGH"
   ) {
 
     if (
@@ -5572,7 +7904,8 @@ function footprintAtLevel(
     }
 
     else if (
-      deltaPct > 20
+      deltaPct >
+      20
     ) {
 
       state =
@@ -5584,7 +7917,8 @@ function footprintAtLevel(
 
 
   if (
-    side === "LOW"
+    side ===
+    "LOW"
   ) {
 
     if (
@@ -5621,7 +7955,8 @@ function footprintAtLevel(
     }
 
     else if (
-      deltaPct < -20
+      deltaPct <
+      -20
     ) {
 
       state =
@@ -5655,7 +7990,6 @@ function footprintAtLevel(
 /* =========================================================
    VWAP
 ========================================================= */
-
 
 function buildVwap(
   m1
@@ -5696,7 +8030,8 @@ function buildVwap(
 
     source.filter(
       b =>
-        b.volume > 0
+        b.volume >
+        0
     ).length
 
     >=
@@ -5809,7 +8144,8 @@ function buildVwap(
         :
 
         source[
-          source.length - 1
+          source.length -
+          1
         ].close,
 
 
@@ -5833,7 +8169,6 @@ function buildVwap(
 /* =========================================================
    HISTORICAL ASIA SWEEP MODEL
 ========================================================= */
-
 
 function buildSweepHistory(
   m5
@@ -5861,11 +8196,13 @@ function buildSweepHistory(
 
     if (
 
-      p.weekday === 0
+      p.weekday ===
+      0
 
       ||
 
-      p.weekday === 6
+      p.weekday ===
+      6
 
     ) {
 
@@ -5964,7 +8301,10 @@ function buildSweepHistory(
           key
         )
         .sort(
-          (a, b) =>
+          (
+            a,
+            b
+          ) =>
             a.ts -
             b.ts
         );
@@ -6014,7 +8354,8 @@ function buildSweepHistory(
 
 
     if (
-      asia.length < 80
+      asia.length <
+      80
     ) {
 
       continue;
@@ -6046,7 +8387,8 @@ function buildSweepHistory(
 
     const endTs =
       asia[
-        asia.length - 1
+        asia.length -
+        1
       ].ts;
 
 
@@ -6074,7 +8416,8 @@ function buildSweepHistory(
 
 
     if (
-      after.length < 12
+      after.length <
+      12
     ) {
 
       continue;
@@ -6175,7 +8518,8 @@ function analyzeSweepEvent(
 
       b =>
 
-        side === "HIGH"
+        side ===
+        "HIGH"
 
           ?
 
@@ -6191,7 +8535,8 @@ function analyzeSweepEvent(
 
 
   if (
-    firstIndex < 0
+    firstIndex <
+    0
   ) {
 
     return null;
@@ -6254,10 +8599,11 @@ function analyzeSweepEvent(
 
   for (
 
-    let i = 0;
+    let i =
+      0;
 
     i <
-    segment.length;
+      segment.length;
 
     i++
 
@@ -6269,7 +8615,8 @@ function analyzeSweepEvent(
 
     const ext =
 
-      side === "HIGH"
+      side ===
+      "HIGH"
 
         ?
 
@@ -6304,12 +8651,14 @@ function analyzeSweepEvent(
 
 
     if (
-      i > 0
+      i >
+      0
     ) {
 
       const backInside =
 
-        side === "HIGH"
+        side ===
+        "HIGH"
 
           ?
 
@@ -6349,7 +8698,8 @@ function analyzeSweepEvent(
 
     extensionAtr:
 
-      atrAt > 0
+      atrAt >
+      0
 
         ?
 
@@ -6529,7 +8879,6 @@ function summarizeSweepEvents(
 /* =========================================================
    CREATE LIQUIDITY POOLS
 ========================================================= */
-
 
 function buildLiquidityPools({
 
@@ -6756,9 +9105,9 @@ function buildLiquidityPools({
 
   for (
     const eqh of
-    equalLevels.highs
-    ||
-    []
+      equalLevels.highs
+      ||
+      []
   ) {
 
     add(
@@ -6780,9 +9129,9 @@ function buildLiquidityPools({
 
   for (
     const eql of
-    equalLevels.lows
-    ||
-    []
+      equalLevels.lows
+      ||
+      []
   ) {
 
     add(
@@ -6805,15 +9154,15 @@ function buildLiquidityPools({
   for (
     const swing of
 
-    (
-      swingLevels.highs
-      ||
-      []
-    )
-      .slice(
-        0,
-        3
+      (
+        swingLevels.highs
+        ||
+        []
       )
+        .slice(
+          0,
+          3
+        )
   ) {
 
     add(
@@ -6836,15 +9185,15 @@ function buildLiquidityPools({
   for (
     const swing of
 
-    (
-      swingLevels.lows
-      ||
-      []
-    )
-      .slice(
-        0,
-        3
+      (
+        swingLevels.lows
+        ||
+        []
       )
+        .slice(
+          0,
+          3
+        )
   ) {
 
     add(
@@ -6883,9 +9232,8 @@ function buildLiquidityPools({
 
 
 /* =========================================================
-   MERGE CONFLUENT LIQUIDITY
+   MERGE LIQUIDITY
 ========================================================= */
-
 
 function mergeNearbyPools(
   pools,
@@ -6896,7 +9244,10 @@ function mergeNearbyPools(
     pools
       .slice()
       .sort(
-        (a, b) =>
+        (
+          a,
+          b
+        ) =>
           a.level -
           b.level
       );
@@ -6912,7 +9263,8 @@ function mergeNearbyPools(
 
     const last =
       out[
-        out.length - 1
+        out.length -
+        1
       ];
 
 
@@ -6941,10 +9293,8 @@ function mergeNearbyPools(
     ) {
 
       if (
-
         pool.importance >
         last.importance
-
       ) {
 
         last.aliases.push(
@@ -6963,8 +9313,9 @@ function mergeNearbyPools(
         last.importance =
           pool.importance;
 
+      }
 
-      } else {
+      else {
 
         last.aliases.push(
           pool.name
@@ -6984,8 +9335,9 @@ function mergeNearbyPools(
 
         2;
 
+    }
 
-    } else {
+    else {
 
       out.push({
 
@@ -7009,7 +9361,6 @@ function mergeNearbyPools(
 /* =========================================================
    LIQUIDITY TARGET SCORING
 ========================================================= */
-
 
 function enrichPool({
 
@@ -7043,6 +9394,7 @@ function enrichPool({
 
 
   const distanceAtr =
+
     distance
 
     /
@@ -7334,15 +9686,6 @@ function enrichPool({
     );
 
 
-  /* =====================================================
-     HISTORICAL OVERSHOOT
-
-     Asia pools use actual recent Asia sweep measurements.
-
-     Other pools use ATR-based default estimates.
-  ===================================================== */
-
-
   const historical =
 
     pool.type ===
@@ -7393,15 +9736,14 @@ function enrichPool({
     0.36;
 
 
-  /* Not enough history? use conservative defaults */
-
   if (
 
     historical
 
     &&
 
-    historical.sweeps < 3
+    historical.sweeps <
+    3
 
   ) {
 
@@ -7417,15 +9759,6 @@ function enrichPool({
       0.36;
 
   }
-
-
-  /* =====================================================
-     FLOW ADJUSTMENT
-
-     Acceptance = deeper expected penetration.
-
-     Rejection / absorption = shallower expected raid.
-  ===================================================== */
 
 
   let depthMultiplier =
@@ -7554,7 +9887,8 @@ function enrichPool({
 
 
   if (
-    medianAtr < 0.12
+    medianAtr <
+    0.12
   ) {
 
     raidStyle =
@@ -7564,7 +9898,8 @@ function enrichPool({
 
 
   if (
-    medianAtr > 0.32
+    medianAtr >
+    0.32
   ) {
 
     raidStyle =
@@ -7583,11 +9918,6 @@ function enrichPool({
       "ACCEPTANCE / DEEP RAID RISK";
 
   }
-
-
-  /* =====================================================
-     REASONS
-  ===================================================== */
 
 
   const reasons =
@@ -7609,7 +9939,8 @@ function enrichPool({
 
 
   if (
-    directionalPressure > 0.2
+    directionalPressure >
+    0.2
   ) {
 
     reasons.push(
@@ -7622,7 +9953,8 @@ function enrichPool({
 
 
   if (
-    directionalPressure < -0.2
+    directionalPressure <
+    -0.2
   ) {
 
     reasons.push(
@@ -7635,7 +9967,8 @@ function enrichPool({
 
 
   if (
-    activeSessionRisk >= 10
+    activeSessionRisk >=
+    10
   ) {
 
     reasons.push(
@@ -7650,8 +9983,7 @@ function enrichPool({
   if (
     Math.abs(
       delta
-    )
-    >=
+    ) >=
     15
   ) {
 
@@ -7724,7 +10056,8 @@ function enrichPool({
 
     likelihood:
 
-      likelihoodScore >= 75
+      likelihoodScore >=
+      75
 
         ?
 
@@ -7732,7 +10065,8 @@ function enrichPool({
 
         :
 
-        likelihoodScore >= 58
+        likelihoodScore >=
+        58
 
           ?
 
@@ -7821,7 +10155,6 @@ function enrichPool({
 /* =========================================================
    TRAP WINDOWS
 ========================================================= */
-
 
 function buildTrapWindows({
 
@@ -8002,7 +10335,8 @@ function buildTrapWindows({
 
 
     if (
-      score > 0
+      score >
+      0
     ) {
 
       windows.push({
@@ -8028,7 +10362,8 @@ function buildTrapWindows({
 
         risk:
 
-          score >= 75
+          score >=
+          75
 
             ?
 
@@ -8036,7 +10371,8 @@ function buildTrapWindows({
 
             :
 
-            score >= 55
+            score >=
+            55
 
               ?
 
@@ -8133,7 +10469,10 @@ function buildTrapWindows({
   return windows
 
     .sort(
-      (a, b) =>
+      (
+        a,
+        b
+      ) =>
         b.score -
         a.score
     )
@@ -8149,7 +10488,6 @@ function buildTrapWindows({
 /* =========================================================
    MARKET REGIME
 ========================================================= */
-
 
 function buildRegime({
 
@@ -8203,7 +10541,9 @@ function buildRegime({
   const biases = [
 
     structure.m5.bias,
+
     structure.m15.bias,
+
     structure.h1.bias
 
   ];
@@ -8227,7 +10567,8 @@ function buildRegime({
 
   const trend =
 
-    bullish >= 2
+    bullish >=
+    2
 
       ?
 
@@ -8235,7 +10576,8 @@ function buildRegime({
 
       :
 
-      bearish >= 2
+      bearish >=
+      2
 
         ?
 
@@ -8271,7 +10613,8 @@ function buildRegime({
 
   const orderFlow =
 
-    footprint.last15.deltaPct >= 18
+    footprint.last15.deltaPct >=
+    18
 
       ?
 
@@ -8279,7 +10622,8 @@ function buildRegime({
 
       :
 
-      footprint.last15.deltaPct <= -18
+      footprint.last15.deltaPct <=
+      -18
 
         ?
 
@@ -8336,7 +10680,6 @@ function buildRegime({
 /* =========================================================
    UTILITIES
 ========================================================= */
-
 
 function num(
   value
@@ -8505,7 +10848,10 @@ function percentile(
       .slice()
 
       .sort(
-        (a, b) =>
+        (
+          a,
+          b
+        ) =>
           a -
           b
       );
@@ -8521,7 +10867,8 @@ function percentile(
 
 
   if (
-    arr.length === 1
+    arr.length ===
+    1
   ) {
 
     return arr[0];
@@ -8586,7 +10933,8 @@ function lastFinite(
       values.length -
       1;
 
-    i >= 0;
+    i >=
+      0;
 
     i--
 
