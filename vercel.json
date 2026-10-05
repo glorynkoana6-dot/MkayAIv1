@@ -1,8 +1,18 @@
 {
-  "version": 2,
-  "routes": [
-    { "src": "/api/gold", "dest": "/api/gold.js" },
-    { "src": "/api/price", "dest": "/api/price.js" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "functions": {
+    "api/xau.js": {
+      "maxDuration": 30
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    }
   ]
 }
