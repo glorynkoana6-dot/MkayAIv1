@@ -1,71 +1,146 @@
 /* ============================================================
-   MKAYFX BTC LIQUIDITY INTELLIGENCE ENGINE V2.1
-   ------------------------------------------------------------
-   FILE:
+   MKAYFX BTC LIQUIDITY INTELLIGENCE ENGINE V3
+   ============================================================
+
+   FILE
+   ----
    /api/btc.js
 
-   FIXES
-   ------------------------------------------------------------
-   - Prevents [object Object] errors
-   - Cleaner Coinbase error handling
-   - Safer JSON parsing
-   - Safer candle fetching
-   - Safer frontend-compatible error response
-   - Coinbase-only BTC-USD
+   MARKET
+   ------
+   BTC-USD
+
+   SOURCE
+   ------
+   Coinbase Exchange public REST API
+
+   IMPORTANT V3 CHANGES
+   --------------------
+   - Removed massive Level 2 order-book download
+   - Uses Level 1 best bid / ask instead
+   - Coinbase recent trades provide delta / CVD
+   - Optional endpoints fail gracefully
+   - Lower Vercel memory usage
+   - Lower Coinbase request load
+   - Cleaner error responses
+   - 5 core requests only
+
+   TIMEFRAMES
+   ----------
+   M5  = Coinbase
+   M15 = built from M5
+   H1  = Coinbase
+   H4  = built from H1
+   D1  = Coinbase
+
 ============================================================ */
+
 
 const PRODUCT =
   "BTC-USD";
 
-const COINBASE =
+
+const BASE_URL =
   "https://api.exchange.coinbase.com";
 
 
+/* ============================================================
+   SETTINGS
+============================================================ */
+
 const SETTINGS = {
 
-  M5_GRANULARITY: 300,
-  H1_GRANULARITY: 3600,
-  D1_GRANULARITY: 86400,
+  M5_GRANULARITY:
+    300,
 
-  M5_CANDLES: 280,
-  H1_CANDLES: 280,
-  D1_CANDLES: 40,
+  H1_GRANULARITY:
+    3600,
 
-  ATR_PERIOD: 14,
-  RSI_PERIOD: 14,
+  D1_GRANULARITY:
+    86400,
 
-  EMA_FAST: 20,
-  EMA_MID: 50,
-  EMA_SLOW: 200,
 
-  SWING_STRENGTH: 2,
-  EQUAL_LEVEL_ATR_TOLERANCE: 0.12,
+  M5_COUNT:
+    260,
 
-  ROUND_NUMBER_STEP: 1000,
-  MAJOR_ROUND_NUMBER_STEP: 5000,
+  H1_COUNT:
+    260,
 
-  TRACKING_SCORE: 35,
-  ARMED_SCORE: 55,
+  D1_COUNT:
+    35,
 
-  SWEEP_MIN_ATR: 0.04,
-  SWEEP_MAX_ATR: 0.45,
 
-  SIGNAL_SCORE: 70,
-  SIGNAL_GAP: 7,
+  ATR_PERIOD:
+    14,
 
-  TP1_R: 1.5,
-  TP2_R: 2.5,
+  RSI_PERIOD:
+    14,
 
-  STOP_ATR: 0.55,
 
-  ORDER_BOOK_LEVELS: 30,
-  VOLUME_LOOKBACK: 20
+  EMA_FAST:
+    20,
+
+  EMA_MID:
+    50,
+
+  EMA_SLOW:
+    200,
+
+
+  SWING_STRENGTH:
+    2,
+
+
+  EQUAL_ATR_TOLERANCE:
+    0.12,
+
+
+  ROUND_STEP:
+    1000,
+
+  MAJOR_ROUND_STEP:
+    5000,
+
+
+  TRACKING_SCORE:
+    35,
+
+  ARMED_SCORE:
+    55,
+
+
+  SIGNAL_SCORE:
+    68,
+
+  SIGNAL_GAP:
+    6,
+
+
+  STOP_ATR:
+    0.55,
+
+  TP1_R:
+    1.5,
+
+  TP2_R:
+    2.5,
+
+
+  SWEEP_MIN_ATR:
+    0.04,
+
+  SWEEP_MAX_ATR:
+    0.45,
+
+
+  VOLUME_LOOKBACK:
+    20
 
 };
 
 
 /* ============================================================
-   HELPERS
+   BASIC HELPERS
 ============================================================ */
 
 function num(
@@ -74,9 +149,14 @@ function num(
 ) {
 
   const n =
-    Number(value);
+    Number(
+      value
+    );
 
-  return Number.isFinite(n)
+
+  return Number.isFinite(
+    n
+  )
     ? n
     : fallback;
 
@@ -90,39 +170,42 @@ function round(
 
   if (
     value === null ||
-    value === undefined ||
-    !Number.isFinite(Number(value))
+    value === undefined
   ) {
 
     return null;
 
   }
 
-  const p =
-    10 ** digits;
+
+  const n =
+    Number(
+      value
+    );
+
+
+  if (
+    !Number.isFinite(
+      n
+    )
+  ) {
+
+    return null;
+
+  }
+
+
+  const power =
+    10 **
+    digits;
+
 
   return (
     Math.round(
-      Number(value) *
-      p
-    ) / p
-  );
-
-}
-
-
-function clamp(
-  value,
-  min,
-  max
-) {
-
-  return Math.max(
-    min,
-    Math.min(
-      max,
-      value
-    )
+      n *
+      power
+    ) /
+    power
   );
 
 }
@@ -132,16 +215,26 @@ function average(
   values
 ) {
 
-  if (!values.length) {
+  if (
+    !Array.isArray(
+      values
+    ) ||
+    !values.length
+  ) {
 
     return 0;
 
   }
 
+
   return (
     values.reduce(
-      (a, b) =>
-        a + b,
+      (
+        total,
+        value
+      ) =>
+        total +
+        value,
       0
     ) /
     values.length
@@ -150,8 +243,25 @@ function average(
 }
 
 
+function clamp(
+  value,
+  minimum,
+  maximum
+) {
+
+  return Math.max(
+    minimum,
+    Math.min(
+      maximum,
+      value
+    )
+  );
+
+}
+
+
 /* ============================================================
-   ERROR STRING NORMALIZER
+   ERROR CONVERTER
 ============================================================ */
 
 function errorText(
@@ -185,7 +295,7 @@ function errorText(
     return (
       error.message ||
       error.name ||
-      "Unknown error"
+      "Unknown Error"
     );
 
   }
@@ -226,7 +336,7 @@ function errorText(
 
     catch {
 
-      return "Unknown object error";
+      return "Object error";
 
     }
 
@@ -241,12 +351,12 @@ function errorText(
 
 
 /* ============================================================
-   HTTP
+   HTTP FETCH
 ============================================================ */
 
 async function getJSON(
   url,
-  timeoutMs = 9000
+  timeoutMs = 7000
 ) {
 
   const controller =
@@ -255,8 +365,11 @@ async function getJSON(
 
   const timer =
     setTimeout(
-      () =>
-        controller.abort(),
+      () => {
+
+        controller.abort();
+
+      },
       timeoutMs
     );
 
@@ -277,12 +390,9 @@ async function getJSON(
               "application/json",
 
             "User-Agent":
-              "MKAYFX-BTC-V2.1"
+              "MKAYFX-BTC-V3"
 
           },
-
-          cache:
-            "no-store",
 
           signal:
             controller.signal
@@ -291,18 +401,21 @@ async function getJSON(
       );
 
 
-    const rawText =
+    const text =
       await response.text();
 
 
-    let data = null;
+    let data =
+      null;
 
 
     try {
 
       data =
-        rawText
-          ? JSON.parse(rawText)
+        text
+          ? JSON.parse(
+            text
+          )
           : null;
 
     }
@@ -310,7 +423,7 @@ async function getJSON(
     catch {
 
       throw new Error(
-        `Coinbase returned invalid JSON. HTTP ${response.status}. Response: ${rawText.slice(0, 180)}`
+        `Invalid Coinbase JSON (${response.status})`
       );
 
     }
@@ -341,23 +454,6 @@ async function getJSON(
 
         message =
           data.error;
-
-      }
-
-      else if (
-        data
-      ) {
-
-        try {
-
-          message =
-            JSON.stringify(
-              data
-            );
-
-        }
-
-        catch {}
 
       }
 
@@ -409,13 +505,52 @@ async function getJSON(
 
 
 /* ============================================================
+   SAFE OPTIONAL FETCH
+
+   Optional requests return fallback rather
+   than killing the whole engine.
+============================================================ */
+
+async function safeFetch(
+  promise,
+  fallback
+) {
+
+  try {
+
+    return await promise;
+
+  }
+
+  catch (
+    error
+  ) {
+
+    console.error(
+      "OPTIONAL COINBASE ERROR:",
+      errorText(
+        error
+      )
+    );
+
+
+    return fallback;
+
+  }
+
+}
+
+
+/* ============================================================
    COINBASE ENDPOINTS
 ============================================================ */
 
 async function fetchTicker() {
 
   return getJSON(
-    `${COINBASE}/products/${PRODUCT}/ticker`
+
+    `${BASE_URL}/products/${PRODUCT}/ticker`
+
   );
 
 }
@@ -424,16 +559,20 @@ async function fetchTicker() {
 async function fetchTrades() {
 
   return getJSON(
-    `${COINBASE}/products/${PRODUCT}/trades`
+
+    `${BASE_URL}/products/${PRODUCT}/trades`
+
   );
 
 }
 
 
-async function fetchOrderBook() {
+async function fetchBestBook() {
 
   return getJSON(
-    `${COINBASE}/products/${PRODUCT}/book?level=2`
+
+    `${BASE_URL}/products/${PRODUCT}/book?level=1`
+
   );
 
 }
@@ -443,10 +582,23 @@ async function fetchOrderBook() {
    CANDLES
 ============================================================ */
 
-async function fetchCandles({
+async function fetchCandles(
   granularity,
-  count
-}) {
+  requestedCount
+) {
+
+  const count =
+    Math.min(
+      Math.max(
+        Number(
+          requestedCount
+        ) ||
+        50,
+        10
+      ),
+      280
+    );
+
 
   const now =
     Math.floor(
@@ -455,15 +607,9 @@ async function fetchCandles({
     );
 
 
-  const safeCount =
-    Math.min(
-      Math.max(
-        Number(count) || 50,
-        10
-      ),
-      280
-    );
-
+  /*
+     Keep window safely under Coinbase candle limit.
+  */
 
   const end =
     now;
@@ -472,13 +618,19 @@ async function fetchCandles({
   const start =
     end -
     granularity *
-    safeCount;
+    count;
 
 
   const url =
-    `${COINBASE}/products/${PRODUCT}/candles` +
+
+    `${BASE_URL}` +
+
+    `/products/${PRODUCT}/candles` +
+
     `?granularity=${granularity}` +
+
     `&start=${start}` +
+
     `&end=${end}`;
 
 
@@ -489,80 +641,107 @@ async function fetchCandles({
 
 
   if (
-    !Array.isArray(raw)
+    !Array.isArray(
+      raw
+    )
   ) {
 
     throw new Error(
-      `Coinbase candle response was not an array: ${errorText(raw)}`
+      "Coinbase candles response is not an array"
     );
 
   }
 
 
-  const candles =
-    raw
-      .map(
-        row => ({
-
-          timestamp:
-            num(
-              row?.[0]
-            ) *
-            1000,
-
-          low:
-            num(
-              row?.[1]
-            ),
-
-          high:
-            num(
-              row?.[2]
-            ),
-
-          open:
-            num(
-              row?.[3]
-            ),
-
-          close:
-            num(
-              row?.[4]
-            ),
-
-          volume:
-            num(
-              row?.[5]
-            )
-
-        })
-      )
-      .filter(
-        candle =>
-          candle.timestamp > 0 &&
-          candle.high > 0 &&
-          candle.low > 0 &&
-          candle.open > 0 &&
-          candle.close > 0
-      )
-      .sort(
-        (a, b) =>
-          a.timestamp -
-          b.timestamp
-      );
-
-
-  const unique =
+  const map =
     new Map();
 
 
   for (
-    const candle of
-    candles
+    const row of
+    raw
   ) {
 
-    unique.set(
-      candle.timestamp,
+    if (
+      !Array.isArray(
+        row
+      ) ||
+      row.length <
+      6
+    ) {
+
+      continue;
+
+    }
+
+
+    const timestamp =
+      num(
+        row[0]
+      ) *
+      1000;
+
+
+    const candle = {
+
+      timestamp,
+
+      low:
+        num(
+          row[1]
+        ),
+
+      high:
+        num(
+          row[2]
+        ),
+
+      open:
+        num(
+          row[3]
+        ),
+
+      close:
+        num(
+          row[4]
+        ),
+
+      volume:
+        num(
+          row[5]
+        )
+
+    };
+
+
+    if (
+      timestamp <=
+      0
+    ) {
+
+      continue;
+
+    }
+
+
+    if (
+      candle.open <=
+      0 ||
+      candle.high <=
+      0 ||
+      candle.low <=
+      0 ||
+      candle.close <=
+      0
+    ) {
+
+      continue;
+
+    }
+
+
+    map.set(
+      timestamp,
       candle
     );
 
@@ -570,23 +749,30 @@ async function fetchCandles({
 
 
   return [
-    ...unique.values()
-  ];
+    ...map.values()
+  ].sort(
+    (
+      a,
+      b
+    ) =>
+      a.timestamp -
+      b.timestamp
+  );
 
 }
 
 
 /* ============================================================
-   RESAMPLE
+   RESAMPLING
 ============================================================ */
 
 function resample(
   candles,
-  targetMinutes
+  minutes
 ) {
 
   const interval =
-    targetMinutes *
+    minutes *
     60 *
     1000;
 
@@ -609,7 +795,9 @@ function resample(
 
 
     if (
-      !buckets.has(key)
+      !buckets.has(
+        key
+      )
     ) {
 
       buckets.set(
@@ -676,7 +864,10 @@ function resample(
   return [
     ...buckets.values()
   ].sort(
-    (a, b) =>
+    (
+      a,
+      b
+    ) =>
       a.timestamp -
       b.timestamp
   );
@@ -693,7 +884,9 @@ function emaSeries(
   period
 ) {
 
-  if (!values.length) {
+  if (
+    !values.length
+  ) {
 
     return [];
 
@@ -708,12 +901,12 @@ function emaSeries(
     );
 
 
-  const output =
-    [];
-
-
   let current =
     values[0];
+
+
+  const result =
+    [];
 
 
   for (
@@ -722,8 +915,10 @@ function emaSeries(
   ) {
 
     current =
+
       value *
       multiplier +
+
       current *
       (
         1 -
@@ -731,14 +926,14 @@ function emaSeries(
       );
 
 
-    output.push(
+    result.push(
       current
     );
 
   }
 
 
-  return output;
+  return result;
 
 }
 
@@ -754,7 +949,8 @@ function calculateRSI(
 
   if (
     closes.length <
-    period + 1
+    period +
+    1
   ) {
 
     return 50;
@@ -770,10 +966,14 @@ function calculateRSI(
     0;
 
 
+  const start =
+    closes.length -
+    period;
+
+
   for (
     let i =
-      closes.length -
-      period;
+      start;
     i <
       closes.length;
     i++
@@ -785,7 +985,7 @@ function calculateRSI(
 
 
     if (
-      change >=
+      change >
       0
     ) {
 
@@ -794,7 +994,10 @@ function calculateRSI(
 
     }
 
-    else {
+    else if (
+      change <
+      0
+    ) {
 
       losses +=
         Math.abs(
@@ -822,12 +1025,15 @@ function calculateRSI(
 
 
   return (
+
     100 -
+
     100 /
     (
       1 +
       rs
     )
+
   );
 
 }
@@ -844,7 +1050,8 @@ function calculateATR(
 
   if (
     candles.length <
-    period + 1
+    period +
+    1
   ) {
 
     return 0;
@@ -852,7 +1059,7 @@ function calculateATR(
   }
 
 
-  const tr =
+  const ranges =
     [];
 
 
@@ -871,8 +1078,7 @@ function calculateATR(
       candles[i - 1];
 
 
-    tr.push(
-
+    const range =
       Math.max(
 
         current.high -
@@ -888,15 +1094,18 @@ function calculateATR(
           previous.close
         )
 
-      )
+      );
 
+
+    ranges.push(
+      range
     );
 
   }
 
 
   return average(
-    tr.slice(
+    ranges.slice(
       -period
     )
   );
@@ -905,7 +1114,7 @@ function calculateATR(
 
 
 /* ============================================================
-   STRUCTURE
+   TIMEFRAME STRUCTURE
 ============================================================ */
 
 function detectStructure(
@@ -913,9 +1122,11 @@ function detectStructure(
 ) {
 
   if (
-    !candles ||
+    !Array.isArray(
+      candles
+    ) ||
     candles.length <
-    15
+    12
   ) {
 
     return {
@@ -951,26 +1162,26 @@ function detectStructure(
 
   const closes =
     candles.map(
-      candle =>
-        candle.close
+      c =>
+        c.close
     );
 
 
-  const e20 =
+  const ema20Series =
     emaSeries(
       closes,
       SETTINGS.EMA_FAST
     );
 
 
-  const e50 =
+  const ema50Series =
     emaSeries(
       closes,
       SETTINGS.EMA_MID
     );
 
 
-  const e200 =
+  const ema200Series =
     emaSeries(
       closes,
       SETTINGS.EMA_SLOW
@@ -982,15 +1193,15 @@ function detectStructure(
 
 
   const ema20 =
-    e20.at(-1);
+    ema20Series.at(-1);
 
 
   const ema50 =
-    e50.at(-1);
+    ema50Series.at(-1);
 
 
   const ema200 =
-    e200.at(-1);
+    ema200Series.at(-1);
 
 
   let bull =
@@ -1228,11 +1439,11 @@ function calculateVWAP(
   }
 
 
-  let priceVolume =
+  let volume =
     0;
 
 
-  let volume =
+  let priceVolume =
     0;
 
 
@@ -1241,7 +1452,7 @@ function calculateVWAP(
     candles
   ) {
 
-    const typical =
+    const typicalPrice =
       (
         candle.high +
         candle.low +
@@ -1251,7 +1462,7 @@ function calculateVWAP(
 
 
     priceVolume +=
-      typical *
+      typicalPrice *
       candle.volume;
 
 
@@ -1280,34 +1491,33 @@ function calculateVWAP(
 
 
 /* ============================================================
-   UTC DAY
+   TODAY BARS
 ============================================================ */
 
-function dayKeyUTC(
-  timestamp
+function todayBars(
+  candles
 ) {
 
-  const d =
-    new Date(
-      timestamp
+  const now =
+    new Date();
+
+
+  const midnight =
+    Date.UTC(
+
+      now.getUTCFullYear(),
+
+      now.getUTCMonth(),
+
+      now.getUTCDate()
+
     );
 
 
-  return (
-    `${d.getUTCFullYear()}-` +
-    `${String(
-      d.getUTCMonth() +
-      1
-    ).padStart(
-      2,
-      "0"
-    )}-` +
-    `${String(
-      d.getUTCDate()
-    ).padStart(
-      2,
-      "0"
-    )}`
+  return candles.filter(
+    candle =>
+      candle.timestamp >=
+      midnight
   );
 
 }
@@ -1317,12 +1527,12 @@ function dayKeyUTC(
    DAILY LEVELS
 ============================================================ */
 
-function dailyLevels(
-  dailyCandles
+function getDailyLevels(
+  daily
 ) {
 
   if (
-    dailyCandles.length <
+    daily.length <
     2
   ) {
 
@@ -1345,21 +1555,12 @@ function dailyLevels(
   }
 
 
-  const sorted =
-    [...dailyCandles]
-      .sort(
-        (a, b) =>
-          a.timestamp -
-          b.timestamp
-      );
-
-
   const current =
-    sorted.at(-1);
+    daily.at(-1);
 
 
   const previous =
-    sorted.at(-2);
+    daily.at(-2);
 
 
   return {
@@ -1382,10 +1583,10 @@ function dailyLevels(
 
 
 /* ============================================================
-   WEEKLY LEVELS
+   WEEK START
 ============================================================ */
 
-function utcWeekStart(
+function weekStartUTC(
   timestamp
 ) {
 
@@ -1399,8 +1600,9 @@ function utcWeekStart(
     date.getUTCDay();
 
 
-  const mondayOffset =
-    day === 0
+  const offset =
+    day ===
+    0
       ? 6
       : day - 1;
 
@@ -1412,15 +1614,19 @@ function utcWeekStart(
     date.getUTCMonth(),
 
     date.getUTCDate() -
-      mondayOffset
+      offset
 
   );
 
 }
 
 
-function weeklyLevels(
-  dailyCandles
+/* ============================================================
+   WEEKLY LEVELS
+============================================================ */
+
+function getWeeklyLevels(
+  daily
 ) {
 
   const weeks =
@@ -1429,17 +1635,19 @@ function weeklyLevels(
 
   for (
     const candle of
-    dailyCandles
+    daily
   ) {
 
     const key =
-      utcWeekStart(
+      weekStartUTC(
         candle.timestamp
       );
 
 
     if (
-      !weeks.has(key)
+      !weeks.has(
+        key
+      )
     ) {
 
       weeks.set(
@@ -1450,11 +1658,11 @@ function weeklyLevels(
     }
 
 
-    weeks
-      .get(key)
-      .push(
-        candle
-      );
+    weeks.get(
+      key
+    ).push(
+      candle
+    );
 
   }
 
@@ -1462,8 +1670,12 @@ function weeklyLevels(
   const keys =
     [...weeks.keys()]
       .sort(
-        (a, b) =>
-          a - b
+        (
+          a,
+          b
+        ) =>
+          a -
+          b
       );
 
 
@@ -1488,13 +1700,13 @@ function weeklyLevels(
   }
 
 
-  const currentWeek =
+  const current =
     weeks.get(
       keys.at(-1)
     );
 
 
-  const previousWeek =
+  const previous =
     weeks.get(
       keys.at(-2)
     );
@@ -1504,7 +1716,7 @@ function weeklyLevels(
 
     previousWeekHigh:
       Math.max(
-        ...previousWeek.map(
+        ...previous.map(
           c =>
             c.high
         )
@@ -1512,14 +1724,14 @@ function weeklyLevels(
 
     previousWeekLow:
       Math.min(
-        ...previousWeek.map(
+        ...previous.map(
           c =>
             c.low
         )
       ),
 
     weeklyOpen:
-      currentWeek[0]
+      current[0]
         ?.open ??
       null
 
@@ -1529,43 +1741,10 @@ function weeklyLevels(
 
 
 /* ============================================================
-   TODAY M5
-============================================================ */
-
-function getTodayCandles(
-  candles
-) {
-
-  const now =
-    new Date();
-
-
-  const start =
-    Date.UTC(
-
-      now.getUTCFullYear(),
-
-      now.getUTCMonth(),
-
-      now.getUTCDate()
-
-    );
-
-
-  return candles.filter(
-    candle =>
-      candle.timestamp >=
-      start
-  );
-
-}
-
-
-/* ============================================================
    SESSION LEVELS
 ============================================================ */
 
-function sessionLevels(
+function getSessionLevels(
   candles
 ) {
 
@@ -1585,7 +1764,7 @@ function sessionLevels(
     );
 
 
-  function window(
+  function buildWindow(
     startHour,
     endHour
   ) {
@@ -1629,16 +1808,16 @@ function sessionLevels(
       high:
         Math.max(
           ...bars.map(
-            b =>
-              b.high
+            c =>
+              c.high
           )
         ),
 
       low:
         Math.min(
           ...bars.map(
-            b =>
-              b.low
+            c =>
+              c.low
           )
         ),
 
@@ -1654,19 +1833,19 @@ function sessionLevels(
   return {
 
     asia:
-      window(
+      buildWindow(
         0,
         8
       ),
 
     london:
-      window(
+      buildWindow(
         7,
         16
       ),
 
     newYork:
-      window(
+      buildWindow(
         13,
         22
       )
@@ -1699,8 +1878,10 @@ function currentSession() {
 
 
   if (
-    hour >= 0 &&
-    hour < 8
+    hour >=
+      0 &&
+    hour <
+      8
   ) {
 
     active.push(
@@ -1711,8 +1892,10 @@ function currentSession() {
 
 
   if (
-    hour >= 7 &&
-    hour < 16
+    hour >=
+      7 &&
+    hour <
+      16
   ) {
 
     active.push(
@@ -1723,8 +1906,10 @@ function currentSession() {
 
 
   if (
-    hour >= 13 &&
-    hour < 22
+    hour >=
+      13 &&
+    hour <
+      22
   ) {
 
     active.push(
@@ -1753,18 +1938,26 @@ function currentSession() {
       hour,
 
     weekend:
-      day === 0 ||
-      day === 6,
+      day ===
+        0 ||
+      day ===
+        6,
 
     day:
       [
 
         "Sunday",
+
         "Monday",
+
         "Tuesday",
+
         "Wednesday",
+
         "Thursday",
+
         "Friday",
+
         "Saturday"
 
       ][day]
@@ -1780,8 +1973,7 @@ function currentSession() {
 
 function findSwings(
   candles,
-  strength =
-    SETTINGS.SWING_STRENGTH
+  strength = 2
 ) {
 
   const highs =
@@ -1801,11 +1993,11 @@ function findSwings(
     i++
   ) {
 
-    let swingHigh =
+    let high =
       true;
 
 
-    let swingLow =
+    let low =
       true;
 
 
@@ -1823,7 +2015,7 @@ function findSwings(
           candles[i + j].high
       ) {
 
-        swingHigh =
+        high =
           false;
 
       }
@@ -1836,7 +2028,7 @@ function findSwings(
           candles[i + j].low
       ) {
 
-        swingLow =
+        low =
           false;
 
       }
@@ -1845,7 +2037,7 @@ function findSwings(
 
 
     if (
-      swingHigh
+      high
     ) {
 
       highs.push({
@@ -1862,7 +2054,7 @@ function findSwings(
 
 
     if (
-      swingLow
+      low
     ) {
 
       lows.push({
@@ -1895,7 +2087,7 @@ function findSwings(
    EQUAL LIQUIDITY
 ============================================================ */
 
-function findEqualLiquidity(
+function equalLiquidity(
   swings,
   atr
 ) {
@@ -1903,7 +2095,7 @@ function findEqualLiquidity(
   const tolerance =
     atr *
     SETTINGS
-      .EQUAL_LEVEL_ATR_TOLERANCE;
+      .EQUAL_ATR_TOLERANCE;
 
 
   const equalHighs =
@@ -1914,14 +2106,14 @@ function findEqualLiquidity(
     [];
 
 
-  function compare(
+  function scan(
     points,
-    destination
+    result
   ) {
 
     const recent =
       points.slice(
-        -25
+        -20
       );
 
 
@@ -1934,25 +2126,22 @@ function findEqualLiquidity(
 
       for (
         let j =
-          i + 1;
+          i +
+          1;
         j <
           recent.length;
         j++
       ) {
 
-        const difference =
+        if (
           Math.abs(
             recent[i].price -
             recent[j].price
-          );
-
-
-        if (
-          difference <=
+          ) <=
           tolerance
         ) {
 
-          destination.push({
+          result.push({
 
             price:
               (
@@ -1972,13 +2161,13 @@ function findEqualLiquidity(
   }
 
 
-  compare(
+  scan(
     swings.highs,
     equalHighs
   );
 
 
-  compare(
+  scan(
     swings.lows,
     equalLows
   );
@@ -2002,21 +2191,21 @@ function findEqualLiquidity(
 
 
 /* ============================================================
-   ROUND NUMBERS
+   ROUND NUMBER LIQUIDITY
 ============================================================ */
 
-function roundLevels(
+function roundNumbers(
   price
 ) {
 
-  const small =
+  const step =
     SETTINGS
-      .ROUND_NUMBER_STEP;
+      .ROUND_STEP;
 
 
-  const major =
+  const majorStep =
     SETTINGS
-      .MAJOR_ROUND_NUMBER_STEP;
+      .MAJOR_ROUND_STEP;
 
 
   return {
@@ -2024,30 +2213,30 @@ function roundLevels(
     lower:
       Math.floor(
         price /
-        small
+        step
       ) *
-      small,
+      step,
 
     upper:
       Math.ceil(
         price /
-        small
+        step
       ) *
-      small,
+      step,
 
     majorLower:
       Math.floor(
         price /
-        major
+        majorStep
       ) *
-      major,
+      majorStep,
 
     majorUpper:
       Math.ceil(
         price /
-        major
+        majorStep
       ) *
-      major
+      majorStep
 
   };
 
@@ -2055,42 +2244,40 @@ function roundLevels(
 
 
 /* ============================================================
-   VOLUME
+   VOLUME ANALYSIS
 ============================================================ */
 
 function volumeAnalysis(
-  m5
+  candles
 ) {
 
   const recent =
-    m5.slice(
+    candles.slice(
       -SETTINGS
         .VOLUME_LOOKBACK
     );
 
 
-  const volumes =
-    recent.map(
-      c =>
-        c.volume
-    );
-
-
   const avg =
     average(
-      volumes
+      recent.map(
+        candle =>
+          candle.volume
+      )
     );
 
 
   const current =
-    m5.at(-1)
+    candles.at(-1)
       ?.volume ??
     0;
 
 
   const ratio =
-    avg > 0
-      ? current / avg
+    avg >
+    0
+      ? current /
+        avg
       : 1;
 
 
@@ -2100,7 +2287,7 @@ function volumeAnalysis(
 
   if (
     ratio >=
-    1.4
+    1.40
   ) {
 
     state =
@@ -2148,7 +2335,17 @@ function volumeAnalysis(
 
 
 /* ============================================================
-   TRADE FLOW
+   COINBASE TRADE FLOW
+
+   Coinbase returns MAKER side.
+
+   maker sell
+   =
+   aggressive buyer
+
+   maker buy
+   =
+   aggressive seller
 ============================================================ */
 
 function analyzeTrades(
@@ -2156,10 +2353,15 @@ function analyzeTrades(
 ) {
 
   if (
-    !Array.isArray(trades)
+    !Array.isArray(
+      trades
+    )
   ) {
 
     return {
+
+      available:
+        false,
 
       trades:
         0,
@@ -2180,20 +2382,11 @@ function analyzeTrades(
         0,
 
       pressure:
-        "UNKNOWN"
+        "UNAVAILABLE"
 
     };
 
   }
-
-
-  const sorted =
-    [...trades]
-      .sort(
-        (a, b) =>
-          new Date(a.time) -
-          new Date(b.time)
-      );
 
 
   let aggressiveBuy =
@@ -2206,6 +2399,22 @@ function analyzeTrades(
 
   let cvd =
     0;
+
+
+  const sorted =
+    [...trades]
+      .sort(
+        (
+          a,
+          b
+        ) =>
+          new Date(
+            a.time
+          ) -
+          new Date(
+            b.time
+          )
+      );
 
 
   for (
@@ -2262,10 +2471,13 @@ function analyzeTrades(
 
 
   const deltaPercent =
-    total > 0
+    total >
+    0
+
       ? delta /
         total *
         100
+
       : 0;
 
 
@@ -2297,8 +2509,11 @@ function analyzeTrades(
 
   return {
 
+    available:
+      true,
+
     trades:
-      sorted.length,
+      trades.length,
 
     aggressiveBuyBTC:
       round(
@@ -2338,144 +2553,144 @@ function analyzeTrades(
 
 
 /* ============================================================
-   ORDER BOOK
+   LIGHTWEIGHT LEVEL-1 BOOK
+
+   We deliberately do NOT use Coinbase level=2 here.
 ============================================================ */
 
-function analyzeOrderBook(
-  book
+function analyzeBook(
+  rawBook,
+  ticker
 ) {
 
-  const bids =
-    Array.isArray(
-      book?.bids
-    )
-      ? book.bids.slice(
-        0,
-        SETTINGS.ORDER_BOOK_LEVELS
-      )
-      : [];
+  let bid =
+    null;
 
 
-  const asks =
-    Array.isArray(
-      book?.asks
-    )
-      ? book.asks.slice(
-        0,
-        SETTINGS.ORDER_BOOK_LEVELS
-      )
-      : [];
-
-
-  let bidUSD =
-    0;
-
-
-  let askUSD =
-    0;
-
-
-  for (
-    const bid of
-    bids
-  ) {
-
-    bidUSD +=
-      num(bid[0]) *
-      num(bid[1]);
-
-  }
-
-
-  for (
-    const ask of
-    asks
-  ) {
-
-    askUSD +=
-      num(ask[0]) *
-      num(ask[1]);
-
-  }
-
-
-  const total =
-    bidUSD +
-    askUSD;
-
-
-  const imbalance =
-    total > 0
-      ? (
-        (
-          bidUSD -
-          askUSD
-        ) /
-        total
-      ) *
-        100
-      : 0;
-
-
-  let pressure =
-    "BALANCED";
+  let ask =
+    null;
 
 
   if (
-    imbalance >
-    7
+    Array.isArray(
+      rawBook?.bids
+    ) &&
+    rawBook.bids.length
   ) {
 
-    pressure =
-      "BID HEAVY";
+    bid =
+      num(
+        rawBook
+          .bids[0][0],
+        null
+      );
 
   }
 
 
   if (
-    imbalance <
-    -7
+    Array.isArray(
+      rawBook?.asks
+    ) &&
+    rawBook.asks.length
   ) {
 
-    pressure =
-      "ASK HEAVY";
+    ask =
+      num(
+        rawBook
+          .asks[0][0],
+        null
+      );
 
   }
 
+
+  /*
+     Ticker fallback.
+  */
+
+  if (
+    !Number.isFinite(
+      bid
+    )
+  ) {
+
+    bid =
+      num(
+        ticker?.bid,
+        null
+      );
+
+  }
+
+
+  if (
+    !Number.isFinite(
+      ask
+    )
+  ) {
+
+    ask =
+      num(
+        ticker?.ask,
+        null
+      );
+
+  }
+
+
+  const spread =
+
+    Number.isFinite(
+      bid
+    ) &&
+    Number.isFinite(
+      ask
+    )
+
+      ? ask -
+        bid
+
+      : null;
+
+
+  /*
+     No fake imbalance value.
+
+     Level 1 only tells us top-of-book.
+  */
 
   return {
 
+    available:
+      Number.isFinite(
+        bid
+      ) &&
+      Number.isFinite(
+        ask
+      ),
+
     bestBid:
-      bids.length
-        ? num(
-          bids[0][0]
-        )
-        : null,
+      round(
+        bid
+      ),
 
     bestAsk:
-      asks.length
-        ? num(
-          asks[0][0]
-        )
-        : null,
-
-    bidUSD:
       round(
-        bidUSD
+        ask
       ),
 
-    askUSD:
+    spread:
       round(
-        askUSD
-      ),
-
-    imbalancePercent:
-      round(
-        imbalance,
+        spread,
         2
       ),
 
-    pressure
+    imbalancePercent:
+      0,
+
+    pressure:
+      "TOP OF BOOK"
 
   };
 
@@ -2483,19 +2698,26 @@ function analyzeOrderBook(
 
 
 /* ============================================================
-   LIQUIDITY
+   BUILD LIQUIDITY POOLS
 ============================================================ */
 
 function buildLiquidityPools({
 
   price,
+
   atr,
+
   daily,
+
   weekly,
+
   sessions,
-  equalLiquidity,
+
+  equals,
+
   swings,
-  roundNumbers
+
+  roundLevels
 
 }) {
 
@@ -2504,18 +2726,24 @@ function buildLiquidityPools({
 
 
   function add(
+
     name,
+
     level,
+
     side,
-    weight,
+
+    baseWeight,
+
     type
+
   ) {
 
     if (
-      level === null ||
-      level === undefined ||
       !Number.isFinite(
-        Number(level)
+        Number(
+          level
+        )
       )
     ) {
 
@@ -2524,21 +2752,26 @@ function buildLiquidityPools({
     }
 
 
-    const numericLevel =
-      Number(level);
+    const value =
+      Number(
+        level
+      );
 
 
     const distance =
       Math.abs(
         price -
-        numericLevel
+        value
       );
 
 
     const distanceATR =
-      atr > 0
+      atr >
+      0
+
         ? distance /
           atr
+
         : 999;
 
 
@@ -2612,25 +2845,28 @@ function buildLiquidityPools({
       name,
 
       level:
-        numericLevel,
+        value,
 
       side,
 
       type,
 
+      baseWeight,
+
       distance,
 
       distanceATR,
 
-      baseWeight:
-        weight,
-
       score:
         clamp(
-          weight +
+
+          baseWeight +
           proximity,
+
           0,
+
           65
+
         )
 
     });
@@ -2639,38 +2875,62 @@ function buildLiquidityPools({
 
 
   add(
+
     "Previous Day High",
+
     daily.previousDayHigh,
+
     "BUY_SIDE",
+
     24,
+
     "PDH"
+
   );
 
 
   add(
+
     "Previous Day Low",
+
     daily.previousDayLow,
+
     "SELL_SIDE",
+
     24,
+
     "PDL"
+
   );
 
 
   add(
+
     "Previous Week High",
+
     weekly.previousWeekHigh,
+
     "BUY_SIDE",
+
     27,
+
     "PWH"
+
   );
 
 
   add(
+
     "Previous Week Low",
+
     weekly.previousWeekLow,
+
     "SELL_SIDE",
+
     27,
+
     "PWL"
+
   );
 
 
@@ -2679,20 +2939,32 @@ function buildLiquidityPools({
   ) {
 
     add(
+
       "Asia High",
+
       sessions.asia.high,
+
       "BUY_SIDE",
+
       14,
+
       "ASIA"
+
     );
 
 
     add(
+
       "Asia Low",
+
       sessions.asia.low,
+
       "SELL_SIDE",
+
       14,
+
       "ASIA"
+
     );
 
   }
@@ -2703,20 +2975,32 @@ function buildLiquidityPools({
   ) {
 
     add(
+
       "London High",
+
       sessions.london.high,
+
       "BUY_SIDE",
+
       15,
+
       "LONDON"
+
     );
 
 
     add(
+
       "London Low",
+
       sessions.london.low,
+
       "SELL_SIDE",
+
       15,
+
       "LONDON"
+
     );
 
   }
@@ -2727,20 +3011,32 @@ function buildLiquidityPools({
   ) {
 
     add(
+
       "New York High",
+
       sessions.newYork.high,
+
       "BUY_SIDE",
+
       15,
+
       "NEW_YORK"
+
     );
 
 
     add(
+
       "New York Low",
+
       sessions.newYork.low,
+
       "SELL_SIDE",
+
       15,
+
       "NEW_YORK"
+
     );
 
   }
@@ -2748,15 +3044,21 @@ function buildLiquidityPools({
 
   for (
     const item of
-    equalLiquidity.equalHighs
+    equals.equalHighs
   ) {
 
     add(
+
       "Equal Highs",
+
       item.price,
+
       "BUY_SIDE",
+
       20,
+
       "EQH"
+
     );
 
   }
@@ -2764,108 +3066,184 @@ function buildLiquidityPools({
 
   for (
     const item of
-    equalLiquidity.equalLows
+    equals.equalLows
   ) {
 
     add(
+
       "Equal Lows",
+
       item.price,
+
       "SELL_SIDE",
+
       20,
+
       "EQL"
+
     );
 
   }
 
 
   for (
-    const swing of
+    const item of
     swings.highs.slice(
       -4
     )
   ) {
 
     add(
+
       "M15 Swing High",
-      swing.price,
+
+      item.price,
+
       "BUY_SIDE",
+
       15,
+
       "SWING_HIGH"
+
     );
 
   }
 
 
   for (
-    const swing of
+    const item of
     swings.lows.slice(
       -4
     )
   ) {
 
     add(
+
       "M15 Swing Low",
-      swing.price,
+
+      item.price,
+
       "SELL_SIDE",
+
       15,
+
       "SWING_LOW"
+
     );
 
   }
 
 
   add(
+
     "Round Number Above",
-    roundNumbers.upper,
+
+    roundLevels.upper,
+
     "BUY_SIDE",
+
     10,
+
     "ROUND"
+
   );
 
 
   add(
+
     "Round Number Below",
-    roundNumbers.lower,
+
+    roundLevels.lower,
+
     "SELL_SIDE",
+
     10,
+
     "ROUND"
+
   );
 
 
   if (
-    roundNumbers.majorUpper !==
-    roundNumbers.upper
+    roundLevels.majorUpper !==
+    roundLevels.upper
   ) {
 
     add(
+
       "Major Round Number Above",
-      roundNumbers.majorUpper,
+
+      roundLevels.majorUpper,
+
       "BUY_SIDE",
+
       17,
+
       "MAJOR_ROUND"
+
     );
 
   }
 
 
   if (
-    roundNumbers.majorLower !==
-    roundNumbers.lower
+    roundLevels.majorLower !==
+    roundLevels.lower
   ) {
 
     add(
+
       "Major Round Number Below",
-      roundNumbers.majorLower,
+
+      roundLevels.majorLower,
+
       "SELL_SIDE",
+
       17,
+
       "MAJOR_ROUND"
+
     );
 
   }
 
 
-  return pools.sort(
-    (a, b) => {
+  const unique =
+    new Map();
+
+
+  for (
+    const pool of
+    pools
+  ) {
+
+    const key =
+
+      pool.name +
+
+      ":" +
+
+      round(
+        pool.level,
+        2
+      );
+
+
+    unique.set(
+      key,
+      pool
+    );
+
+  }
+
+
+  return [
+    ...unique.values()
+  ].sort(
+    (
+      a,
+      b
+    ) => {
 
       if (
         b.score !==
@@ -2891,6 +3269,10 @@ function buildLiquidityPools({
 }
 
 
+/* ============================================================
+   CHOOSE PRIMARY LIQUIDITY
+============================================================ */
+
 function choosePrimaryLiquidity(
   pools
 ) {
@@ -2907,10 +3289,15 @@ function choosePrimaryLiquidity(
   return [
     ...pools
   ].sort(
-    (a, b) => {
+    (
+      a,
+      b
+    ) => {
 
-      const scoreA =
+      const aRank =
+
         a.score -
+
         Math.min(
           a.distanceATR *
           4,
@@ -2918,8 +3305,10 @@ function choosePrimaryLiquidity(
         );
 
 
-      const scoreB =
+      const bRank =
+
         b.score -
+
         Math.min(
           b.distanceATR *
           4,
@@ -2928,8 +3317,8 @@ function choosePrimaryLiquidity(
 
 
       return (
-        scoreB -
-        scoreA
+        bRank -
+        aRank
       );
 
     }
@@ -2939,12 +3328,35 @@ function choosePrimaryLiquidity(
 
 
 /* ============================================================
-   REJECTION
+   CANDLE REJECTION
 ============================================================ */
 
 function candleRejection(
   candle
 ) {
+
+  if (
+    !candle
+  ) {
+
+    return {
+
+      bullish:
+        false,
+
+      bearish:
+        false,
+
+      upperWickPercent:
+        0,
+
+      lowerWickPercent:
+        0
+
+    };
+
+  }
+
 
   const range =
     candle.high -
@@ -3014,16 +3426,20 @@ function candleRejection(
   return {
 
     bullish:
+
       lowerPct >=
-        38 &&
+      38 &&
+
       candle.close >
-        candle.open,
+      candle.open,
 
     bearish:
+
       upperPct >=
-        38 &&
+      38 &&
+
       candle.close <
-        candle.open,
+      candle.open,
 
     upperWickPercent:
       round(
@@ -3043,7 +3459,7 @@ function candleRejection(
 
 
 /* ============================================================
-   STRUCTURE TRIGGER
+   STRUCTURE BREAK
 ============================================================ */
 
 function structureTrigger(
@@ -3074,7 +3490,7 @@ function structureTrigger(
   }
 
 
-  const previous =
+  const prior =
     candles.slice(
       -8,
       -1
@@ -3087,7 +3503,7 @@ function structureTrigger(
 
   const previousHigh =
     Math.max(
-      ...previous.map(
+      ...prior.map(
         c =>
           c.high
       )
@@ -3096,7 +3512,7 @@ function structureTrigger(
 
   const previousLow =
     Math.min(
-      ...previous.map(
+      ...prior.map(
         c =>
           c.low
       )
@@ -3129,20 +3545,27 @@ function structureTrigger(
 
 
 /* ============================================================
-   RAID
+   RAID MODEL
 ============================================================ */
 
 function analyzeRaid({
 
   pool,
+
   price,
+
   atr,
-  lastM5,
-  m15Structure,
-  h1Structure,
-  h4Structure,
+
+  candle,
+
+  m15,
+
+  h1,
+
+  h4,
+
   flow,
-  book,
+
   volume
 
 }) {
@@ -3156,21 +3579,21 @@ function analyzeRaid({
   }
 
 
-  const level =
-    pool.level;
-
-
   const distance =
     Math.abs(
       price -
-      level
+      pool.level
     );
 
 
   const distanceATR =
-    atr > 0
+
+    atr >
+    0
+
       ? distance /
         atr
+
       : 999;
 
 
@@ -3192,7 +3615,7 @@ function analyzeRaid({
 
 
     reasons.push(
-      "Price is approaching the liquidity target"
+      "Price is approaching this liquidity pool"
     );
 
   }
@@ -3208,7 +3631,7 @@ function analyzeRaid({
 
 
     reasons.push(
-      "Liquidity is within 0.75 ATR"
+      "Liquidity is inside 0.75 ATR"
     );
 
   }
@@ -3224,7 +3647,7 @@ function analyzeRaid({
 
 
     reasons.push(
-      "Price is extremely close to the target"
+      "Price is extremely close to liquidity"
     );
 
   }
@@ -3244,8 +3667,8 @@ function analyzeRaid({
   ) {
 
     if (
-      lastM5.high >
-      level
+      candle.high >
+      pool.level
     ) {
 
       swept =
@@ -3257,7 +3680,7 @@ function analyzeRaid({
 
 
       reasons.push(
-        "Buy-side liquidity was swept"
+        "Buy-side liquidity has been swept"
       );
 
     }
@@ -3265,8 +3688,8 @@ function analyzeRaid({
 
     if (
       swept &&
-      lastM5.close <
-      level
+      candle.close <
+      pool.level
     ) {
 
       rejected =
@@ -3278,46 +3701,31 @@ function analyzeRaid({
 
 
       reasons.push(
-        "Price closed back below the swept liquidity"
+        "Price closed back below the swept level"
       );
 
     }
 
 
     if (
+      flow.available &&
       flow.deltaPercent <
       -5
     ) {
 
       score +=
-        7;
+        8;
 
 
       reasons.push(
-        "Aggressive flow is bearish"
+        "Aggressive order flow is bearish"
       );
 
     }
 
 
     if (
-      book.imbalancePercent <
-      -5
-    ) {
-
-      score +=
-        5;
-
-
-      reasons.push(
-        "Order book is ask-heavy"
-      );
-
-    }
-
-
-    if (
-      m15Structure.bias ===
+      m15.bias ===
       "BEARISH"
     ) {
 
@@ -3326,14 +3734,14 @@ function analyzeRaid({
 
 
       reasons.push(
-        "M15 supports bearish reversal"
+        "M15 supports downside"
       );
 
     }
 
 
     if (
-      h1Structure.bias ===
+      h1.bias ===
       "BEARISH"
     ) {
 
@@ -3347,6 +3755,17 @@ function analyzeRaid({
 
     }
 
+
+    if (
+      h4.bias ===
+      "BULLISH"
+    ) {
+
+      score -=
+        5;
+
+    }
+
   }
 
 
@@ -3356,8 +3775,8 @@ function analyzeRaid({
   ) {
 
     if (
-      lastM5.low <
-      level
+      candle.low <
+      pool.level
     ) {
 
       swept =
@@ -3369,7 +3788,7 @@ function analyzeRaid({
 
 
       reasons.push(
-        "Sell-side liquidity was swept"
+        "Sell-side liquidity has been swept"
       );
 
     }
@@ -3377,8 +3796,8 @@ function analyzeRaid({
 
     if (
       swept &&
-      lastM5.close >
-      level
+      candle.close >
+      pool.level
     ) {
 
       rejected =
@@ -3390,46 +3809,31 @@ function analyzeRaid({
 
 
       reasons.push(
-        "Price closed back above the swept liquidity"
+        "Price closed back above the swept level"
       );
 
     }
 
 
     if (
+      flow.available &&
       flow.deltaPercent >
       5
     ) {
 
       score +=
-        7;
+        8;
 
 
       reasons.push(
-        "Aggressive flow is bullish"
+        "Aggressive order flow is bullish"
       );
 
     }
 
 
     if (
-      book.imbalancePercent >
-      5
-    ) {
-
-      score +=
-        5;
-
-
-      reasons.push(
-        "Order book is bid-heavy"
-      );
-
-    }
-
-
-    if (
-      m15Structure.bias ===
+      m15.bias ===
       "BULLISH"
     ) {
 
@@ -3438,14 +3842,14 @@ function analyzeRaid({
 
 
       reasons.push(
-        "M15 supports bullish reversal"
+        "M15 supports upside"
       );
 
     }
 
 
     if (
-      h1Structure.bias ===
+      h1.bias ===
       "BULLISH"
     ) {
 
@@ -3456,6 +3860,17 @@ function analyzeRaid({
       reasons.push(
         "H1 supports upside"
       );
+
+    }
+
+
+    if (
+      h4.bias ===
+      "BEARISH"
+    ) {
+
+      score -=
+        5;
 
     }
 
@@ -3474,32 +3889,6 @@ function analyzeRaid({
     reasons.push(
       "M5 volume is elevated"
     );
-
-  }
-
-
-  if (
-    pool.side ===
-      "BUY_SIDE" &&
-    h4Structure.bias ===
-      "BULLISH"
-  ) {
-
-    score -=
-      5;
-
-  }
-
-
-  if (
-    pool.side ===
-      "SELL_SIDE" &&
-    h4Structure.bias ===
-      "BEARISH"
-  ) {
-
-    score -=
-      5;
 
   }
 
@@ -3559,14 +3948,16 @@ function analyzeRaid({
   }
 
 
-  const minOvershoot =
+  const minimum =
     atr *
-    SETTINGS.SWEEP_MIN_ATR;
+    SETTINGS
+      .SWEEP_MIN_ATR;
 
 
-  let maxOvershoot =
+  let maximum =
     atr *
-    SETTINGS.SWEEP_MAX_ATR;
+    SETTINGS
+      .SWEEP_MAX_ATR;
 
 
   if (
@@ -3574,52 +3965,63 @@ function analyzeRaid({
     "HIGH"
   ) {
 
-    maxOvershoot *=
+    maximum *=
       1.20;
 
   }
 
 
   if (
+    flow.available &&
     Math.abs(
       flow.deltaPercent
     ) >
     20
   ) {
 
-    maxOvershoot *=
+    maximum *=
       1.15;
 
   }
 
 
-  const zone =
+  let zone;
+
+
+  if (
     pool.side ===
     "BUY_SIDE"
+  ) {
 
-      ? {
+    zone = {
 
-        low:
-          level +
-          minOvershoot,
+      low:
+        pool.level +
+        minimum,
 
-        high:
-          level +
-          maxOvershoot
+      high:
+        pool.level +
+        maximum
 
-      }
+    };
 
-      : {
+  }
 
-        low:
-          level -
-          maxOvershoot,
+  else {
 
-        high:
-          level -
-          minOvershoot
+    zone = {
 
-      };
+      low:
+        pool.level -
+        maximum,
+
+      high:
+        pool.level -
+        minimum
+
+    };
+
+  }
 
 
   return {
@@ -3635,7 +4037,7 @@ function analyzeRaid({
 
     level:
       round(
-        level
+        pool.level
       ),
 
     livePrice:
@@ -3690,22 +4092,31 @@ function analyzeRaid({
 
 
 /* ============================================================
-   SIGNAL
+   SIGNAL ENGINE
 ============================================================ */
 
 function generateSignal({
 
   price,
+
   atr,
+
   vwap,
+
   raid,
-  m5Structure,
-  m15Structure,
-  h1Structure,
-  h4Structure,
+
+  m5,
+
+  m15,
+
+  h1,
+
+  h4,
+
   flow,
-  book,
+
   rejection,
+
   trigger
 
 }) {
@@ -3726,8 +4137,10 @@ function generateSignal({
     [];
 
 
+  /* M5 */
+
   if (
-    m5Structure.bias ===
+    m5.bias ===
     "BULLISH"
   ) {
 
@@ -3743,7 +4156,7 @@ function generateSignal({
 
 
   if (
-    m5Structure.bias ===
+    m5.bias ===
     "BEARISH"
   ) {
 
@@ -3758,8 +4171,10 @@ function generateSignal({
   }
 
 
+  /* M15 */
+
   if (
-    m15Structure.bias ===
+    m15.bias ===
     "BULLISH"
   ) {
 
@@ -3775,7 +4190,7 @@ function generateSignal({
 
 
   if (
-    m15Structure.bias ===
+    m15.bias ===
     "BEARISH"
   ) {
 
@@ -3790,8 +4205,10 @@ function generateSignal({
   }
 
 
+  /* H1 */
+
   if (
-    h1Structure.bias ===
+    h1.bias ===
     "BULLISH"
   ) {
 
@@ -3807,7 +4224,7 @@ function generateSignal({
 
 
   if (
-    h1Structure.bias ===
+    h1.bias ===
     "BEARISH"
   ) {
 
@@ -3822,8 +4239,10 @@ function generateSignal({
   }
 
 
+  /* H4 */
+
   if (
-    h4Structure.bias ===
+    h4.bias ===
     "BULLISH"
   ) {
 
@@ -3839,7 +4258,7 @@ function generateSignal({
 
 
   if (
-    h4Structure.bias ===
+    h4.bias ===
     "BEARISH"
   ) {
 
@@ -3853,6 +4272,8 @@ function generateSignal({
 
   }
 
+
+  /* VWAP */
 
   if (
     Number.isFinite(
@@ -3870,23 +4291,19 @@ function generateSignal({
 
 
       buyReasons.push(
-        "Price above VWAP"
+        "Price above daily VWAP"
       );
 
     }
 
-
-    if (
-      price <
-      vwap
-    ) {
+    else {
 
       sellScore +=
         5;
 
 
       sellReasons.push(
-        "Price below VWAP"
+        "Price below daily VWAP"
       );
 
     }
@@ -3894,69 +4311,47 @@ function generateSignal({
   }
 
 
+  /* TRADE FLOW */
+
   if (
-    flow.deltaPercent >
-    5
+    flow.available
   ) {
 
-    buyScore +=
-      9;
+    if (
+      flow.deltaPercent >
+      5
+    ) {
+
+      buyScore +=
+        10;
 
 
-    buyReasons.push(
-      "Positive delta"
-    );
+      buyReasons.push(
+        "Positive Coinbase trade delta"
+      );
+
+    }
+
+
+    if (
+      flow.deltaPercent <
+      -5
+    ) {
+
+      sellScore +=
+        10;
+
+
+      sellReasons.push(
+        "Negative Coinbase trade delta"
+      );
+
+    }
 
   }
 
 
-  if (
-    flow.deltaPercent <
-    -5
-  ) {
-
-    sellScore +=
-      9;
-
-
-    sellReasons.push(
-      "Negative delta"
-    );
-
-  }
-
-
-  if (
-    book.imbalancePercent >
-    5
-  ) {
-
-    buyScore +=
-      6;
-
-
-    buyReasons.push(
-      "Bid-heavy order book"
-    );
-
-  }
-
-
-  if (
-    book.imbalancePercent <
-    -5
-  ) {
-
-    sellScore +=
-      6;
-
-
-    sellReasons.push(
-      "Ask-heavy order book"
-    );
-
-  }
-
+  /* REJECTION */
 
   if (
     rejection.bullish
@@ -3988,6 +4383,8 @@ function generateSignal({
   }
 
 
+  /* STRUCTURE */
+
   if (
     trigger.bullish
   ) {
@@ -4018,6 +4415,8 @@ function generateSignal({
   }
 
 
+  /* RAID */
+
   if (
     raid?.swept &&
     raid?.rejected
@@ -4033,7 +4432,7 @@ function generateSignal({
 
 
       buyReasons.push(
-        "Sell-side sweep rejected"
+        "Sell-side liquidity sweep rejected"
       );
 
     }
@@ -4049,7 +4448,7 @@ function generateSignal({
 
 
       sellReasons.push(
-        "Buy-side sweep rejected"
+        "Buy-side liquidity sweep rejected"
       );
 
     }
@@ -4291,6 +4690,26 @@ function generateSignal({
         takeProfit2
       ),
 
+    riskReward1:
+
+      signal ===
+      "WAIT"
+
+        ? null
+
+        : SETTINGS
+          .TP1_R,
+
+    riskReward2:
+
+      signal ===
+      "WAIT"
+
+        ? null
+
+        : SETTINGS
+          .TP2_R,
+
     buyReasons,
 
     sellReasons
@@ -4301,7 +4720,7 @@ function generateSignal({
 
 
 /* ============================================================
-   MAIN
+   MAIN VERCEL HANDLER
 ============================================================ */
 
 module.exports =
@@ -4315,26 +4734,54 @@ async function handler(
 
 
   res.setHeader(
+
     "Cache-Control",
+
     "no-store, no-cache, must-revalidate"
+
   );
 
 
   res.setHeader(
+
     "Content-Type",
+
     "application/json; charset=utf-8"
+
   );
+
+
+  if (
+    req.method ===
+    "OPTIONS"
+  ) {
+
+    return res
+      .status(200)
+      .end();
+
+  }
 
 
   try {
 
+    /* ======================================================
+       CORE REQUESTS
+
+       Critical:
+       - ticker
+       - M5
+       - H1
+       - D1
+
+       Optional:
+       - trades
+       - level 1 book
+    ====================================================== */
+
     const [
 
       ticker,
-
-      trades,
-
-      bookRaw,
 
       m5,
 
@@ -4347,42 +4794,70 @@ async function handler(
 
         fetchTicker(),
 
-        fetchTrades(),
+        fetchCandles(
 
-        fetchOrderBook(),
+          SETTINGS
+            .M5_GRANULARITY,
 
-        fetchCandles({
+          SETTINGS
+            .M5_COUNT
 
-          granularity:
-            SETTINGS.M5_GRANULARITY,
+        ),
 
-          count:
-            SETTINGS.M5_CANDLES
+        fetchCandles(
 
-        }),
+          SETTINGS
+            .H1_GRANULARITY,
 
-        fetchCandles({
+          SETTINGS
+            .H1_COUNT
 
-          granularity:
-            SETTINGS.H1_GRANULARITY,
+        ),
 
-          count:
-            SETTINGS.H1_CANDLES
+        fetchCandles(
 
-        }),
+          SETTINGS
+            .D1_GRANULARITY,
 
-        fetchCandles({
+          SETTINGS
+            .D1_COUNT
 
-          granularity:
-            SETTINGS.D1_GRANULARITY,
-
-          count:
-            SETTINGS.D1_CANDLES
-
-        })
+        )
 
       ]);
 
+
+    /* ======================================================
+       OPTIONAL MARKET MICROSTRUCTURE
+
+       Failure here DOES NOT kill engine.
+    ====================================================== */
+
+    const [
+
+      rawTrades,
+
+      rawBook
+
+    ] =
+      await Promise.all([
+
+        safeFetch(
+          fetchTrades(),
+          []
+        ),
+
+        safeFetch(
+          fetchBestBook(),
+          null
+        )
+
+      ]);
+
+
+    /* ======================================================
+       VALIDATION
+    ====================================================== */
 
     if (
       m5.length <
@@ -4390,7 +4865,7 @@ async function handler(
     ) {
 
       throw new Error(
-        `Only ${m5.length} M5 candles were returned`
+        `Coinbase returned only ${m5.length} M5 candles`
       );
 
     }
@@ -4402,7 +4877,7 @@ async function handler(
     ) {
 
       throw new Error(
-        `Only ${h1.length} H1 candles were returned`
+        `Coinbase returned only ${h1.length} H1 candles`
       );
 
     }
@@ -4414,18 +4889,39 @@ async function handler(
     ) {
 
       throw new Error(
-        `Only ${d1.length} daily candles were returned`
+        `Coinbase returned only ${d1.length} D1 candles`
       );
 
     }
 
 
+    /* ======================================================
+       PRICE
+    ====================================================== */
+
     const price =
       num(
         ticker?.price,
-        m5.at(-1)?.close
+        m5.at(-1)
+          .close
       );
 
+
+    if (
+      price <=
+      0
+    ) {
+
+      throw new Error(
+        "Coinbase returned an invalid BTC price"
+      );
+
+    }
+
+
+    /* ======================================================
+       TIMEFRAMES
+    ====================================================== */
 
     const m15 =
       resample(
@@ -4441,12 +4937,9 @@ async function handler(
       );
 
 
-    const atr =
-      calculateATR(
-        m5,
-        SETTINGS.ATR_PERIOD
-      );
-
+    /* ======================================================
+       STRUCTURE
+    ====================================================== */
 
     const m5Structure =
       detectStructure(
@@ -4472,20 +4965,52 @@ async function handler(
       );
 
 
+    /* ======================================================
+       ATR
+    ====================================================== */
+
+    const atr =
+      calculateATR(
+        m5,
+        SETTINGS
+          .ATR_PERIOD
+      );
+
+
+    if (
+      atr <=
+      0
+    ) {
+
+      throw new Error(
+        "Unable to calculate BTC ATR"
+      );
+
+    }
+
+
+    /* ======================================================
+       LEVELS
+    ====================================================== */
+
     const daily =
-      dailyLevels(
+      getDailyLevels(
         d1
       );
 
 
     const weekly =
-      weeklyLevels(
+      getWeeklyLevels(
         d1
       );
 
 
+    /* ======================================================
+       SESSIONS
+    ====================================================== */
+
     const sessions =
-      sessionLevels(
+      getSessionLevels(
         m5
       );
 
@@ -4494,47 +5019,67 @@ async function handler(
       currentSession();
 
 
-    const todayM5 =
-      getTodayCandles(
+    /* ======================================================
+       VWAP
+    ====================================================== */
+
+    const today =
+      todayBars(
         m5
       );
 
 
     const vwap =
       calculateVWAP(
-        todayM5
+        today.length
+          ? today
+          : m5.slice(-50)
       );
 
+
+    /* ======================================================
+       SWINGS
+    ====================================================== */
 
     const swings =
       findSwings(
         m15,
-        SETTINGS.SWING_STRENGTH
+        SETTINGS
+          .SWING_STRENGTH
       );
 
 
-    const equalLiquidity =
-      findEqualLiquidity(
+    const equals =
+      equalLiquidity(
         swings,
         atr
       );
 
 
-    const roundNumbers =
-      roundLevels(
+    /* ======================================================
+       ROUND NUMBERS
+    ====================================================== */
+
+    const roundLevels =
+      roundNumbers(
         price
       );
 
 
+    /* ======================================================
+       FLOW
+    ====================================================== */
+
     const flow =
       analyzeTrades(
-        trades
+        rawTrades
       );
 
 
     const book =
-      analyzeOrderBook(
-        bookRaw
+      analyzeBook(
+        rawBook,
+        ticker
       );
 
 
@@ -4543,6 +5088,10 @@ async function handler(
         m5
       );
 
+
+    /* ======================================================
+       LIQUIDITY
+    ====================================================== */
 
     const pools =
       buildLiquidityPools({
@@ -4557,11 +5106,11 @@ async function handler(
 
         sessions,
 
-        equalLiquidity,
+        equals,
 
         swings,
 
-        roundNumbers
+        roundLevels
 
       });
 
@@ -4571,6 +5120,10 @@ async function handler(
         pools
       );
 
+
+    /* ======================================================
+       RAID
+    ====================================================== */
 
     const raid =
       analyzeRaid({
@@ -4582,23 +5135,28 @@ async function handler(
 
         atr,
 
-        lastM5:
+        candle:
           m5.at(-1),
 
-        m15Structure,
+        m15:
+          m15Structure,
 
-        h1Structure,
+        h1:
+          h1Structure,
 
-        h4Structure,
+        h4:
+          h4Structure,
 
         flow,
-
-        book,
 
         volume
 
       });
 
+
+    /* ======================================================
+       CONFIRMATION
+    ====================================================== */
 
     const rejection =
       candleRejection(
@@ -4612,6 +5170,10 @@ async function handler(
       );
 
 
+    /* ======================================================
+       SIGNAL
+    ====================================================== */
+
     const signal =
       generateSignal({
 
@@ -4623,17 +5185,19 @@ async function handler(
 
         raid,
 
-        m5Structure,
+        m5:
+          m5Structure,
 
-        m15Structure,
+        m15:
+          m15Structure,
 
-        h1Structure,
+        h1:
+          h1Structure,
 
-        h4Structure,
+        h4:
+          h4Structure,
 
         flow,
-
-        book,
 
         rejection,
 
@@ -4641,6 +5205,10 @@ async function handler(
 
       });
 
+
+    /* ======================================================
+       MACRO BIAS
+    ====================================================== */
 
     const bullish =
       [
@@ -4652,8 +5220,8 @@ async function handler(
         h4Structure
 
       ].filter(
-        item =>
-          item.bias ===
+        x =>
+          x.bias ===
           "BULLISH"
       ).length;
 
@@ -4668,8 +5236,8 @@ async function handler(
         h4Structure
 
       ].filter(
-        item =>
-          item.bias ===
+        x =>
+          x.bias ===
           "BEARISH"
       ).length;
 
@@ -4700,12 +5268,15 @@ async function handler(
     }
 
 
+    /* ======================================================
+       VOLATILITY
+    ====================================================== */
+
     const atrPercent =
-      price > 0
-        ? atr /
-          price *
-          100
-        : 0;
+
+      atr /
+      price *
+      100;
 
 
     let regime =
@@ -4745,6 +5316,10 @@ async function handler(
     }
 
 
+    /* ======================================================
+       RESPONSE
+    ====================================================== */
+
     return res
       .status(200)
       .json({
@@ -4753,7 +5328,7 @@ async function handler(
           true,
 
         engine:
-          "MKAYFX BTC LIQUIDITY INTELLIGENCE V2.1",
+          "MKAYFX BTC LIQUIDITY INTELLIGENCE V3",
 
         source:
           "Coinbase Exchange",
@@ -4778,26 +5353,13 @@ async function handler(
             ),
 
           bid:
-            round(
-              book.bestBid
-            ),
+            book.bestBid,
 
           ask:
-            round(
-              book.bestAsk
-            ),
+            book.bestAsk,
 
           spread:
-            book.bestBid &&
-            book.bestAsk
-
-              ? round(
-                book.bestAsk -
-                book.bestBid,
-                2
-              )
-
-              : null
+            book.spread
 
         },
 
@@ -4813,16 +5375,21 @@ async function handler(
 
                 high:
                   round(
-                    sessions.asia.high
+                    sessions
+                      .asia
+                      .high
                   ),
 
                 low:
                   round(
-                    sessions.asia.low
+                    sessions
+                      .asia
+                      .low
                   )
 
               }
               : null,
+
 
           london:
             sessions.london
@@ -4830,16 +5397,21 @@ async function handler(
 
                 high:
                   round(
-                    sessions.london.high
+                    sessions
+                      .london
+                      .high
                   ),
 
                 low:
                   round(
-                    sessions.london.low
+                    sessions
+                      .london
+                      .low
                   )
 
               }
               : null,
+
 
           newYork:
             sessions.newYork
@@ -4847,12 +5419,16 @@ async function handler(
 
                 high:
                   round(
-                    sessions.newYork.high
+                    sessions
+                      .newYork
+                      .high
                   ),
 
                 low:
                   round(
-                    sessions.newYork.low
+                    sessions
+                      .newYork
+                      .low
                   )
 
               }
@@ -4907,16 +5483,19 @@ async function handler(
             ),
 
           position:
-            vwap === null
 
-              ? "UNKNOWN"
+            Number.isFinite(
+              vwap
+            )
 
-              : price >
+              ? price >
                 vwap
 
                 ? "ABOVE"
 
                 : "BELOW"
+
+              : "UNKNOWN"
 
         },
 
@@ -4925,45 +5504,55 @@ async function handler(
 
           previousDayHigh:
             round(
-              daily.previousDayHigh
+              daily
+                .previousDayHigh
             ),
 
           previousDayLow:
             round(
-              daily.previousDayLow
+              daily
+                .previousDayLow
             ),
 
           dailyOpen:
             round(
-              daily.dailyOpen
+              daily
+                .dailyOpen
             ),
 
           previousWeekHigh:
             round(
-              weekly.previousWeekHigh
+              weekly
+                .previousWeekHigh
             ),
 
           previousWeekLow:
             round(
-              weekly.previousWeekLow
+              weekly
+                .previousWeekLow
             ),
 
           weeklyOpen:
             round(
-              weekly.weeklyOpen
+              weekly
+                .weeklyOpen
             ),
 
           roundNumberAbove:
-            roundNumbers.upper,
+            roundLevels
+              .upper,
 
           roundNumberBelow:
-            roundNumbers.lower,
+            roundLevels
+              .lower,
 
           majorRoundAbove:
-            roundNumbers.majorUpper,
+            roundLevels
+              .majorUpper,
 
           majorRoundBelow:
-            roundNumbers.majorLower
+            roundLevels
+              .majorLower
 
         },
 
@@ -4995,6 +5584,7 @@ async function handler(
 
 
         liquidityPools:
+
           pools
             .slice(
               0,
@@ -5054,6 +5644,26 @@ async function handler(
           D1:
             d1.length
 
+        },
+
+
+        diagnostics: {
+
+          ticker:
+            true,
+
+          trades:
+            flow.available,
+
+          topOfBook:
+            book.available,
+
+          level2Book:
+            false,
+
+          heavyOrderBookDisabled:
+            true
+
         }
 
       });
@@ -5071,10 +5681,15 @@ async function handler(
 
 
     console.error(
-      "BTC ENGINE ERROR:",
+      "MKAYFX BTC V3 ERROR:",
       message
     );
 
+
+    /*
+       Important:
+       always return our own JSON.
+    */
 
     return res
       .status(500)
@@ -5084,7 +5699,7 @@ async function handler(
           false,
 
         engine:
-          "MKAYFX BTC LIQUIDITY INTELLIGENCE V2.1",
+          "MKAYFX BTC LIQUIDITY INTELLIGENCE V3",
 
         source:
           "Coinbase Exchange",
