@@ -3,6 +3,9 @@
   "functions": {
     "api/btc.js": {
       "maxDuration": 30
+    },
+    "api/backtest.js": {
+      "maxDuration": 30
     }
   },
   "headers": [
