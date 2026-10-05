@@ -1,33 +1,11 @@
 /* =========================================================
-   MKAYFX XAU LIVE PRICE FEED
+   MKAYFX XAU LIVE PRICE
    /api/price.js
 
-   PURPOSE
-   -------
-   Lightweight XAU/USD price endpoint.
+   Lightweight live XAU/USD endpoint.
 
-   This endpoint is deliberately separate from /api/xau.
-
-   /api/xau
-   --------
-   Heavy analysis:
-   - Liquidity pools
-   - Sweep projections
-   - MTF structure
-   - Footprint proxy
-   - Sessions
-   - Macro
-   - Historical sweep statistics
-
-   /api/price
-   ----------
-   Lightweight:
-   - Current XAU/USD price
-   - Updated frequently
-   - Used for live sweep-stage tracking
-
-   ENVIRONMENT VARIABLE
-   --------------------
+   ENVIRONMENT
+   -----------
    TWELVE_DATA_API_KEY
 ========================================================= */
 
@@ -44,8 +22,12 @@ const SYMBOL =
   "XAU/USD";
 
 
-const CACHE_MS =
-  4_000;
+/*
+  Keep this reasonably high so Twelve Data
+  does not get hammered unnecessarily.
+*/
+const MEMORY_CACHE_MS =
+  8_000;
 
 
 let memoryCache = {
@@ -148,7 +130,7 @@ export default async function handler(
 
 
     /* =====================================================
-       SHORT MEMORY CACHE
+       MEMORY CACHE
     ===================================================== */
 
     if (
@@ -159,7 +141,7 @@ export default async function handler(
 
       now -
       memoryCache.at <
-      CACHE_MS
+      MEMORY_CACHE_MS
 
     ) {
 
@@ -182,32 +164,32 @@ export default async function handler(
 
 
     /* =====================================================
-       TRY TWELVE DATA /price FIRST
+       DIRECT PRICE
     ===================================================== */
 
-    let result =
+    let quote =
       await fetchDirectPrice();
 
 
     /* =====================================================
-       FALLBACK TO 1-MIN CANDLE
+       FALLBACK TO 1M
     ===================================================== */
 
     if (
-      !result
+      !quote
     ) {
 
-      result =
+      quote =
         await fetchFallbackPrice();
 
     }
 
 
     if (
-      !result
+      !quote
       ||
       !Number.isFinite(
-        result.price
+        quote.price
       )
     ) {
 
@@ -228,15 +210,15 @@ export default async function handler(
 
       price:
         round(
-          result.price,
+          quote.price,
           3
         ),
 
       source:
-        result.source,
+        quote.source,
 
       quoteTime:
-        result.quoteTime
+        quote.quoteTime
         ||
         new Date()
           .toISOString(),
@@ -277,7 +259,7 @@ export default async function handler(
   ) {
 
     console.error(
-      "Live XAU price error:",
+      "XAU live price error:",
       error
     );
 
@@ -292,7 +274,7 @@ export default async function handler(
         error:
           error?.message
           ||
-          "Unknown price error"
+          "Unknown live-price error"
 
       });
 
@@ -302,7 +284,7 @@ export default async function handler(
 
 
 /* =========================================================
-   DIRECT PRICE
+   DIRECT /price ENDPOINT
 ========================================================= */
 
 async function fetchDirectPrice() {
@@ -335,7 +317,7 @@ async function fetchDirectPrice() {
           headers: {
 
             "User-Agent":
-              "MKAYFX-Live-Price/1.0"
+              "MKAYFX-XAU-Live/2.0"
 
           }
 
@@ -357,8 +339,7 @@ async function fetchDirectPrice() {
 
 
     if (
-      data.status ===
-      "error"
+      data.status === "error"
     ) {
 
       return null;
@@ -409,7 +390,7 @@ async function fetchDirectPrice() {
 
 
 /* =========================================================
-   FALLBACK
+   1M FALLBACK
 ========================================================= */
 
 async function fetchFallbackPrice() {
@@ -458,17 +439,7 @@ async function fetchFallbackPrice() {
 
   const response =
     await fetch(
-      url,
-      {
-
-        headers: {
-
-          "User-Agent":
-            "MKAYFX-Live-Price-Fallback/1.0"
-
-        }
-
-      }
+      url
     );
 
 
@@ -490,15 +461,14 @@ async function fetchFallbackPrice() {
 
 
   if (
-    data.status ===
-    "error"
+    data.status === "error"
   ) {
 
     throw new Error(
 
       data.message
       ||
-      "Twelve Data fallback error"
+      "Twelve Data error"
 
     );
 
@@ -514,7 +484,7 @@ async function fetchFallbackPrice() {
   ) {
 
     throw new Error(
-      "Fallback returned no values"
+      "No fallback candle returned"
     );
 
   }
@@ -537,7 +507,7 @@ async function fetchFallbackPrice() {
   ) {
 
     throw new Error(
-      "Fallback returned invalid price"
+      "Invalid fallback price"
     );
 
   }
@@ -591,7 +561,7 @@ async function fetchFallbackPrice() {
     price,
 
     source:
-      "Twelve Data 1min fallback",
+      "Twelve Data M1 fallback",
 
     quoteTime
 
@@ -609,7 +579,7 @@ function round(
   decimals = 2
 ) {
 
-  const number =
+  const n =
     Number(
       value
     );
@@ -617,7 +587,7 @@ function round(
 
   if (
     !Number.isFinite(
-      number
+      n
     )
   ) {
 
@@ -633,7 +603,7 @@ function round(
 
   return Math.round(
 
-    number *
+    n *
     multiplier
 
   )
