@@ -1,134 +1,28 @@
-const TD_BASE =
-  "https://api.twelvedata.com";
-
-
-export default async function handler(
-  req,
-  res
-) {
-
-  res.setHeader(
-    "Content-Type",
-    "application/json; charset=utf-8"
-  );
-
-  res.setHeader(
-    "Cache-Control",
-    "s-maxage=8, stale-while-revalidate=12"
-  );
-
-
-  const apiKey =
-    process.env.TWELVE_DATA_API_KEY;
-
-
+export default async function handler(req, res) {
+  // Pulls securely from Vercel Environment Variables
+  const apiKey = process.env.TWELVE_DATA_API_KEY;
+  const symbol = "XAU/USD";
+  const interval = "1h"; 
+  
   if (!apiKey) {
-
-    return res
-      .status(500)
-      .json({
-        ok: false,
-        error:
-          "Missing TWELVE_DATA_API_KEY in Vercel Environment Variables."
-      });
-
+    return res.status(500).json({ error: "TWELVE_DATA_API_KEY environment variable is not configured on Vercel." });
   }
-
 
   try {
+    const apiResponse = await fetch(`https://api.twelvedata.com/time_series?symbol=${symbol}&interval=${interval}&outputsize=10&apikey=${apiKey}`);
+    const data = await apiResponse.json();
 
-    const url =
-      `${TD_BASE}/price` +
-      `?symbol=${encodeURIComponent("XAU/USD")}` +
-      `&apikey=${encodeURIComponent(apiKey)}`;
-
-
-    const response =
-      await fetch(
-        url,
-        {
-          headers: {
-            Accept:
-              "application/json"
-          },
-
-          signal:
-            AbortSignal.timeout(
-              8000
-            )
-        }
-      );
-
-
-    if (!response.ok) {
-
-      throw new Error(
-        `Twelve Data HTTP ${response.status}`
-      );
-
+    if (data.status === "error") {
+      return res.status(400).json({ error: data.message });
     }
 
-
-    const data =
-      await response.json();
-
-
-    if (
-      data.status === "error" ||
-      !Number.isFinite(
-        Number(
-          data.price
-        )
-      )
-    ) {
-
-      throw new Error(
-        data.message ||
-        "Twelve Data returned no XAU/USD price."
-      );
-
-    }
-
-
-    return res
-      .status(200)
-      .json({
-
-        ok: true,
-
-        symbol:
-          "XAU/USD",
-
-        price:
-          Number(
-            data.price
-          ),
-
-        timestamp:
-          new Date()
-            .toISOString(),
-
-        source:
-          "Twelve Data"
-
-      });
-
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json({
+      symbol: data.meta.symbol,
+      interval: data.meta.interval,
+      values: data.values // Array containing open, high, low, close data
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to communicate with Twelve Data API." });
   }
-
-  catch (error) {
-
-    return res
-      .status(502)
-      .json({
-
-        ok: false,
-
-        error:
-          error?.message ||
-          "Price request failed."
-
-      });
-
-  }
-
 }
