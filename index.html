@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
@@ -11,10 +10,7 @@
   content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"
 >
 
-<meta
-  name="theme-color"
-  content="#030507"
->
+<meta name="theme-color" content="#05080d">
 
 <meta
   name="apple-mobile-web-app-capable"
@@ -26,130 +22,84 @@
   content="black-translucent"
 >
 
-<meta
-  name="apple-mobile-web-app-title"
-  content="MKAYFX SWEEP"
->
-
-<title>MKAYFX Liquidity Sweep Strategy</title>
+<title>MKAYFX SWEEP STRATEGY</title>
 
 
 <style>
+
+/* =========================================================
+   RESET
+========================================================= */
 
 *{
   box-sizing:border-box;
   -webkit-tap-highlight-color:transparent;
 }
 
-
 :root{
 
-  --bg:#030507;
-  --bg2:#060a0f;
-
-  --card:#080d13;
+  --bg:#020406;
+  --card:#080d14;
   --card2:#0b1119;
-  --card3:#0e151f;
+  --border:#1c2736;
 
-  --border:#1a222d;
-  --border2:#252f3c;
+  --text:#f4f6f8;
+  --muted:#778196;
 
-  --text:#f5f7fa;
-  --muted:#7c899b;
-  --muted2:#a7b0bc;
+  --gold:#f7c84f;
+  --orange:#ff9748;
 
-  --green:#3ae6a5;
-  --red:#ff657d;
-  --gold:#f4ca5d;
-  --blue:#7994ff;
-  --orange:#ff9b4a;
-
-  --shadow:
-    0 22px 70px
-    rgba(0,0,0,.30);
-
+  --green:#35e6a1;
+  --red:#ff6077;
+  --blue:#7d95ff;
 }
 
-
-html{
-
-  background:
-    var(--bg);
-
-}
-
-
+html,
 body{
-
   margin:0;
-
-  min-height:
-    100vh;
-
+  padding:0;
   background:
-
     radial-gradient(
-      circle at 50% -15%,
-      rgba(72,94,130,.13),
-      transparent 28%
-    ),
-
-    var(--bg);
-
-  color:
-    var(--text);
-
+      circle at top left,
+      #07111d 0%,
+      #030609 35%,
+      #010203 75%
+    );
+  color:var(--text);
   font-family:
     -apple-system,
     BlinkMacSystemFont,
-    "SF Pro Display",
     "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
     sans-serif;
-
-  padding-bottom:
-    calc(
-      50px +
-      env(safe-area-inset-bottom)
-    );
-
 }
 
+body{
+  min-height:100vh;
+}
 
 button{
-
-  font:
-    inherit;
-
+  font:inherit;
 }
 
 
 /* =========================================================
-   SHELL
+   APP
 ========================================================= */
 
+.app{
 
-.shell{
+  width:100%;
+  max-width:760px;
 
-  width:
-    min(
-      100%,
-      920px
-    );
-
-  margin:
-    auto;
+  margin:0 auto;
 
   padding:
-
-    calc(
-      18px +
-      env(safe-area-inset-top)
-    )
-
-    16px
-
-    40px;
-
+    calc(env(safe-area-inset-top) + 30px)
+    20px
+    calc(env(safe-area-inset-bottom) + 50px);
 }
 
 
@@ -157,571 +107,315 @@ button{
    HEADER
 ========================================================= */
 
-
 .header{
 
   display:flex;
 
-  justify-content:
-    space-between;
+  justify-content:space-between;
+  align-items:flex-start;
 
-  align-items:
-    flex-start;
+  gap:20px;
 
-  gap:
-    14px;
-
-  margin-bottom:
-    20px;
-
+  margin-bottom:35px;
 }
-
-
-.brand-small{
-
-  color:
-    var(--gold);
-
-  font-size:
-    11px;
-
-  font-weight:
-    900;
-
-  letter-spacing:
-    .16em;
-
-  text-transform:
-    uppercase;
-
-  margin-bottom:
-    5px;
-
-}
-
 
 .brand{
 
-  font-size:
-    clamp(
-      25px,
-      7vw,
-      38px
-    );
+  font-size:15px;
+  font-weight:900;
 
-  line-height:
-    1;
+  letter-spacing:5px;
 
-  font-weight:
-    900;
+  color:var(--gold);
 
-  letter-spacing:
-    -.045em;
-
+  margin-bottom:12px;
 }
 
+h1{
+
+  margin:0;
+
+  font-size:40px;
+  line-height:1;
+
+  letter-spacing:-2px;
+}
 
 .subtitle{
 
-  color:
-    var(--muted);
+  margin-top:14px;
 
-  font-size:
-    13px;
+  color:var(--muted);
 
-  margin-top:
-    8px;
-
+  font-size:18px;
 }
 
+.refreshBtn{
 
-.refresh{
+  width:64px;
+  height:64px;
 
-  flex:
-    0 0 auto;
+  flex:0 0 64px;
 
-  border:
-    1px solid
-    var(--border2);
+  border-radius:22px;
 
-  background:
-    var(--card2);
+  border:1px solid var(--border);
 
-  color:
-    var(--text);
+  background:#08101a;
 
-  border-radius:
-    14px;
+  color:white;
 
-  min-width:
-    52px;
+  font-size:30px;
 
-  height:
-    46px;
+  display:flex;
 
-  padding:
-    0 15px;
+  align-items:center;
+  justify-content:center;
 
-  font-weight:
-    800;
+  cursor:pointer;
+}
 
+.refreshBtn:active{
+  transform:scale(.96);
 }
 
 
 /* =========================================================
-   STATUS
+   CONNECTION
 ========================================================= */
-
 
 .connection{
 
   display:flex;
 
-  align-items:
-    center;
+  align-items:center;
 
-  gap:
-    8px;
+  gap:12px;
 
-  margin-bottom:
-    14px;
+  color:var(--muted);
 
-  color:
-    var(--muted);
+  margin-bottom:26px;
 
-  font-size:
-    12px;
-
+  font-size:17px;
 }
-
 
 .dot{
 
-  width:
-    8px;
+  width:11px;
+  height:11px;
 
-  height:
-    8px;
+  border-radius:50%;
 
-  border-radius:
-    50%;
-
-  background:
-    var(--orange);
+  background:var(--orange);
 
   box-shadow:
-    0 0 15px
-    currentColor;
-
+    0 0 16px rgba(255,151,72,.55);
 }
 
+.dot.connected{
 
-.dot.live{
+  background:var(--green);
 
-  background:
-    var(--green);
-
+  box-shadow:
+    0 0 16px rgba(53,230,161,.55);
 }
-
 
 .dot.error{
 
-  background:
-    var(--red);
+  background:var(--red);
 
-}
-
-
-.error{
-
-  display:none;
-
-  background:
-    rgba(
-      255,
-      101,
-      125,
-      .08
-    );
-
-  color:
-    var(--red);
-
-  border:
-    1px solid
-    rgba(
-      255,
-      101,
-      125,
-      .18
-    );
-
-  padding:
-    14px;
-
-  border-radius:
-    15px;
-
-  margin-bottom:
-    16px;
-
-  font-size:
-    13px;
-
+  box-shadow:
+    0 0 16px rgba(255,96,119,.55);
 }
 
 
 /* =========================================================
-   CARDS
+   CARD
 ========================================================= */
-
 
 .card{
 
   background:
-
     linear-gradient(
-      180deg,
-      rgba(255,255,255,.018),
-      transparent
-    ),
+      145deg,
+      rgba(13,20,30,.96),
+      rgba(5,9,14,.98)
+    );
 
-    var(--card);
+  border:1px solid var(--border);
 
-  border:
-    1px solid
-    var(--border);
+  border-radius:32px;
 
-  border-radius:
-    24px;
+  padding:26px;
 
   box-shadow:
-    var(--shadow);
+    0 25px 60px rgba(0,0,0,.35);
 
-}
-
-
-.section{
-
-  margin-top:
-    30px;
-
-}
-
-
-.section-head{
-
-  display:flex;
-
-  align-items:
-    flex-end;
-
-  justify-content:
-    space-between;
-
-  gap:
-    12px;
-
-  margin:
-
-    0
-    4px
-    12px;
-
-}
-
-
-.section-title{
-
-  font-size:
-    21px;
-
-  font-weight:
-    900;
-
-  letter-spacing:
-    -.025em;
-
-}
-
-
-.section-sub{
-
-  color:
-    var(--muted);
-
-  font-size:
-    12px;
-
-  text-align:
-    right;
-
+  margin-bottom:30px;
 }
 
 
 /* =========================================================
-   HERO
+   MAIN SIGNAL
 ========================================================= */
 
-
-.hero{
-
-  padding:
-    22px;
-
-}
-
-
-.hero-top{
+.signalTop{
 
   display:flex;
 
-  justify-content:
-    space-between;
+  justify-content:space-between;
+  align-items:flex-start;
 
-  align-items:
-    flex-start;
-
-  gap:
-    12px;
-
+  gap:20px;
 }
 
+.symbol{
 
-.label{
+  color:#9aa4b9;
 
-  color:
-    var(--muted);
+  font-size:15px;
 
-  font-size:
-    11px;
+  letter-spacing:4px;
 
-  font-weight:
-    900;
-
-  letter-spacing:
-    .14em;
-
-  text-transform:
-    uppercase;
-
+  font-weight:900;
 }
-
 
 .price{
 
-  font-size:
-    clamp(
-      37px,
-      11vw,
-      58px
-    );
+  font-size:42px;
+  font-weight:900;
 
-  font-weight:
-    900;
+  margin-top:25px;
 
-  letter-spacing:
-    -.055em;
-
-  margin-top:
-    6px;
-
+  letter-spacing:-2px;
 }
 
+.marketMessage{
 
-.signal{
+  color:var(--muted);
 
-  min-width:
-    92px;
+  font-size:17px;
 
-  text-align:
-    center;
+  margin-top:12px;
+}
 
-  padding:
-    12px 14px;
+.signalBadge{
 
-  border-radius:
-    14px;
+  min-width:125px;
 
-  font-weight:
-    900;
+  padding:18px 18px;
 
-  font-size:
-    16px;
+  text-align:center;
 
-  letter-spacing:
-    .05em;
+  border-radius:20px;
+
+  border:1px solid #29374a;
+
+  color:var(--gold);
 
   background:
-    #10161e;
+    rgba(247,200,79,.07);
 
-  color:
-    var(--muted2);
+  font-size:21px;
 
-  border:
-    1px solid
-    var(--border2);
+  font-weight:900;
 
+  letter-spacing:2px;
 }
 
+.signalBadge.buy{
 
-.signal.buy{
-
-  color:
-    var(--green);
+  color:var(--green);
 
   background:
-    rgba(
-      58,
-      230,
-      165,
-      .09
-    );
-
-  border-color:
-    rgba(
-      58,
-      230,
-      165,
-      .20
-    );
-
+    rgba(53,230,161,.08);
 }
 
+.signalBadge.sell{
 
-.signal.sell{
-
-  color:
-    var(--red);
+  color:var(--red);
 
   background:
-    rgba(
-      255,
-      101,
-      125,
-      .09
-    );
-
-  border-color:
-    rgba(
-      255,
-      101,
-      125,
-      .20
-    );
-
+    rgba(255,96,119,.08);
 }
 
 
-.signal.wait{
+/* =========================================================
+   STATE
+========================================================= */
 
-  color:
-    var(--gold);
+.stateGrid{
 
-  background:
-    rgba(
-      244,
-      202,
-      93,
-      .07
-    );
+  margin-top:40px;
 
+  display:grid;
+
+  grid-template-columns:1fr auto;
+
+  gap:20px;
+
+  align-items:end;
 }
 
+.smallLabel{
 
-.state-row{
+  color:#8a94aa;
 
-  margin-top:
-    20px;
+  font-size:13px;
 
-  display:flex;
+  letter-spacing:4px;
 
-  justify-content:
-    space-between;
+  font-weight:900;
 
-  align-items:
-    flex-end;
-
-  gap:
-    16px;
-
+  margin-bottom:8px;
 }
 
+.stateValue{
 
-.state-name{
+  font-size:24px;
 
-  font-size:
-    17px;
-
-  font-weight:
-    850;
-
+  font-weight:900;
 }
 
+.confidenceValue{
 
-.confidence{
+  font-size:27px;
 
-  text-align:
-    right;
+  font-weight:900;
 
+  color:var(--gold);
+
+  text-align:right;
 }
 
+.bar{
 
-.confidence-number{
+  margin-top:28px;
 
-  font-size:
-    28px;
+  height:8px;
 
-  font-weight:
-    900;
+  border-radius:999px;
 
-  color:
-    var(--gold);
+  background:#111b28;
 
+  overflow:hidden;
 }
 
+.barFill{
 
-.progress{
+  width:0%;
 
-  height:
-    6px;
+  height:100%;
 
-  background:
-    #121922;
+  border-radius:999px;
 
-  overflow:
-    hidden;
+  background:linear-gradient(
+    90deg,
+    var(--orange),
+    var(--gold)
+  );
 
-  border-radius:
-    999px;
-
-  margin-top:
-    17px;
-
-}
-
-
-.progress-fill{
-
-  width:
-    0%;
-
-  height:
-    100%;
-
-  background:
-    linear-gradient(
-      90deg,
-      var(--blue),
-      var(--gold)
-    );
-
-  border-radius:
-    inherit;
-
-  transition:
-    width .3s ease;
-
+  transition:width .35s ease;
 }
 
 
@@ -729,34 +423,85 @@ button{
    THESIS
 ========================================================= */
 
-
 .thesis{
 
-  margin-top:
-    16px;
+  margin-top:25px;
 
-  padding:
-    17px;
+  border:1px solid var(--border);
 
-  background:
-    var(--card2);
+  border-radius:22px;
 
-  border:
-    1px solid
-    var(--border);
+  padding:22px;
 
-  border-radius:
-    17px;
+  color:#dbe0e8;
 
-  color:
-    #d7dde5;
+  font-size:17px;
+  line-height:1.5;
 
-  line-height:
-    1.55;
+  background:#060c13;
+}
 
-  font-size:
-    14px;
 
+/* =========================================================
+   ALERT BUTTON
+========================================================= */
+
+.alertBtn{
+
+  width:100%;
+
+  margin-top:20px;
+
+  padding:22px;
+
+  border-radius:22px;
+
+  border:1px solid var(--border);
+
+  background:#07101a;
+
+  color:white;
+
+  font-size:18px;
+
+  font-weight:800;
+
+  cursor:pointer;
+}
+
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+.sectionHeader{
+
+  display:flex;
+
+  align-items:end;
+  justify-content:space-between;
+
+  gap:20px;
+
+  margin:44px 8px 18px;
+}
+
+.sectionTitle{
+
+  font-size:30px;
+
+  font-weight:900;
+
+  letter-spacing:-1px;
+}
+
+.sectionSub{
+
+  color:var(--muted);
+
+  font-size:15px;
+
+  text-align:right;
 }
 
 
@@ -764,679 +509,216 @@ button{
    TRADE PLAN
 ========================================================= */
 
-
-.trade-grid{
+.planGrid{
 
   display:grid;
 
-  grid-template-columns:
-    repeat(
-      2,
-      minmax(
-        0,
-        1fr
-      )
-    );
+  grid-template-columns:1fr 1fr;
 
-  gap:
-    10px;
-
-  margin-top:
-    16px;
-
+  gap:14px;
 }
 
+.planBox{
 
-.metric{
+  min-height:120px;
 
-  min-width:
-    0;
+  border:1px solid var(--border);
 
-  padding:
-    15px;
+  border-radius:22px;
 
-  background:
-    var(--card2);
+  background:#07101a;
 
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:
-    17px;
-
+  padding:18px;
 }
 
+.planLabel{
 
-.metric-label{
+  color:#8f99ae;
 
-  color:
-    var(--muted);
+  font-size:12px;
 
-  font-size:
-    10px;
+  letter-spacing:3px;
 
-  font-weight:
-    900;
+  font-weight:900;
 
-  letter-spacing:
-    .12em;
-
-  text-transform:
-    uppercase;
-
+  margin-bottom:18px;
 }
 
+.planValue{
 
-.metric-value{
+  font-size:21px;
 
-  margin-top:
-    7px;
-
-  font-size:
-    19px;
-
-  font-weight:
-    850;
-
-  overflow-wrap:
-    anywhere;
-
+  font-weight:900;
 }
-
-
-.metric-note{
-
-  color:
-    var(--muted);
-
-  margin-top:
-    4px;
-
-  font-size:
-    11px;
-
-  line-height:
-    1.35;
-
-}
-
 
 .gold{
-
-  color:
-    var(--gold);
-
+  color:var(--gold);
 }
-
-
-.red{
-
-  color:
-    var(--red);
-
-}
-
 
 .green{
+  color:var(--green);
+}
 
-  color:
-    var(--green);
-
+.red{
+  color:var(--red);
 }
 
 
 /* =========================================================
-   CHECKLIST
+   DEBUG
 ========================================================= */
 
+.debugCard{
 
-.checklist{
+  border-color:#394456;
 
-  overflow:
-    hidden;
-
+  background:
+    linear-gradient(
+      145deg,
+      rgba(14,18,26,.98),
+      rgba(3,5,8,.98)
+    );
 }
 
+.debugTitle{
 
-.check{
+  font-size:24px;
+
+  font-weight:900;
+
+  margin-bottom:8px;
+}
+
+.debugHelp{
+
+  color:var(--muted);
+
+  line-height:1.5;
+
+  margin-bottom:25px;
+}
+
+.debugGrid{
 
   display:grid;
 
-  grid-template-columns:
-    34px
-    1fr;
+  grid-template-columns:1fr 1fr;
 
-  gap:
-    10px;
-
-  padding:
-    15px 16px;
-
-  border-bottom:
-    1px solid
-    var(--border);
-
+  gap:12px;
 }
 
+.debugBox{
 
-.check:last-child{
+  border:1px solid var(--border);
 
-  border-bottom:
-    0;
+  background:#050a10;
 
+  border-radius:18px;
+
+  padding:16px;
 }
 
+.debugKey{
 
-.check-icon{
+  color:#808ba0;
 
-  width:
-    28px;
+  font-size:11px;
 
-  height:
-    28px;
+  letter-spacing:2px;
 
-  border-radius:
-    10px;
+  font-weight:800;
 
-  display:flex;
-
-  align-items:
-    center;
-
-  justify-content:
-    center;
-
-  font-size:
-    13px;
-
-  font-weight:
-    900;
-
-  color:
-    var(--red);
-
-  background:
-    rgba(
-      255,
-      101,
-      125,
-      .08
-    );
-
+  margin-bottom:10px;
 }
 
+.debugValue{
 
-.check.pass
-.check-icon{
+  font-size:15px;
 
-  color:
-    var(--green);
+  font-weight:800;
 
-  background:
-    rgba(
-      58,
-      230,
-      165,
-      .09
-    );
-
+  overflow-wrap:anywhere;
 }
 
+.debugRaw{
 
-.check-title{
+  margin-top:18px;
 
-  font-weight:
-    780;
+  padding:17px;
 
-  font-size:
-    14px;
+  border-radius:18px;
 
+  background:#020508;
+
+  border:1px solid var(--border);
+
+  overflow-x:auto;
+
+  white-space:pre-wrap;
+
+  word-break:break-word;
+
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace;
+
+  font-size:12px;
+
+  line-height:1.6;
+
+  color:#c8d1df;
+
+  min-height:180px;
 }
 
+.errorText{
+  color:var(--red);
+}
 
-.check-detail{
+.successText{
+  color:var(--green);
+}
 
-  color:
-    var(--muted);
-
-  font-size:
-    12px;
-
-  margin-top:
-    4px;
-
+.warningText{
+  color:var(--gold);
 }
 
 
 /* =========================================================
-   FOOTPRINT
+   MOBILE
 ========================================================= */
 
-
-.foot-grid{
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(
-      2,
-      1fr
-    );
-
-  gap:
-    10px;
-
-  padding:
-    14px;
-
-}
-
-
-.foot-item{
-
-  padding:
-    15px;
-
-  background:
-    var(--card2);
-
-  border:
-    1px solid
-    var(--border);
-
-  border-radius:
-    17px;
-
-}
-
-
-.delta{
-
-  font-size:
-    25px;
-
-  font-weight:
-    900;
-
-  margin-top:
-    7px;
-
-}
-
-
-.delta.pos{
-
-  color:
-    var(--green);
-
-}
-
-
-.delta.neg{
-
-  color:
-    var(--red);
-
-}
-
-
-/* =========================================================
-   LIQUIDITY CARDS
-========================================================= */
-
-
-.pool-list{
-
-  display:grid;
-
-  gap:
-    10px;
-
-}
-
-
-.pool{
-
-  padding:
-    17px;
-
-}
-
-
-.pool-top{
-
-  display:flex;
-
-  justify-content:
-    space-between;
-
-  align-items:
-    flex-start;
-
-  gap:
-    12px;
-
-}
-
-
-.pool-name{
-
-  font-size:
-    17px;
-
-  font-weight:
-    850;
-
-}
-
-
-.pool-type{
-
-  color:
-    var(--muted);
-
-  font-size:
-    11px;
-
-  margin-top:
-    3px;
-
-}
-
-
-.pool-score{
-
-  min-width:
-    64px;
-
-  text-align:
-    center;
-
-  border-radius:
-    13px;
-
-  padding:
-    8px 9px;
-
-  font-weight:
-    900;
-
-  color:
-    var(--gold);
-
-  background:
-    rgba(
-      244,
-      202,
-      93,
-      .08
-    );
-
-}
-
-
-.pool-grid{
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(
-      2,
-      1fr
-    );
-
-  gap:
-    13px;
-
-  margin-top:
-    16px;
-
-}
-
-
-.pool-key{
-
-  color:
-    var(--muted);
-
-  font-size:
-    10px;
-
-  font-weight:
-    850;
-
-  text-transform:
-    uppercase;
-
-  letter-spacing:
-    .1em;
-
-}
-
-
-.pool-value{
-
-  margin-top:
-    4px;
-
-  font-size:
-    15px;
-
-  font-weight:
-    750;
-
-}
-
-
-/* =========================================================
-   SESSIONS
-========================================================= */
-
-
-.sessions{
-
-  display:grid;
-
-  gap:
-    10px;
-
-}
-
-
-.session{
-
-  padding:
-    16px;
-
-  display:flex;
-
-  justify-content:
-    space-between;
-
-  gap:
-    15px;
-
-  align-items:
-    center;
-
-}
-
-
-.session-name{
-
-  font-weight:
-    850;
-
-}
-
-
-.session-phase{
-
-  color:
-    var(--muted);
-
-  font-size:
-    11px;
-
-  margin-top:
-    4px;
-
-}
-
-
-.session-right{
-
-  text-align:
-    right;
-
-}
-
-
-.active{
-
-  color:
-    var(--green);
-
-}
-
-
-.closed{
-
-  color:
-    var(--muted);
-
-}
-
-
-/* =========================================================
-   NOTIFICATIONS
-========================================================= */
-
-
-.notify{
-
-  width:
-    100%;
-
-  height:
-    50px;
-
-  border-radius:
-    16px;
-
-  margin-top:
-    12px;
-
-  background:
-    var(--card2);
-
-  color:
-    var(--text);
-
-  border:
-    1px solid
-    var(--border2);
-
-  font-weight:
-    850;
-
-}
-
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
-
-.footer{
-
-  color:
-    var(--muted);
-
-  font-size:
-    11px;
-
-  line-height:
-    1.6;
-
-  margin-top:
-    32px;
-
-  padding:
-    0 5px;
-
-}
-
-
-/* =========================================================
-   DESKTOP
-========================================================= */
-
-
-@media(
-  min-width:700px
-){
-
-  .trade-grid{
-
-    grid-template-columns:
-      repeat(
-        4,
-        1fr
-      );
-
+@media(max-width:520px){
+
+  .app{
+    padding-left:18px;
+    padding-right:18px;
   }
 
-
-  .foot-grid{
-
-    grid-template-columns:
-      repeat(
-        4,
-        1fr
-      );
-
+  h1{
+    font-size:34px;
   }
 
-
-  .pool-list{
-
-    grid-template-columns:
-      repeat(
-        2,
-        1fr
-      );
-
+  .subtitle{
+    font-size:16px;
   }
 
-
-  .sessions{
-
-    grid-template-columns:
-      repeat(
-        3,
-        1fr
-      );
-
+  .card{
+    padding:22px;
+    border-radius:28px;
   }
 
-
-  .session{
-
-    display:block;
-
+  .price{
+    font-size:36px;
   }
 
-
-  .session-right{
-
-    text-align:
-      left;
-
-    margin-top:
-      12px;
-
+  .planGrid,
+  .debugGrid{
+    grid-template-columns:1fr 1fr;
   }
 
 }
@@ -1448,402 +730,202 @@ button{
 
 <body>
 
+<div class="app">
 
-<div class="shell">
+
+<!-- =======================================================
+     HEADER
+======================================================= -->
+
+<div class="header">
+
+  <div>
+
+    <div class="brand">
+      MKAYFX
+    </div>
+
+    <h1>
+      SWEEP STRATEGY
+    </h1>
+
+    <div class="subtitle">
+      XAU/USD liquidity raid + reversal engine
+    </div>
+
+  </div>
 
 
-  <header class="header">
+  <button
+    class="refreshBtn"
+    id="refreshBtn"
+    aria-label="Refresh"
+  >
+    ↻
+  </button>
+
+</div>
+
+
+<!-- =======================================================
+     CONNECTION
+======================================================= -->
+
+<div class="connection">
+
+  <div
+    class="dot"
+    id="connectionDot"
+  ></div>
+
+  <span id="connectionText">
+    Connecting...
+  </span>
+
+  <span>·</span>
+
+  <span id="latencyText">
+    —
+  </span>
+
+</div>
+
+
+<!-- =======================================================
+     MAIN SIGNAL CARD
+======================================================= -->
+
+<div class="card">
+
+  <div class="signalTop">
 
     <div>
 
-      <div class="brand-small">
-        MKAYFX
+      <div class="symbol">
+        XAU/USD
       </div>
 
-      <div class="brand">
-        SWEEP STRATEGY
+      <div
+        class="price"
+        id="price"
+      >
+        —
       </div>
 
-      <div class="subtitle">
-        XAU/USD liquidity raid + reversal engine
+      <div
+        class="marketMessage"
+        id="marketMessage"
+      >
+        Waiting for market data
       </div>
 
     </div>
 
 
-    <button
-      class="refresh"
-      id="refreshBtn"
+    <div
+      class="signalBadge"
+      id="signalBadge"
     >
-      ↻
-    </button>
+      WAIT
+    </div>
 
-  </header>
+  </div>
 
 
-  <div class="connection">
+  <div class="stateGrid">
 
-    <span
-      class="dot"
-      id="statusDot"
-    ></span>
+    <div>
 
-    <span id="statusText">
-      Connecting…
-    </span>
+      <div class="smallLabel">
+        STRATEGY STATE
+      </div>
 
-    <span>
-      ·
-    </span>
+      <div
+        class="stateValue"
+        id="strategyState"
+      >
+        Analysing...
+      </div>
 
-    <span id="lastUpdated">
-      —
-    </span>
+    </div>
+
+
+    <div>
+
+      <div class="smallLabel">
+        CONFIDENCE
+      </div>
+
+      <div
+        class="confidenceValue"
+        id="confidence"
+      >
+        —
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="bar">
+
+    <div
+      class="barFill"
+      id="confidenceBar"
+    ></div>
 
   </div>
 
 
   <div
-    class="error"
-    id="error"
-  ></div>
+    class="thesis"
+    id="thesis"
+  >
+    Building liquidity thesis...
+  </div>
 
 
-  <!-- =====================================================
-       HERO
-  ====================================================== -->
+  <button
+    class="alertBtn"
+    id="alertBtn"
+  >
+    Enable trade alerts
+  </button>
 
+</div>
 
-  <section class="card hero">
 
-    <div class="hero-top">
+<!-- =======================================================
+     TRADE PLAN
+======================================================= -->
 
-      <div>
+<div class="sectionHeader">
 
-        <div class="label">
-          XAU/USD
-        </div>
+  <div class="sectionTitle">
+    Trade plan
+  </div>
 
-        <div
-          class="price"
-          id="price"
-        >
-          —
-        </div>
+  <div class="sectionSub">
+    only activates after confirmation
+  </div>
 
-        <div
-          class="subtitle"
-          id="dataAge"
-        >
-          Waiting for market data
-        </div>
+</div>
 
-      </div>
 
+<div class="card">
 
-      <div
-        class="signal wait"
-        id="signal"
-      >
-        WAIT
-      </div>
+  <div class="planGrid">
 
-    </div>
+    <div class="planBox">
 
-
-    <div class="state-row">
-
-      <div>
-
-        <div class="label">
-          Strategy state
-        </div>
-
-        <div
-          class="state-name"
-          id="stateName"
-        >
-          Analysing…
-        </div>
-
-      </div>
-
-
-      <div class="confidence">
-
-        <div class="label">
-          Confidence
-        </div>
-
-        <div
-          class="confidence-number"
-          id="confidence"
-        >
-          —
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <div class="progress">
-
-      <div
-        class="progress-fill"
-        id="confidenceBar"
-      ></div>
-
-    </div>
-
-
-    <div
-      class="thesis"
-      id="thesis"
-    >
-      Building liquidity thesis…
-    </div>
-
-
-    <button
-      class="notify"
-      id="notifyBtn"
-    >
-      Enable trade alerts
-    </button>
-
-  </section>
-
-
-  <!-- =====================================================
-       TRADE PLAN
-  ====================================================== -->
-
-
-  <section class="section">
-
-    <div class="section-head">
-
-      <div class="section-title">
-        Trade plan
-      </div>
-
-      <div class="section-sub">
-        only activates after confirmation
-      </div>
-
-    </div>
-
-
-    <div
-      class="card"
-      style="padding:14px"
-    >
-
-      <div class="trade-grid">
-
-
-        <div class="metric">
-
-          <div class="metric-label">
-            Focus pool
-          </div>
-
-          <div
-            class="metric-value gold"
-            id="focusPool"
-          >
-            —
-          </div>
-
-          <div
-            class="metric-note"
-            id="focusScore"
-          >
-            —
-          </div>
-
-        </div>
-
-
-        <div class="metric">
-
-          <div class="metric-label">
-            Liquidity level
-          </div>
-
-          <div
-            class="metric-value"
-            id="poolLevel"
-          >
-            —
-          </div>
-
-          <div
-            class="metric-note"
-            id="raidStyle"
-          >
-            —
-          </div>
-
-        </div>
-
-
-        <div class="metric">
-
-          <div class="metric-label">
-            Likely sweep end
-          </div>
-
-          <div
-            class="metric-value gold"
-            id="likelyEnd"
-          >
-            —
-          </div>
-
-          <div
-            class="metric-note"
-            id="sweepZone"
-          >
-            —
-          </div>
-
-        </div>
-
-
-        <div class="metric">
-
-          <div class="metric-label">
-            Planned entry
-          </div>
-
-          <div
-            class="metric-value"
-            id="entry"
-          >
-            —
-          </div>
-
-          <div class="metric-note">
-            after confirmation
-          </div>
-
-        </div>
-
-
-        <div class="metric">
-
-          <div class="metric-label">
-            Stop loss
-          </div>
-
-          <div
-            class="metric-value red"
-            id="stop"
-          >
-            —
-          </div>
-
-          <div class="metric-note">
-            beyond sweep invalidation
-          </div>
-
-        </div>
-
-
-        <div class="metric">
-
-          <div class="metric-label">
-            TP1
-          </div>
-
-          <div
-            class="metric-value green"
-            id="tp1"
-          >
-            —
-          </div>
-
-          <div
-            class="metric-note"
-            id="tp1Name"
-          >
-            —
-          </div>
-
-        </div>
-
-
-        <div class="metric">
-
-          <div class="metric-label">
-            TP2
-          </div>
-
-          <div
-            class="metric-value green"
-            id="tp2"
-          >
-            —
-          </div>
-
-          <div
-            class="metric-note"
-            id="tp2Name"
-          >
-            —
-          </div>
-
-        </div>
-
-
-        <div class="metric">
-
-          <div class="metric-label">
-            Reward / Risk
-          </div>
-
-          <div
-            class="metric-value gold"
-            id="rr"
-          >
-            —
-          </div>
-
-          <div
-            class="metric-note"
-            id="riskPoints"
-          >
-            —
-          </div>
-
-        </div>
-
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- =====================================================
-       CONFIRMATIONS
-  ====================================================== -->
-
-
-  <section class="section">
-
-    <div class="section-head">
-
-      <div class="section-title">
-        Entry confirmation
+      <div class="planLabel">
+        FOCUS POOL
       </div>
 
       <div
-        class="section-sub"
-        id="confirmCount"
+        class="planValue gold"
+        id="focusPool"
       >
         —
       </div>
@@ -1851,130 +933,1472 @@ button{
     </div>
 
 
-    <div
-      class="card checklist"
-      id="checklist"
-    ></div>
+    <div class="planBox">
 
-  </section>
-
-
-  <!-- =====================================================
-       FOOTPRINT
-  ====================================================== -->
-
-
-  <section class="section">
-
-    <div class="section-head">
-
-      <div class="section-title">
-        Order-flow proxy
+      <div class="planLabel">
+        LIQUIDITY LEVEL
       </div>
-
-      <div class="section-sub">
-        synthetic footprint intelligence
-      </div>
-
-    </div>
-
-
-    <div class="card">
 
       <div
-        class="foot-grid"
-        id="footprint"
-      ></div>
-
-    </div>
-
-  </section>
-
-
-  <!-- =====================================================
-       LIQUIDITY
-  ====================================================== -->
-
-
-  <section class="section">
-
-    <div class="section-head">
-
-      <div class="section-title">
-        Liquidity map
-      </div>
-
-      <div class="section-sub">
-        strongest nearby pools
+        class="planValue"
+        id="liquidityLevel"
+      >
+        —
       </div>
 
     </div>
 
 
-    <div
-      class="pool-list"
-      id="poolList"
-    ></div>
+    <div class="planBox">
 
-  </section>
-
-
-  <!-- =====================================================
-       SESSIONS
-  ====================================================== -->
-
-
-  <section class="section">
-
-    <div class="section-head">
-
-      <div class="section-title">
-        Sessions
+      <div class="planLabel">
+        ENTRY
       </div>
 
-      <div class="section-sub">
-        live liquidity windows
+      <div
+        class="planValue"
+        id="entry"
+      >
+        —
       </div>
 
     </div>
 
 
-    <div
-      class="sessions"
-      id="sessions"
-    ></div>
+    <div class="planBox">
 
-  </section>
+      <div class="planLabel">
+        STOP LOSS
+      </div>
+
+      <div
+        class="planValue red"
+        id="stopLoss"
+      >
+        —
+      </div>
+
+    </div>
 
 
-  <div class="footer">
+    <div class="planBox">
 
-    This model waits for a liquidity raid and reversal
-    confirmation instead of automatically buying lows or
-    selling highs.
+      <div class="planLabel">
+        TAKE PROFIT
+      </div>
 
-    <br><br>
+      <div
+        class="planValue green"
+        id="takeProfit"
+      >
+        —
+      </div>
 
-    Footprint delta is an OHLC/volume-derived proxy and is
-    not centralized exchange bid/ask footprint data.
+    </div>
 
-    <br><br>
 
-    A profitable historical edge must still be verified
-    through backtesting, forward testing, spread/slippage
-    modelling and out-of-sample testing.
+    <div class="planBox">
+
+      <div class="planLabel">
+        RISK / REWARD
+      </div>
+
+      <div
+        class="planValue"
+        id="riskReward"
+      >
+        —
+      </div>
+
+    </div>
 
   </div>
+
+</div>
+
+
+<!-- =======================================================
+     API DEBUGGER
+======================================================= -->
+
+<div class="sectionHeader">
+
+  <div class="sectionTitle">
+    API Debugger
+  </div>
+
+  <div class="sectionSub">
+    temporary diagnostic panel
+  </div>
+
+</div>
+
+
+<div class="card debugCard">
+
+  <div class="debugTitle">
+    Backend connection
+  </div>
+
+  <div class="debugHelp">
+    This section shows exactly what
+    <strong>/api/xau</strong>
+    is returning.
+  </div>
+
+
+  <div class="debugGrid">
+
+
+    <div class="debugBox">
+
+      <div class="debugKey">
+        ENDPOINT
+      </div>
+
+      <div
+        class="debugValue"
+        id="debugEndpoint"
+      >
+        /api/xau
+      </div>
+
+    </div>
+
+
+    <div class="debugBox">
+
+      <div class="debugKey">
+        HTTP STATUS
+      </div>
+
+      <div
+        class="debugValue"
+        id="debugStatus"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="debugBox">
+
+      <div class="debugKey">
+        CONTENT TYPE
+      </div>
+
+      <div
+        class="debugValue"
+        id="debugType"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="debugBox">
+
+      <div class="debugKey">
+        RESPONSE TIME
+      </div>
+
+      <div
+        class="debugValue"
+        id="debugTime"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="debugBox">
+
+      <div class="debugKey">
+        API RESULT
+      </div>
+
+      <div
+        class="debugValue"
+        id="debugResult"
+      >
+        Waiting...
+      </div>
+
+    </div>
+
+
+    <div class="debugBox">
+
+      <div class="debugKey">
+        LAST UPDATE
+      </div>
+
+      <div
+        class="debugValue"
+        id="debugUpdated"
+      >
+        —
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div
+    class="debugRaw"
+    id="debugRaw"
+  >
+Waiting for API response...
+  </div>
+
+</div>
 
 
 </div>
 
 
-<script
-  type="module"
-  src="/app.js"
-></script>
+<script>
 
+/* =========================================================
+   CONFIG
+========================================================= */
+
+const API_ENDPOINT =
+  "/api/xau";
+
+const REFRESH_MS =
+  15000;
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const connectionDot =
+  document.getElementById(
+    "connectionDot"
+  );
+
+const connectionText =
+  document.getElementById(
+    "connectionText"
+  );
+
+const latencyText =
+  document.getElementById(
+    "latencyText"
+  );
+
+const refreshBtn =
+  document.getElementById(
+    "refreshBtn"
+  );
+
+const priceEl =
+  document.getElementById(
+    "price"
+  );
+
+const marketMessage =
+  document.getElementById(
+    "marketMessage"
+  );
+
+const signalBadge =
+  document.getElementById(
+    "signalBadge"
+  );
+
+const strategyState =
+  document.getElementById(
+    "strategyState"
+  );
+
+const confidenceEl =
+  document.getElementById(
+    "confidence"
+  );
+
+const confidenceBar =
+  document.getElementById(
+    "confidenceBar"
+  );
+
+const thesisEl =
+  document.getElementById(
+    "thesis"
+  );
+
+const focusPoolEl =
+  document.getElementById(
+    "focusPool"
+  );
+
+const liquidityLevelEl =
+  document.getElementById(
+    "liquidityLevel"
+  );
+
+const entryEl =
+  document.getElementById(
+    "entry"
+  );
+
+const stopLossEl =
+  document.getElementById(
+    "stopLoss"
+  );
+
+const takeProfitEl =
+  document.getElementById(
+    "takeProfit"
+  );
+
+const riskRewardEl =
+  document.getElementById(
+    "riskReward"
+  );
+
+
+/* =========================================================
+   DEBUG ELEMENTS
+========================================================= */
+
+const debugStatus =
+  document.getElementById(
+    "debugStatus"
+  );
+
+const debugType =
+  document.getElementById(
+    "debugType"
+  );
+
+const debugTime =
+  document.getElementById(
+    "debugTime"
+  );
+
+const debugResult =
+  document.getElementById(
+    "debugResult"
+  );
+
+const debugUpdated =
+  document.getElementById(
+    "debugUpdated"
+  );
+
+const debugRaw =
+  document.getElementById(
+    "debugRaw"
+  );
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function firstDefined(
+  obj,
+  paths
+){
+
+  for(
+    const path of paths
+  ){
+
+    const parts =
+      path.split(".");
+
+    let current =
+      obj;
+
+    let found =
+      true;
+
+    for(
+      const part of parts
+    ){
+
+      if(
+        current === null ||
+        current === undefined ||
+        !Object.prototype
+          .hasOwnProperty
+          .call(
+            current,
+            part
+          )
+      ){
+
+        found =
+          false;
+
+        break;
+
+      }
+
+      current =
+        current[
+          part
+        ];
+
+    }
+
+    if(
+      found &&
+      current !== undefined &&
+      current !== null
+    ){
+
+      return current;
+
+    }
+
+  }
+
+  return null;
+
+}
+
+
+/* =========================================================
+   FORMAT PRICE
+========================================================= */
+
+function formatPrice(
+  value
+){
+
+  const n =
+    Number(
+      value
+    );
+
+  if(
+    !Number.isFinite(
+      n
+    )
+  ){
+
+    return "—";
+
+  }
+
+  return n.toFixed(
+    2
+  );
+
+}
+
+
+/* =========================================================
+   SET CONNECTION STATE
+========================================================= */
+
+function setConnection(
+  type,
+  text
+){
+
+  connectionDot.className =
+    "dot";
+
+  if(
+    type ===
+    "connected"
+  ){
+
+    connectionDot
+      .classList
+      .add(
+        "connected"
+      );
+
+  }
+
+  if(
+    type ===
+    "error"
+  ){
+
+    connectionDot
+      .classList
+      .add(
+        "error"
+      );
+
+  }
+
+  connectionText.textContent =
+    text;
+
+}
+
+
+/* =========================================================
+   SIGNAL STYLE
+========================================================= */
+
+function setSignal(
+  value
+){
+
+  let signal =
+    String(
+      value ||
+      "WAIT"
+    )
+    .toUpperCase();
+
+  signalBadge.className =
+    "signalBadge";
+
+  if(
+    signal.includes(
+      "BUY"
+    )
+  ){
+
+    signal =
+      "BUY";
+
+    signalBadge
+      .classList
+      .add(
+        "buy"
+      );
+
+  }
+
+  else if(
+    signal.includes(
+      "SELL"
+    )
+  ){
+
+    signal =
+      "SELL";
+
+    signalBadge
+      .classList
+      .add(
+        "sell"
+      );
+
+  }
+
+  else{
+
+    signal =
+      "WAIT";
+
+  }
+
+  signalBadge.textContent =
+    signal;
+
+}
+
+
+/* =========================================================
+   DETECT API ERROR
+========================================================= */
+
+function detectApiProblem(
+  data
+){
+
+  if(
+    !data ||
+    typeof data !==
+      "object"
+  ){
+
+    return null;
+
+  }
+
+
+  const error =
+    firstDefined(
+      data,
+      [
+        "error",
+        "message",
+        "detail",
+        "details",
+        "status_message"
+      ]
+    );
+
+
+  const status =
+    String(
+      firstDefined(
+        data,
+        [
+          "status",
+          "code"
+        ]
+      ) ||
+      ""
+    )
+    .toLowerCase();
+
+
+  if(
+    error &&
+    (
+      data.ok === false ||
+      status ===
+        "error"
+    )
+  ){
+
+    return String(
+      error
+    );
+
+  }
+
+
+  if(
+    data.code &&
+    Number(
+      data.code
+    ) >= 400
+  ){
+
+    return String(
+      error ||
+      `API code ${data.code}`
+    );
+
+  }
+
+
+  return null;
+
+}
+
+
+/* =========================================================
+   RENDER DATA
+========================================================= */
+
+function renderMarketData(
+  data
+){
+
+  const price =
+    firstDefined(
+      data,
+      [
+        "price",
+        "currentPrice",
+        "current_price",
+        "market.price",
+        "quote.price",
+        "data.price",
+        "analysis.price"
+      ]
+    );
+
+
+  const signal =
+    firstDefined(
+      data,
+      [
+        "signal",
+        "direction",
+        "bias",
+        "trade.signal",
+        "trade.direction",
+        "analysis.signal",
+        "setup.signal"
+      ]
+    );
+
+
+  const confidence =
+    firstDefined(
+      data,
+      [
+        "confidence",
+        "score",
+        "confidenceScore",
+        "confidence_score",
+        "analysis.confidence",
+        "setup.confidence"
+      ]
+    );
+
+
+  const state =
+    firstDefined(
+      data,
+      [
+        "strategyState",
+        "strategy_state",
+        "state",
+        "status",
+        "analysis.state",
+        "setup.state"
+      ]
+    );
+
+
+  const thesis =
+    firstDefined(
+      data,
+      [
+        "thesis",
+        "reason",
+        "reasoning",
+        "summary",
+        "analysis.thesis",
+        "analysis.summary",
+        "setup.reason"
+      ]
+    );
+
+
+  const focusPool =
+    firstDefined(
+      data,
+      [
+        "focusPool",
+        "focus_pool",
+        "liquidity.focusPool",
+        "liquidity.focus_pool",
+        "trade.focusPool"
+      ]
+    );
+
+
+  const liquidityLevel =
+    firstDefined(
+      data,
+      [
+        "liquidityLevel",
+        "liquidity_level",
+        "level",
+        "liquidity.level",
+        "trade.liquidityLevel"
+      ]
+    );
+
+
+  const entry =
+    firstDefined(
+      data,
+      [
+        "entry",
+        "trade.entry",
+        "setup.entry"
+      ]
+    );
+
+
+  const sl =
+    firstDefined(
+      data,
+      [
+        "sl",
+        "stopLoss",
+        "stop_loss",
+        "trade.sl",
+        "trade.stopLoss",
+        "setup.sl"
+      ]
+    );
+
+
+  const tp =
+    firstDefined(
+      data,
+      [
+        "tp",
+        "takeProfit",
+        "take_profit",
+        "trade.tp",
+        "trade.takeProfit",
+        "setup.tp"
+      ]
+    );
+
+
+  const rr =
+    firstDefined(
+      data,
+      [
+        "rr",
+        "riskReward",
+        "risk_reward",
+        "trade.rr",
+        "setup.rr"
+      ]
+    );
+
+
+  /* PRICE */
+
+  priceEl.textContent =
+    formatPrice(
+      price
+    );
+
+
+  /* SIGNAL */
+
+  setSignal(
+    signal
+  );
+
+
+  /* CONFIDENCE */
+
+  const conf =
+    Number(
+      confidence
+    );
+
+  if(
+    Number.isFinite(
+      conf
+    )
+  ){
+
+    const bounded =
+      Math.max(
+        0,
+        Math.min(
+          100,
+          conf
+        )
+      );
+
+    confidenceEl.textContent =
+      `${Math.round(
+        bounded
+      )}%`;
+
+    confidenceBar.style.width =
+      `${bounded}%`;
+
+  }
+
+  else{
+
+    confidenceEl.textContent =
+      "—";
+
+    confidenceBar.style.width =
+      "0%";
+
+  }
+
+
+  /* STATE */
+
+  strategyState.textContent =
+    state ||
+    "Monitoring";
+
+
+  /* THESIS */
+
+  if(
+    Array.isArray(
+      thesis
+    )
+  ){
+
+    thesisEl.textContent =
+      thesis.join(
+        " • "
+      );
+
+  }
+
+  else{
+
+    thesisEl.textContent =
+      thesis ||
+      "Market data received. Waiting for sweep confirmation.";
+
+  }
+
+
+  /* PLAN */
+
+  focusPoolEl.textContent =
+    focusPool ||
+    "—";
+
+
+  liquidityLevelEl.textContent =
+    formatPrice(
+      liquidityLevel
+    );
+
+
+  entryEl.textContent =
+    formatPrice(
+      entry
+    );
+
+
+  stopLossEl.textContent =
+    formatPrice(
+      sl
+    );
+
+
+  takeProfitEl.textContent =
+    formatPrice(
+      tp
+    );
+
+
+  if(
+    rr !== null &&
+    rr !== undefined
+  ){
+
+    riskRewardEl.textContent =
+      String(
+        rr
+      );
+
+  }
+
+  else{
+
+    riskRewardEl.textContent =
+      "—";
+
+  }
+
+
+  /* MESSAGE */
+
+  if(
+    price !== null
+  ){
+
+    marketMessage.textContent =
+      "Live market data received";
+
+  }
+
+  else{
+
+    marketMessage.textContent =
+      "API connected but price field was not found";
+
+  }
+
+}
+
+
+/* =========================================================
+   MAIN API REQUEST
+========================================================= */
+
+let requestRunning =
+  false;
+
+
+async function loadData(){
+
+  if(
+    requestRunning
+  ){
+
+    return;
+
+  }
+
+  requestRunning =
+    true;
+
+
+  setConnection(
+    "loading",
+    "Connecting..."
+  );
+
+
+  marketMessage.textContent =
+    "Requesting /api/xau...";
+
+
+  debugResult.textContent =
+    "Requesting...";
+
+  debugResult.className =
+    "debugValue";
+
+
+  const started =
+    performance.now();
+
+
+  const url =
+    `${API_ENDPOINT}?_=${Date.now()}`;
+
+
+  try{
+
+
+    const response =
+      await fetch(
+        url,
+        {
+
+          method:
+            "GET",
+
+          cache:
+            "no-store",
+
+          headers:{
+
+            "Accept":
+              "application/json"
+
+          }
+
+        }
+      );
+
+
+    const elapsed =
+      Math.round(
+        performance.now() -
+        started
+      );
+
+
+    latencyText.textContent =
+      `${elapsed} ms`;
+
+    debugTime.textContent =
+      `${elapsed} ms`;
+
+
+    debugStatus.textContent =
+      `${response.status} ${response.statusText || ""}`;
+
+
+    const contentType =
+      response.headers.get(
+        "content-type"
+      ) ||
+      "unknown";
+
+
+    debugType.textContent =
+      contentType;
+
+
+    const raw =
+      await response.text();
+
+
+    let data =
+      null;
+
+
+    try{
+
+      data =
+        JSON.parse(
+          raw
+        );
+
+    }
+
+    catch(
+      jsonError
+    ){
+
+      /* response was not JSON */
+
+    }
+
+
+    debugUpdated.textContent =
+      new Date()
+        .toLocaleTimeString();
+
+
+    /* ===============================================
+       RAW OUTPUT
+    =============================================== */
+
+    if(
+      data
+    ){
+
+      debugRaw.textContent =
+        JSON.stringify(
+          data,
+          null,
+          2
+        );
+
+    }
+
+    else{
+
+      debugRaw.textContent =
+        raw ||
+        "[Empty response]";
+
+    }
+
+
+    /* ===============================================
+       HTTP ERROR
+    =============================================== */
+
+    if(
+      !response.ok
+    ){
+
+      setConnection(
+        "error",
+        `API ERROR ${response.status}`
+      );
+
+
+      debugResult.textContent =
+        `HTTP ${response.status}`;
+
+      debugResult.className =
+        "debugValue errorText";
+
+
+      strategyState.textContent =
+        "Backend error";
+
+
+      marketMessage.textContent =
+        data?.error ||
+        data?.message ||
+        raw ||
+        `HTTP ${response.status}`;
+
+
+      thesisEl.textContent =
+        "The frontend reached /api/xau, but the backend returned an error. Check the raw response below.";
+
+
+      return;
+
+    }
+
+
+    /* ===============================================
+       NON JSON RESPONSE
+    =============================================== */
+
+    if(
+      !data
+    ){
+
+      setConnection(
+        "error",
+        "INVALID RESPONSE"
+      );
+
+
+      debugResult.textContent =
+        "Not JSON";
+
+      debugResult.className =
+        "debugValue errorText";
+
+
+      strategyState.textContent =
+        "Invalid response";
+
+
+      marketMessage.textContent =
+        "Backend returned HTML/text instead of JSON";
+
+
+      thesisEl.textContent =
+        "The /api/xau route was reached, but it did not return valid JSON.";
+
+
+      return;
+
+    }
+
+
+    /* ===============================================
+       API LEVEL ERROR
+    =============================================== */
+
+    const apiProblem =
+      detectApiProblem(
+        data
+      );
+
+
+    if(
+      apiProblem
+    ){
+
+      setConnection(
+        "error",
+        "API DATA ERROR"
+      );
+
+
+      debugResult.textContent =
+        apiProblem;
+
+      debugResult.className =
+        "debugValue errorText";
+
+
+      strategyState.textContent =
+        "Provider error";
+
+
+      marketMessage.textContent =
+        apiProblem;
+
+
+      thesisEl.textContent =
+        "The backend is running, but the market-data provider returned an error.";
+
+
+      return;
+
+    }
+
+
+    /* ===============================================
+       SUCCESS
+    =============================================== */
+
+    setConnection(
+      "connected",
+      "Connected"
+    );
+
+
+    debugResult.textContent =
+      "SUCCESS";
+
+    debugResult.className =
+      "debugValue successText";
+
+
+    renderMarketData(
+      data
+    );
+
+
+  }
+
+  catch(
+    error
+  ){
+
+
+    const elapsed =
+      Math.round(
+        performance.now() -
+        started
+      );
+
+
+    setConnection(
+      "error",
+      "CONNECTION FAILED"
+    );
+
+
+    latencyText.textContent =
+      `${elapsed} ms`;
+
+
+    debugTime.textContent =
+      `${elapsed} ms`;
+
+
+    debugStatus.textContent =
+      "FETCH FAILED";
+
+
+    debugType.textContent =
+      "—";
+
+
+    debugResult.textContent =
+      error.message ||
+      "Unknown error";
+
+
+    debugResult.className =
+      "debugValue errorText";
+
+
+    debugUpdated.textContent =
+      new Date()
+        .toLocaleTimeString();
+
+
+    debugRaw.textContent =
+      `FETCH ERROR
+
+${error.name || "Error"}:
+${error.message || "Unknown error"}
+
+Endpoint:
+${API_ENDPOINT}
+
+Full requested URL:
+${window.location.origin}${API_ENDPOINT}`;
+
+
+    strategyState.textContent =
+      "Connection failed";
+
+
+    marketMessage.textContent =
+      error.message ||
+      "Could not reach backend";
+
+
+    thesisEl.textContent =
+      "The browser could not successfully reach /api/xau.";
+
+
+  }
+
+  finally{
+
+    requestRunning =
+      false;
+
+  }
+
+}
+
+
+/* =========================================================
+   MANUAL REFRESH
+========================================================= */
+
+refreshBtn.addEventListener(
+  "click",
+  async () => {
+
+    refreshBtn.style.transform =
+      "rotate(180deg)";
+
+    await loadData();
+
+    setTimeout(
+      () => {
+
+        refreshBtn.style.transform =
+          "";
+
+      },
+      250
+    );
+
+  }
+);
+
+
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
+
+document
+  .getElementById(
+    "alertBtn"
+  )
+  .addEventListener(
+    "click",
+    async () => {
+
+      if(
+        !(
+          "Notification"
+          in window
+        )
+      ){
+
+        alert(
+          "Browser notifications are not supported here."
+        );
+
+        return;
+
+      }
+
+
+      const permission =
+        await Notification
+          .requestPermission();
+
+
+      if(
+        permission ===
+        "granted"
+      ){
+
+        document
+          .getElementById(
+            "alertBtn"
+          )
+          .textContent =
+            "Trade alerts enabled";
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
+
+loadData();
+
+
+/* =========================================================
+   AUTO REFRESH
+========================================================= */
+
+setInterval(
+  () => {
+
+    loadData();
+
+  },
+  REFRESH_MS
+);
+
+
+</script>
 
 </body>
 
