@@ -2,6 +2,9 @@
   "functions": {
     "api/xau.js": {
       "maxDuration": 30
+    },
+    "api/price.js": {
+      "maxDuration": 10
     }
   },
   "headers": [
