@@ -4,7 +4,7 @@
     "api/btc.js": {
       "maxDuration": 30
     },
-    
+     }
     }
   },
   "headers": [
