@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -10,7 +11,10 @@
   content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"
 >
 
-<meta name="theme-color" content="#030609">
+<meta
+  name="theme-color"
+  content="#03060a"
+>
 
 <meta
   name="apple-mobile-web-app-capable"
@@ -24,49 +28,35 @@
 
 <meta
   name="apple-mobile-web-app-title"
-  content="MKAYFX"
+  content="MKAYFX BTC"
 >
 
-<title>
-MKAYFX XAU Sweep Signal Engine
-</title>
+<title>MKAYFX BTC Intelligence</title>
 
 
 <style>
-
-:root{
-
-  --bg:#020406;
-  --card:#081019;
-  --card2:#050b11;
-  --border:#1b2735;
-
-  --text:#f5f7fa;
-  --muted:#7f8ba0;
-  --muted2:#a3aec0;
-
-  --gold:#f7c84e;
-  --orange:#ff9b4a;
-
-  --green:#38e6a3;
-  --red:#ff6177;
-
-  --blue:#7895ff;
-
-}
-
-
-/* =========================================================
-   RESET
-========================================================= */
 
 *{
   box-sizing:border-box;
   -webkit-tap-highlight-color:transparent;
 }
 
-html{
-  background:var(--bg);
+:root{
+
+  --bg:#03060a;
+  --card:#091019;
+  --card2:#0d1622;
+
+  --border:rgba(255,255,255,.075);
+
+  --text:#f4f7fb;
+  --muted:#778496;
+
+  --green:#30e79a;
+  --red:#ff5870;
+  --orange:#f5a623;
+  --gold:#f4ca64;
+  --blue:#7194ff;
 }
 
 body{
@@ -76,14 +66,12 @@ body{
   min-height:100vh;
 
   background:
-
     radial-gradient(
-      circle at top left,
-      rgba(17,48,76,.30),
-      transparent 28%
-    ),
-
-    var(--bg);
+      circle at top,
+      #101927 0,
+      #05090e 33%,
+      #020407 100%
+    );
 
   color:var(--text);
 
@@ -92,313 +80,281 @@ body{
     BlinkMacSystemFont,
     "Segoe UI",
     Roboto,
-    Helvetica,
-    Arial,
     sans-serif;
 
-}
-
-button{
-  font:inherit;
-}
-
-
-/* =========================================================
-   APP
-========================================================= */
-
-.app{
-
-  width:100%;
-  max-width:820px;
-
-  margin:0 auto;
-
   padding:
-
+    env(safe-area-inset-top)
+    13px
     calc(
-      env(safe-area-inset-top)
-      +
-      28px
-    )
-
-    18px
-
-    calc(
+      30px +
       env(safe-area-inset-bottom)
-      +
-      70px
     );
 
 }
 
+.container{
 
-/* =========================================================
-   HEADER
-========================================================= */
+  max-width:900px;
+
+  margin:auto;
+
+}
 
 .header{
 
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-
-  gap:18px;
-
-  margin-bottom:30px;
+  padding:
+    14px 3px
+    16px;
 
 }
 
 .brand{
 
-  color:var(--gold);
+  display:flex;
 
-  font-size:15px;
+  align-items:center;
 
-  font-weight:950;
+  justify-content:
+    space-between;
 
-  letter-spacing:6px;
-
-  margin-bottom:13px;
+  gap:12px;
 
 }
 
 .title{
 
-  margin:0;
+  font-size:19px;
 
-  font-size:39px;
+  font-weight:850;
 
-  line-height:.98;
-
-  font-weight:950;
-
-  letter-spacing:-2px;
+  letter-spacing:.4px;
 
 }
 
 .subtitle{
 
-  max-width:520px;
-
-  margin-top:15px;
-
   color:var(--muted);
 
-  font-size:16px;
+  font-size:11px;
 
-  line-height:1.5;
-
-}
-
-.refresh{
-
-  min-width:68px;
-  width:68px;
-  height:68px;
-
-  border:1px solid var(--border);
-
-  border-radius:23px;
-
-  background:#07101a;
-
-  color:white;
-
-  font-size:31px;
-
-  cursor:pointer;
+  margin-top:4px;
 
 }
 
+.live{
 
-/* =========================================================
-   CONNECTION
-========================================================= */
+  border:
+    1px solid
+    rgba(
+      48,
+      231,
+      154,
+      .25
+    );
 
-.connection{
+  color:var(--green);
 
-  display:flex;
-  align-items:center;
-  flex-wrap:wrap;
+  background:
+    rgba(
+      48,
+      231,
+      154,
+      .07
+    );
 
-  gap:9px;
+  padding:
+    6px 9px;
 
-  color:var(--muted);
+  border-radius:
+    999px;
 
-  font-size:15px;
+  font-size:10px;
 
-  margin-bottom:23px;
+  font-weight:800;
 
 }
-
-.dot{
-
-  width:12px;
-  height:12px;
-
-  border-radius:50%;
-
-  background:var(--orange);
-
-}
-
-.dot.live{
-  background:var(--green);
-}
-
-.dot.error{
-  background:var(--red);
-}
-
-
-/* =========================================================
-   CARDS
-========================================================= */
 
 .card{
 
-  margin-bottom:21px;
-
-  padding:23px;
-
-  border-radius:28px;
-
-  border:1px solid var(--border);
-
   background:
-
     linear-gradient(
       145deg,
-      rgba(11,18,28,.98),
-      rgba(5,9,14,.98)
+      rgba(
+        12,
+        20,
+        31,
+        .96
+      ),
+      rgba(
+        5,
+        10,
+        16,
+        .96
+      )
     );
 
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:
+    18px;
+
+  padding:15px;
+
+  margin-bottom:11px;
+
   box-shadow:
-    0 25px 70px
-    rgba(0,0,0,.22);
+    0 12px 35px
+    rgba(
+      0,
+      0,
+      0,
+      .2
+    );
 
 }
 
+.section-title{
 
-/* =========================================================
-   TOP PRICE
-========================================================= */
+  font-size:10px;
 
-.marketTop{
+  color:var(--muted);
 
-  display:flex;
+  letter-spacing:1.2px;
 
-  justify-content:space-between;
+  font-weight:800;
 
-  align-items:flex-start;
-
-  gap:15px;
-
-}
-
-.symbol{
-
-  color:#9ca7ba;
-
-  font-size:14px;
-
-  font-weight:950;
-
-  letter-spacing:5px;
+  margin-bottom:12px;
 
 }
 
 .price{
 
-  margin-top:20px;
+  font-size:
+    clamp(
+      35px,
+      10vw,
+      55px
+    );
 
-  font-size:48px;
-
-  line-height:1;
-
-  font-weight:950;
+  font-weight:900;
 
   letter-spacing:-2px;
 
 }
 
-.liveStatus{
+.small{
 
-  margin-top:12px;
+  color:var(--muted);
 
-  color:var(--green);
-
-  font-size:12px;
-
-  font-weight:850;
+  font-size:11px;
 
 }
 
-.raidBadge{
+.signal{
 
-  min-width:127px;
+  font-size:34px;
 
-  padding:16px 12px;
+  font-weight:950;
 
-  border-radius:21px;
+}
 
-  border:1px solid #303c4d;
+.signal.BUY{
+  color:var(--green);
+}
+
+.signal.SELL{
+  color:var(--red);
+}
+
+.signal.WAIT{
+  color:var(--gold);
+}
+
+.grid{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(
+        0,
+        1fr
+      )
+    );
+
+  gap:9px;
+
+}
+
+.grid4{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(
+        0,
+        1fr
+      )
+    );
+
+  gap:8px;
+
+}
+
+.metric{
 
   background:
-    rgba(247,200,78,.055);
+    rgba(
+      255,
+      255,
+      255,
+      .025
+    );
 
-  color:var(--gold);
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      .055
+    );
 
-  text-align:center;
+  border-radius:13px;
+
+  padding:11px;
+
+}
+
+.metric-label{
+
+  color:var(--muted);
+
+  font-size:9px;
+
+  font-weight:700;
+
+  text-transform:uppercase;
+
+  letter-spacing:.55px;
+
+}
+
+.metric-value{
+
+  margin-top:5px;
 
   font-size:14px;
 
-  font-weight:950;
+  font-weight:800;
 
-  letter-spacing:.8px;
+  word-break:break-word;
 
-}
-
-.raidBadge.high{
-
-  color:var(--red);
-
-  background:
-    rgba(255,97,119,.055);
-
-}
-
-.raidBadge.low{
-
-  color:var(--green);
-
-  background:
-    rgba(56,230,163,.055);
-
-}
-
-
-/* =========================================================
-   LABELS
-========================================================= */
-
-.label{
-
-  color:#8894a9;
-
-  font-size:10px;
-
-  font-weight:950;
-
-  letter-spacing:3px;
-
-  margin-bottom:8px;
-
-}
-
-.gold{
-  color:var(--gold);
 }
 
 .green{
@@ -409,77 +365,115 @@ button{
   color:var(--red);
 }
 
+.orange{
+  color:var(--orange);
+}
+
+.gold{
+  color:var(--gold);
+}
+
 .blue{
   color:var(--blue);
 }
 
+.bias{
 
-/* =========================================================
-   STAGE
-========================================================= */
+  display:inline-flex;
 
-.stageArea{
+  align-items:center;
 
-  margin-top:31px;
+  justify-content:center;
 
-  padding-top:25px;
+  min-width:80px;
 
-  border-top:
-    1px solid
-    rgba(255,255,255,.06);
+  padding:
+    6px 8px;
 
-}
+  border-radius:9px;
 
-.stage{
+  font-size:10px;
 
-  font-size:29px;
-
-  font-weight:950;
-
-  letter-spacing:-1px;
+  font-weight:850;
 
 }
 
-.stageDescription{
+.bias.BULLISH{
 
-  margin-top:10px;
+  color:var(--green);
 
-  color:var(--muted);
+  background:
+    rgba(
+      48,
+      231,
+      154,
+      .08
+    );
 
-  line-height:1.55;
+}
 
-  font-size:13px;
+.bias.BEARISH{
+
+  color:var(--red);
+
+  background:
+    rgba(
+      255,
+      88,
+      112,
+      .08
+    );
+
+}
+
+.bias.NEUTRAL,
+.bias.MIXED{
+
+  color:var(--gold);
+
+  background:
+    rgba(
+      244,
+      202,
+      100,
+      .08
+    );
 
 }
 
 .progress{
 
-  height:11px;
+  width:100%;
 
-  margin-top:22px;
+  height:8px;
 
-  border-radius:999px;
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .05
+    );
+
+  border-radius:99px;
 
   overflow:hidden;
 
-  background:#111b28;
+  margin-top:8px;
 
 }
 
-.progressFill{
-
-  width:0%;
+.progress > div{
 
   height:100%;
 
-  border-radius:999px;
+  width:0%;
 
   background:
-
     linear-gradient(
       90deg,
-      var(--orange),
-      var(--gold)
+      #f5c55d,
+      #ff665f
     );
 
   transition:
@@ -487,777 +481,192 @@ button{
 
 }
 
-.progressLabels{
+.level{
 
   display:flex;
 
-  justify-content:space-between;
+  justify-content:
+    space-between;
 
-  gap:4px;
+  gap:10px;
+
+  border-bottom:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      .045
+    );
+
+  padding:
+    9px 0;
+
+}
+
+.level:last-child{
+
+  border-bottom:none;
+
+}
+
+.level-name{
+
+  font-size:12px;
+
+}
+
+.level-price{
+
+  font-size:12px;
+
+  font-weight:800;
+
+}
+
+.reason{
+
+  font-size:11px;
+
+  padding:
+    7px 0;
+
+  color:#cbd4df;
+
+  border-bottom:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      .04
+    );
+
+}
+
+.reason:last-child{
+
+  border-bottom:none;
+
+}
+
+.btn{
+
+  width:100%;
+
+  border:none;
+
+  border-radius:13px;
+
+  padding:13px;
+
+  font-weight:850;
+
+  font-size:12px;
+
+  color:#06100d;
+
+  background:var(--green);
+
+  cursor:pointer;
+
+}
+
+.btn:active{
+
+  transform:
+    scale(.99);
+
+}
+
+.status{
 
   margin-top:8px;
 
-  color:#606b7e;
+  text-align:center;
 
-  font-size:8px;
+  color:var(--muted);
+
+  font-size:10px;
+
+}
+
+.raid-title{
+
+  font-size:19px;
 
   font-weight:900;
 
-}
-
-
-/* =========================================================
-   SIGNAL CARD
-========================================================= */
-
-.signalCard{
-
-  position:relative;
-
-  overflow:hidden;
+  line-height:1.25;
 
 }
 
-.signalGlow{
-
-  position:absolute;
-
-  width:190px;
-  height:190px;
-
-  right:-90px;
-  top:-100px;
-
-  border-radius:50%;
-
-  background:
-    rgba(247,200,78,.07);
-
-  filter:blur(30px);
-
-  pointer-events:none;
-
-}
-
-.signalHeader{
-
-  position:relative;
-
-  display:flex;
-
-  justify-content:space-between;
-
-  align-items:flex-start;
-
-  gap:15px;
-
-}
-
-.signalStatus{
+.raid-score{
 
   font-size:31px;
 
   font-weight:950;
 
-  letter-spacing:-1px;
-
-}
-
-.signalStatus.buy{
-  color:var(--green);
-}
-
-.signalStatus.sell{
-  color:var(--red);
-}
-
-.signalStatus.wait{
-  color:var(--gold);
-}
-
-.quality{
-
-  min-width:85px;
-
-  padding:10px 11px;
-
-  border-radius:17px;
-
-  background:#07101a;
-
-  border:1px solid var(--border);
-
-  text-align:center;
-
-}
-
-.qualityValue{
-
-  color:var(--gold);
-
-  font-size:20px;
-
-  font-weight:950;
-
-}
-
-.qualityLabel{
-
-  margin-top:3px;
-
-  color:var(--muted);
-
-  font-size:8px;
-
-  font-weight:900;
-
-  letter-spacing:1px;
-
-}
-
-.signalMessage{
-
-  margin-top:13px;
-
-  color:var(--muted);
-
-  font-size:13px;
-
-  line-height:1.55;
-
-}
-
-
-/* =========================================================
-   GRID
-========================================================= */
-
-.grid2{
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(2,minmax(0,1fr));
-
-  gap:11px;
-
-  margin-top:19px;
-
-}
-
-.box{
-
-  min-width:0;
-
-  padding:16px;
-
-  border-radius:19px;
-
-  border:1px solid var(--border);
-
-  background:#060d14;
-
-}
-
-.boxLabel{
-
-  margin-bottom:8px;
-
-  color:#798599;
-
-  font-size:9px;
-
-  font-weight:950;
-
-  letter-spacing:1.6px;
-
-}
-
-.boxValue{
-
-  font-size:19px;
-
-  font-weight:950;
-
-  line-height:1.2;
-
-  overflow-wrap:anywhere;
-
-}
-
-.boxSub{
-
-  margin-top:6px;
-
-  color:var(--muted);
-
-  font-size:10px;
-
-  line-height:1.4;
-
-}
-
-
-/* =========================================================
-   CONDITIONS
-========================================================= */
-
-.conditions{
-
-  margin-top:20px;
-
-}
-
-.condition{
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:space-between;
-
-  gap:12px;
-
-  padding:12px 0;
-
-  border-bottom:
-    1px solid
-    rgba(255,255,255,.055);
-
-}
-
-.condition:last-child{
-  border-bottom:0;
-}
-
-.conditionName{
-
-  color:#cbd2dc;
-
-  font-size:12px;
-
-  line-height:1.35;
-
-}
-
-.conditionState{
-
-  flex:0 0 auto;
-
-  font-size:11px;
-
-  font-weight:950;
-
-}
-
-.conditionState.pass{
-  color:var(--green);
-}
-
-.conditionState.fail{
-  color:#6d788b;
-}
-
-
-/* =========================================================
-   BUTTONS
-========================================================= */
-
-.button{
-
-  width:100%;
-
-  margin-top:16px;
-
-  padding:17px;
-
-  border:1px solid var(--border);
-
-  border-radius:20px;
-
-  background:#07101a;
-
-  color:white;
-
-  font-size:14px;
-
-  font-weight:900;
-
-  cursor:pointer;
-
-}
-
-.button.secondary{
-
-  background:#050a10;
-
-  color:#aeb8c8;
-
-}
-
-
-/* =========================================================
-   SECTION
-========================================================= */
-
-.sectionHeader{
-
-  display:flex;
-
-  justify-content:space-between;
-
-  align-items:flex-end;
-
-  gap:15px;
-
-  margin:
-    39px
-    5px
-    16px;
-
-}
-
-.sectionTitle{
-
-  font-size:27px;
-
-  font-weight:950;
-
-  letter-spacing:-1px;
-
-}
-
-.sectionHint{
-
-  max-width:210px;
-
-  color:var(--muted);
-
-  text-align:right;
-
-  font-size:11px;
-
-  line-height:1.4;
-
-}
-
-
-/* =========================================================
-   THESIS
-========================================================= */
-
-.thesis{
-
-  padding:18px;
-
-  border-radius:19px;
-
-  border:1px solid var(--border);
-
-  background:#050b11;
-
-  color:#dce2eb;
-
-  font-size:14px;
-
-  line-height:1.65;
-
-}
-
-
-/* =========================================================
-   SESSION
-========================================================= */
-
-.session{
-
-  padding:17px;
-
-  border:1px solid var(--border);
-
-  border-radius:19px;
-
-  background:#060d14;
-
-  margin-bottom:10px;
-
-}
-
-.sessionTop{
-
-  display:flex;
-
-  justify-content:space-between;
-
-  gap:10px;
-
-}
-
-.sessionName{
-
-  font-weight:950;
-
-  font-size:17px;
-
-}
-
-.sessionPhase{
-
-  margin-top:5px;
-
-  color:var(--muted);
-
-  font-size:11px;
-
-}
-
-.sessionBadge{
-
-  padding:6px 8px;
-
-  border-radius:999px;
-
-  background:#111b27;
-
-  color:#8e99aa;
-
-  font-size:8px;
-
-  font-weight:950;
-
-}
-
-.sessionBadge.active{
-
-  color:var(--green);
-
-  background:
-    rgba(56,230,163,.07);
-
-}
-
-.sessionGrid{
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(3,minmax(0,1fr));
-
-  gap:8px;
-
-  margin-top:14px;
-
-}
-
-.miniLabel{
-
-  color:#697487;
-
-  font-size:8px;
-
-  font-weight:900;
-
-}
-
-.miniValue{
-
-  margin-top:4px;
-
-  font-size:12px;
-
-  font-weight:850;
-
-}
-
-
-/* =========================================================
-   STRUCTURE
-========================================================= */
-
-.tfRow{
-
-  display:grid;
-
-  grid-template-columns:
-    52px
-    1fr
-    auto;
-
-  align-items:center;
-
-  gap:10px;
-
-  padding:13px 0;
-
-  border-bottom:
-    1px solid
-    rgba(255,255,255,.055);
-
-}
-
-.tfRow:last-child{
-  border-bottom:0;
-}
-
-.tfName{
-
-  font-weight:950;
-
-  color:#a5afc1;
-
-}
-
-.tfBias{
-
-  font-weight:950;
-
-}
-
-.tfExtra{
-
-  color:var(--muted);
-
-  font-size:10px;
-
-}
-
-
-/* =========================================================
-   POOLS
-========================================================= */
-
-.pool{
-
-  padding:16px 0;
-
-  border-bottom:
-    1px solid
-    rgba(255,255,255,.055);
-
-}
-
-.pool:last-child{
-  border-bottom:0;
-}
-
-.poolTop{
-
-  display:flex;
-
-  justify-content:space-between;
-
-  gap:10px;
-
-}
-
-.poolName{
-
-  font-weight:950;
-
-  font-size:16px;
-
-}
-
-.poolLevel{
-
-  margin-top:4px;
-
-  color:#9aa5b7;
-
-  font-size:12px;
-
-}
-
-.poolScore{
-
-  color:var(--gold);
-
-  font-size:18px;
-
-  font-weight:950;
-
-}
-
-.pills{
-
-  display:flex;
-
-  flex-wrap:wrap;
-
-  gap:6px;
-
-  margin-top:10px;
-
 }
 
 .pill{
 
-  padding:6px 8px;
+  display:inline-block;
+
+  padding:
+    5px 8px;
 
   border-radius:999px;
 
-  background:#111a26;
+  margin-top:7px;
 
-  color:#96a1b4;
-
-  font-size:8px;
+  font-size:9px;
 
   font-weight:900;
 
-}
+  letter-spacing:.5px;
 
-.poolReason{
-
-  margin-top:10px;
-
-  color:var(--muted);
-
-  font-size:10px;
-
-  line-height:1.5;
-
-}
-
-
-/* =========================================================
-   WARNING
-========================================================= */
-
-.warning{
-
-  margin-top:16px;
-
-  padding:15px;
-
-  border-radius:18px;
+  color:var(--orange);
 
   border:
     1px solid
-    rgba(247,200,78,.15);
+    rgba(
+      245,
+      166,
+      35,
+      .25
+    );
 
   background:
-    rgba(247,200,78,.035);
-
-  color:#a3997b;
-
-  font-size:11px;
-
-  line-height:1.55;
-
-}
-
-
-/* =========================================================
-   DIAGNOSTICS
-========================================================= */
-
-details{
-
-  border:1px solid var(--border);
-
-  border-radius:21px;
-
-  background:#050b11;
-
-  overflow:hidden;
+    rgba(
+      245,
+      166,
+      35,
+      .07
+    );
 
 }
-
-summary{
-
-  padding:18px;
-
-  color:#abb5c5;
-
-  font-weight:900;
-
-  cursor:pointer;
-
-}
-
-.raw{
-
-  margin:0 16px 16px;
-
-  padding:13px;
-
-  max-height:350px;
-
-  overflow:auto;
-
-  background:#010305;
-
-  border-radius:15px;
-
-  color:#adb7c6;
-
-  font-family:
-    ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Monaco,
-    monospace;
-
-  white-space:pre-wrap;
-
-  word-break:break-word;
-
-  font-size:8px;
-
-  line-height:1.5;
-
-}
-
-
-/* =========================================================
-   ERROR
-========================================================= */
 
 .error{
 
-  display:none;
-
-  padding:15px;
-
-  margin-bottom:18px;
-
-  border-radius:18px;
-
-  border:
-    1px solid
-    rgba(255,97,119,.23);
-
-  background:
-    rgba(255,97,119,.06);
-
-  color:#ff9dac;
+  color:var(--red);
 
   font-size:12px;
 
 }
 
+@media(
+  max-width:600px
+){
 
-/* =========================================================
-   MOBILE
-========================================================= */
+  .grid4{
 
-@media(max-width:520px){
+    grid-template-columns:
+      repeat(
+        2,
+        1fr
+      );
 
-  .title{
-    font-size:34px;
-  }
-
-  .price{
-    font-size:42px;
-  }
-
-  .card{
-    padding:20px;
-  }
-
-  .raidBadge{
-    min-width:110px;
-    font-size:12px;
   }
 
 }
@@ -1269,255 +678,154 @@ summary{
 
 <body>
 
-<div class="app">
+<div class="container">
 
 
-<!-- =======================================================
+<!-- ======================================================
      HEADER
-======================================================= -->
+====================================================== -->
 
 <div class="header">
 
-  <div>
+  <div class="brand">
 
-    <div class="brand">
-      MKAYFX
+    <div>
+
+      <div class="title">
+        MKAYFX BTC
+      </div>
+
+      <div class="subtitle">
+        COINBASE LIQUIDITY INTELLIGENCE
+      </div>
+
     </div>
 
-    <h1 class="title">
-      XAU SWEEP<br>
-      SIGNAL ENGINE
-    </h1>
-
-    <div class="subtitle">
-
-      Live liquidity raid tracking with confirmed
-      reversal BUY / SELL signals.
-
+    <div class="live">
+      ● LIVE
     </div>
 
   </div>
 
-
-  <button
-    class="refresh"
-    id="refreshButton"
-  >
-    ↻
-  </button>
-
 </div>
 
 
-<!-- =======================================================
-     CONNECTION
-======================================================= -->
-
-<div class="connection">
-
-  <div
-    class="dot"
-    id="connectionDot"
-  ></div>
-
-  <span id="connectionText">
-    Connecting...
-  </span>
-
-  <span>·</span>
-
-  <span id="priceLatency">
-    price —
-  </span>
-
-  <span>·</span>
-
-  <span id="analysisLatency">
-    analysis —
-  </span>
-
-</div>
-
-
-<div
-  class="error"
-  id="errorBanner"
-></div>
-
-
-<!-- =======================================================
-     LIVE PRICE / SWEEP
-======================================================= -->
+<!-- ======================================================
+     PRICE
+====================================================== -->
 
 <div class="card">
 
-  <div class="marketTop">
+  <div class="section-title">
+    BTC / USD
+  </div>
 
-    <div>
+  <div
+    class="price"
+    id="price"
+  >
+    —
+  </div>
 
-      <div class="symbol">
-        XAU/USD
+  <div
+    class="small"
+    id="marketInfo"
+  >
+    Loading Coinbase…
+  </div>
+
+</div>
+
+
+<!-- ======================================================
+     SIGNAL
+====================================================== -->
+
+<div class="card">
+
+  <div class="section-title">
+    CURRENT INTELLIGENCE
+  </div>
+
+  <div
+    class="signal WAIT"
+    id="signal"
+  >
+    WAIT
+  </div>
+
+  <div
+    class="small"
+    id="signalConfidence"
+  >
+    Analysing…
+  </div>
+
+
+  <div
+    class="grid4"
+    style="margin-top:14px"
+  >
+
+    <div class="metric">
+
+      <div class="metric-label">
+        BUY SCORE
       </div>
 
       <div
-        class="price"
-        id="livePrice"
+        class="metric-value green"
+        id="buyScore"
       >
         —
       </div>
 
+    </div>
+
+
+    <div class="metric">
+
+      <div class="metric-label">
+        SELL SCORE
+      </div>
+
       <div
-        class="liveStatus"
-        id="liveStatus"
+        class="metric-value red"
+        id="sellScore"
       >
-        WAITING FOR PRICE
+        —
       </div>
 
     </div>
 
 
-    <div
-      class="raidBadge"
-      id="raidBadge"
-    >
-      WAIT
-    </div>
+    <div class="metric">
 
-  </div>
-
-
-  <div class="stageArea">
-
-    <div class="label">
-      SWEEP STAGE
-    </div>
-
-    <div
-      class="stage"
-      id="sweepStage"
-    >
-      ANALYSING
-    </div>
-
-    <div
-      class="stageDescription"
-      id="stageDescription"
-    >
-      Waiting for liquidity intelligence.
-    </div>
-
-
-    <div class="progress">
+      <div class="metric-label">
+        MACRO
+      </div>
 
       <div
-        class="progressFill"
-        id="progressFill"
-      ></div>
+        class="metric-value"
+        id="macroBias"
+      >
+        —
+      </div>
 
     </div>
 
 
-    <div class="progressLabels">
+    <div class="metric">
 
-      <span>APPROACH</span>
-      <span>RAID</span>
-      <span>OVERSHOOT</span>
-      <span>REJECTION</span>
-
-    </div>
-
-
-    <div class="grid2">
-
-      <div class="box">
-
-        <div class="boxLabel">
-          LIQUIDITY
-        </div>
-
-        <div
-          class="boxValue gold"
-          id="targetPrice"
-        >
-          —
-        </div>
-
-        <div
-          class="boxSub"
-          id="targetName"
-        >
-          —
-        </div>
-
+      <div class="metric-label">
+        VOLATILITY
       </div>
 
-
-      <div class="box">
-
-        <div class="boxLabel">
-          LIVE DISTANCE
-        </div>
-
-        <div
-          class="boxValue"
-          id="distance"
-        >
-          —
-        </div>
-
-        <div
-          class="boxSub"
-          id="distanceAtr"
-        >
-          —
-        </div>
-
-      </div>
-
-
-      <div class="box">
-
-        <div class="boxLabel">
-          PROJECTED END
-        </div>
-
-        <div
-          class="boxValue"
-          id="projectedEnd"
-        >
-          —
-        </div>
-
-        <div
-          class="boxSub"
-          id="projectedZone"
-        >
-          —
-        </div>
-
-      </div>
-
-
-      <div class="box">
-
-        <div class="boxLabel">
-          RAID SCORE
-        </div>
-
-        <div
-          class="boxValue gold"
-          id="raidScore"
-        >
-          —
-        </div>
-
-        <div
-          class="boxSub"
-          id="raidStyle"
-        >
-          —
-        </div>
-
+      <div
+        class="metric-value"
+        id="volatility"
+      >
+        —
       </div>
 
     </div>
@@ -1527,82 +835,29 @@ summary{
 </div>
 
 
-<!-- =======================================================
-     SIGNAL
-======================================================= -->
+<!-- ======================================================
+     TRADE
+====================================================== -->
 
-<div class="sectionHeader">
+<div
+  class="card"
+  id="tradeCard"
+>
 
-  <div class="sectionTitle">
-    Trade signal
+  <div class="section-title">
+    TRADE LEVELS
   </div>
 
-  <div class="sectionHint">
-    only after confirmed rejection
-  </div>
+  <div class="grid4">
 
-</div>
+    <div class="metric">
 
-
-<div class="card signalCard">
-
-  <div class="signalGlow"></div>
-
-
-  <div class="signalHeader">
-
-    <div>
-
-      <div class="label">
-        MODEL SIGNAL
-      </div>
-
-      <div
-        class="signalStatus wait"
-        id="signalStatus"
-      >
-        WAIT
-      </div>
-
-    </div>
-
-
-    <div class="quality">
-
-      <div
-        class="qualityValue"
-        id="signalQuality"
-      >
-        0
-      </div>
-
-      <div class="qualityLabel">
-        QUALITY
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <div
-    class="signalMessage"
-    id="signalMessage"
-  >
-    Waiting for a liquidity sweep and reversal confirmation.
-  </div>
-
-
-  <div class="grid2">
-
-    <div class="box">
-
-      <div class="boxLabel">
+      <div class="metric-label">
         ENTRY
       </div>
 
       <div
-        class="boxValue"
+        class="metric-value"
         id="entry"
       >
         —
@@ -1611,15 +866,15 @@ summary{
     </div>
 
 
-    <div class="box">
+    <div class="metric">
 
-      <div class="boxLabel">
-        STOP LOSS
+      <div class="metric-label">
+        STOP
       </div>
 
       <div
-        class="boxValue red"
-        id="stopLoss"
+        class="metric-value red"
+        id="stop"
       >
         —
       </div>
@@ -1627,14 +882,14 @@ summary{
     </div>
 
 
-    <div class="box">
+    <div class="metric">
 
-      <div class="boxLabel">
-        TP1 · 1.5R
+      <div class="metric-label">
+        TP 1
       </div>
 
       <div
-        class="boxValue green"
+        class="metric-value green"
         id="tp1"
       >
         —
@@ -1643,14 +898,14 @@ summary{
     </div>
 
 
-    <div class="box">
+    <div class="metric">
 
-      <div class="boxLabel">
-        TP2 · 2.5R
+      <div class="metric-label">
+        TP 2
       </div>
 
       <div
-        class="boxValue green"
+        class="metric-value green"
         id="tp2"
       >
         —
@@ -1658,142 +913,80 @@ summary{
 
     </div>
 
-
-    <div class="box">
-
-      <div class="boxLabel">
-        RISK DISTANCE
-      </div>
-
-      <div
-        class="boxValue"
-        id="riskDistance"
-      >
-        —
-      </div>
-
-    </div>
-
-
-    <div class="box">
-
-      <div class="boxLabel">
-        SIGNAL STATE
-      </div>
-
-      <div
-        class="boxValue"
-        id="signalState"
-      >
-        —
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <div class="conditions">
-
-    <div class="label">
-      CONFIRMATION CHECKS
-    </div>
-
-    <div
-      id="conditions"
-    >
-    </div>
-
-  </div>
-
-
-  <button
-    class="button"
-    id="alertButton"
-  >
-    Enable signal alerts
-  </button>
-
-
-  <button
-    class="button secondary"
-    id="clearSignalButton"
-  >
-    Clear locked signal
-  </button>
-
-
-  <div class="warning">
-
-    This is a heuristic trading model, not a guarantee.
-    A raid score or model signal is not a calibrated probability
-    of profit. Spread, slippage and sudden news can invalidate a
-    setup.
-
   </div>
 
 </div>
 
 
-<!-- =======================================================
-     LIVE THESIS
-======================================================= -->
-
-<div class="sectionHeader">
-
-  <div class="sectionTitle">
-    Live thesis
-  </div>
-
-  <div class="sectionHint">
-    current liquidity interpretation
-  </div>
-
-</div>
-
+<!-- ======================================================
+     RAID
+====================================================== -->
 
 <div class="card">
+
+  <div class="section-title">
+    HIGHEST-PRIORITY LIQUIDITY
+  </div>
 
   <div
-    class="thesis"
-    id="thesis"
+    class="raid-title"
+    id="raidTarget"
   >
-    Waiting for analysis...
+    Analysing…
   </div>
 
-</div>
-
-
-<!-- =======================================================
-     MARKET
-======================================================= -->
-
-<div class="sectionHeader">
-
-  <div class="sectionTitle">
-    Market state
+  <div
+    class="small"
+    id="raidInfo"
+    style="margin-top:5px"
+  >
+    —
   </div>
 
-  <div class="sectionHint">
-    regime + flow
+  <div
+    class="pill"
+    id="raidStage"
+  >
+    MONITORING
   </div>
 
-</div>
+
+  <div
+    class="raid-score"
+    id="raidScore"
+    style="margin-top:13px"
+  >
+    —
+  </div>
+
+  <div class="small">
+    RAID SCORE
+  </div>
 
 
-<div class="card">
+  <div class="progress">
 
-  <div class="grid2">
+    <div
+      id="raidProgress"
+    ></div>
 
-    <div class="box">
+  </div>
 
-      <div class="boxLabel">
-        REGIME
+
+  <div
+    class="grid"
+    style="margin-top:15px"
+  >
+
+    <div class="metric">
+
+      <div class="metric-label">
+        SWEEP ZONE LOW
       </div>
 
       <div
-        class="boxValue"
-        id="regime"
+        class="metric-value"
+        id="sweepLow"
       >
         —
       </div>
@@ -1801,86 +994,319 @@ summary{
     </div>
 
 
-    <div class="box">
+    <div class="metric">
 
-      <div class="boxLabel">
-        VWAP
+      <div class="metric-label">
+        SWEEP ZONE HIGH
       </div>
 
       <div
-        class="boxValue"
+        class="metric-value"
+        id="sweepHigh"
+      >
+        —
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ======================================================
+     TIMEFRAMES
+====================================================== -->
+
+<div class="card">
+
+  <div class="section-title">
+    MULTI-TIMEFRAME STRUCTURE
+  </div>
+
+  <div class="grid4">
+
+    <div class="metric">
+
+      <div class="metric-label">
+        M5
+      </div>
+
+      <div
+        id="m5"
+        class="bias NEUTRAL"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="metric">
+
+      <div class="metric-label">
+        M15
+      </div>
+
+      <div
+        id="m15"
+        class="bias NEUTRAL"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="metric">
+
+      <div class="metric-label">
+        H1
+      </div>
+
+      <div
+        id="h1"
+        class="bias NEUTRAL"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="metric">
+
+      <div class="metric-label">
+        H4
+      </div>
+
+      <div
+        id="h4"
+        class="bias NEUTRAL"
+      >
+        —
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ======================================================
+     FLOW
+====================================================== -->
+
+<div class="card">
+
+  <div class="section-title">
+    ORDER FLOW
+  </div>
+
+  <div class="grid4">
+
+    <div class="metric">
+
+      <div class="metric-label">
+        DELTA
+      </div>
+
+      <div
+        class="metric-value"
+        id="delta"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="metric">
+
+      <div class="metric-label">
+        CVD
+      </div>
+
+      <div
+        class="metric-value"
+        id="cvd"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="metric">
+
+      <div class="metric-label">
+        BOOK
+      </div>
+
+      <div
+        class="metric-value"
+        id="book"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="metric">
+
+      <div class="metric-label">
+        M5 VOLUME
+      </div>
+
+      <div
+        class="metric-value"
+        id="volume"
+      >
+        —
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ======================================================
+     MARKET REFERENCE
+====================================================== -->
+
+<div class="card">
+
+  <div class="section-title">
+    REFERENCE LEVELS
+  </div>
+
+  <div class="grid">
+
+    <div class="metric">
+
+      <div class="metric-label">
+        PREVIOUS DAY HIGH
+      </div>
+
+      <div
+        class="metric-value"
+        id="pdh"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="metric">
+
+      <div class="metric-label">
+        PREVIOUS DAY LOW
+      </div>
+
+      <div
+        class="metric-value"
+        id="pdl"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="metric">
+
+      <div class="metric-label">
+        PREVIOUS WEEK HIGH
+      </div>
+
+      <div
+        class="metric-value"
+        id="pwh"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="metric">
+
+      <div class="metric-label">
+        PREVIOUS WEEK LOW
+      </div>
+
+      <div
+        class="metric-value"
+        id="pwl"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="metric">
+
+      <div class="metric-label">
+        DAILY OPEN
+      </div>
+
+      <div
+        class="metric-value"
+        id="dailyOpen"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="metric">
+
+      <div class="metric-label">
+        WEEKLY OPEN
+      </div>
+
+      <div
+        class="metric-value"
+        id="weeklyOpen"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="metric">
+
+      <div class="metric-label">
+        DAILY VWAP
+      </div>
+
+      <div
+        class="metric-value blue"
         id="vwap"
       >
         —
       </div>
 
-      <div
-        class="boxSub"
-        id="vwapDistance"
-      >
-        —
-      </div>
-
     </div>
 
 
-    <div class="box">
+    <div class="metric">
 
-      <div class="boxLabel">
-        5M DELTA
+      <div class="metric-label">
+        5M ATR
       </div>
 
       <div
-        class="boxValue"
-        id="delta5"
-      >
-        —
-      </div>
-
-    </div>
-
-
-    <div class="box">
-
-      <div class="boxLabel">
-        15M DELTA
-      </div>
-
-      <div
-        class="boxValue"
-        id="delta15"
-      >
-        —
-      </div>
-
-    </div>
-
-
-    <div class="box">
-
-      <div class="boxLabel">
-        DIVERGENCE
-      </div>
-
-      <div
-        class="boxValue"
-        id="divergence"
-      >
-        —
-      </div>
-
-    </div>
-
-
-    <div class="box">
-
-      <div class="boxLabel">
-        ABSORPTION
-      </div>
-
-      <div
-        class="boxValue"
-        id="absorption"
+        class="metric-value"
+        id="atr"
       >
         —
       </div>
@@ -1892,110 +1318,209 @@ summary{
 </div>
 
 
-<!-- =======================================================
-     STRUCTURE
-======================================================= -->
-
-<div class="sectionHeader">
-
-  <div class="sectionTitle">
-    MTF structure
-  </div>
-
-  <div class="sectionHint">
-    M5 · M15 · H1 · H4 · D1
-  </div>
-
-</div>
-
-
-<div class="card">
-
-  <div id="structureRows">
-    —
-  </div>
-
-</div>
-
-
-<!-- =======================================================
+<!-- ======================================================
      SESSIONS
-======================================================= -->
-
-<div class="sectionHeader">
-
-  <div class="sectionTitle">
-    Sessions
-  </div>
-
-  <div class="sectionHint">
-    live liquidity windows
-  </div>
-
-</div>
-
-
-<div id="sessions">
-</div>
-
-
-<!-- =======================================================
-     LIQUIDITY
-======================================================= -->
-
-<div class="sectionHeader">
-
-  <div class="sectionTitle">
-    Liquidity map
-  </div>
-
-  <div class="sectionHint">
-    ranked current pools
-  </div>
-
-</div>
-
+====================================================== -->
 
 <div class="card">
 
-  <div id="poolList">
-    —
+  <div class="section-title">
+    CRYPTO SESSION INTELLIGENCE
   </div>
-
-</div>
-
-
-<!-- =======================================================
-     DEBUG
-======================================================= -->
-
-<div class="sectionHeader">
-
-  <div class="sectionTitle">
-    Diagnostics
-  </div>
-
-  <div class="sectionHint">
-    raw backend response
-  </div>
-
-</div>
-
-
-<details>
-
-  <summary>
-    Show diagnostics
-  </summary>
 
   <div
-    class="raw"
-    id="raw"
+    class="small"
+    id="activeSession"
+    style="margin-bottom:12px"
   >
-    Waiting...
+    —
   </div>
 
-</details>
+  <div class="grid">
+
+    <div class="metric">
+
+      <div class="metric-label">
+        ASIA RANGE
+      </div>
+
+      <div
+        class="metric-value"
+        id="asia"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="metric">
+
+      <div class="metric-label">
+        LONDON RANGE
+      </div>
+
+      <div
+        class="metric-value"
+        id="london"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="metric">
+
+      <div class="metric-label">
+        NEW YORK RANGE
+      </div>
+
+      <div
+        class="metric-value"
+        id="newYork"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="metric">
+
+      <div class="metric-label">
+        WEEKEND
+      </div>
+
+      <div
+        class="metric-value"
+        id="weekend"
+      >
+        —
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ======================================================
+     LIQUIDITY LIST
+====================================================== -->
+
+<div class="card">
+
+  <div class="section-title">
+    LIQUIDITY MAP
+  </div>
+
+  <div id="liquidity">
+    Loading…
+  </div>
+
+</div>
+
+
+<!-- ======================================================
+     RAID REASONS
+====================================================== -->
+
+<div class="card">
+
+  <div class="section-title">
+    RAID MODEL REASONS
+  </div>
+
+  <div id="raidReasons">
+    —
+  </div>
+
+</div>
+
+
+<!-- ======================================================
+     SIGNAL REASONS
+====================================================== -->
+
+<div class="card">
+
+  <div class="section-title">
+    SIGNAL COMPONENTS
+  </div>
+
+  <div
+    class="grid"
+    style="align-items:start"
+  >
+
+    <div>
+
+      <div
+        class="green"
+        style="
+          font-size:11px;
+          font-weight:850;
+          margin-bottom:8px;
+        "
+      >
+        BUY
+      </div>
+
+      <div id="buyReasons">
+        —
+      </div>
+
+    </div>
+
+
+    <div>
+
+      <div
+        class="red"
+        style="
+          font-size:11px;
+          font-weight:850;
+          margin-bottom:8px;
+        "
+      >
+        SELL
+      </div>
+
+      <div id="sellReasons">
+        —
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ======================================================
+     REFRESH
+====================================================== -->
+
+<div class="card">
+
+  <button
+    class="btn"
+    id="refreshBtn"
+    onclick="loadData(true)"
+  >
+    FORCE NEW ANALYSIS
+  </button>
+
+  <div
+    class="status"
+    id="status"
+  >
+    —
+  </div>
+
+</div>
 
 
 </div>
@@ -2004,148 +1529,34 @@ summary{
 <script>
 
 /* =========================================================
-   CONFIG
+   MKAYFX BTC FRONTEND
 ========================================================= */
 
-const ANALYSIS_API =
-  "/api/xau";
+const REFRESH_MS =
+  30000;
 
 
-const PRICE_API =
-  "/api/price";
-
-
-/*
-  10 seconds is much safer for Twelve Data
-  credit usage than requesting every second.
-*/
-const PRICE_REFRESH_MS =
-  10_000;
-
-
-const ANALYSIS_REFRESH_MS =
-  60_000;
-
-
-/*
-  Signal rules
-*/
-const SIGNAL_MIN_QUALITY =
-  70;
-
-
-const TP1_R =
-  1.5;
-
-
-const TP2_R =
-  2.5;
-
-
-const RUNTIME_KEY =
-  "mkayfx_sweep_runtime_v4";
-
-
-const SIGNAL_KEY =
-  "mkayfx_locked_signal_v4";
-
-
-let analysis =
-  null;
-
-
-let livePrice =
-  null;
-
-
-let priceLoading =
+let loading =
   false;
 
 
-let analysisLoading =
-  false;
+function $(id){
 
-
-let notificationsEnabled =
-  false;
-
-
-/* =========================================================
-   DOM
-========================================================= */
-
-function el(
-  id
-) {
-
-  return document.getElementById(
-    id
-  );
+  return document
+    .getElementById(id);
 
 }
 
 
-/* =========================================================
-   FORMAT
-========================================================= */
+function money(value){
 
-function priceText(
-  value,
-  decimals = 2
-) {
-
-  const n =
-    Number(
-      value
-    );
-
-
-  if (
+  if(
+    value === null ||
+    value === undefined ||
     !Number.isFinite(
-      n
+      Number(value)
     )
-  ) {
-
-    return "—";
-
-  }
-
-
-  return n.toLocaleString(
-
-    undefined,
-
-    {
-
-      minimumFractionDigits:
-        decimals,
-
-      maximumFractionDigits:
-        decimals
-
-    }
-
-  );
-
-}
-
-
-function signed(
-  value,
-  decimals = 1
-) {
-
-  const n =
-    Number(
-      value
-    );
-
-
-  if (
-    !Number.isFinite(
-      n
-    )
-  ) {
+  ){
 
     return "—";
 
@@ -2153,2465 +1564,533 @@ function signed(
 
 
   return (
-
-    (
-      n > 0
-        ?
-        "+"
-        :
-        ""
-    )
-
-    +
-
-    n.toFixed(
-      decimals
-    )
-
+    "$" +
+    Number(value)
+      .toLocaleString(
+        "en-US",
+        {
+          minimumFractionDigits:2,
+          maximumFractionDigits:2
+        }
+      )
   );
 
 }
 
 
-function clamp(
+function number(
   value,
-  min,
-  max
-) {
-
-  return Math.max(
-
-    min,
-
-    Math.min(
-      max,
-      value
-    )
-
-  );
-
-}
-
-
-function escapeHtml(
-  value
-) {
-
-  return String(
-    value ??
-    ""
-  )
-
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-
-    .replace(
-      /</g,
-      "&lt;"
-    )
-
-    .replace(
-      />/g,
-      "&gt;"
-    )
-
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-
-    .replace(
-      /'/g,
-      "&#039;"
-    );
-
-}
-
-
-/* =========================================================
-   STORAGE
-========================================================= */
-
-function readJson(
-  key,
-  fallback = null
-) {
-
-  try {
-
-    const raw =
-      localStorage.getItem(
-        key
-      );
-
-
-    if (
-      !raw
-    ) {
-
-      return fallback;
-
-    }
-
-
-    return JSON.parse(
-      raw
-    );
-
-
-  } catch (
-    error
-  ) {
-
-    return fallback;
-
-  }
-
-}
-
-
-function saveJson(
-  key,
-  value
-) {
-
-  try {
-
-    localStorage.setItem(
-
-      key,
-
-      JSON.stringify(
-        value
-      )
-
-    );
-
-  } catch (
-    error
-  ) {
-
-  }
-
-}
-
-
-/* =========================================================
-   POOL KEY
-========================================================= */
-
-function poolKey(
-  pool
-) {
-
-  if (
-    !pool
-  ) {
-
-    return null;
-
-  }
-
-
-  return (
-
-    `${pool.type || pool.name}|` +
-
-    `${Number(pool.level).toFixed(2)}|` +
-
-    `${pool.side}`
-
-  );
-
-}
-
-
-/* =========================================================
-   RUNTIME
-========================================================= */
-
-function defaultRuntime(
-  key = null
-) {
-
-  return {
-
-    poolKey:
-      key,
-
-    crossedTarget:
-      false,
-
-    rejectionDetected:
-      false,
-
-    acceptanceSamples:
-      0,
-
-    maxPenetration:
-      0,
-
-    previousStage:
-      null,
-
-    stage:
-      "TRACKING",
-
-    updatedAt:
-      Date.now()
-
-  };
-
-}
-
-
-function getRuntime(
-  pool
-) {
-
-  const key =
-    poolKey(
-      pool
-    );
-
-
-  let runtime =
-    readJson(
-      RUNTIME_KEY,
-      null
-    );
-
-
-  if (
-    !runtime
-    ||
-    runtime.poolKey !==
-    key
-  ) {
-
-    runtime =
-      defaultRuntime(
-        key
-      );
-
-
-    saveJson(
-      RUNTIME_KEY,
-      runtime
-    );
-
-  }
-
-
-  return runtime;
-
-}
-
-
-/* =========================================================
-   SWEEP STAGE
-========================================================= */
-
-function calculateSweepStage(
-  currentPrice,
-  pool
-) {
-
-  if (
-    !pool
-    ||
+  digits = 2
+){
+
+  if(
+    value === null ||
+    value === undefined ||
     !Number.isFinite(
-      Number(
-        currentPrice
-      )
+      Number(value)
     )
-  ) {
+  ){
 
-    return {
-
-      stage:
-        "WAITING",
-
-      progress:
-        0,
-
-      description:
-        "Waiting for price and liquidity data.",
-
-      runtime:
-        null
-
-    };
+    return "—";
 
   }
 
 
-  const price =
-    Number(
-      currentPrice
-    );
-
-
-  const target =
-    Number(
-      pool.level
-    );
-
-
-  const atr5 =
-    Number(
-      analysis?.market?.atr5
-    )
-
-    ||
-
-    target *
-    0.0007;
-
-
-  const sweep =
-    pool.projectedSweep
-    ||
-    {};
-
-
-  const likelyEnd =
-    Number(
-      sweep.likelyEnd
-    );
-
-
-  const zoneLow =
-    Number(
-      sweep.zoneLow
-    );
-
-
-  const zoneHigh =
-    Number(
-      sweep.zoneHigh
-    );
-
-
-  const runtime =
-    getRuntime(
-      pool
-    );
-
-
-  const approachDistance =
-    Math.max(
-
-      atr5 *
-      1.25,
-
-      target *
-      0.00045
-
-    );
-
-
-  const reversalDistance =
-    Math.max(
-
-      atr5 *
-      0.32,
-
-      target *
-      0.00012
-
-    );
-
-
-  let beforeDistance =
-    0;
-
-
-  let penetration =
-    0;
-
-
-  let crossedNow =
-    false;
-
-
-  let projectedReached =
-    false;
-
-
-  let beyondOuterZone =
-    false;
-
-
-  let returnedThroughTarget =
-    false;
-
-
-  let reversalConfirmed =
-    false;
-
-
-  /* =====================================================
-     HIGH POOL
-  ===================================================== */
-
-  if (
-    pool.side ===
-    "HIGH"
-  ) {
-
-    beforeDistance =
-      target -
-      price;
-
-
-    penetration =
-      Math.max(
-        0,
-        price -
-        target
-      );
-
-
-    crossedNow =
-      price >=
-      target;
-
-
-    projectedReached =
-
-      Number.isFinite(
-        likelyEnd
-      )
-
-      &&
-
-      price >=
-      likelyEnd;
-
-
-    beyondOuterZone =
-
-      Number.isFinite(
-        zoneHigh
-      )
-
-      &&
-
-      price >
-      zoneHigh;
-
-
-    returnedThroughTarget =
-
-      runtime.crossedTarget
-
-      &&
-
-      price <
-      target;
-
-
-    reversalConfirmed =
-
-      runtime.rejectionDetected
-
-      &&
-
-      price <=
-
-      target -
-      reversalDistance;
-
-  }
-
-
-  /* =====================================================
-     LOW POOL
-  ===================================================== */
-
-  else {
-
-    beforeDistance =
-      price -
-      target;
-
-
-    penetration =
-      Math.max(
-        0,
-        target -
-        price
-      );
-
-
-    crossedNow =
-      price <=
-      target;
-
-
-    projectedReached =
-
-      Number.isFinite(
-        likelyEnd
-      )
-
-      &&
-
-      price <=
-      likelyEnd;
-
-
-    beyondOuterZone =
-
-      Number.isFinite(
-        zoneLow
-      )
-
-      &&
-
-      price <
-      zoneLow;
-
-
-    returnedThroughTarget =
-
-      runtime.crossedTarget
-
-      &&
-
-      price >
-      target;
-
-
-    reversalConfirmed =
-
-      runtime.rejectionDetected
-
-      &&
-
-      price >=
-
-      target +
-      reversalDistance;
-
-  }
-
-
-  /* =====================================================
-     UPDATE HISTORY
-  ===================================================== */
-
-  if (
-    crossedNow
-  ) {
-
-    runtime.crossedTarget =
-      true;
-
-  }
-
-
-  runtime.maxPenetration =
-    Math.max(
-
-      Number(
-        runtime.maxPenetration
-      )
-      ||
-      0,
-
-      penetration
-
-    );
-
-
-  if (
-    returnedThroughTarget
-  ) {
-
-    runtime.rejectionDetected =
-      true;
-
-
-    runtime.acceptanceSamples =
-      0;
-
-  }
-
-
-  if (
-    beyondOuterZone
-    &&
-    crossedNow
-  ) {
-
-    runtime.acceptanceSamples =
-      (
-        runtime.acceptanceSamples
-        ||
-        0
-      )
-      +
-      1;
-
-  }
-
-  else if (
-    !returnedThroughTarget
-  ) {
-
-    runtime.acceptanceSamples =
-      Math.max(
-
-        0,
-
-        (
-          runtime.acceptanceSamples
-          ||
-          0
-        )
-
-        -
-
-        1
-
-      );
-
-  }
-
-
-  let stage =
-    "TRACKING";
-
-
-  let progress =
-    8;
-
-
-  let description =
-
-    pool.side ===
-    "HIGH"
-
-      ?
-
-      "Tracking buy-side liquidity above current price."
-
-      :
-
-      "Tracking sell-side liquidity below current price.";
-
-
-  /* =====================================================
-     ACCEPTANCE
-  ===================================================== */
-
-  if (
-    runtime.acceptanceSamples >= 3
-  ) {
-
-    stage =
-      "ACCEPTANCE";
-
-
-    progress =
-      100;
-
-
-    description =
-
-      pool.side ===
-      "HIGH"
-
-        ?
-
-        "Price is holding above the projected raid zone. Reversal setup cancelled while upside acceptance remains."
-
-        :
-
-        "Price is holding below the projected raid zone. Reversal setup cancelled while downside acceptance remains.";
-
-  }
-
-
-  /* =====================================================
-     REVERSAL
-  ===================================================== */
-
-  else if (
-    reversalConfirmed
-  ) {
-
-    stage =
-      "REVERSAL CONFIRMED";
-
-
-    progress =
-      100;
-
-
-    description =
-
-      pool.side ===
-      "HIGH"
-
-        ?
-
-        "Buy-side liquidity was swept and price rejected sufficiently back below the liquidity level."
-
-        :
-
-        "Sell-side liquidity was swept and price rejected sufficiently back above the liquidity level.";
-
-  }
-
-
-  /* =====================================================
-     REJECTION
-  ===================================================== */
-
-  else if (
-    runtime.rejectionDetected
-    ||
-    returnedThroughTarget
-  ) {
-
-    stage =
-      "REJECTION";
-
-
-    progress =
-      86;
-
-
-    description =
-
-      pool.side ===
-      "HIGH"
-
-        ?
-
-        "Price swept above liquidity and returned below the level. Waiting for stronger bearish follow-through."
-
-        :
-
-        "Price swept below liquidity and returned above the level. Waiting for stronger bullish follow-through.";
-
-  }
-
-
-  /* =====================================================
-     OVERSHOOT
-  ===================================================== */
-
-  else if (
-    projectedReached
-  ) {
-
-    stage =
-      "OVERSHOOT";
-
-
-    progress =
-      72;
-
-
-    description =
-      "Price has reached the projected sweep-depth region.";
-
-  }
-
-
-  /* =====================================================
-     RAID
-  ===================================================== */
-
-  else if (
-    crossedNow
-  ) {
-
-    stage =
-      "RAIDING";
-
-
-    progress =
-      55;
-
-
-    description =
-      "Liquidity is currently being raided. Waiting to see rejection or acceptance.";
-
-  }
-
-
-  /* =====================================================
-     APPROACH
-  ===================================================== */
-
-  else if (
-    beforeDistance <=
-    approachDistance
-  ) {
-
-    const normalized =
-
-      1
-
-      -
-
-      (
-        beforeDistance /
-        approachDistance
-      );
-
-
-    stage =
-      "APPROACHING";
-
-
-    progress =
-
-      15
-
-      +
-
-      clamp(
-        normalized,
-        0,
-        1
-      )
-
-      *
-      35;
-
-
-    description =
-      "Price is approaching the selected liquidity pool. No trade signal yet.";
-
-  }
-
-
-  runtime.previousStage =
-    runtime.stage;
-
-
-  runtime.stage =
-    stage;
-
-
-  runtime.updatedAt =
-    Date.now();
-
-
-  saveJson(
-    RUNTIME_KEY,
-    runtime
-  );
-
-
-  return {
-
-    stage,
-
-    progress,
-
-    description,
-
-    runtime,
-
-    reversalConfirmed
-
-  };
-
-}
-
-
-/* =========================================================
-   SIGNAL QUALITY
-========================================================= */
-
-function calculateSignalQuality(
-  direction,
-  pool,
-  stageData
-) {
-
-  let score =
-    0;
-
-
-  const checks =
-    [];
-
-
-  const structure =
-    analysis?.structure
-    ||
-    {};
-
-
-  const footprint =
-    analysis?.footprint
-    ||
-    {};
-
-
-  const m5 =
-    structure.m5
-    ||
-    {};
-
-
-  const m15 =
-    structure.m15
-    ||
-    {};
-
-
-  const delta5 =
-    Number(
-      footprint.last5?.deltaPct
-    );
-
-
-  const delta15 =
-    Number(
-      footprint.last15?.deltaPct
-    );
-
-
-  /* =====================================================
-     REVERSAL CONFIRMED
-  ===================================================== */
-
-  const stagePass =
-
-    stageData.stage ===
-    "REVERSAL CONFIRMED";
-
-
-  checks.push({
-
-    name:
-      "Liquidity sweep + reversal confirmed",
-
-    pass:
-      stagePass
-
-  });
-
-
-  if (
-    stagePass
-  ) {
-
-    score +=
-      42;
-
-  }
-
-
-  /* =====================================================
-     M5
-  ===================================================== */
-
-  let m5Pass =
-    false;
-
-
-  if (
-    direction === "SELL"
-  ) {
-
-    m5Pass =
-
-      m5.bias === "BEARISH"
-
-      ||
-
-      Number(
-        m5.score
-      ) < 0;
-
-  }
-
-  else {
-
-    m5Pass =
-
-      m5.bias === "BULLISH"
-
-      ||
-
-      Number(
-        m5.score
-      ) > 0;
-
-  }
-
-
-  checks.push({
-
-    name:
-      `${direction} M5 structure confirmation`,
-
-    pass:
-      m5Pass
-
-  });
-
-
-  if (
-    m5Pass
-  ) {
-
-    score +=
-      14;
-
-  }
-
-
-  /* =====================================================
-     M15
-  ===================================================== */
-
-  let m15Pass =
-    false;
-
-
-  if (
-    direction === "SELL"
-  ) {
-
-    m15Pass =
-
-      m15.bias === "BEARISH"
-
-      ||
-
-      Number(
-        m15.score
-      ) < 0;
-
-  }
-
-  else {
-
-    m15Pass =
-
-      m15.bias === "BULLISH"
-
-      ||
-
-      Number(
-        m15.score
-      ) > 0;
-
-  }
-
-
-  checks.push({
-
-    name:
-      `${direction} M15 structure confirmation`,
-
-    pass:
-      m15Pass
-
-  });
-
-
-  if (
-    m15Pass
-  ) {
-
-    score +=
-      14;
-
-  }
-
-
-  /* =====================================================
-     DELTA
-  ===================================================== */
-
-  let deltaPass =
-    false;
-
-
-  let deltaTurnPass =
-    false;
-
-
-  if (
-    direction === "SELL"
-  ) {
-
-    deltaPass =
-
-      Number.isFinite(
-        delta5
-      )
-
-      &&
-
-      delta5 <
-      0;
-
-
-    deltaTurnPass =
-
-      Number.isFinite(
-        delta5
-      )
-
-      &&
-
-      Number.isFinite(
-        delta15
-      )
-
-      &&
-
-      delta5 <
-      delta15 -
-      3;
-
-  }
-
-  else {
-
-    deltaPass =
-
-      Number.isFinite(
-        delta5
-      )
-
-      &&
-
-      delta5 >
-      0;
-
-
-    deltaTurnPass =
-
-      Number.isFinite(
-        delta5
-      )
-
-      &&
-
-      Number.isFinite(
-        delta15
-      )
-
-      &&
-
-      delta5 >
-      delta15 +
-      3;
-
-  }
-
-
-  checks.push({
-
-    name:
-      `${direction} short-term delta`,
-
-    pass:
-      deltaPass
-
-  });
-
-
-  if (
-    deltaPass
-  ) {
-
-    score +=
-      10;
-
-  }
-
-
-  checks.push({
-
-    name:
-      "Delta reversal / acceleration",
-
-    pass:
-      deltaTurnPass
-
-  });
-
-
-  if (
-    deltaTurnPass
-  ) {
-
-    score +=
-      8;
-
-  }
-
-
-  /* =====================================================
-     REJECTION FOOTPRINT
-  ===================================================== */
-
-  const rejectionPass =
-
-    pool.nearLevelFootprint
-      ?.rejection ===
-    true;
-
-
-  checks.push({
-
-    name:
-      "Liquidity-level rejection detected",
-
-    pass:
-      rejectionPass
-
-  });
-
-
-  if (
-    rejectionPass
-  ) {
-
-    score +=
-      6;
-
-  }
-
-
-  /* =====================================================
-     DIVERGENCE
-  ===================================================== */
-
-  let divergencePass =
-    false;
-
-
-  if (
-    direction === "SELL"
-  ) {
-
-    divergencePass =
-
-      footprint.divergence ===
-      "PRICE UP / DELTA DOWN";
-
-  }
-
-  else {
-
-    divergencePass =
-
-      footprint.divergence ===
-      "PRICE DOWN / DELTA UP";
-
-  }
-
-
-  checks.push({
-
-    name:
-      "Order-flow divergence",
-
-    pass:
-      divergencePass
-
-  });
-
-
-  if (
-    divergencePass
-  ) {
-
-    score +=
-      6;
-
-  }
-
-
-  /* =====================================================
-     ABSORPTION
-  ===================================================== */
-
-  const absorptionText =
-    String(
-      footprint.absorption
-      ||
-      ""
-    );
-
-
-  let absorptionPass =
-    false;
-
-
-  if (
-    direction === "SELL"
-  ) {
-
-    absorptionPass =
-      absorptionText.includes(
-        "BUYING ABSORBED"
-      );
-
-  }
-
-  else {
-
-    absorptionPass =
-      absorptionText.includes(
-        "SELLING ABSORBED"
-      );
-
-  }
-
-
-  checks.push({
-
-    name:
-      "Absorption confirmation",
-
-    pass:
-      absorptionPass
-
-  });
-
-
-  if (
-    absorptionPass
-  ) {
-
-    score +=
-      6;
-
-  }
-
-
-  score =
-    clamp(
-      score,
-      0,
-      100
-    );
-
-
-  /*
-    Require actual reversal,
-    plus structure participation,
-    plus short-term delta direction.
-  */
-  const ready =
-
-    stagePass
-
-    &&
-
-    (
-      m5Pass
-      ||
-      m15Pass
-    )
-
-    &&
-
-    deltaPass
-
-    &&
-
-    score >=
-    SIGNAL_MIN_QUALITY;
-
-
-  return {
-
-    score,
-
-    ready,
-
-    checks,
-
-    m5Pass,
-
-    m15Pass,
-
-    deltaPass,
-
-    deltaTurnPass
-
-  };
-
-}
-
-
-/* =========================================================
-   CREATE TRADE PLAN
-========================================================= */
-
-function createTradeSignal(
-  direction,
-  pool,
-  quality
-) {
-
-  const entry =
-    Number(
-      livePrice
-    );
-
-
-  const atr5 =
-    Number(
-      analysis?.market?.atr5
-    )
-
-    ||
-
-    entry *
-    0.0007;
-
-
-  const target =
-    Number(
-      pool.level
-    );
-
-
-  const zoneLow =
-    Number(
-      pool.projectedSweep?.zoneLow
-    );
-
-
-  const zoneHigh =
-    Number(
-      pool.projectedSweep?.zoneHigh
-    );
-
-
-  /*
-    Extra protection beyond projected sweep zone.
-  */
-  const buffer =
-
-    Math.max(
-
-      atr5 *
-      0.25,
-
-      entry *
-      0.00008
-
-    );
-
-
-  const minimumRisk =
-    atr5 *
-    0.40;
-
-
-  let stopLoss;
-
-
-  if (
-    direction ===
-    "SELL"
-  ) {
-
-    const outer =
-
-      Number.isFinite(
-        zoneHigh
-      )
-
-        ?
-
-        Math.max(
-          zoneHigh,
-          target
-        )
-
-        :
-
-        target;
-
-
-    stopLoss =
-      outer +
-      buffer;
-
-
-    if (
-      stopLoss -
-      entry <
-      minimumRisk
-    ) {
-
-      stopLoss =
-        entry +
-        minimumRisk;
-
-    }
-
-  }
-
-  else {
-
-    const outer =
-
-      Number.isFinite(
-        zoneLow
-      )
-
-        ?
-
-        Math.min(
-          zoneLow,
-          target
-        )
-
-        :
-
-        target;
-
-
-    stopLoss =
-      outer -
-      buffer;
-
-
-    if (
-      entry -
-      stopLoss <
-      minimumRisk
-    ) {
-
-      stopLoss =
-        entry -
-        minimumRisk;
-
-    }
-
-  }
-
-
-  const risk =
-    Math.abs(
-      entry -
-      stopLoss
-    );
-
-
-  let tp1;
-  let tp2;
-
-
-  if (
-    direction ===
-    "SELL"
-  ) {
-
-    tp1 =
-      entry -
-      risk *
-      TP1_R;
-
-
-    tp2 =
-      entry -
-      risk *
-      TP2_R;
-
-  }
-
-  else {
-
-    tp1 =
-      entry +
-      risk *
-      TP1_R;
-
-
-    tp2 =
-      entry +
-      risk *
-      TP2_R;
-
-  }
-
-
-  return {
-
-    id:
-
-      `MKAYFX-${Date.now()}`,
-
-
-    poolKey:
-      poolKey(
-        pool
-      ),
-
-
-    direction,
-
-
-    status:
-      "ACTIVE",
-
-
-    quality:
-      quality.score,
-
-
-    entry:
-      round(
-        entry,
-        3
-      ),
-
-
-    stopLoss:
-      round(
-        stopLoss,
-        3
-      ),
-
-
-    tp1:
-      round(
-        tp1,
-        3
-      ),
-
-
-    tp2:
-      round(
-        tp2,
-        3
-      ),
-
-
-    risk:
-      round(
-        risk,
-        3
-      ),
-
-
-    poolName:
-      pool.name,
-
-
-    liquidityLevel:
-      round(
-        pool.level,
-        3
-      ),
-
-
-    raidScore:
-      pool.likelihoodScore,
-
-
-    stageAtEntry:
-      "REVERSAL CONFIRMED",
-
-
-    reasons:
-      quality.checks
-        .filter(
-          x =>
-            x.pass
-        )
-        .map(
-          x =>
-            x.name
-        ),
-
-
-    createdAt:
-      new Date()
-        .toISOString(),
-
-
-    tp1Hit:
-      false
-
-  };
-
-}
-
-
-/* =========================================================
-   ROUND
-========================================================= */
-
-function round(
-  value,
-  decimals = 3
-) {
-
-  const n =
-    Number(
-      value
-    );
-
-
-  if (
-    !Number.isFinite(
-      n
-    )
-  ) {
-
-    return null;
-
-  }
-
-
-  const m =
-    10 **
-    decimals;
-
-
-  return Math.round(
-    n *
-    m
-  )
-  /
-  m;
-
-}
-
-
-/* =========================================================
-   SIGNAL STORAGE
-========================================================= */
-
-function getSignal() {
-
-  return readJson(
-    SIGNAL_KEY,
-    null
-  );
-
-}
-
-
-function saveSignal(
-  signal
-) {
-
-  saveJson(
-    SIGNAL_KEY,
-    signal
-  );
-
-}
-
-
-/* =========================================================
-   UPDATE SIGNAL OUTCOME
-========================================================= */
-
-function updateSignalOutcome(
-  signal,
-  currentPrice
-) {
-
-  if (
-    !signal
-    ||
-    !Number.isFinite(
-      Number(
-        currentPrice
-      )
-    )
-  ) {
-
-    return signal;
-
-  }
-
-
-  const price =
-    Number(
-      currentPrice
-    );
-
-
-  if (
-    signal.status ===
-    "STOPPED"
-
-    ||
-
-    signal.status ===
-    "TP2 HIT"
-
-  ) {
-
-    return signal;
-
-  }
-
-
-  if (
-    signal.direction ===
-    "BUY"
-  ) {
-
-    if (
-      price <=
-      signal.stopLoss
-    ) {
-
-      signal.status =
-        "STOPPED";
-
-    }
-
-    else if (
-      price >=
-      signal.tp2
-    ) {
-
-      signal.status =
-        "TP2 HIT";
-
-
-      signal.tp1Hit =
-        true;
-
-    }
-
-    else if (
-      price >=
-      signal.tp1
-    ) {
-
-      signal.status =
-        "TP1 HIT";
-
-
-      signal.tp1Hit =
-        true;
-
-    }
-
-  }
-
-  else {
-
-    if (
-      price >=
-      signal.stopLoss
-    ) {
-
-      signal.status =
-        "STOPPED";
-
-    }
-
-    else if (
-      price <=
-      signal.tp2
-    ) {
-
-      signal.status =
-        "TP2 HIT";
-
-
-      signal.tp1Hit =
-        true;
-
-    }
-
-    else if (
-      price <=
-      signal.tp1
-    ) {
-
-      signal.status =
-        "TP1 HIT";
-
-
-      signal.tp1Hit =
-        true;
-
-    }
-
-  }
-
-
-  signal.lastPrice =
-    price;
-
-
-  signal.updatedAt =
-    new Date()
-      .toISOString();
-
-
-  saveSignal(
-    signal
-  );
-
-
-  return signal;
-
-}
-
-
-/* =========================================================
-   NOTIFY SIGNAL
-========================================================= */
-
-function notifySignal(
-  signal
-) {
-
-  if (
-    !notificationsEnabled
-  ) {
-
-    return;
-
-  }
-
-
-  if (
-    !(
-      "Notification"
-      in window
-    )
-  ) {
-
-    return;
-
-  }
-
-
-  if (
-    Notification.permission !==
-    "granted"
-  ) {
-
-    return;
-
-  }
-
-
-  try {
-
-    new Notification(
-
-      `MKAYFX ${signal.direction} SIGNAL`,
-
+  return Number(value)
+    .toLocaleString(
+      "en-US",
       {
-
-        body:
-
-          `Entry ${priceText(signal.entry)} · ` +
-
-          `SL ${priceText(signal.stopLoss)} · ` +
-
-          `TP1 ${priceText(signal.tp1)} · ` +
-
-          `TP2 ${priceText(signal.tp2)}`
-
+        maximumFractionDigits:
+          digits
       }
-
     );
 
-  } catch (
-    error
-  ) {
+}
+
+
+function setBias(
+  id,
+  value
+){
+
+  const el =
+    $(id);
+
+
+  el.textContent =
+    value || "—";
+
+
+  el.className =
+    "bias " +
+    (
+      value ||
+      "NEUTRAL"
+    );
+
+}
+
+
+function reasonsHTML(
+  reasons
+){
+
+  if(
+    !reasons ||
+    !reasons.length
+  ){
+
+    return (
+      '<div class="small">' +
+      'No confirmation yet' +
+      '</div>'
+    );
 
   }
+
+
+  return reasons
+    .map(
+      reason =>
+        `<div class="reason">• ${reason}</div>`
+    )
+    .join("");
+
+}
+
+
+function rangeText(
+  session
+){
+
+  if(!session){
+
+    return "Not formed yet";
+
+  }
+
+
+  return (
+    `${money(session.low)} → ` +
+    `${money(session.high)}`
+  );
 
 }
 
 
 /* =========================================================
-   SIGNAL ENGINE
+   RENDER
 ========================================================= */
 
-function runSignalEngine(
-  pool,
-  stageData
-) {
+function render(data){
 
-  if (
-    !pool
-  ) {
+  const market =
+    data.market;
 
-    return {
-
-      signal:
-        null,
-
-      candidate:
-        null
-
-    };
-
-  }
-
-
-  const direction =
-
-    pool.side ===
-    "HIGH"
-
-      ?
-
-      "SELL"
-
-      :
-
-      "BUY";
-
-
-  const candidate =
-    calculateSignalQuality(
-
-      direction,
-
-      pool,
-
-      stageData
-
-    );
-
-
-  let signal =
-    getSignal();
-
-
-  /*
-    Existing active signal stays locked.
-  */
-  if (
-    signal
-
-    &&
-
-    (
-      signal.status ===
-      "ACTIVE"
-
-      ||
-
-      signal.status ===
-      "TP1 HIT"
-    )
-  ) {
-
-    signal =
-      updateSignalOutcome(
-
-        signal,
-
-        livePrice
-
-      );
-
-
-    return {
-
-      signal,
-
-      candidate
-
-    };
-
-  }
-
-
-  /*
-    Don't repeatedly create signals from exactly
-    the same liquidity pool after it already resolved.
-  */
-  if (
-    signal
-
-    &&
-
-    signal.poolKey ===
-    poolKey(
-      pool
-    )
-
-    &&
-
-    (
-      signal.status ===
-      "TP2 HIT"
-
-      ||
-
-      signal.status ===
-      "STOPPED"
-    )
-  ) {
-
-    return {
-
-      signal,
-
-      candidate
-
-    };
-
-  }
-
-
-  /*
-    Create new locked signal.
-  */
-  if (
-    candidate.ready
-  ) {
-
-    signal =
-      createTradeSignal(
-
-        direction,
-
-        pool,
-
-        candidate
-
-      );
-
-
-    saveSignal(
-      signal
-    );
-
-
-    notifySignal(
-      signal
-    );
-
-  }
-
-
-  return {
-
-    signal,
-
-    candidate
-
-  };
-
-}
-
-
-/* =========================================================
-   RENDER SIGNAL
-========================================================= */
-
-function renderSignal(
-  result
-) {
 
   const signal =
-    result.signal;
+    data.signal;
 
 
-  const candidate =
-    result.candidate;
+  const raid =
+    data.raid;
 
 
-  const status =
-    el(
-      "signalStatus"
+  $("price").textContent =
+    money(
+      market.price
     );
 
 
-  status.className =
-    "signalStatus wait";
+  $("marketInfo").textContent =
+    `Coinbase BTC-USD • ` +
+    `Bid ${money(market.bid)} • ` +
+    `Ask ${money(market.ask)} • ` +
+    `API ${data.latencyMs}ms`;
 
 
-  el(
-    "signalQuality"
-  ).textContent =
+  /* =======================================================
+     SIGNAL
+  ======================================================= */
 
-    candidate
+  $("signal").textContent =
+    signal.signal;
 
-      ?
 
-      Math.round(
-        candidate.score
+  $("signal").className =
+    `signal ${signal.signal}`;
+
+
+  $("signalConfidence")
+    .textContent =
+      signal.signal ===
+      "WAIT"
+
+      ? (
+        `No confirmed trade • ` +
+        `highest score ${number(signal.confidence,1)}`
       )
 
-      :
-
-      "0";
-
-
-  renderConditions(
-    candidate?.checks
-    ||
-    []
-  );
+      : (
+        `${number(signal.confidence,1)}% model score • ` +
+        `gap ${number(signal.scoreGap,1)}`
+      );
 
 
-  if (
-    !signal
-  ) {
-
-    status.textContent =
-      "WAIT";
-
-
-    el(
-      "signalMessage"
-    ).textContent =
-
-      candidate?.score >=
-      SIGNAL_MIN_QUALITY
-
-        ?
-
-        "Quality is high enough, but the full signal trigger has not completed."
-
-        :
-
-        `Waiting for REVERSAL CONFIRMED plus structure and delta confirmation. Minimum quality ${SIGNAL_MIN_QUALITY}/100.`;
-
-
-    clearTradePlan();
-
-
-    return;
-
-  }
-
-
-  status.textContent =
-    signal.direction;
-
-
-  status.className =
-
-    `signalStatus ${signal.direction.toLowerCase()}`;
-
-
-  el(
-    "signalQuality"
-  ).textContent =
-    Math.round(
-      signal.quality
+  $("buyScore").textContent =
+    number(
+      signal.buyScore,
+      1
     );
 
 
-  el(
-    "entry"
-  ).textContent =
-    priceText(
+  $("sellScore").textContent =
+    number(
+      signal.sellScore,
+      1
+    );
+
+
+  $("macroBias").textContent =
+    data.macroBias;
+
+
+  $("macroBias").className =
+    "metric-value " +
+    (
+      data.macroBias ===
+      "BULLISH"
+        ? "green"
+        :
+      data.macroBias ===
+      "BEARISH"
+        ? "red"
+        :
+        "gold"
+    );
+
+
+  $("volatility").textContent =
+    data.volatility.regime;
+
+
+  /* =======================================================
+     TRADE LEVELS
+  ======================================================= */
+
+  $("entry").textContent =
+    money(
       signal.entry
     );
 
 
-  el(
-    "stopLoss"
-  ).textContent =
-    priceText(
+  $("stop").textContent =
+    money(
       signal.stopLoss
     );
 
 
-  el(
-    "tp1"
-  ).textContent =
-    priceText(
-      signal.tp1
+  $("tp1").textContent =
+    money(
+      signal.takeProfit1
     );
 
 
-  el(
-    "tp2"
-  ).textContent =
-    priceText(
-      signal.tp2
+  $("tp2").textContent =
+    money(
+      signal.takeProfit2
     );
 
 
-  el(
-    "riskDistance"
-  ).textContent =
-    priceText(
-      signal.risk
-    );
+  /* =======================================================
+     RAID
+  ======================================================= */
+
+  if(raid){
+
+    $("raidTarget").textContent =
+      raid.target;
 
 
-  el(
-    "signalState"
-  ).textContent =
-    signal.status;
+    $("raidInfo").textContent =
+      `${money(raid.level)} • ` +
+      `${money(raid.distance)} away • ` +
+      `${number(raid.distanceATR,2)} ATR`;
 
 
-  if (
-    signal.status ===
-    "ACTIVE"
-  ) {
+    $("raidStage").textContent =
+      raid.stage;
 
-    el(
-      "signalMessage"
-    ).textContent =
 
-      `${signal.direction} signal locked from ${signal.poolName}. ` +
+    $("raidScore").textContent =
+      `${number(raid.score,0)} / ${raid.maxScore}`;
 
-      `Entry ${priceText(signal.entry)}, ` +
 
-      `SL ${priceText(signal.stopLoss)}, ` +
+    $("raidProgress").style.width =
+      `${Math.min(
+        100,
+        raid.score /
+        raid.maxScore *
+        100
+      )}%`;
 
-      `TP1 ${priceText(signal.tp1)}, ` +
 
-      `TP2 ${priceText(signal.tp2)}.`;
+    $("sweepLow").textContent =
+      money(
+        raid
+          .projectedSweepZone
+          .low
+      );
+
+
+    $("sweepHigh").textContent =
+      money(
+        raid
+          .projectedSweepZone
+          .high
+      );
+
+
+    $("raidReasons").innerHTML =
+      reasonsHTML(
+        raid.reasons
+      );
 
   }
 
 
-  else if (
-    signal.status ===
-    "TP1 HIT"
-  ) {
+  /* =======================================================
+     TIMEFRAMES
+  ======================================================= */
 
-    el(
-      "signalMessage"
-    ).textContent =
-
-      "TP1 has been reached. The model is still tracking TP2.";
-
-  }
+  setBias(
+    "m5",
+    data.timeframes.M5.bias
+  );
 
 
-  else if (
-    signal.status ===
-    "TP2 HIT"
-  ) {
-
-    el(
-      "signalMessage"
-    ).textContent =
-
-      "TP2 has been reached. This signal is complete.";
-
-  }
+  setBias(
+    "m15",
+    data.timeframes.M15.bias
+  );
 
 
-  else if (
-    signal.status ===
-    "STOPPED"
-  ) {
-
-    el(
-      "signalMessage"
-    ).textContent =
-
-      "The stop-loss level was reached. This signal is closed.";
-
-  }
-
-}
+  setBias(
+    "h1",
+    data.timeframes.H1.bias
+  );
 
 
-/* =========================================================
-   CLEAR PLAN
-========================================================= */
-
-function clearTradePlan() {
-
-  el(
-    "entry"
-  ).textContent =
-    "—";
+  setBias(
+    "h4",
+    data.timeframes.H4.bias
+  );
 
 
-  el(
-    "stopLoss"
-  ).textContent =
-    "—";
+  /* =======================================================
+     FLOW
+  ======================================================= */
+
+  const delta =
+    data.flow
+      .deltaPercent;
 
 
-  el(
-    "tp1"
-  ).textContent =
-    "—";
+  $("delta").textContent =
+    `${number(delta,2)}%`;
 
 
-  el(
-    "tp2"
-  ).textContent =
-    "—";
-
-
-  el(
-    "riskDistance"
-  ).textContent =
-    "—";
-
-
-  el(
-    "signalState"
-  ).textContent =
-    "WAITING";
-
-}
-
-
-/* =========================================================
-   CONDITIONS
-========================================================= */
-
-function renderConditions(
-  checks
-) {
-
-  const container =
-    el(
-      "conditions"
+  $("delta").className =
+    "metric-value " +
+    (
+      delta > 0
+        ? "green"
+        :
+      delta < 0
+        ? "red"
+        :
+        ""
     );
 
 
-  container.innerHTML =
+  $("cvd").textContent =
+    number(
+      data.flow.cvd,
+      4
+    );
 
-    checks
+
+  $("book").textContent =
+    `${number(
+      data.orderBook
+        .imbalancePercent,
+      2
+    )}%`;
+
+
+  $("volume").textContent =
+    `${number(
+      data.volume.ratio,
+      2
+    )}x ${data.volume.state}`;
+
+
+  /* =======================================================
+     REFERENCE LEVELS
+  ======================================================= */
+
+  $("pdh").textContent =
+    money(
+      data.levels
+        .previousDayHigh
+    );
+
+
+  $("pdl").textContent =
+    money(
+      data.levels
+        .previousDayLow
+    );
+
+
+  $("pwh").textContent =
+    money(
+      data.levels
+        .previousWeekHigh
+    );
+
+
+  $("pwl").textContent =
+    money(
+      data.levels
+        .previousWeekLow
+    );
+
+
+  $("dailyOpen").textContent =
+    money(
+      data.levels
+        .dailyOpen
+    );
+
+
+  $("weeklyOpen").textContent =
+    money(
+      data.levels
+        .weeklyOpen
+    );
+
+
+  $("vwap").textContent =
+    money(
+      data.vwap.daily
+    );
+
+
+  $("atr").textContent =
+    money(
+      data.volatility
+        .atr5m
+    );
+
+
+  /* =======================================================
+     SESSION
+  ======================================================= */
+
+  $("activeSession").textContent =
+    `Active: ` +
+    data.session.active.join(
+      " + "
+    );
+
+
+  $("asia").textContent =
+    rangeText(
+      data.sessionLevels.asia
+    );
+
+
+  $("london").textContent =
+    rangeText(
+      data.sessionLevels.london
+    );
+
+
+  $("newYork").textContent =
+    rangeText(
+      data.sessionLevels.newYork
+    );
+
+
+  $("weekend").textContent =
+    data.session.weekend
+      ? "YES"
+      : "NO";
+
+
+  /* =======================================================
+     LIQUIDITY MAP
+  ======================================================= */
+
+  $("liquidity").innerHTML =
+    data.liquidityPools
+      .slice(
+        0,
+        10
+      )
       .map(
-        check => `
+        level => `
 
-          <div class="condition">
+          <div class="level">
 
-            <div class="conditionName">
-              ${escapeHtml(check.name)}
+            <div>
+
+              <div class="level-name">
+
+                ${level.name}
+
+              </div>
+
+              <div class="small">
+
+                ${level.side.replace(
+                  "_",
+                  " "
+                )}
+
+                •
+
+                ${number(
+                  level.distanceATR,
+                  2
+                )} ATR away
+
+              </div>
+
             </div>
 
             <div
-              class="conditionState ${check.pass ? "pass" : "fail"}"
+              style="text-align:right"
             >
 
-              ${
-                check.pass
-                  ?
-                  "PASS"
-                  :
-                  "WAIT"
-              }
+              <div class="level-price">
+
+                ${money(
+                  level.level
+                )}
+
+              </div>
+
+              <div class="small">
+
+                score
+                ${number(
+                  level.score,
+                  0
+                )}
+
+              </div>
 
             </div>
 
@@ -4619,856 +2098,69 @@ function renderConditions(
 
         `
       )
-      .join(
-        ""
-      );
+      .join("");
+
+
+  /* =======================================================
+     SIGNAL REASONS
+  ======================================================= */
+
+  $("buyReasons").innerHTML =
+    reasonsHTML(
+      signal.buyReasons
+    );
+
+
+  $("sellReasons").innerHTML =
+    reasonsHTML(
+      signal.sellReasons
+    );
+
+
+  $("status").textContent =
+    `Updated ${new Date().toLocaleTimeString()} • ` +
+    `refreshes every ${REFRESH_MS / 1000}s`;
 
 }
 
 
 /* =========================================================
-   MAIN LIVE RENDER
+   LOAD
 ========================================================= */
 
-function renderLive() {
+async function loadData(
+  forced = false
+){
 
-  if (
-    !analysis
-
-    ||
-
-    !Number.isFinite(
-      Number(
-        livePrice
-      )
-    )
-  ) {
+  if(loading){
 
     return;
 
   }
 
 
-  const pool =
-    analysis
-      .liquidityPools
-      ?.[0];
-
-
-  if (
-    !pool
-  ) {
-
-    return;
-
-  }
-
-
-  const price =
-    Number(
-      livePrice
-    );
-
-
-  const stageData =
-    calculateSweepStage(
-
-      price,
-
-      pool
-
-    );
-
-
-  /* PRICE */
-
-  el(
-    "livePrice"
-  ).textContent =
-    priceText(
-      price
-    );
-
-
-  /* RAID BADGE */
-
-  const badge =
-    el(
-      "raidBadge"
-    );
-
-
-  badge.className =
-    "raidBadge";
-
-
-  if (
-    pool.side ===
-    "HIGH"
-  ) {
-
-    badge.textContent =
-      "UP RAID WATCH";
-
-
-    badge.classList.add(
-      "high"
-    );
-
-  }
-
-  else {
-
-    badge.textContent =
-      "DOWN RAID WATCH";
-
-
-    badge.classList.add(
-      "low"
-    );
-
-  }
-
-
-  /* STAGE */
-
-  el(
-    "sweepStage"
-  ).textContent =
-    stageData.stage;
-
-
-  el(
-    "stageDescription"
-  ).textContent =
-    stageData.description;
-
-
-  el(
-    "progressFill"
-  ).style.width =
-
-    `${clamp(
-      stageData.progress,
-      0,
-      100
-    )}%`;
-
-
-  /* TARGET */
-
-  el(
-    "targetPrice"
-  ).textContent =
-    priceText(
-      pool.level
-    );
-
-
-  el(
-    "targetName"
-  ).textContent =
-    pool.name
-    ||
-    "—";
-
-
-  /* DISTANCE */
-
-  const distance =
-    Math.abs(
-
-      price
-
-      -
-
-      Number(
-        pool.level
-      )
-
-    );
-
-
-  el(
-    "distance"
-  ).textContent =
-    priceText(
-      distance
-    );
-
-
-  const atr15 =
-    Number(
-      analysis.market?.atr15
-    );
-
-
-  el(
-    "distanceAtr"
-  ).textContent =
-
-    Number.isFinite(
-      atr15
-    )
-    &&
-    atr15 > 0
-
-      ?
-
-      `${(
-        distance /
-        atr15
-      ).toFixed(2)}× M15 ATR`
-
-      :
-
-      "—";
-
-
-  /* PROJECTED */
-
-  el(
-    "projectedEnd"
-  ).textContent =
-    priceText(
-      pool.projectedSweep?.likelyEnd
-    );
-
-
-  el(
-    "projectedZone"
-  ).textContent =
-
-    `${priceText(
-      pool.projectedSweep?.zoneLow
-    )} – ` +
-
-    `${priceText(
-      pool.projectedSweep?.zoneHigh
-    )}`;
-
-
-  /* SCORE */
-
-  el(
-    "raidScore"
-  ).textContent =
-
-    `${Math.round(
-      Number(
-        pool.likelihoodScore
-      )
-      ||
-      0
-    )}/95`;
-
-
-  el(
-    "raidStyle"
-  ).textContent =
-
-    `${pool.likelihood || "—"} · ` +
-
-    `${pool.raidStyle || "—"}`;
-
-
-  /* THESIS */
-
-  const directionText =
-
-    pool.side ===
-    "HIGH"
-
-      ?
-
-      "buy-side liquidity"
-
-      :
-
-      "sell-side liquidity";
-
-
-  el(
-    "thesis"
-  ).textContent =
-
-    `${pool.name} at ${priceText(pool.level)} ` +
-
-    `is currently the highest-ranked ${directionText}. ` +
-
-    `Live price is ${priceText(price)}, ` +
-
-    `${priceText(distance)} away. ` +
-
-    `Raid score is ${Math.round(pool.likelihoodScore)}/95. ` +
-
-    `Current stage is ${stageData.stage}. ` +
-
-    `The projected sweep zone is ` +
-
-    `${priceText(pool.projectedSweep?.zoneLow)} – ` +
-
-    `${priceText(pool.projectedSweep?.zoneHigh)}. ` +
-
-    `The model will not create a reversal trade merely because ` +
-
-    `the liquidity level is touched. It waits for rejection, ` +
-
-    `reversal confirmation, structure participation and delta confirmation.`;
-
-
-  /* SIGNAL */
-
-  const signalResult =
-    runSignalEngine(
-
-      pool,
-
-      stageData
-
-    );
-
-
-  renderSignal(
-    signalResult
-  );
-
-}
-
-
-/* =========================================================
-   RENDER ANALYSIS
-========================================================= */
-
-function renderAnalysis() {
-
-  if (
-    !analysis
-  ) {
-
-    return;
-
-  }
-
-
-  el(
-    "regime"
-  ).textContent =
-    analysis.market
-      ?.regime
-      ?.label
-      ||
-      "—";
-
-
-  el(
-    "vwap"
-  ).textContent =
-    priceText(
-      analysis.market?.vwap
-    );
-
-
-  el(
-    "vwapDistance"
-  ).textContent =
-
-    `${signed(
-      analysis.market?.vwapDistance,
-      2
-    )} from VWAP`;
-
-
-  el(
-    "delta5"
-  ).textContent =
-
-    `${signed(
-      analysis.footprint?.last5?.deltaPct,
-      1
-    )}%`;
-
-
-  el(
-    "delta15"
-  ).textContent =
-
-    `${signed(
-      analysis.footprint?.last15?.deltaPct,
-      1
-    )}%`;
-
-
-  el(
-    "divergence"
-  ).textContent =
-    analysis.footprint?.divergence
-    ||
-    "NONE";
-
-
-  el(
-    "absorption"
-  ).textContent =
-    analysis.footprint?.absorption
-    ||
-    "NONE";
-
-
-  renderStructure();
-
-
-  renderSessions();
-
-
-  renderPools();
-
-
-  el(
-    "raw"
-  ).textContent =
-    JSON.stringify(
-      analysis,
-      null,
-      2
-    );
-
-
-  renderLive();
-
-}
-
-
-/* =========================================================
-   STRUCTURE
-========================================================= */
-
-function biasClass(
-  bias
-) {
-
-  if (
-    bias ===
-    "BULLISH"
-  ) {
-
-    return "green";
-
-  }
-
-
-  if (
-    bias ===
-    "BEARISH"
-  ) {
-
-    return "red";
-
-  }
-
-
-  return "gold";
-
-}
-
-
-function renderStructure() {
-
-  const structure =
-    analysis?.structure
-    ||
-    {};
-
-
-  const rows = [
-
-    ["M5","m5"],
-
-    ["M15","m15"],
-
-    ["H1","h1"],
-
-    ["H4","h4"],
-
-    ["D1","d1"]
-
-  ];
-
-
-  el(
-    "structureRows"
-  ).innerHTML =
-
-    rows
-      .map(
-        ([label,key]) => {
-
-          const tf =
-            structure[key];
-
-
-          if (
-            !tf
-          ) {
-
-            return "";
-
-          }
-
-
-          return `
-
-            <div class="tfRow">
-
-              <div class="tfName">
-                ${label}
-              </div>
-
-              <div
-                class="tfBias ${biasClass(tf.bias)}"
-              >
-                ${escapeHtml(tf.bias)}
-              </div>
-
-              <div class="tfExtra">
-
-                RSI ${priceText(tf.rsi14,1)}
-                ·
-                ${signed(tf.score,1)}
-
-              </div>
-
-            </div>
-
-          `;
-
-        }
-      )
-      .join(
-        ""
-      );
-
-}
-
-
-/* =========================================================
-   SESSIONS
-========================================================= */
-
-function renderSessions() {
-
-  const sessions =
-    analysis?.sessions
-    ||
-    [];
-
-
-  el(
-    "sessions"
-  ).innerHTML =
-
-    sessions
-      .map(
-        session => {
-
-          const range =
-            session.range
-            ||
-            {};
-
-
-          return `
-
-            <div class="session">
-
-              <div class="sessionTop">
-
-                <div>
-
-                  <div class="sessionName">
-                    ${escapeHtml(session.name)}
-                  </div>
-
-                  <div class="sessionPhase">
-                    ${escapeHtml(session.phase)}
-                  </div>
-
-                </div>
-
-                <div
-                  class="sessionBadge ${session.active ? "active" : ""}"
-                >
-
-                  ${
-                    session.active
-                      ?
-                      "ACTIVE"
-                      :
-                      "CLOSED"
-                  }
-
-                </div>
-
-              </div>
-
-
-              <div class="sessionGrid">
-
-                <div>
-
-                  <div class="miniLabel">
-                    LOCAL
-                  </div>
-
-                  <div class="miniValue">
-                    ${escapeHtml(session.localTime)}
-                  </div>
-
-                </div>
-
-
-                <div>
-
-                  <div class="miniLabel">
-                    NEXT
-                  </div>
-
-                  <div class="miniValue">
-                    ${escapeHtml(session.nextEvent)}
-                  </div>
-
-                </div>
-
-
-                <div>
-
-                  <div class="miniLabel">
-                    RANGE
-                  </div>
-
-                  <div class="miniValue">
-                    ${priceText(range.range)}
-                  </div>
-
-                </div>
-
-
-                <div>
-
-                  <div class="miniLabel">
-                    HIGH
-                  </div>
-
-                  <div class="miniValue">
-                    ${priceText(range.high)}
-                  </div>
-
-                </div>
-
-
-                <div>
-
-                  <div class="miniLabel">
-                    LOW
-                  </div>
-
-                  <div class="miniValue">
-                    ${priceText(range.low)}
-                  </div>
-
-                </div>
-
-
-                <div>
-
-                  <div class="miniLabel">
-                    HOURS
-                  </div>
-
-                  <div class="miniValue">
-
-                    ${escapeHtml(session.openLocal)}
-                    –
-                    ${escapeHtml(session.closeLocal)}
-
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          `;
-
-        }
-      )
-      .join(
-        ""
-      );
-
-}
-
-
-/* =========================================================
-   POOLS
-========================================================= */
-
-function renderPools() {
-
-  const pools =
-    analysis?.liquidityPools
-    ||
-    [];
-
-
-  el(
-    "poolList"
-  ).innerHTML =
-
-    pools
-      .slice(
-        0,
-        8
-      )
-      .map(
-        pool => {
-
-          const reasons =
-            (
-              pool.reasons
-              ||
-              []
-            )
-              .slice(
-                0,
-                3
-              )
-              .join(
-                " · "
-              );
-
-
-          return `
-
-            <div class="pool">
-
-              <div class="poolTop">
-
-                <div>
-
-                  <div class="poolName">
-                    ${escapeHtml(pool.name)}
-                  </div>
-
-                  <div class="poolLevel">
-
-                    ${priceText(pool.level)}
-
-                    ·
-
-                    ${escapeHtml(pool.side)}
-
-                  </div>
-
-                </div>
-
-                <div class="poolScore">
-
-                  ${Math.round(
-                    Number(
-                      pool.likelihoodScore
-                    )
-                    ||
-                    0
-                  )}
-
-                </div>
-
-              </div>
-
-
-              <div class="pills">
-
-                <div class="pill">
-                  ${escapeHtml(pool.likelihood)}
-                </div>
-
-                <div class="pill">
-                  ${escapeHtml(pool.raidStyle)}
-                </div>
-
-                <div class="pill">
-                  ${priceText(pool.distanceAtr)}× ATR
-                </div>
-
-                <div class="pill">
-
-                  END
-
-                  ${priceText(
-                    pool.projectedSweep?.likelyEnd
-                  )}
-
-                </div>
-
-              </div>
-
-
-              <div class="poolReason">
-                ${escapeHtml(reasons)}
-              </div>
-
-            </div>
-
-          `;
-
-        }
-      )
-      .join(
-        ""
-      );
-
-}
-
-
-/* =========================================================
-   PRICE REQUEST
-========================================================= */
-
-async function loadPrice() {
-
-  if (
-    priceLoading
-  ) {
-
-    return;
-
-  }
-
-
-  priceLoading =
+  loading =
     true;
 
 
-  const started =
-    performance.now();
+  $("status").textContent =
+    forced
+      ? "Running new Coinbase analysis…"
+      : "Refreshing…";
 
 
-  try {
+  $("refreshBtn").disabled =
+    true;
+
+
+  try{
 
     const response =
       await fetch(
-
-        `${PRICE_API}?t=${Date.now()}`,
-
+        `/api/btc?t=${Date.now()}`,
         {
-
-          cache:
-            "no-store"
-
+          cache:"no-store"
         }
-
       );
 
 
@@ -5476,475 +2168,54 @@ async function loadPrice() {
       await response.json();
 
 
-    if (
-      !response.ok
-      ||
-      data.ok !== true
-    ) {
+    if(
+      !response.ok ||
+      !data.ok
+    ){
 
       throw new Error(
-
-        data.error
-        ||
-        `Price HTTP ${response.status}`
-
+        data.error ||
+        "BTC engine failed"
       );
 
     }
 
 
-    livePrice =
-      Number(
-        data.price
-      );
-
-
-    if (
-      !Number.isFinite(
-        livePrice
-      )
-    ) {
-
-      throw new Error(
-        "Invalid live price"
-      );
-
-    }
-
-
-    const elapsed =
-      Math.round(
-
-        performance.now()
-
-        -
-
-        started
-
-      );
-
-
-    el(
-      "priceLatency"
-    ).textContent =
-      `price ${elapsed}ms`;
-
-
-    el(
-      "liveStatus"
-    ).textContent =
-
-      `LIVE · ` +
-
-      `${data.cache ? "CACHED" : "FRESH"} · ` +
-
-      `${data.source}`;
-
-
-    updateConnection();
-
-
-    renderLive();
-
-
-  } catch (
-    error
-  ) {
-
-    el(
-      "liveStatus"
-    ).textContent =
-      `PRICE ERROR · ${error.message}`;
+    render(data);
 
   }
 
-  finally {
+  catch(error){
 
-    priceLoading =
+    $("status").innerHTML =
+      `<span class="error">${error.message}</span>`;
+
+  }
+
+  finally{
+
+    loading =
+      false;
+
+
+    $("refreshBtn").disabled =
       false;
 
   }
 
 }
-
-
-/* =========================================================
-   ANALYSIS REQUEST
-========================================================= */
-
-async function loadAnalysis() {
-
-  if (
-    analysisLoading
-  ) {
-
-    return;
-
-  }
-
-
-  analysisLoading =
-    true;
-
-
-  const started =
-    performance.now();
-
-
-  try {
-
-    const response =
-      await fetch(
-
-        `${ANALYSIS_API}?t=${Date.now()}`,
-
-        {
-
-          cache:
-            "no-store"
-
-        }
-
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if (
-      !response.ok
-      ||
-      data.ok !== true
-    ) {
-
-      throw new Error(
-
-        data.error
-        ||
-        `Analysis HTTP ${response.status}`
-
-      );
-
-    }
-
-
-    analysis =
-      data;
-
-
-    const elapsed =
-      Math.round(
-
-        performance.now()
-
-        -
-
-        started
-
-      );
-
-
-    el(
-      "analysisLatency"
-    ).textContent =
-      `analysis ${elapsed}ms`;
-
-
-    el(
-      "errorBanner"
-    ).style.display =
-      "none";
-
-
-    updateConnection();
-
-
-    renderAnalysis();
-
-
-  } catch (
-    error
-  ) {
-
-    const banner =
-      el(
-        "errorBanner"
-      );
-
-
-    banner.style.display =
-      "block";
-
-
-    banner.textContent =
-      error.message;
-
-
-    el(
-      "connectionDot"
-    ).className =
-      "dot error";
-
-
-    el(
-      "connectionText"
-    ).textContent =
-      "Analysis error";
-
-  }
-
-  finally {
-
-    analysisLoading =
-      false;
-
-  }
-
-}
-
-
-/* =========================================================
-   CONNECTION
-========================================================= */
-
-function updateConnection() {
-
-  const dot =
-    el(
-      "connectionDot"
-    );
-
-
-  dot.className =
-    "dot";
-
-
-  if (
-    analysis
-
-    &&
-
-    Number.isFinite(
-      Number(
-        livePrice
-      )
-    )
-  ) {
-
-    dot.classList.add(
-      "live"
-    );
-
-
-    el(
-      "connectionText"
-    ).textContent =
-      "Live";
-
-  }
-
-  else {
-
-    el(
-      "connectionText"
-    ).textContent =
-      "Connecting...";
-
-  }
-
-}
-
-
-/* =========================================================
-   ALERTS
-========================================================= */
-
-el(
-  "alertButton"
-)
-  .addEventListener(
-    "click",
-    async () => {
-
-      if (
-        !(
-          "Notification"
-          in window
-        )
-      ) {
-
-        alert(
-          "Notifications are not supported in this browser."
-        );
-
-        return;
-
-      }
-
-
-      const permission =
-        await Notification
-          .requestPermission();
-
-
-      if (
-        permission ===
-        "granted"
-      ) {
-
-        notificationsEnabled =
-          true;
-
-
-        el(
-          "alertButton"
-        ).textContent =
-          "Signal alerts enabled";
-
-      }
-
-      else {
-
-        el(
-          "alertButton"
-        ).textContent =
-          "Notification permission denied";
-
-      }
-
-    }
-  );
-
-
-/* =========================================================
-   CLEAR SIGNAL
-========================================================= */
-
-el(
-  "clearSignalButton"
-)
-  .addEventListener(
-    "click",
-    () => {
-
-      localStorage.removeItem(
-        SIGNAL_KEY
-      );
-
-
-      localStorage.removeItem(
-        RUNTIME_KEY
-      );
-
-
-      clearTradePlan();
-
-
-      el(
-        "signalStatus"
-      ).textContent =
-        "WAIT";
-
-
-      el(
-        "signalStatus"
-      ).className =
-        "signalStatus wait";
-
-
-      el(
-        "signalMessage"
-      ).textContent =
-        "Locked signal cleared. Waiting for a new sweep setup.";
-
-
-      renderLive();
-
-    }
-  );
-
-
-/* =========================================================
-   REFRESH BUTTON
-========================================================= */
-
-el(
-  "refreshButton"
-)
-  .addEventListener(
-    "click",
-    async () => {
-
-      const button =
-        el(
-          "refreshButton"
-        );
-
-
-      button.style.transform =
-        "rotate(180deg)";
-
-
-      await Promise.all([
-
-        loadPrice(),
-
-        loadAnalysis()
-
-      ]);
-
-
-      setTimeout(
-        () => {
-
-          button.style.transform =
-            "";
-
-        },
-        250
-      );
-
-    }
-  );
 
 
 /* =========================================================
    START
 ========================================================= */
 
-Promise.all([
+loadData();
 
-  loadAnalysis(),
-
-  loadPrice()
-
-]);
-
-
-/* =========================================================
-   LIVE PRICE LOOP
-========================================================= */
 
 setInterval(
-
-  loadPrice,
-
-  PRICE_REFRESH_MS
-
-);
-
-
-/* =========================================================
-   ANALYSIS LOOP
-========================================================= */
-
-setInterval(
-
-  loadAnalysis,
-
-  ANALYSIS_REFRESH_MS
-
+  () => loadData(false),
+  REFRESH_MS
 );
 
 </script>
